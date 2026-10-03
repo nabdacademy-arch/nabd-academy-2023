@@ -1,0 +1,23 @@
+(function(){
+  const cfg=window.NABD_CONFIG||{};
+
+  window.NABD_BACKEND_READY=Boolean(
+    cfg.supabaseUrl &&
+    cfg.supabaseAnonKey &&
+    window.supabase
+  );
+
+  window.nabdSupabase=window.NABD_BACKEND_READY
+    ? window.supabase.createClient(
+        cfg.supabaseUrl,
+        cfg.supabaseAnonKey,
+        {
+          auth:{
+            persistSession:true,
+            autoRefreshToken:true,
+            detectSessionInUrl:true
+          }
+        }
+      )
+    : null;
+})();
