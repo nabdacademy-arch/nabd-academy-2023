@@ -1,0 +1,28 @@
+[
+  {
+    "id": "arabic-llm-first-aid",
+    "slug": "arabic-llm-first-aid",
+    "project_no": "01",
+    "title": "Does Dialect Change Safety?",
+    "title_ar": "هل تغيّر اللهجة سلامة النصيحة؟",
+    "subtitle": "A Benchmark Study of Large Language Models Providing First-Aid Advice in Modern Standard Arabic and Levantine Arabic",
+    "summary": "A planned benchmark study comparing the safety and completeness of first-aid advice across Modern Standard Arabic and Levantine Arabic prompts.",
+    "summary_ar": "دراسة معيارية مخططة لمقارنة سلامة واكتمال نصائح الإسعافات الأولية بين العربية الفصحى واللهجة الشامية.",
+    "field": "AI • First Aid • Arabic NLP",
+    "status": "Research Protocol",
+    "author_display": "NABD Research Center"
+  },
+  {
+    "id": "nano-cancer-integrative",
+    "slug": "nano-cancer-integrative",
+    "project_no": "02",
+    "title": "The Synergistic Paradigm",
+    "title_ar": "النموذج التآزري",
+    "subtitle": "An Integrative Nano-Clinical Protocol for Cancer Therapy",
+    "summary": "An integrative research framework combining thymoquinone-loaded nanoparticles with psychoneuroimmunological support.",
+    "summary_ar": "إطار بحثي تكاملي يجمع بين الجسيمات النانوية المحمّلة بالثيموكينون والدعم النفسي العصبي المناعي.",
+    "field": "Nanotechnology • Molecular Oncology • Integrative Oncology",
+    "status": "Conceptual Research Protocol",
+    "author_display": "Mohammed Khaled Suleiman Al Arja"
+  }
+]
