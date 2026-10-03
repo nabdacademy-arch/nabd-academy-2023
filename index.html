@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -14,9 +15,15 @@
     content="NABD Academy for Medical Sciences — medical education, research development, student learning, and verifiable certificates."
   >
 
-  <meta name="theme-color" content="#071d2d">
+  <meta
+    name="theme-color"
+    content="#031d2d"
+  >
 
-  <meta property="og:type" content="website">
+  <meta
+    property="og:type"
+    content="website"
+  >
 
   <meta
     property="og:title"
@@ -37,11 +44,15 @@
     NABD Academy for Medical Sciences
   </title>
 
+
+  <!-- Final stylesheet + cache refresh -->
   <link
     rel="stylesheet"
-    href="assets/css/styles.css"
+    href="assets/css/styles.css?v=6"
   >
 
+
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -56,23 +67,26 @@
     }
   }
   </script>
+
 </head>
+
 
 
 <body>
 
 
-  <!-- =========================================
+  <!-- =====================================================
        HEADER
-       ========================================= -->
+       ===================================================== -->
 
   <header class="site-header">
 
     <div class="container nav-wrap">
 
+
       <a
-        href="#home"
         class="brand"
+        href="#home"
         aria-label="NABD Academy home"
       >
 
@@ -95,14 +109,16 @@
       </a>
 
 
+
       <button
         id="menuBtn"
         class="menu-btn"
         type="button"
-        aria-label="Open navigation"
+        aria-label="Open navigation menu"
       >
         ☰
       </button>
+
 
 
       <nav
@@ -117,12 +133,14 @@
           Home
         </a>
 
+
         <a
           href="#courses"
           data-i18n="nav.courses"
         >
           Courses
         </a>
+
 
         <a
           href="#research"
@@ -131,6 +149,7 @@
           Research
         </a>
 
+
         <a
           href="#verify"
           data-i18n="nav.verify"
@@ -138,9 +157,11 @@
           Verify
         </a>
 
+
         <a href="#founder">
           Founder
         </a>
+
 
         <a
           href="#achievements"
@@ -149,6 +170,7 @@
           Achievements
         </a>
 
+
         <a
           href="#about"
           data-i18n="nav.about"
@@ -156,13 +178,22 @@
           About
         </a>
 
+
+        <a
+          href="#feedback"
+        >
+          Feedback
+        </a>
+
+
         <a
           href="portal.html"
-          class="btn btn-small nav-login"
+          class="btn btn-small"
           data-i18n="nav.login"
         >
           Student Login
         </a>
+
 
         <button
           id="langBtn"
@@ -183,21 +214,26 @@
   <main>
 
 
-    <!-- =========================================
+    <!-- =====================================================
          HERO
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="premium-hero"
       id="home"
+      class="premium-hero"
     >
 
+
       <div class="hero-glow hero-glow-one"></div>
+
       <div class="hero-glow hero-glow-two"></div>
+
 
 
       <div class="container premium-hero-grid">
 
+
+        <!-- Hero text -->
 
         <div class="premium-hero-copy">
 
@@ -213,19 +249,27 @@
           </div>
 
 
+
           <h1>
 
-            <span>Learn.</span>
+            <span>
+              Learn.
+            </span>
 
-            <span>Research.</span>
+            <span>
+              Research.
+            </span>
 
-            <span>Verify.</span>
+            <span>
+              Verify.
+            </span>
 
             <span class="hero-accent">
               Grow.
             </span>
 
           </h1>
+
 
 
           <p
@@ -241,38 +285,49 @@
 
           <div class="premium-hero-actions">
 
+
             <a
               class="btn hero-primary-btn"
               href="#courses"
-              data-i18n="hero.explore"
             >
+
               <span class="btn-icon">
                 🎓
               </span>
 
-              Explore Courses
+              <span data-i18n="hero.explore">
+                Explore Courses
+              </span>
 
               <span>
                 →
               </span>
+
             </a>
+
 
 
             <a
               class="btn hero-secondary-btn"
               href="#verify"
-              data-i18n="hero.verify"
             >
+
               <span class="btn-icon">
                 ✓
               </span>
 
-              Verify Certificate
+              <span data-i18n="hero.verify">
+                Verify Certificate
+              </span>
+
             </a>
+
 
           </div>
 
 
+
+          <!-- Trust cards -->
 
           <div class="hero-trust-grid">
 
@@ -344,21 +399,28 @@
 
           </div>
 
+
         </div>
 
 
+
+        <!-- Desktop hero image -->
 
         <div class="premium-hero-visual">
 
           <div class="hero-image-frame">
 
+
             <img
               src="assets/images/hero-medical.jpg"
-              alt="Medical science and human anatomy visualization"
+              alt="Medical sciences and human anatomy visualization"
               class="hero-main-image"
+              fetchpriority="high"
             >
 
+
             <div class="hero-image-overlay"></div>
+
 
 
             <div class="floating-medical-card card-brain">
@@ -374,6 +436,7 @@
             </div>
 
 
+
             <div class="floating-medical-card card-research">
 
               <span>
@@ -385,6 +448,7 @@
               </small>
 
             </div>
+
 
 
             <div class="floating-medical-card card-verify">
@@ -399,6 +463,7 @@
 
             </div>
 
+
           </div>
 
         </div>
@@ -410,9 +475,9 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          METRICS
-         ========================================= -->
+         ===================================================== -->
 
     <section class="premium-metrics">
 
@@ -516,13 +581,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          COURSES
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section premium-courses-section"
       id="courses"
+      class="section premium-courses-section"
     >
 
       <div class="container">
@@ -540,9 +605,11 @@
               Learning
             </span>
 
+
             <h2 data-i18n="courses.title">
               Medical Courses
             </h2>
+
 
             <p data-i18n="courses.text">
               Structured theoretical medical learning
@@ -552,18 +619,20 @@
           </div>
 
 
+
           <a
-            href="#courses"
             class="section-action"
+            href="#courses"
           >
-            View Courses
-            →
+            View Courses →
           </a>
 
 
         </div>
 
 
+
+        <!-- app.js inserts all course cards here -->
 
         <div
           id="courseGrid"
@@ -577,13 +646,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          CERTIFICATE VERIFICATION
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section premium-verification"
       id="verify"
+      class="section premium-verification"
     >
 
       <div class="container">
@@ -603,15 +672,16 @@
             </span>
 
 
+
             <h2 data-i18n="verify.title">
-              Check the Authenticity
-              of Your Certificate
+              Check the Authenticity of Your Certificate
             </h2>
 
 
+
             <p data-i18n="verify.text">
-              Enter the certificate ID exactly
-              as shown on the Certificate of Completion.
+              Enter the certificate ID exactly as shown
+              on the Certificate of Completion.
             </p>
 
 
@@ -621,20 +691,24 @@
               class="premium-verify-form"
             >
 
+
               <div class="verify-input-shell">
 
                 <span>
                   ✓
                 </span>
 
+
                 <input
                   id="certificateId"
                   type="text"
                   placeholder="NABD-MT-2026-0001"
                   autocomplete="off"
+                  aria-label="Certificate ID"
                 >
 
               </div>
+
 
 
               <button
@@ -643,8 +717,8 @@
                 data-i18n="verify.button"
               >
                 Verify Certificate
-                →
               </button>
+
 
             </form>
 
@@ -675,52 +749,58 @@
 
 
 
-    <!-- =========================================
-         FOUNDER
-         ========================================= -->
+    <!-- =====================================================
+         FOUNDER & DIRECTOR
+         ===================================================== -->
 
     <section
-      class="founder-premium-section"
       id="founder"
+      class="founder-premium-section"
     >
 
 
       <div class="founder-bg-glow"></div>
 
 
+
       <div class="container founder-premium-grid">
 
+
+        <!-- Founder photo -->
 
         <div class="founder-photo-area">
 
 
           <div class="founder-ring ring-one"></div>
+
           <div class="founder-ring ring-two"></div>
+
 
 
           <div class="founder-photo-frame">
 
             <img
               src="assets/images/founder.jpg"
-              alt="Mohammed Khaled Al-Arja, Founder and Director of NABD Academy for Medical Sciences"
+              alt="Mohammed Khaled Al-Arja"
               class="founder-photo"
+              loading="lazy"
+              decoding="async"
             >
 
           </div>
 
 
+
           <div class="founder-badge">
-
-            <span>
-              N
-            </span>
-
+            N
           </div>
 
 
         </div>
 
 
+
+        <!-- Founder information -->
 
         <div class="founder-copy">
 
@@ -730,16 +810,25 @@
           </span>
 
 
+
           <h2>
             Mohammed Khaled Al-Arja
           </h2>
 
 
+
           <p class="founder-role">
+
             Founder & Director
-            <span>•</span>
+
+            <span>
+              •
+            </span>
+
             NABD Academy for Medical Sciences
+
           </p>
+
 
 
           <p class="founder-description">
@@ -750,6 +839,7 @@
           </p>
 
 
+
           <div class="founder-skills">
 
             <span>
@@ -757,7 +847,7 @@
             </span>
 
             <span>
-              Research
+              Research Development
             </span>
 
             <span>
@@ -769,6 +859,7 @@
             </span>
 
           </div>
+
 
 
           <div class="founder-arabic">
@@ -794,6 +885,8 @@
 
 
 
+        <!-- Vision card -->
+
         <div class="founder-vision-card">
 
 
@@ -809,7 +902,7 @@
 
           <p>
             Building an accessible,
-            transparent and research-driven
+            transparent, and research-driven
             digital environment for medical learning.
           </p>
 
@@ -828,13 +921,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          RESEARCH
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section premium-research-section"
       id="research"
+      class="section premium-research-section"
     >
 
       <div class="container">
@@ -845,6 +938,7 @@
 
           <div>
 
+
             <span
               class="eyebrow"
               data-i18n="research.eyebrow"
@@ -853,9 +947,11 @@
             </span>
 
 
+
             <h2 data-i18n="research.title">
               Research & Scientific Projects
             </h2>
+
 
 
             <p data-i18n="research.text">
@@ -864,21 +960,24 @@
               and completed work.
             </p>
 
+
           </div>
 
 
+
           <a
-            href="research.html"
             class="section-action"
+            href="research.html"
           >
-            Explore Research
-            →
+            Explore Research →
           </a>
 
 
         </div>
 
 
+
+        <!-- app.js inserts research projects -->
 
         <div
           id="researchGrid"
@@ -892,13 +991,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          ACHIEVEMENTS
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section achievements-premium"
       id="achievements"
+      class="section achievements-premium"
     >
 
       <div class="container">
@@ -906,7 +1005,9 @@
 
         <div class="premium-section-heading">
 
+
           <div>
+
 
             <span
               class="eyebrow"
@@ -915,9 +1016,13 @@
               Milestones
             </span>
 
+
+
             <h2 data-i18n="achievements.title">
               Research & Achievements
             </h2>
+
+
 
             <p data-i18n="achievements.text">
               Documented milestones,
@@ -925,7 +1030,9 @@
               and transparent recognition.
             </p>
 
+
           </div>
+
 
         </div>
 
@@ -936,9 +1043,11 @@
 
           <article class="achievement-card">
 
+
             <div class="achievement-visual research-visual">
               ⚗
             </div>
+
 
             <div>
 
@@ -953,15 +1062,18 @@
 
             </div>
 
+
           </article>
 
 
 
           <article class="achievement-card">
 
+
             <div class="achievement-visual certificate-visual">
               ✓
             </div>
+
 
             <div>
 
@@ -976,32 +1088,32 @@
 
             </div>
 
+
           </article>
 
 
 
           <article class="achievement-card">
 
+
             <div class="achievement-visual recognition-visual">
               ★
             </div>
 
+
             <div>
 
-              <h3
-                data-i18n="achievements.pendingTitle"
-              >
+              <h3 data-i18n="achievements.pendingTitle">
                 Evidence-first Recognition
               </h3>
 
-              <p
-                data-i18n="achievements.pendingText"
-              >
+              <p data-i18n="achievements.pendingText">
                 Awards and recognitions are published
                 only after documentary verification.
               </p>
 
             </div>
+
 
           </article>
 
@@ -1015,13 +1127,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          ABOUT
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section premium-about"
       id="about"
+      class="section premium-about"
     >
 
       <div class="container premium-about-grid">
@@ -1038,10 +1150,12 @@
           </span>
 
 
+
           <h2 data-i18n="about.title">
             Accessible medical learning
             with verifiable outcomes
           </h2>
+
 
 
           <p data-i18n="about.text">
@@ -1068,6 +1182,7 @@
 
           <div>
 
+
             <h3 data-i18n="about.transparency">
               Academic Transparency
             </h3>
@@ -1079,6 +1194,7 @@
               or governmental accreditation unless
               explicitly stated and documented.
             </p>
+
 
           </div>
 
@@ -1092,13 +1208,13 @@
 
 
 
-    <!-- =========================================
+    <!-- =====================================================
          COMPLAINTS & FEEDBACK
-         ========================================= -->
+         ===================================================== -->
 
     <section
-      class="section complaints-section"
       id="feedback"
+      class="section complaints-section"
     >
 
       <div class="container">
@@ -1108,6 +1224,7 @@
 
 
           <div class="complaints-heading">
+
 
             <span class="eyebrow">
               Complaints & Feedback
@@ -1125,6 +1242,7 @@
               technical issue,
               or general feedback.
             </p>
+
 
           </div>
 
@@ -1145,8 +1263,8 @@
 
                 <input
                   id="feedbackName"
-                  type="text"
                   name="name"
+                  type="text"
                   autocomplete="name"
                   placeholder="Your name"
                 >
@@ -1161,8 +1279,8 @@
 
                 <input
                   id="feedbackEmail"
-                  type="email"
                   name="email"
+                  type="email"
                   autocomplete="email"
                   placeholder="name@example.com"
                 >
@@ -1221,17 +1339,18 @@
 
 
             <button
-              type="submit"
               class="btn"
+              type="submit"
             >
-              Send Feedback
-              →
+              Send Feedback →
             </button>
+
 
 
             <div
               id="feedbackStatus"
               class="complaints-status"
+              aria-live="polite"
             ></div>
 
 
@@ -1247,20 +1366,16 @@
 
 
 
-    <!-- =========================================
-         CTA
-         ========================================= -->
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
 
     <section class="premium-final-cta">
-
 
       <div class="container">
 
 
         <div class="premium-final-cta-card">
-
-
-          <div class="cta-dna-pattern"></div>
 
 
           <div>
@@ -1292,12 +1407,16 @@
             <a
               class="btn cta-gold-btn"
               href="enroll.html"
-              data-i18n="cta.form"
             >
               🎓
-              Start Learning
+
+              <span data-i18n="cta.form">
+                Start Learning
+              </span>
+
               →
             </a>
+
 
 
             <a
@@ -1319,7 +1438,6 @@
 
       </div>
 
-
     </section>
 
 
@@ -1327,9 +1445,9 @@
 
 
 
-  <!-- =========================================
+  <!-- =====================================================
        FOOTER
-       ========================================= -->
+       ===================================================== -->
 
   <footer class="premium-footer">
 
@@ -1341,8 +1459,8 @@
 
 
         <a
-          href="#home"
           class="brand footer-main-brand"
+          href="#home"
         >
 
           <span class="brand-mark">
@@ -1362,12 +1480,15 @@
 
           </span>
 
+
         </a>
+
 
 
         <p data-i18n="footer.tagline">
           Learn • Research • Verify • Grow
         </p>
+
 
 
         <small>
@@ -1387,24 +1508,39 @@
           Courses
         </a>
 
+
         <a href="#research">
           Research
         </a>
+
 
         <a href="#verify">
           Verify Certificate
         </a>
 
+
         <a href="#founder">
           Founder
         </a>
+
 
         <a href="#about">
           About
         </a>
 
+
         <a href="#feedback">
           Complaints & Feedback
+        </a>
+
+
+        <a href="portal.html">
+          Student Portal
+        </a>
+
+
+        <a href="policies.html">
+          Policies
         </a>
 
 
@@ -1436,10 +1572,15 @@
 
 
       <span>
+
         ©
+
         <span id="year"></span>
+
         NABD Academy for Medical Sciences.
+
       </span>
+
 
 
       <span>
@@ -1454,24 +1595,32 @@
 
 
 
-  <!-- =========================================
-       SCRIPTS
-       ========================================= -->
+  <!-- =====================================================
+       LIBRARIES
+       ===================================================== -->
 
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
+
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
   ></script>
 
-  <script src="assets/js/config.js"></script>
 
-  <script src="assets/js/supabase-client.js"></script>
 
-  <script src="assets/js/app.js"></script>
+  <!-- =====================================================
+       NABD SCRIPTS + CACHE REFRESH
+       ===================================================== -->
+
+  <script src="assets/js/config.js?v=6"></script>
+
+  <script src="assets/js/supabase-client.js?v=6"></script>
+
+  <script src="assets/js/app.js?v=6"></script>
 
 
 </body>
+
 </html>
