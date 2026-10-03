@@ -1,58 +1,19 @@
 <!doctype html>
 <html lang="en" dir="ltr">
-
 <head>
-
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="NABD Academy for Medical Sciences — medical learning, research development, and verifiable certificates of completion.">
+  <meta name="theme-color" content="#061d2d">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="NABD Academy for Medical Sciences">
+  <meta property="og:description" content="Learn • Research • Verify • Grow">
+  <meta property="og:image" content="social-preview.jpg">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
+  <title>NABD Academy for Medical Sciences</title>
 
-  <meta
-    name="description"
-    content="NABD Academy for Medical Sciences — medical education, research development, student learning, and verifiable certificates."
-  >
+  <link rel="stylesheet" href="assets/css/styles.css?v=10">
 
-  <meta
-    name="theme-color"
-    content="#031d2d"
-  >
-
-  <meta
-    property="og:type"
-    content="website"
-  >
-
-  <meta
-    property="og:title"
-    content="NABD Academy for Medical Sciences"
-  >
-
-  <meta
-    property="og:description"
-    content="Learn • Research • Verify • Grow"
-  >
-
-  <meta
-    property="og:image"
-    content="social-preview.jpg"
-  >
-
-  <title>
-    NABD Academy for Medical Sciences
-  </title>
-
-
-  <!-- Final stylesheet + cache refresh -->
-  <link
-    rel="stylesheet"
-    href="assets/css/styles.css?v=6"
-  >
-
-
-  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -67,124 +28,61 @@
     }
   }
   </script>
-
 </head>
-
-
 
 <body>
 
-
-  <!-- =====================================================
-       HEADER
-       ===================================================== -->
-
   <header class="site-header">
-
     <div class="container nav-wrap">
 
-
-      <a
-        class="brand"
-        href="#home"
-        aria-label="NABD Academy home"
-      >
-
-        <span class="brand-mark">
-          N
-        </span>
+      <a class="brand" href="#home" aria-label="NABD Academy home">
+        <span class="brand-mark">N</span>
 
         <span class="brand-copy">
-
-          <strong>
-            NABD Academy
-          </strong>
-
-          <small>
-            for Medical Sciences
-          </small>
-
+          <strong>NABD Academy</strong>
+          <small>for Medical Sciences</small>
         </span>
-
       </a>
-
-
 
       <button
         id="menuBtn"
         class="menu-btn"
         type="button"
-        aria-label="Open navigation menu"
+        aria-label="Open navigation"
+        aria-expanded="false"
       >
         ☰
       </button>
 
+      <nav id="mainNav" class="main-nav" aria-label="Main navigation">
 
-
-      <nav
-        id="mainNav"
-        class="main-nav"
-      >
-
-        <a
-          href="#home"
-          data-i18n="nav.home"
-        >
+        <a href="#home" data-i18n="nav.home">
           Home
         </a>
 
-
-        <a
-          href="#courses"
-          data-i18n="nav.courses"
-        >
+        <a href="#courses" data-i18n="nav.courses">
           Courses
         </a>
 
-
-        <a
-          href="#research"
-          data-i18n="nav.research"
-        >
+        <a href="#research" data-i18n="nav.research">
           Research
         </a>
 
-
-        <a
-          href="#verify"
-          data-i18n="nav.verify"
-        >
+        <a href="#verify" data-i18n="nav.verify">
           Verify
         </a>
 
-
-        <a href="#founder">
+        <a href="#founder" data-i18n="nav.founder">
           Founder
         </a>
 
-
-        <a
-          href="#achievements"
-          data-i18n="nav.achievements"
-        >
-          Achievements
-        </a>
-
-
-        <a
-          href="#about"
-          data-i18n="nav.about"
-        >
+        <a href="#about" data-i18n="nav.about">
           About
         </a>
 
-
-        <a
-          href="#feedback"
-        >
+        <a href="#feedback" data-i18n="nav.feedback">
           Feedback
         </a>
-
 
         <a
           href="portal.html"
@@ -194,384 +92,156 @@
           Student Login
         </a>
 
-
-        <button
-          id="langBtn"
-          class="lang-btn"
-          type="button"
-        >
+        <button id="langBtn" class="lang-btn" type="button">
           العربية
         </button>
 
       </nav>
 
     </div>
-
   </header>
-
 
 
   <main>
 
+    <!-- HERO -->
 
-    <!-- =====================================================
-         HERO
-         ===================================================== -->
-
-    <section
-      id="home"
-      class="premium-hero"
-    >
-
-
-      <div class="hero-glow hero-glow-one"></div>
-
-      <div class="hero-glow hero-glow-two"></div>
-
-
-
-      <div class="container premium-hero-grid">
-
-
-        <!-- Hero text -->
-
-        <div class="premium-hero-copy">
-
-
-          <div class="hero-brand-line">
-
-            <span class="hero-brand-dot"></span>
-
-            <span data-i18n="hero.eyebrow">
-              Medical Education • Research • Verification
-            </span>
-
-          </div>
-
-
-
-          <h1>
-
-            <span>
-              Learn.
-            </span>
-
-            <span>
-              Research.
-            </span>
-
-            <span>
-              Verify.
-            </span>
-
-            <span class="hero-accent">
-              Grow.
-            </span>
-
-          </h1>
-
-
-
-          <p
-            class="premium-hero-lead"
-            data-i18n="hero.text"
-          >
-            A bilingual digital academy for medical learning,
-            student development, research projects,
-            and verifiable certificates.
-          </p>
-
-
-
-          <div class="premium-hero-actions">
-
-
-            <a
-              class="btn hero-primary-btn"
-              href="#courses"
-            >
-
-              <span class="btn-icon">
-                🎓
-              </span>
-
-              <span data-i18n="hero.explore">
-                Explore Courses
-              </span>
-
-              <span>
-                →
-              </span>
-
-            </a>
-
-
-
-            <a
-              class="btn hero-secondary-btn"
-              href="#verify"
-            >
-
-              <span class="btn-icon">
-                ✓
-              </span>
-
-              <span data-i18n="hero.verify">
-                Verify Certificate
-              </span>
-
-            </a>
-
-
-          </div>
-
-
-
-          <!-- Trust cards -->
-
-          <div class="hero-trust-grid">
-
-
-            <div class="hero-trust-card">
-
-              <span class="trust-icon">
-                ◎
-              </span>
-
-              <span>
-
-                <strong data-i18n="hero.bilingual">
-                  Arabic & English
-                </strong>
-
-                <small>
-                  Bilingual learning
-                </small>
-
-              </span>
-
-            </div>
-
-
-
-            <div class="hero-trust-card">
-
-              <span class="trust-icon">
-                ▦
-              </span>
-
-              <span>
-
-                <strong data-i18n="hero.qr">
-                  QR Verification
-                </strong>
-
-                <small>
-                  Secure credentials
-                </small>
-
-              </span>
-
-            </div>
-
-
-
-            <div class="hero-trust-card">
-
-              <span class="trust-icon">
-                ♙
-              </span>
-
-              <span>
-
-                <strong data-i18n="hero.portal">
-                  Student Portal
-                </strong>
-
-                <small>
-                  Digital access
-                </small>
-
-              </span>
-
-            </div>
-
-
-          </div>
-
-
-        </div>
-
-
-
-        <!-- Desktop hero image -->
-
-        <div class="premium-hero-visual">
-
-          <div class="hero-image-frame">
-
-
-            <img
-              src="assets/images/hero-medical.jpg"
-              alt="Medical sciences and human anatomy visualization"
-              class="hero-main-image"
-              fetchpriority="high"
-            >
-
-
-            <div class="hero-image-overlay"></div>
-
-
-
-            <div class="floating-medical-card card-brain">
-
-              <span>
-                ◉
-              </span>
-
-              <small>
-                Medical Science
-              </small>
-
-            </div>
-
-
-
-            <div class="floating-medical-card card-research">
-
-              <span>
-                ✦
-              </span>
-
-              <small>
-                Research
-              </small>
-
-            </div>
-
-
-
-            <div class="floating-medical-card card-verify">
-
-              <span>
-                ✓
-              </span>
-
-              <small>
-                Verification
-              </small>
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         METRICS
-         ===================================================== -->
-
-    <section class="premium-metrics">
+    <section id="home" class="hero">
 
       <div class="container">
 
-        <div class="premium-metrics-grid">
+        <div class="hero-panel">
 
+          <div class="hero-content">
 
-          <article class="premium-metric-card">
+            <div class="hero-kicker">
 
-            <div class="metric-icon">
-              ✚
-            </div>
+              <span class="kicker-dot"></span>
 
-            <div>
-
-              <strong id="courseCount">
-                5
-              </strong>
-
-              <span>
-                Medical Courses
+              <span data-i18n="hero.eyebrow">
+                Medical Education • Research • Verification
               </span>
 
             </div>
 
-          </article>
+            <h1 aria-label="Learn. Research. Verify. Grow.">
 
+              <span>Learn.</span>
+              <span>Research.</span>
+              <span>Verify.</span>
 
-
-          <article class="premium-metric-card">
-
-            <div class="metric-icon">
-              ⚗
-            </div>
-
-            <div>
-
-              <strong id="researchCount">
-                2
-              </strong>
-
-              <span>
-                Research Projects
+              <span class="hero-accent">
+                Grow.
               </span>
 
-            </div>
+            </h1>
 
-          </article>
+            <p class="hero-lead" data-i18n="hero.text">
+              A bilingual digital academy for medical learning,
+              student development, research projects,
+              and verifiable certificates.
+            </p>
 
+            <div class="hero-actions">
 
+              <a class="btn btn-glow" href="#courses">
 
-          <article class="premium-metric-card">
+                <span aria-hidden="true">
+                  🎓
+                </span>
 
-            <div class="metric-icon gold">
-              ✓
-            </div>
+                <span data-i18n="hero.explore">
+                  Explore Courses
+                </span>
 
-            <div>
+                <span aria-hidden="true">
+                  →
+                </span>
 
-              <strong>
-                24/7
-              </strong>
+              </a>
 
-              <span>
-                Certificate Verification
-              </span>
+              <a class="btn btn-light" href="#verify">
 
-            </div>
+                <span aria-hidden="true">
+                  ✓
+                </span>
 
-          </article>
+                <span data-i18n="hero.verify">
+                  Verify Certificate
+                </span>
 
-
-
-          <article class="premium-metric-card">
-
-            <div class="metric-icon">
-              ◎
-            </div>
-
-            <div>
-
-              <strong>
-                100%
-              </strong>
-
-              <span>
-                Online Learning
-              </span>
+              </a>
 
             </div>
 
-          </article>
 
+            <div class="trust-grid">
+
+              <article class="trust-card">
+
+                <span class="trust-icon">
+                  ◎
+                </span>
+
+                <span>
+
+                  <strong data-i18n="hero.bilingual">
+                    Arabic & English
+                  </strong>
+
+                  <small data-i18n="hero.bilingualSub">
+                    Bilingual learning
+                  </small>
+
+                </span>
+
+              </article>
+
+
+              <article class="trust-card">
+
+                <span class="trust-icon">
+                  ▦
+                </span>
+
+                <span>
+
+                  <strong data-i18n="hero.qr">
+                    QR Verification
+                  </strong>
+
+                  <small data-i18n="hero.qrSub">
+                    Secure credentials
+                  </small>
+
+                </span>
+
+              </article>
+
+
+              <article class="trust-card">
+
+                <span class="trust-icon">
+                  ◉
+                </span>
+
+                <span>
+
+                  <strong data-i18n="hero.portal">
+                    Student Portal
+                  </strong>
+
+                  <small data-i18n="hero.portalSub">
+                    Digital access
+                  </small>
+
+                </span>
+
+              </article>
+
+            </div>
+
+          </div>
 
         </div>
 
@@ -580,36 +250,117 @@
     </section>
 
 
+    <!-- STATS -->
 
-    <!-- =====================================================
-         COURSES
-         ===================================================== -->
+    <section class="stats-strip" aria-label="Academy overview">
 
-    <section
-      id="courses"
-      class="section premium-courses-section"
-    >
+      <div class="container stats-grid">
 
-      <div class="container">
+        <article class="stat-card">
 
-
-        <div class="premium-section-heading">
-
+          <span class="stat-icon">
+            ✚
+          </span>
 
           <div>
 
-            <span
-              class="eyebrow"
-              data-i18n="courses.eyebrow"
-            >
-              Learning
+            <strong id="courseCount">
+              5
+            </strong>
+
+            <span data-i18n="stats.courses">
+              Medical Courses
             </span>
 
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span class="stat-icon">
+            ⚗
+          </span>
+
+          <div>
+
+            <strong id="researchCount">
+              2
+            </strong>
+
+            <span data-i18n="stats.research">
+              Research Projects
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span class="stat-icon gold">
+            ✓
+          </span>
+
+          <div>
+
+            <strong>
+              QR
+            </strong>
+
+            <span data-i18n="stats.verify">
+              Certificate Verification
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <article class="stat-card">
+
+          <span class="stat-icon">
+            ◎
+          </span>
+
+          <div>
+
+            <strong>
+              Online
+            </strong>
+
+            <span data-i18n="stats.online">
+              Digital Learning
+            </span>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- COURSES -->
+
+    <section id="courses" class="section courses-section">
+
+      <div class="container">
+
+        <div class="section-head">
+
+          <div>
+
+            <span class="eyebrow" data-i18n="courses.eyebrow">
+              Learning
+            </span>
 
             <h2 data-i18n="courses.title">
               Medical Courses
             </h2>
-
 
             <p data-i18n="courses.text">
               Structured theoretical medical learning
@@ -618,326 +369,210 @@
 
           </div>
 
-
-
-          <a
-            class="section-action"
-            href="#courses"
-          >
-            View Courses →
-          </a>
-
-
         </div>
 
-
-
-        <!-- app.js inserts all course cards here -->
-
-        <div
-          id="courseGrid"
-          class="card-grid premium-course-grid"
-        ></div>
-
+        <div id="courseGrid" class="course-grid"></div>
 
       </div>
 
     </section>
 
 
+    <!-- VERIFY CERTIFICATE -->
 
-    <!-- =====================================================
-         CERTIFICATE VERIFICATION
-         ===================================================== -->
-
-    <section
-      id="verify"
-      class="section premium-verification"
-    >
+    <section id="verify" class="section verify-section">
 
       <div class="container">
 
+        <div class="verify-shell">
 
-        <div class="verification-shell">
+          <div class="verify-copy">
 
-
-          <div class="verification-copy">
-
-
-            <span
-              class="eyebrow"
-              data-i18n="verify.eyebrow"
-            >
-              Verify Certificate
+            <span class="eyebrow" data-i18n="verify.eyebrow">
+              Certificate Verification
             </span>
 
-
-
             <h2 data-i18n="verify.title">
-              Check the Authenticity of Your Certificate
+              Check the authenticity of your certificate
             </h2>
 
-
-
             <p data-i18n="verify.text">
-              Enter the certificate ID exactly as shown
-              on the Certificate of Completion.
+              Enter the certificate ID exactly
+              as shown on the certificate.
             </p>
 
+            <form id="verifyForm" class="verify-form">
 
+              <label class="verify-input">
 
-            <form
-              id="verifyForm"
-              class="premium-verify-form"
-            >
-
-
-              <div class="verify-input-shell">
-
-                <span>
+                <span aria-hidden="true">
                   ✓
                 </span>
-
 
                 <input
                   id="certificateId"
                   type="text"
                   placeholder="NABD-MT-2026-0001"
                   autocomplete="off"
-                  aria-label="Certificate ID"
                 >
 
-              </div>
-
-
+              </label>
 
               <button
-                class="btn verify-main-button"
+                class="btn"
                 type="submit"
                 data-i18n="verify.button"
               >
                 Verify Certificate
               </button>
 
-
             </form>
 
-
           </div>
 
 
-
-          <div class="verification-result-shell">
-
-            <div
-              id="verifyResult"
-              class="verify-result empty"
-              data-i18n="verify.empty"
-            >
-              Verification result will appear here.
-            </div>
-
+          <div
+            id="verifyResult"
+            class="verify-result empty"
+            data-i18n="verify.empty"
+          >
+            Verification result will appear here.
           </div>
-
 
         </div>
-
 
       </div>
 
     </section>
 
 
+    <!-- FOUNDER -->
 
-    <!-- =====================================================
-         FOUNDER & DIRECTOR
-         ===================================================== -->
+    <section id="founder" class="founder-section">
 
-    <section
-      id="founder"
-      class="founder-premium-section"
-    >
+      <div class="container founder-grid">
 
+        <div class="founder-portrait-wrap">
 
-      <div class="founder-bg-glow"></div>
+          <div class="founder-ring"></div>
 
-
-
-      <div class="container founder-premium-grid">
-
-
-        <!-- Founder photo -->
-
-        <div class="founder-photo-area">
-
-
-          <div class="founder-ring ring-one"></div>
-
-          <div class="founder-ring ring-two"></div>
-
-
-
-          <div class="founder-photo-frame">
+          <div class="founder-portrait">
 
             <img
               src="assets/images/founder.jpg"
               alt="Mohammed Khaled Al-Arja"
-              class="founder-photo"
               loading="lazy"
               decoding="async"
             >
 
           </div>
 
-
-
-          <div class="founder-badge">
+          <span class="founder-seal">
             N
-          </div>
-
+          </span>
 
         </div>
 
 
-
-        <!-- Founder information -->
-
         <div class="founder-copy">
 
-
-          <span class="founder-label">
+          <span
+            class="founder-label"
+            data-i18n="founder.label"
+          >
             Founder & Director
           </span>
-
-
 
           <h2>
             Mohammed Khaled Al-Arja
           </h2>
 
-
-
-          <p class="founder-role">
-
-            Founder & Director
-
-            <span>
-              •
-            </span>
-
-            NABD Academy for Medical Sciences
-
+          <p
+            class="founder-role"
+            data-i18n="founder.role"
+          >
+            Founder & Director — NABD Academy for Medical Sciences
           </p>
 
-
-
-          <p class="founder-description">
-            Leading the development of NABD Academy's
-            digital educational platform, medical-science
-            learning environment, research initiatives,
-            and transparent certificate verification system.
+          <p data-i18n="founder.text">
+            Leading the development of NABD Academy's digital
+            educational platform, medical-science learning
+            environment, research initiatives, and transparent
+            certificate verification system.
           </p>
 
+          <div class="founder-tags">
 
-
-          <div class="founder-skills">
-
-            <span>
+            <span data-i18n="founder.tag1">
               Medical Education
             </span>
 
-            <span>
+            <span data-i18n="founder.tag2">
               Research Development
             </span>
 
-            <span>
+            <span data-i18n="founder.tag3">
               Digital Learning
             </span>
 
-            <span>
+            <span data-i18n="founder.tag4">
               Certificate Verification
             </span>
 
           </div>
 
 
+          <div class="founder-ar">
 
-          <div class="founder-arabic">
-
-            <strong
-              lang="ar"
-              dir="rtl"
-            >
+            <strong>
               محمد خالد العرجا
             </strong>
 
-            <span
-              lang="ar"
-              dir="rtl"
-            >
+            <span>
               المؤسس والمدير — أكاديمية نبض للعلوم الطبية
             </span>
 
           </div>
 
-
         </div>
 
 
+        <aside class="vision-card">
 
-        <!-- Vision card -->
-
-        <div class="founder-vision-card">
-
-
-          <span class="vision-symbol">
+          <span class="quote-mark">
             “
           </span>
 
-
-          <h3>
+          <h3 data-i18n="founder.visionTitle">
             Leadership & Vision
           </h3>
 
-
-          <p>
-            Building an accessible,
-            transparent, and research-driven
-            digital environment for medical learning.
+          <p data-i18n="founder.visionText">
+            Building an accessible, transparent,
+            and research-driven digital environment
+            for medical learning.
           </p>
 
-
-          <div class="vision-signature">
+          <strong>
             Mohammed Khaled Al-Arja
-          </div>
+          </strong>
 
-
-        </div>
-
+        </aside>
 
       </div>
 
     </section>
 
 
+    <!-- RESEARCH -->
 
-    <!-- =====================================================
-         RESEARCH
-         ===================================================== -->
-
-    <section
-      id="research"
-      class="section premium-research-section"
-    >
+    <section id="research" class="section research-section">
 
       <div class="container">
 
-
-        <div class="premium-section-heading">
-
+        <div class="section-head">
 
           <div>
-
 
             <span
               class="eyebrow"
@@ -946,68 +581,51 @@
               NABD Research Center
             </span>
 
-
-
             <h2 data-i18n="research.title">
               Research & Scientific Projects
             </h2>
 
-
-
             <p data-i18n="research.text">
-              Transparent project pages that distinguish
-              protocols, ongoing studies,
-              and completed work.
+              Transparent project pages for protocols,
+              ongoing studies, and completed work.
             </p>
-
 
           </div>
 
 
-
           <a
-            class="section-action"
+            class="section-link"
             href="research.html"
+            data-i18n="research.more"
           >
             Explore Research →
           </a>
 
-
         </div>
 
-
-
-        <!-- app.js inserts research projects -->
 
         <div
           id="researchGrid"
           class="research-grid"
         ></div>
 
-
       </div>
 
     </section>
 
 
-
-    <!-- =====================================================
-         ACHIEVEMENTS
-         ===================================================== -->
+    <!-- ACHIEVEMENTS -->
 
     <section
       id="achievements"
-      class="section achievements-premium"
+      class="section achievements-section"
     >
 
       <div class="container">
 
-
-        <div class="premium-section-heading">
-
+        <div class="section-head">
 
           <div>
-
 
             <span
               class="eyebrow"
@@ -1016,13 +634,9 @@
               Milestones
             </span>
 
-
-
             <h2 data-i18n="achievements.title">
               Research & Achievements
             </h2>
-
-
 
             <p data-i18n="achievements.text">
               Documented milestones,
@@ -1030,76 +644,62 @@
               and transparent recognition.
             </p>
 
-
           </div>
-
 
         </div>
 
 
-
-        <div class="achievement-cards">
-
+        <div class="achievement-grid">
 
           <article class="achievement-card">
 
-
-            <div class="achievement-visual research-visual">
+            <span class="achievement-icon">
               ⚗
-            </div>
-
+            </span>
 
             <div>
 
-              <h3>
+              <h3 data-i18n="achievements.researchTitle">
                 Research Projects
               </h3>
 
-              <p>
+              <p data-i18n="achievements.researchText">
                 Scientific protocols
                 and medical research development.
               </p>
 
             </div>
 
-
           </article>
-
 
 
           <article class="achievement-card">
 
-
-            <div class="achievement-visual certificate-visual">
+            <span class="achievement-icon">
               ✓
-            </div>
-
+            </span>
 
             <div>
 
-              <h3>
+              <h3 data-i18n="achievements.verifyTitle">
                 Verifiable Credentials
               </h3>
 
-              <p>
+              <p data-i18n="achievements.verifyText">
                 Certificate ID and QR-based
                 public verification.
               </p>
 
             </div>
 
-
           </article>
-
 
 
           <article class="achievement-card">
 
-
-            <div class="achievement-visual recognition-visual">
+            <span class="achievement-icon gold">
               ★
-            </div>
-
+            </span>
 
             <div>
 
@@ -1114,33 +714,22 @@
 
             </div>
 
-
           </article>
 
-
         </div>
-
 
       </div>
 
     </section>
 
 
+    <!-- ABOUT -->
 
-    <!-- =====================================================
-         ABOUT
-         ===================================================== -->
+    <section id="about" class="section about-section">
 
-    <section
-      id="about"
-      class="section premium-about"
-    >
-
-      <div class="container premium-about-grid">
-
+      <div class="container about-grid">
 
         <div>
-
 
           <span
             class="eyebrow"
@@ -1149,279 +738,249 @@
             About NABD
           </span>
 
-
-
           <h2 data-i18n="about.title">
             Accessible medical learning
             with verifiable outcomes
           </h2>
 
-
-
           <p data-i18n="about.text">
-            NABD Academy for Medical Sciences
-            is an educational initiative focused
-            on theoretical medical courses,
-            research development,
-            and transparent certificates
+            NABD Academy for Medical Sciences is an educational
+            initiative focused on theoretical medical courses,
+            research development, and transparent certificates
             of completion.
           </p>
-
 
         </div>
 
 
-
-        <div class="transparency-premium-card">
-
+        <aside class="transparency-card">
 
           <span class="transparency-icon">
             ✓
           </span>
 
-
           <div>
-
 
             <h3 data-i18n="about.transparency">
               Academic Transparency
             </h3>
 
-
             <p data-i18n="about.disclaimer">
               Certificates are certificates of completion
               and do not represent a university degree
-              or governmental accreditation unless
-              explicitly stated and documented.
+              or governmental accreditation unless explicitly
+              stated and documented.
             </p>
-
 
           </div>
 
-
-        </div>
-
+        </aside>
 
       </div>
 
     </section>
 
 
-
-    <!-- =====================================================
-         COMPLAINTS & FEEDBACK
-         ===================================================== -->
+    <!-- FEEDBACK -->
 
     <section
       id="feedback"
-      class="section complaints-section"
+      class="section feedback-section"
     >
 
       <div class="container">
 
+        <div class="feedback-card">
 
-        <div class="complaints-card">
+          <div class="feedback-intro">
 
-
-          <div class="complaints-heading">
-
-
-            <span class="eyebrow">
+            <span
+              class="eyebrow"
+              data-i18n="feedback.eyebrow"
+            >
               Complaints & Feedback
             </span>
 
-
-            <h2>
+            <h2 data-i18n="feedback.title">
               We value your feedback
             </h2>
 
-
-            <p>
-              Submit a complaint,
-              suggestion,
-              technical issue,
-              or general feedback.
+            <p data-i18n="feedback.text">
+              Submit a complaint, suggestion,
+              technical issue, or general feedback.
             </p>
-
 
           </div>
 
 
-
           <form
             id="feedbackForm"
-            class="stack-form"
+            class="feedback-form"
           >
 
+            <label>
 
-            <div class="complaints-grid">
-
-
-              <label>
-
+              <span data-i18n="feedback.name">
                 Name
+              </span>
 
-                <input
-                  id="feedbackName"
-                  name="name"
-                  type="text"
-                  autocomplete="name"
-                  placeholder="Your name"
-                >
+              <input
+                id="feedbackName"
+                type="text"
+                autocomplete="name"
+              >
 
-              </label>
-
+            </label>
 
 
-              <label>
+            <label>
 
+              <span data-i18n="feedback.email">
                 Email
+              </span>
 
-                <input
-                  id="feedbackEmail"
-                  name="email"
-                  type="email"
-                  autocomplete="email"
-                  placeholder="name@example.com"
-                >
+              <input
+                id="feedbackEmail"
+                type="email"
+                autocomplete="email"
+              >
 
-              </label>
-
+            </label>
 
 
-              <label class="full">
+            <label class="field-wide">
 
+              <span data-i18n="feedback.type">
                 Type
+              </span>
 
-                <select
-                  id="feedbackCategory"
-                  name="category"
+              <select id="feedbackCategory">
+
+                <option
+                  value="complaint"
+                  data-i18n="feedback.complaint"
                 >
+                  Complaint
+                </option>
 
-                  <option value="complaint">
-                    Complaint
-                  </option>
+                <option
+                  value="suggestion"
+                  data-i18n="feedback.suggestion"
+                >
+                  Suggestion
+                </option>
 
-                  <option value="suggestion">
-                    Suggestion
-                  </option>
+                <option
+                  value="technical"
+                  data-i18n="feedback.technical"
+                >
+                  Technical issue
+                </option>
 
-                  <option value="technical">
-                    Technical issue
-                  </option>
+                <option
+                  value="other"
+                  data-i18n="feedback.other"
+                >
+                  Other
+                </option>
 
-                  <option value="other">
-                    Other
-                  </option>
+              </select>
 
-                </select>
-
-              </label>
-
+            </label>
 
 
-              <label class="full">
+            <label class="field-wide">
 
+              <span data-i18n="feedback.message">
                 Message
+              </span>
 
-                <textarea
-                  id="feedbackMessage"
-                  name="message"
-                  placeholder="Write your message..."
-                  required
-                ></textarea>
+              <textarea
+                id="feedbackMessage"
+                required
+              ></textarea>
 
-              </label>
+            </label>
 
+
+            <div class="field-wide feedback-actions">
+
+              <button
+                class="btn"
+                type="submit"
+                data-i18n="feedback.send"
+              >
+                Send Feedback
+              </button>
+
+              <span
+                id="feedbackStatus"
+                class="feedback-status"
+                aria-live="polite"
+              ></span>
 
             </div>
 
-
-
-            <button
-              class="btn"
-              type="submit"
-            >
-              Send Feedback →
-            </button>
-
-
-
-            <div
-              id="feedbackStatus"
-              class="complaints-status"
-              aria-live="polite"
-            ></div>
-
-
           </form>
 
-
         </div>
-
 
       </div>
 
     </section>
 
 
+    <!-- CTA -->
 
-    <!-- =====================================================
-         FINAL CTA
-         ===================================================== -->
-
-    <section class="premium-final-cta">
+    <section class="final-cta">
 
       <div class="container">
 
-
-        <div class="premium-final-cta-card">
-
+        <div class="cta-card">
 
           <div>
 
-
-            <span class="cta-small">
+            <span class="cta-kicker">
               NABD Academy
             </span>
 
-
-            <h2>
+            <h2 data-i18n="cta.title">
               Build your medical knowledge.
               Start learning today.
             </h2>
 
-
-            <p>
+            <p data-i18n="cta.text">
               Learn • Research • Verify • Grow
             </p>
-
 
           </div>
 
 
-
           <div class="cta-actions">
 
-
             <a
-              class="btn cta-gold-btn"
+              class="btn btn-gold"
               href="enroll.html"
             >
-              🎓
 
-              <span data-i18n="cta.form">
+              <span aria-hidden="true">
+                🎓
+              </span>
+
+              <span data-i18n="cta.start">
                 Start Learning
               </span>
 
-              →
-            </a>
+              <span aria-hidden="true">
+                →
+              </span>
 
+            </a>
 
 
             <a
               id="whatsappCta"
-              class="btn cta-outline-btn disabled"
+              class="btn btn-outline disabled"
               href="#"
               aria-disabled="true"
               data-i18n="cta.whatsapp"
@@ -1429,44 +988,30 @@
               WhatsApp
             </a>
 
-
           </div>
 
-
         </div>
-
 
       </div>
 
     </section>
 
-
   </main>
 
 
+  <!-- FOOTER -->
 
-  <!-- =====================================================
-       FOOTER
-       ===================================================== -->
+  <footer class="footer">
 
-  <footer class="premium-footer">
+    <div class="container footer-grid">
 
+      <div>
 
-    <div class="container premium-footer-grid">
-
-
-      <div class="footer-brand">
-
-
-        <a
-          class="brand footer-main-brand"
-          href="#home"
-        >
+        <a class="brand footer-brand" href="#home">
 
           <span class="brand-mark">
             N
           </span>
-
 
           <span class="brand-copy">
 
@@ -1480,72 +1025,75 @@
 
           </span>
 
-
         </a>
-
-
 
         <p data-i18n="footer.tagline">
           Learn • Research • Verify • Grow
         </p>
-
-
 
         <small>
           Founder & Director:
           Mohammed Khaled Al-Arja
         </small>
 
-
       </div>
 
 
+      <nav
+        class="footer-links"
+        aria-label="Footer navigation"
+      >
 
-      <div class="footer-links">
-
-
-        <a href="#courses">
+        <a
+          href="#courses"
+          data-i18n="nav.courses"
+        >
           Courses
         </a>
 
-
-        <a href="#research">
+        <a
+          href="#research"
+          data-i18n="nav.research"
+        >
           Research
         </a>
 
-
-        <a href="#verify">
-          Verify Certificate
+        <a
+          href="#verify"
+          data-i18n="nav.verify"
+        >
+          Verify
         </a>
 
-
-        <a href="#founder">
+        <a
+          href="#founder"
+          data-i18n="nav.founder"
+        >
           Founder
         </a>
 
-
-        <a href="#about">
-          About
+        <a
+          href="#feedback"
+          data-i18n="nav.feedback"
+        >
+          Feedback
         </a>
 
-
-        <a href="#feedback">
-          Complaints & Feedback
-        </a>
-
-
-        <a href="portal.html">
+        <a
+          href="portal.html"
+          data-i18n="footer.portal"
+        >
           Student Portal
         </a>
 
-
-        <a href="policies.html">
+        <a
+          href="policies.html"
+          data-i18n="footer.policies"
+        >
           Policies
         </a>
 
-
-      </div>
-
+      </nav>
 
 
       <div
@@ -1553,7 +1101,7 @@
         class="footer-contact"
       >
 
-        <strong>
+        <strong data-i18n="footer.contactTitle">
           Contact
         </strong>
 
@@ -1563,64 +1111,35 @@
 
       </div>
 
-
     </div>
-
 
 
     <div class="container footer-bottom">
 
-
       <span>
-
         ©
-
         <span id="year"></span>
-
         NABD Academy for Medical Sciences.
-
       </span>
 
-
-
-      <span>
+      <span data-i18n="footer.bottom">
         Medical Education • Research • Verification
       </span>
 
-
     </div>
-
 
   </footer>
 
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- =====================================================
-       LIBRARIES
-       ===================================================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+  <script src="assets/js/config.js?v=10"></script>
 
+  <script src="assets/js/supabase-client.js?v=10"></script>
 
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-  ></script>
-
-
-
-  <!-- =====================================================
-       NABD SCRIPTS + CACHE REFRESH
-       ===================================================== -->
-
-  <script src="assets/js/config.js?v=6"></script>
-
-  <script src="assets/js/supabase-client.js?v=6"></script>
-
-  <script src="assets/js/app.js?v=6"></script>
-
+  <script src="assets/js/app.js?v=10"></script>
 
 </body>
-
 </html>
