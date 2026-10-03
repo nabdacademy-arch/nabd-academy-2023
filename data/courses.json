@@ -1,0 +1,100 @@
+[
+  {
+    "id": "medical-terminology",
+    "slug": "medical-terminology",
+    "code": "MT",
+    "title_en": "Medical Terminology",
+    "title_ar": "المصطلحات الطبية",
+    "description_en": "Core medical vocabulary, roots, prefixes, suffixes and clinical terminology.",
+    "description_ar": "أساسيات المصطلحات الطبية والجذور والبادئات واللواحق والمفردات السريرية.",
+    "level_en": "Foundation",
+    "level_ar": "تأسيسي",
+    "hours": 30,
+    "status": "active",
+    "modules": [
+      "Word structure",
+      "Body systems terminology",
+      "Clinical abbreviations",
+      "Case-based terminology"
+    ]
+  },
+  {
+    "id": "general-anatomy",
+    "slug": "general-anatomy",
+    "code": "ANAT",
+    "title_en": "General Anatomy",
+    "title_ar": "التشريح العام",
+    "description_en": "Foundational human anatomy with clinically oriented terminology.",
+    "description_ar": "مبادئ التشريح البشري بمصطلحات ذات توجه سريري.",
+    "level_en": "Foundation",
+    "level_ar": "تأسيسي",
+    "hours": 30,
+    "status": "active",
+    "modules": [
+      "Anatomical language",
+      "Musculoskeletal system",
+      "Thorax",
+      "Abdomen",
+      "Head and neck"
+    ]
+  },
+  {
+    "id": "physiology",
+    "slug": "physiology",
+    "code": "PHYS",
+    "title_en": "Physiology",
+    "title_ar": "علم وظائف الأعضاء",
+    "description_en": "Core concepts in normal human physiology.",
+    "description_ar": "المفاهيم الأساسية في وظائف أعضاء الجسم الطبيعية.",
+    "level_en": "Foundation",
+    "level_ar": "تأسيسي",
+    "hours": 30,
+    "status": "active",
+    "modules": [
+      "Cell physiology",
+      "Cardiovascular system",
+      "Respiratory system",
+      "Renal system",
+      "Endocrine system"
+    ]
+  },
+  {
+    "id": "biochemistry",
+    "slug": "biochemistry",
+    "code": "BIOC",
+    "title_en": "Biochemistry",
+    "title_ar": "الكيمياء الحيوية",
+    "description_en": "Biomolecules, metabolism and clinically relevant biochemistry.",
+    "description_ar": "الجزيئات الحيوية والاستقلاب والكيمياء الحيوية الطبية.",
+    "level_en": "Foundation",
+    "level_ar": "تأسيسي",
+    "hours": 30,
+    "status": "active",
+    "modules": [
+      "Biomolecules",
+      "Enzymes",
+      "Metabolism",
+      "Molecular foundations"
+    ]
+  },
+  {
+    "id": "pathology",
+    "slug": "pathology",
+    "code": "PATH",
+    "title_en": "Pathology",
+    "title_ar": "علم الأمراض",
+    "description_en": "Basic mechanisms of disease and cellular injury.",
+    "description_ar": "الآليات الأساسية للمرض وأذية الخلايا والالتهاب.",
+    "level_en": "Foundation",
+    "level_ar": "تأسيسي",
+    "hours": 30,
+    "status": "active",
+    "modules": [
+      "Cell injury",
+      "Inflammation",
+      "Healing",
+      "Hemodynamic disorders",
+      "Neoplasia"
+    ]
+  }
+]
