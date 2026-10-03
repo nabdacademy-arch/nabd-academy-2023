@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://nabdacademy-arch.github.io/nabd-academy-2023/</loc>
-    <lastmod>2026-10-02</lastmod>
-  </url>
+  <url><loc>https://nabdacademy-arch.github.io/nabd-academy-2023/</loc></url>
+  <url><loc>https://nabdacademy-arch.github.io/nabd-academy-2023/portal.html</loc></url>
+  <url><loc>https://nabdacademy-arch.github.io/nabd-academy-2023/enroll.html</loc></url>
+  <url><loc>https://nabdacademy-arch.github.io/nabd-academy-2023/policies.html</loc></url>
 </urlset>
