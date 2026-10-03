@@ -2,37 +2,36 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
-  />
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
   <meta
     name="description"
-    content="NABD Academy for Medical Sciences — medical learning, research, student development, and verifiable certificates."
-  />
+    content="NABD Academy for Medical Sciences — medical education, research development, student learning, and verifiable certificates."
+  >
+
+  <meta name="theme-color" content="#071d2d">
+
+  <meta property="og:type" content="website">
 
   <meta
     property="og:title"
     content="NABD Academy for Medical Sciences"
-  />
+  >
 
   <meta
     property="og:description"
-    content="Medical education, research, student development, and certificate verification."
-  />
+    content="Learn • Research • Verify • Grow"
+  >
 
   <meta
-    property="og:type"
-    content="website"
-  />
-
-  <meta
-    name="theme-color"
-    content="#082235"
-  />
+    property="og:image"
+    content="social-preview.jpg"
+  >
 
   <title>
     NABD Academy for Medical Sciences
@@ -41,20 +40,19 @@
   <link
     rel="stylesheet"
     href="assets/css/styles.css"
-  />
+  >
 
-  <!-- Structured information about NABD -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "NABD Academy for Medical Sciences",
-    "url": "https://nabdacademy-arch.github.io/nabd-academy-2023/",
-    "description": "A digital educational initiative focused on theoretical medical sciences, research development, and verifiable certificates of completion.",
-    "founder": {
-      "@type": "Person",
-      "name": "Mohammed Khaled Al-Arja",
-      "jobTitle": "Founder & Director"
+    "@context":"https://schema.org",
+    "@type":"EducationalOrganization",
+    "name":"NABD Academy for Medical Sciences",
+    "url":"https://nabdacademy-arch.github.io/nabd-academy-2023/",
+    "description":"A digital educational initiative focused on theoretical medical sciences, research development, and verifiable certificates of completion.",
+    "founder":{
+      "@type":"Person",
+      "name":"Mohammed Khaled Al-Arja",
+      "jobTitle":"Founder & Director"
     }
   }
   </script>
@@ -64,17 +62,17 @@
 <body>
 
 
-  <!-- =========================
+  <!-- =========================================
        HEADER
-       ========================= -->
+       ========================================= -->
 
   <header class="site-header">
 
     <div class="container nav-wrap">
 
       <a
-        class="brand"
         href="#home"
+        class="brand"
         aria-label="NABD Academy home"
       >
 
@@ -82,7 +80,8 @@
           N
         </span>
 
-        <span>
+        <span class="brand-copy">
+
           <strong>
             NABD Academy
           </strong>
@@ -90,6 +89,7 @@
           <small>
             for Medical Sciences
           </small>
+
         </span>
 
       </a>
@@ -98,7 +98,8 @@
       <button
         id="menuBtn"
         class="menu-btn"
-        aria-label="Open menu"
+        type="button"
+        aria-label="Open navigation"
       >
         ☰
       </button>
@@ -137,6 +138,10 @@
           Verify
         </a>
 
+        <a href="#founder">
+          Founder
+        </a>
+
         <a
           href="#achievements"
           data-i18n="nav.achievements"
@@ -152,14 +157,8 @@
         </a>
 
         <a
-          href="#founder"
-        >
-          Founder
-        </a>
-
-        <a
           href="portal.html"
-          class="btn btn-small"
+          class="btn btn-small nav-login"
           data-i18n="nav.login"
         >
           Student Login
@@ -168,6 +167,7 @@
         <button
           id="langBtn"
           class="lang-btn"
+          type="button"
         >
           العربية
         </button>
@@ -183,35 +183,53 @@
   <main>
 
 
-    <!-- =========================
+    <!-- =========================================
          HERO
-         ========================= -->
+         ========================================= -->
 
     <section
+      class="premium-hero"
       id="home"
-      class="hero section"
     >
 
-      <div class="container hero-grid">
+      <div class="hero-glow hero-glow-one"></div>
+      <div class="hero-glow hero-glow-two"></div>
 
 
-        <div>
-
-          <span
-            class="eyebrow"
-            data-i18n="hero.eyebrow"
-          >
-            Medical education • Research • Verification
-          </span>
+      <div class="container premium-hero-grid">
 
 
-          <h1 data-i18n="hero.title">
-            Learn. Research. Verify. Grow.
+        <div class="premium-hero-copy">
+
+
+          <div class="hero-brand-line">
+
+            <span class="hero-brand-dot"></span>
+
+            <span data-i18n="hero.eyebrow">
+              Medical Education • Research • Verification
+            </span>
+
+          </div>
+
+
+          <h1>
+
+            <span>Learn.</span>
+
+            <span>Research.</span>
+
+            <span>Verify.</span>
+
+            <span class="hero-accent">
+              Grow.
+            </span>
+
           </h1>
 
 
           <p
-            class="lead"
+            class="premium-hero-lead"
             data-i18n="hero.text"
           >
             A bilingual digital academy for medical learning,
@@ -220,49 +238,109 @@
           </p>
 
 
-          <div class="hero-actions">
+
+          <div class="premium-hero-actions">
 
             <a
-              class="btn"
+              class="btn hero-primary-btn"
               href="#courses"
               data-i18n="hero.explore"
             >
+              <span class="btn-icon">
+                🎓
+              </span>
+
               Explore Courses
+
+              <span>
+                →
+              </span>
             </a>
 
+
             <a
-              class="btn btn-ghost"
+              class="btn hero-secondary-btn"
               href="#verify"
               data-i18n="hero.verify"
             >
+              <span class="btn-icon">
+                ✓
+              </span>
+
               Verify Certificate
             </a>
 
           </div>
 
 
-          <div class="trust-row">
 
-            <span>
-              ✓
-              <span data-i18n="hero.bilingual">
-                Arabic & English
-              </span>
-            </span>
+          <div class="hero-trust-grid">
 
-            <span>
-              ✓
-              <span data-i18n="hero.qr">
-                QR verification
-              </span>
-            </span>
 
-            <span>
-              ✓
-              <span data-i18n="hero.portal">
-                Student portal
+            <div class="hero-trust-card">
+
+              <span class="trust-icon">
+                ◎
               </span>
-            </span>
+
+              <span>
+
+                <strong data-i18n="hero.bilingual">
+                  Arabic & English
+                </strong>
+
+                <small>
+                  Bilingual learning
+                </small>
+
+              </span>
+
+            </div>
+
+
+
+            <div class="hero-trust-card">
+
+              <span class="trust-icon">
+                ▦
+              </span>
+
+              <span>
+
+                <strong data-i18n="hero.qr">
+                  QR Verification
+                </strong>
+
+                <small>
+                  Secure credentials
+                </small>
+
+              </span>
+
+            </div>
+
+
+
+            <div class="hero-trust-card">
+
+              <span class="trust-icon">
+                ♙
+              </span>
+
+              <span>
+
+                <strong data-i18n="hero.portal">
+                  Student Portal
+                </strong>
+
+                <small>
+                  Digital access
+                </small>
+
+              </span>
+
+            </div>
+
 
           </div>
 
@@ -270,66 +348,61 @@
 
 
 
-        <aside class="hero-card">
+        <div class="premium-hero-visual">
 
-          <div class="pulse"></div>
+          <div class="hero-image-frame">
 
+            <img
+              src="assets/images/hero-medical.jpg"
+              alt="Medical science and human anatomy visualization"
+              class="hero-main-image"
+            >
 
-          <h3 data-i18n="hero.cardTitle">
-            NABD Digital Platform v2
-          </h3>
-
-
-          <p data-i18n="hero.cardText">
-            Built for courses, certificates,
-            research, students,
-            and academy administration.
-          </p>
+            <div class="hero-image-overlay"></div>
 
 
-          <div class="metric-grid">
+            <div class="floating-medical-card card-brain">
 
-            <div>
-
-              <strong id="courseCount">
-                5
-              </strong>
-
-              <span data-i18n="metrics.courses">
-                Courses
+              <span>
+                ◉
               </span>
+
+              <small>
+                Medical Science
+              </small>
 
             </div>
 
 
-            <div>
+            <div class="floating-medical-card card-research">
 
-              <strong id="researchCount">
-                2
-              </strong>
-
-              <span data-i18n="metrics.research">
-                Research Projects
+              <span>
+                ✦
               </span>
+
+              <small>
+                Research
+              </small>
 
             </div>
 
 
-            <div>
+            <div class="floating-medical-card card-verify">
 
-              <strong>
-                24/7
-              </strong>
+              <span>
+                ✓
+              </span>
 
-              <span data-i18n="metrics.verify">
+              <small>
                 Verification
-              </span>
+              </small>
 
             </div>
 
           </div>
 
-        </aside>
+        </div>
+
 
       </div>
 
@@ -337,18 +410,126 @@
 
 
 
-    <!-- =========================
+    <!-- =========================================
+         METRICS
+         ========================================= -->
+
+    <section class="premium-metrics">
+
+      <div class="container">
+
+        <div class="premium-metrics-grid">
+
+
+          <article class="premium-metric-card">
+
+            <div class="metric-icon">
+              ✚
+            </div>
+
+            <div>
+
+              <strong id="courseCount">
+                5
+              </strong>
+
+              <span>
+                Medical Courses
+              </span>
+
+            </div>
+
+          </article>
+
+
+
+          <article class="premium-metric-card">
+
+            <div class="metric-icon">
+              ⚗
+            </div>
+
+            <div>
+
+              <strong id="researchCount">
+                2
+              </strong>
+
+              <span>
+                Research Projects
+              </span>
+
+            </div>
+
+          </article>
+
+
+
+          <article class="premium-metric-card">
+
+            <div class="metric-icon gold">
+              ✓
+            </div>
+
+            <div>
+
+              <strong>
+                24/7
+              </strong>
+
+              <span>
+                Certificate Verification
+              </span>
+
+            </div>
+
+          </article>
+
+
+
+          <article class="premium-metric-card">
+
+            <div class="metric-icon">
+              ◎
+            </div>
+
+            <div>
+
+              <strong>
+                100%
+              </strong>
+
+              <span>
+                Online Learning
+              </span>
+
+            </div>
+
+          </article>
+
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================================
          COURSES
-         ========================= -->
+         ========================================= -->
 
     <section
-      class="section muted"
+      class="section premium-courses-section"
       id="courses"
     >
 
       <div class="container">
 
-        <div class="section-head">
+
+        <div class="premium-section-heading">
+
 
           <div>
 
@@ -363,21 +544,32 @@
               Medical Courses
             </h2>
 
+            <p data-i18n="courses.text">
+              Structured theoretical medical learning
+              with completion certificates.
+            </p>
+
           </div>
 
 
-          <p data-i18n="courses.text">
-            Structured theoretical medical learning
-            with completion certificates.
-          </p>
+          <a
+            href="#courses"
+            class="section-action"
+          >
+            View Courses
+            →
+          </a>
+
 
         </div>
 
 
+
         <div
           id="courseGrid"
-          class="card-grid"
+          class="card-grid premium-course-grid"
         ></div>
+
 
       </div>
 
@@ -385,18 +577,271 @@
 
 
 
-    <!-- =========================
-         RESEARCH
-         ========================= -->
+    <!-- =========================================
+         CERTIFICATE VERIFICATION
+         ========================================= -->
 
     <section
-      class="section"
+      class="section premium-verification"
+      id="verify"
+    >
+
+      <div class="container">
+
+
+        <div class="verification-shell">
+
+
+          <div class="verification-copy">
+
+
+            <span
+              class="eyebrow"
+              data-i18n="verify.eyebrow"
+            >
+              Verify Certificate
+            </span>
+
+
+            <h2 data-i18n="verify.title">
+              Check the Authenticity
+              of Your Certificate
+            </h2>
+
+
+            <p data-i18n="verify.text">
+              Enter the certificate ID exactly
+              as shown on the Certificate of Completion.
+            </p>
+
+
+
+            <form
+              id="verifyForm"
+              class="premium-verify-form"
+            >
+
+              <div class="verify-input-shell">
+
+                <span>
+                  ✓
+                </span>
+
+                <input
+                  id="certificateId"
+                  type="text"
+                  placeholder="NABD-MT-2026-0001"
+                  autocomplete="off"
+                >
+
+              </div>
+
+
+              <button
+                class="btn verify-main-button"
+                type="submit"
+                data-i18n="verify.button"
+              >
+                Verify Certificate
+                →
+              </button>
+
+            </form>
+
+
+          </div>
+
+
+
+          <div class="verification-result-shell">
+
+            <div
+              id="verifyResult"
+              class="verify-result empty"
+              data-i18n="verify.empty"
+            >
+              Verification result will appear here.
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         FOUNDER
+         ========================================= -->
+
+    <section
+      class="founder-premium-section"
+      id="founder"
+    >
+
+
+      <div class="founder-bg-glow"></div>
+
+
+      <div class="container founder-premium-grid">
+
+
+        <div class="founder-photo-area">
+
+
+          <div class="founder-ring ring-one"></div>
+          <div class="founder-ring ring-two"></div>
+
+
+          <div class="founder-photo-frame">
+
+            <img
+              src="assets/images/founder.jpg"
+              alt="Mohammed Khaled Al-Arja, Founder and Director of NABD Academy for Medical Sciences"
+              class="founder-photo"
+            >
+
+          </div>
+
+
+          <div class="founder-badge">
+
+            <span>
+              N
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+
+        <div class="founder-copy">
+
+
+          <span class="founder-label">
+            Founder & Director
+          </span>
+
+
+          <h2>
+            Mohammed Khaled Al-Arja
+          </h2>
+
+
+          <p class="founder-role">
+            Founder & Director
+            <span>•</span>
+            NABD Academy for Medical Sciences
+          </p>
+
+
+          <p class="founder-description">
+            Leading the development of NABD Academy's
+            digital educational platform, medical-science
+            learning environment, research initiatives,
+            and transparent certificate verification system.
+          </p>
+
+
+          <div class="founder-skills">
+
+            <span>
+              Medical Education
+            </span>
+
+            <span>
+              Research
+            </span>
+
+            <span>
+              Digital Learning
+            </span>
+
+            <span>
+              Certificate Verification
+            </span>
+
+          </div>
+
+
+          <div class="founder-arabic">
+
+            <strong
+              lang="ar"
+              dir="rtl"
+            >
+              محمد خالد العرجا
+            </strong>
+
+            <span
+              lang="ar"
+              dir="rtl"
+            >
+              المؤسس والمدير — أكاديمية نبض للعلوم الطبية
+            </span>
+
+          </div>
+
+
+        </div>
+
+
+
+        <div class="founder-vision-card">
+
+
+          <span class="vision-symbol">
+            “
+          </span>
+
+
+          <h3>
+            Leadership & Vision
+          </h3>
+
+
+          <p>
+            Building an accessible,
+            transparent and research-driven
+            digital environment for medical learning.
+          </p>
+
+
+          <div class="vision-signature">
+            Mohammed Khaled Al-Arja
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         RESEARCH
+         ========================================= -->
+
+    <section
+      class="section premium-research-section"
       id="research"
     >
 
       <div class="container">
 
-        <div class="section-head">
+
+        <div class="premium-section-heading">
+
 
           <div>
 
@@ -407,20 +852,32 @@
               NABD Research Center
             </span>
 
+
             <h2 data-i18n="research.title">
               Research & Scientific Projects
             </h2>
 
+
+            <p data-i18n="research.text">
+              Transparent project pages that distinguish
+              protocols, ongoing studies,
+              and completed work.
+            </p>
+
           </div>
 
 
-          <p data-i18n="research.text">
-            Transparent project pages that distinguish
-            protocols, ongoing studies,
-            and completed work.
-          </p>
+          <a
+            href="research.html"
+            class="section-action"
+          >
+            Explore Research
+            →
+          </a>
+
 
         </div>
+
 
 
         <div
@@ -428,79 +885,6 @@
           class="research-grid"
         ></div>
 
-      </div>
-
-    </section>
-
-
-
-    <!-- =========================
-         CERTIFICATE VERIFICATION
-         ========================= -->
-
-    <section
-      class="section verify-section"
-      id="verify"
-    >
-
-      <div class="container verify-grid">
-
-
-        <div>
-
-          <span
-            class="eyebrow"
-            data-i18n="verify.eyebrow"
-          >
-            Certificate Verification
-          </span>
-
-
-          <h2 data-i18n="verify.title">
-            Check a NABD certificate
-          </h2>
-
-
-          <p data-i18n="verify.text">
-            Enter the certificate ID exactly
-            as shown on the certificate.
-          </p>
-
-
-          <form
-            id="verifyForm"
-            class="verify-form"
-          >
-
-            <input
-              id="certificateId"
-              type="text"
-              placeholder="NABD-MT-2026-0001"
-              autocomplete="off"
-            />
-
-            <button
-              class="btn"
-              type="submit"
-              data-i18n="verify.button"
-            >
-              Verify
-            </button>
-
-          </form>
-
-        </div>
-
-
-
-        <div
-          id="verifyResult"
-          class="verify-result empty"
-          data-i18n="verify.empty"
-        >
-          Verification result will appear here.
-        </div>
-
 
       </div>
 
@@ -508,19 +892,19 @@
 
 
 
-    <!-- =========================
+    <!-- =========================================
          ACHIEVEMENTS
-         ========================= -->
+         ========================================= -->
 
     <section
-      class="section muted"
+      class="section achievements-premium"
       id="achievements"
     >
 
       <div class="container">
 
 
-        <div class="section-head">
+        <div class="premium-section-heading">
 
           <div>
 
@@ -532,34 +916,98 @@
             </span>
 
             <h2 data-i18n="achievements.title">
-              Achievements & Recognition
+              Research & Achievements
             </h2>
+
+            <p data-i18n="achievements.text">
+              Documented milestones,
+              research activity,
+              and transparent recognition.
+            </p>
 
           </div>
 
-
-          <p data-i18n="achievements.text">
-            Only documented awards and recognitions
-            are published here.
-          </p>
-
         </div>
 
 
 
-        <div class="notice-card">
+        <div class="achievement-cards">
 
-          <strong data-i18n="achievements.pendingTitle">
-            Evidence-first publishing
-          </strong>
 
-          <p data-i18n="achievements.pendingText">
-            Awards are added after verification
-            of the certificate, letter,
-            or official correspondence.
-          </p>
+          <article class="achievement-card">
+
+            <div class="achievement-visual research-visual">
+              ⚗
+            </div>
+
+            <div>
+
+              <h3>
+                Research Projects
+              </h3>
+
+              <p>
+                Scientific protocols
+                and medical research development.
+              </p>
+
+            </div>
+
+          </article>
+
+
+
+          <article class="achievement-card">
+
+            <div class="achievement-visual certificate-visual">
+              ✓
+            </div>
+
+            <div>
+
+              <h3>
+                Verifiable Credentials
+              </h3>
+
+              <p>
+                Certificate ID and QR-based
+                public verification.
+              </p>
+
+            </div>
+
+          </article>
+
+
+
+          <article class="achievement-card">
+
+            <div class="achievement-visual recognition-visual">
+              ★
+            </div>
+
+            <div>
+
+              <h3
+                data-i18n="achievements.pendingTitle"
+              >
+                Evidence-first Recognition
+              </h3>
+
+              <p
+                data-i18n="achievements.pendingText"
+              >
+                Awards and recognitions are published
+                only after documentary verification.
+              </p>
+
+            </div>
+
+          </article>
+
 
         </div>
+
 
       </div>
 
@@ -567,19 +1015,20 @@
 
 
 
-    <!-- =========================
-         ABOUT NABD
-         ========================= -->
+    <!-- =========================================
+         ABOUT
+         ========================================= -->
 
     <section
-      class="section"
+      class="section premium-about"
       id="about"
     >
 
-      <div class="container split">
+      <div class="container premium-about-grid">
 
 
         <div>
+
 
           <span
             class="eyebrow"
@@ -604,24 +1053,35 @@
             of completion.
           </p>
 
+
         </div>
 
 
 
-        <div class="policy-card">
-
-          <h3 data-i18n="about.transparency">
-            Transparency
-          </h3>
+        <div class="transparency-premium-card">
 
 
-          <p data-i18n="about.disclaimer">
-            Certificates are certificates
-            of completion and do not represent
-            a university degree or governmental
-            accreditation unless explicitly
-            stated and documented.
-          </p>
+          <span class="transparency-icon">
+            ✓
+          </span>
+
+
+          <div>
+
+            <h3 data-i18n="about.transparency">
+              Academic Transparency
+            </h3>
+
+
+            <p data-i18n="about.disclaimer">
+              Certificates are certificates of completion
+              and do not represent a university degree
+              or governmental accreditation unless
+              explicitly stated and documented.
+            </p>
+
+          </div>
+
 
         </div>
 
@@ -632,126 +1092,150 @@
 
 
 
-    <!-- ==================================================
-         FOUNDER & DIRECTOR
-         محمد خالد العرجا
-         ================================================== -->
+    <!-- =========================================
+         COMPLAINTS & FEEDBACK
+         ========================================= -->
 
     <section
-      class="section muted"
-      id="founder"
+      class="section complaints-section"
+      id="feedback"
     >
 
-      <div class="container split">
+      <div class="container">
 
 
-        <!-- Founder photo -->
-
-        <div class="hero-medical-visual">
-
-          <img
-            src="assets/images/founder.jpg"
-            alt="Mohammed Khaled Al-Arja, Founder and Director of NABD Academy for Medical Sciences"
-            loading="lazy"
-            decoding="async"
-          />
-
-        </div>
+        <div class="complaints-card">
 
 
-
-        <!-- Founder information -->
-
-        <div>
-
-          <span class="eyebrow">
-            Founder & Leadership
-          </span>
-
-
-          <h2>
-            Mohammed Khaled Al-Arja
-          </h2>
-
-
-          <p
-            style="
-              margin-top:-4px;
-              color:var(--teal);
-              font-weight:850;
-              font-size:18px;
-            "
-          >
-            Founder & Director
-            <br>
-            NABD Academy for Medical Sciences
-          </p>
-
-
-          <p>
-            Founder and Director of NABD Academy
-            for Medical Sciences, leading the
-            development of the academy's educational
-            platform, digital identity, research
-            initiatives, and certificate
-            verification system.
-          </p>
-
-
-          <div
-            class="policy-card"
-            style="margin-top:24px;"
-          >
+          <div class="complaints-heading">
 
             <span class="eyebrow">
-              المؤسس والمدير
+              Complaints & Feedback
             </span>
 
 
-            <h3
-              lang="ar"
-              dir="rtl"
-              style="
-                margin-top:0;
-                color:var(--navy);
-                font-size:26px;
-              "
-            >
-              محمد خالد العرجا
-            </h3>
+            <h2>
+              We value your feedback
+            </h2>
 
 
-            <p
-              lang="ar"
-              dir="rtl"
-            >
-              المؤسس والمدير لأكاديمية نبض للعلوم الطبية،
-              ويقود تطوير المنصة التعليمية والهوية الرقمية
-              والمشاريع البحثية ونظام التحقق من الشهادات.
+            <p>
+              Submit a complaint,
+              suggestion,
+              technical issue,
+              or general feedback.
             </p>
 
           </div>
 
 
 
-          <div
-            class="trust-row"
-            style="margin-top:24px;"
+          <form
+            id="feedbackForm"
+            class="stack-form"
           >
 
-            <span>
-              ✓ Medical Education
-            </span>
 
-            <span>
-              ✓ Research Development
-            </span>
+            <div class="complaints-grid">
 
-            <span>
-              ✓ Digital Verification
-            </span>
 
-          </div>
+              <label>
+
+                Name
+
+                <input
+                  id="feedbackName"
+                  type="text"
+                  name="name"
+                  autocomplete="name"
+                  placeholder="Your name"
+                >
+
+              </label>
+
+
+
+              <label>
+
+                Email
+
+                <input
+                  id="feedbackEmail"
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  placeholder="name@example.com"
+                >
+
+              </label>
+
+
+
+              <label class="full">
+
+                Type
+
+                <select
+                  id="feedbackCategory"
+                  name="category"
+                >
+
+                  <option value="complaint">
+                    Complaint
+                  </option>
+
+                  <option value="suggestion">
+                    Suggestion
+                  </option>
+
+                  <option value="technical">
+                    Technical issue
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+
+                </select>
+
+              </label>
+
+
+
+              <label class="full">
+
+                Message
+
+                <textarea
+                  id="feedbackMessage"
+                  name="message"
+                  placeholder="Write your message..."
+                  required
+                ></textarea>
+
+              </label>
+
+
+            </div>
+
+
+
+            <button
+              type="submit"
+              class="btn"
+            >
+              Send Feedback
+              →
+            </button>
+
+
+            <div
+              id="feedbackStatus"
+              class="complaints-status"
+            ></div>
+
+
+          </form>
 
 
         </div>
@@ -763,59 +1247,78 @@
 
 
 
-    <!-- =========================
-         JOIN NABD
-         ========================= -->
+    <!-- =========================================
+         CTA
+         ========================================= -->
 
-    <section
-      class="section cta-section"
-    >
-
-      <div class="container cta-card">
+    <section class="premium-final-cta">
 
 
-        <div>
-
-          <h2 data-i18n="cta.title">
-            Ready to join a course?
-          </h2>
+      <div class="container">
 
 
-          <p data-i18n="cta.text">
-            Use the registration form
-            or contact the academy
-            through WhatsApp.
-          </p>
-
-        </div>
+        <div class="premium-final-cta-card">
 
 
-
-        <div class="cta-actions">
-
-          <a
-            class="btn"
-            href="enroll.html"
-            data-i18n="cta.form"
-          >
-            Registration Form
-          </a>
+          <div class="cta-dna-pattern"></div>
 
 
-          <a
-            id="whatsappCta"
-            class="btn btn-ghost disabled"
-            href="#"
-            aria-disabled="true"
-            data-i18n="cta.whatsapp"
-          >
-            WhatsApp
-          </a>
+          <div>
+
+
+            <span class="cta-small">
+              NABD Academy
+            </span>
+
+
+            <h2>
+              Build your medical knowledge.
+              Start learning today.
+            </h2>
+
+
+            <p>
+              Learn • Research • Verify • Grow
+            </p>
+
+
+          </div>
+
+
+
+          <div class="cta-actions">
+
+
+            <a
+              class="btn cta-gold-btn"
+              href="enroll.html"
+              data-i18n="cta.form"
+            >
+              🎓
+              Start Learning
+              →
+            </a>
+
+
+            <a
+              id="whatsappCta"
+              class="btn cta-outline-btn disabled"
+              href="#"
+              aria-disabled="true"
+              data-i18n="cta.whatsapp"
+            >
+              WhatsApp
+            </a>
+
+
+          </div>
+
 
         </div>
 
 
       </div>
+
 
     </section>
 
@@ -824,20 +1327,42 @@
 
 
 
-  <!-- =========================
+  <!-- =========================================
        FOOTER
-       ========================= -->
+       ========================================= -->
 
-  <footer class="footer">
-
-    <div class="container footer-grid">
+  <footer class="premium-footer">
 
 
-      <div>
+    <div class="container premium-footer-grid">
 
-        <strong>
-          NABD Academy for Medical Sciences
-        </strong>
+
+      <div class="footer-brand">
+
+
+        <a
+          href="#home"
+          class="brand footer-main-brand"
+        >
+
+          <span class="brand-mark">
+            N
+          </span>
+
+
+          <span class="brand-copy">
+
+            <strong>
+              NABD Academy
+            </strong>
+
+            <small>
+              for Medical Sciences
+            </small>
+
+          </span>
+
+        </a>
 
 
         <p data-i18n="footer.tagline">
@@ -845,58 +1370,56 @@
         </p>
 
 
-        <p
-          style="
-            margin-top:14px;
-            font-size:13px;
-            color:#9fb2bf;
-          "
-        >
+        <small>
           Founder & Director:
           Mohammed Khaled Al-Arja
-        </p>
+        </small>
+
 
       </div>
 
 
 
-      <div>
+      <div class="footer-links">
 
-        <a
-          href="policies.html"
-          data-i18n="footer.policies"
-        >
-          Policies & Transparency
+
+        <a href="#courses">
+          Courses
         </a>
 
-
-        <a
-          href="portal.html"
-          data-i18n="footer.portal"
-        >
-          Student Portal
+        <a href="#research">
+          Research
         </a>
 
-
-        <a
-          href="#founder"
-        >
-          Founder & Director
+        <a href="#verify">
+          Verify Certificate
         </a>
 
-
-        <a
-          href="admin.html"
-          data-i18n="footer.admin"
-        >
-          Admin
+        <a href="#founder">
+          Founder
         </a>
+
+        <a href="#about">
+          About
+        </a>
+
+        <a href="#feedback">
+          Complaints & Feedback
+        </a>
+
 
       </div>
 
 
 
-      <div id="contactBlock">
+      <div
+        id="contactBlock"
+        class="footer-contact"
+      >
+
+        <strong>
+          Contact
+        </strong>
 
         <span data-i18n="footer.contact">
           Official contact channels
@@ -909,22 +1432,31 @@
 
 
 
-    <div class="container copyright">
+    <div class="container footer-bottom">
 
-      ©
-      <span id="year"></span>
 
-      NABD Academy for Medical Sciences.
+      <span>
+        ©
+        <span id="year"></span>
+        NABD Academy for Medical Sciences.
+      </span>
+
+
+      <span>
+        Medical Education • Research • Verification
+      </span>
+
 
     </div>
+
 
   </footer>
 
 
 
-  <!-- =========================
+  <!-- =========================================
        SCRIPTS
-       ========================= -->
+       ========================================= -->
 
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
@@ -942,5 +1474,4 @@
 
 
 </body>
-
 </html>
