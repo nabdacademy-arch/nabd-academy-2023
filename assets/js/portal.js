@@ -1,9 +1,8 @@
 "use strict";
 
 /* =========================================================
-   NABD ACADEMY STUDENT PORTAL v13
-   Auth + Password Recovery + Dashboard
-   Courses + Certificates + Certificate Claims
+   NABD ACADEMY STUDENT PORTAL v14
+   Stable Auth + Recovery + Courses + Certificates + Claims
    ========================================================= */
 
 const $ = selector => document.querySelector(selector);
@@ -24,13 +23,13 @@ const state = {
    ========================================================= */
 
 function escapeHTML(value = "") {
-  return String(value).replace(/[&<>"']/g, character => ({
+  return String(value).replace(/[&<>"']/g, ch => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#039;"
-  }[character]));
+  }[ch]));
 }
 
 
@@ -45,11 +44,7 @@ function setStatus(element, message = "", type = "") {
   if (!element) return;
 
   element.textContent = message;
-
-  element.classList.remove(
-    "error",
-    "success"
-  );
+  element.classList.remove("error", "success");
 
   if (type) {
     element.classList.add(type);
@@ -66,7 +61,6 @@ function setButtonLoading(
   if (!button) return;
 
   button.disabled = loading;
-
   button.textContent = loading
     ? loadingText
     : normalText;
@@ -78,10 +72,7 @@ function showLoader(show = true) {
 
   if (!loader) return;
 
-  loader.classList.toggle(
-    "active",
-    show
-  );
+  loader.classList.toggle("active", show);
 }
 
 
@@ -96,7 +87,8 @@ function hideAllAuthViews() {
 function showAuth() {
   showLoader(false);
 
-  $("#authSection")?.removeAttribute("hidden");
+  $("#authSection")
+    ?.removeAttribute("hidden");
 
   $("#dashboardSection")
     ?.classList
@@ -123,10 +115,7 @@ function normalizeProgress(value) {
     progress = 0;
   }
 
-  if (
-    progress > 0 &&
-    progress <= 1
-  ) {
+  if (progress > 0 && progress <= 1) {
     progress *= 100;
   }
 
@@ -173,7 +162,7 @@ function getProfileName(profile, user) {
 
 
 /* =========================================================
-   AUTH VIEWS
+   AUTH SCREENS
    ========================================================= */
 
 function openSignIn() {
@@ -182,12 +171,20 @@ function openSignIn() {
   showAuth();
   hideAllAuthViews();
 
-  $("#normalAuthArea")?.removeAttribute("hidden");
+  $("#normalAuthArea")
+    ?.removeAttribute("hidden");
 
-  $("#signInView")?.classList.add("active");
+  $("#signInView")
+    ?.classList
+    .add("active");
 
-  $("#signInTab")?.classList.add("active");
-  $("#signUpTab")?.classList.remove("active");
+  $("#signInTab")
+    ?.classList
+    .add("active");
+
+  $("#signUpTab")
+    ?.classList
+    .remove("active");
 
   if ($("#authHeading")) {
     $("#authHeading").textContent =
@@ -200,7 +197,6 @@ function openSignIn() {
   }
 
   setStatus($("#signInStatus"), "");
-  setStatus($("#signUpStatus"), "");
 }
 
 
@@ -210,12 +206,20 @@ function openSignUp() {
   showAuth();
   hideAllAuthViews();
 
-  $("#normalAuthArea")?.removeAttribute("hidden");
+  $("#normalAuthArea")
+    ?.removeAttribute("hidden");
 
-  $("#signUpView")?.classList.add("active");
+  $("#signUpView")
+    ?.classList
+    .add("active");
 
-  $("#signUpTab")?.classList.add("active");
-  $("#signInTab")?.classList.remove("active");
+  $("#signUpTab")
+    ?.classList
+    .add("active");
+
+  $("#signInTab")
+    ?.classList
+    .remove("active");
 
   if ($("#authHeading")) {
     $("#authHeading").textContent =
@@ -227,7 +231,6 @@ function openSignUp() {
       "Use the same email you used in course registration.";
   }
 
-  setStatus($("#signInStatus"), "");
   setStatus($("#signUpStatus"), "");
 }
 
@@ -252,20 +255,20 @@ function openForgotPassword() {
 
   if ($("#authIntro")) {
     $("#authIntro").textContent =
-      "Reset access to your NABD Academy student account.";
+      "Reset access to your NABD Academy account.";
   }
 
-  const loginEmail =
+  const email =
     $("#signInEmail")
       ?.value
       .trim() || "";
 
   if (
-    loginEmail &&
+    email &&
     $("#forgotPasswordEmail")
   ) {
     $("#forgotPasswordEmail").value =
-      loginEmail;
+      email;
   }
 
   setStatus(
@@ -301,14 +304,11 @@ function openResetPassword() {
 
 
 /* =========================================================
-   PROFILE
+   LOAD PROFILE
    ========================================================= */
 
 async function loadProfile(user) {
-  if (
-    !window.nabdSupabase ||
-    !user
-  ) {
+  if (!window.nabdSupabase || !user) {
     return null;
   }
 
@@ -320,15 +320,13 @@ async function loadProfile(user) {
         .eq("id", user.id)
         .maybeSingle();
 
-    if (
-      !error &&
-      data
-    ) {
+    if (!error && data) {
       return data;
     }
+
   } catch (error) {
     console.warn(
-      "Profile lookup:",
+      "Profile lookup failed:",
       error
     );
   }
@@ -338,7 +336,7 @@ async function loadProfile(user) {
 
 
 /* =========================================================
-   COURSES
+   LOAD COURSES
    ========================================================= */
 
 async function loadAllCourses() {
@@ -354,11 +352,7 @@ async function loadAllCourses() {
         .order("created_at");
 
     if (error) {
-      console.warn(
-        "Courses query:",
-        error
-      );
-
+      console.warn(error);
       return [];
     }
 
@@ -367,25 +361,18 @@ async function loadAllCourses() {
       : [];
 
   } catch (error) {
-    console.error(
-      "Courses error:",
-      error
-    );
-
+    console.error(error);
     return [];
   }
 }
 
 
 /* =========================================================
-   ENROLLMENTS
+   LOAD ENROLLMENTS
    ========================================================= */
 
 async function loadEnrollments(user) {
-  if (
-    !window.nabdSupabase ||
-    !user
-  ) {
+  if (!window.nabdSupabase || !user) {
     return [];
   }
 
@@ -394,23 +381,14 @@ async function loadEnrollments(user) {
       await window.nabdSupabase
         .from("enrollments")
         .select("*")
-        .eq(
-          "student_id",
-          user.id
-        )
+        .eq("student_id", user.id)
         .order(
           "enrolled_at",
-          {
-            ascending: false
-          }
+          { ascending: false }
         );
 
     if (error) {
-      console.warn(
-        "Enrollments:",
-        error
-      );
-
+      console.warn(error);
       return [];
     }
 
@@ -420,21 +398,17 @@ async function loadEnrollments(user) {
 
   } catch (error) {
     console.error(error);
-
     return [];
   }
 }
 
 
 /* =========================================================
-   CERTIFICATES
+   LOAD CERTIFICATES
    ========================================================= */
 
 async function loadCertificates(user) {
-  if (
-    !window.nabdSupabase ||
-    !user
-  ) {
+  if (!window.nabdSupabase || !user) {
     return [];
   }
 
@@ -443,23 +417,14 @@ async function loadCertificates(user) {
       await window.nabdSupabase
         .from("certificates")
         .select("*")
-        .eq(
-          "student_id",
-          user.id
-        )
+        .eq("student_id", user.id)
         .order(
           "issue_date",
-          {
-            ascending: false
-          }
+          { ascending: false }
         );
 
     if (error) {
-      console.warn(
-        "Certificates:",
-        error
-      );
-
+      console.warn(error);
       return [];
     }
 
@@ -469,21 +434,17 @@ async function loadCertificates(user) {
 
   } catch (error) {
     console.error(error);
-
     return [];
   }
 }
 
 
 /* =========================================================
-   CLAIMS
+   LOAD CLAIMS
    ========================================================= */
 
 async function loadClaims(user) {
-  if (
-    !window.nabdSupabase ||
-    !user
-  ) {
+  if (!window.nabdSupabase || !user) {
     return [];
   }
 
@@ -492,23 +453,14 @@ async function loadClaims(user) {
       await window.nabdSupabase
         .from("certificate_claims")
         .select("*")
-        .eq(
-          "student_id",
-          user.id
-        )
+        .eq("student_id", user.id)
         .order(
           "created_at",
-          {
-            ascending: false
-          }
+          { ascending: false }
         );
 
     if (error) {
-      console.warn(
-        "Claims:",
-        error
-      );
-
+      console.warn(error);
       return [];
     }
 
@@ -518,14 +470,13 @@ async function loadClaims(user) {
 
   } catch (error) {
     console.error(error);
-
     return [];
   }
 }
 
 
 /* =========================================================
-   COURSE MATCHING
+   COURSE MATCH
    ========================================================= */
 
 function findCourseForEnrollment(enrollment) {
@@ -538,8 +489,7 @@ function findCourseForEnrollment(enrollment) {
       course =>
         String(course.id) ===
         String(enrollment.course_id)
-    ) ||
-    null
+    ) || null
   );
 }
 
@@ -576,31 +526,28 @@ function renderMetrics() {
     state.enrollments;
 
   const completed =
-    enrollments.filter(
-      enrollment => {
+    enrollments.filter(enrollment => {
+      const status =
+        enrollmentStatus(
+          enrollment
+        ).toLowerCase();
 
-        const status =
-          enrollmentStatus(
-            enrollment
-          ).toLowerCase();
-
-        const progress =
-          enrollmentProgress(
-            enrollment
-          );
-
-        return (
-          status === "completed" ||
-          progress >= 100
+      const progress =
+        enrollmentProgress(
+          enrollment
         );
-      }
-    ).length;
+
+      return (
+        status === "completed" ||
+        status === "complete" ||
+        progress >= 100
+      );
+    }).length;
 
 
   let average = 0;
 
   if (enrollments.length) {
-
     const total =
       enrollments.reduce(
         (sum, enrollment) =>
@@ -660,19 +607,12 @@ function renderCourses() {
 
 
   if (!state.enrollments.length) {
-
     container.innerHTML = `
       <div class="empty-state">
-
-        <strong>
-          No courses found yet.
-        </strong>
-
+        <strong>No courses found yet.</strong>
         <br>
-
-        When your enrollment is approved,
-        the course will appear here automatically.
-
+        When your course enrollment is approved,
+        it will appear here automatically.
       </div>
     `;
 
@@ -712,6 +652,7 @@ function renderCourses() {
         const courseSlug =
           course?.slug ||
           course?.id ||
+          enrollment.course_id ||
           "";
 
 
@@ -727,11 +668,7 @@ function renderCourses() {
             </p>
 
             <div class="portal-progress">
-
-              <span
-                style="width:${progress}%"
-              ></span>
-
+              <span style="width:${progress}%"></span>
             </div>
 
             <div class="course-row">
@@ -779,7 +716,6 @@ function renderCertificates() {
 
 
   if (!state.certificates.length) {
-
     container.innerHTML = `
       <div class="empty-state">
 
@@ -892,6 +828,20 @@ function renderClaims() {
           ).toLowerCase();
 
 
+        let text =
+          "Waiting for academy review.";
+
+        if (status === "approved") {
+          text =
+            "Certificate claim approved.";
+        }
+
+        if (status === "rejected") {
+          text =
+            "Certificate claim rejected.";
+        }
+
+
         return `
           <article class="student-claim-card">
 
@@ -908,13 +858,7 @@ function renderClaims() {
             </h3>
 
             <p>
-              ${
-                status === "pending"
-                  ? "Waiting for academy review."
-                  : status === "approved"
-                  ? "Certificate claim approved."
-                  : "Certificate claim rejected."
-              }
+              ${escapeHTML(text)}
             </p>
 
           </article>
@@ -926,7 +870,7 @@ function renderClaims() {
 
 
 /* =========================================================
-   CERTIFICATE CLAIM
+   CLAIM CERTIFICATE
    ========================================================= */
 
 async function handleCertificateClaim(event) {
@@ -956,7 +900,6 @@ async function handleCertificateClaim(event) {
 
 
   if (!state.user) {
-
     setStatus(
       statusBox,
       "You must sign in first.",
@@ -968,7 +911,6 @@ async function handleCertificateClaim(event) {
 
 
   if (!certificateId) {
-
     setStatus(
       statusBox,
       "Enter your Certificate ID.",
@@ -980,11 +922,8 @@ async function handleCertificateClaim(event) {
 
 
   if (
-    !certificateId.startsWith(
-      "NABD-"
-    )
+    !certificateId.startsWith("NABD-")
   ) {
-
     setStatus(
       statusBox,
       "Enter a valid NABD Certificate ID.",
@@ -1004,7 +943,6 @@ async function handleCertificateClaim(event) {
 
 
   try {
-
     const { data, error } =
       await window.nabdSupabase.rpc(
         "verify_certificate",
@@ -1024,11 +962,30 @@ async function handleCertificateClaim(event) {
       !Array.isArray(data) ||
       !data.length
     ) {
-
       setStatus(
         statusBox,
         "Certificate ID was not found.",
         "error"
+      );
+
+      return;
+    }
+
+
+    const alreadyLinked =
+      state.certificates.some(
+        certificate =>
+          normalizeCertificateId(
+            certificate.certificate_id
+          ) === certificateId
+      );
+
+
+    if (alreadyLinked) {
+      setStatus(
+        statusBox,
+        "This certificate is already linked to your account.",
+        "success"
       );
 
       return;
@@ -1045,7 +1002,6 @@ async function handleCertificateClaim(event) {
 
 
     if (existing) {
-
       setStatus(
         statusBox,
         `A claim already exists. Status: ${existing.status}.`,
@@ -1064,7 +1020,7 @@ async function handleCertificateClaim(event) {
     );
 
 
-    const result =
+    const { error: insertError } =
       await window.nabdSupabase
         .from("certificate_claims")
         .insert([
@@ -1081,8 +1037,8 @@ async function handleCertificateClaim(event) {
         ]);
 
 
-    if (result.error) {
-      throw result.error;
+    if (insertError) {
+      throw insertError;
     }
 
 
@@ -1108,12 +1064,10 @@ async function handleCertificateClaim(event) {
 
 
   } catch (error) {
-
     console.error(
-      "Certificate claim:",
+      "Claim error:",
       error
     );
-
 
     setStatus(
       statusBox,
@@ -1122,32 +1076,34 @@ async function handleCertificateClaim(event) {
       "error"
     );
 
-
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Submitting claim…",
       "Submit Claim"
     );
-
   }
 }
 
 
 /* =========================================================
-   DASHBOARD
+   LOAD DASHBOARD
    ========================================================= */
 
 async function loadDashboard(user) {
+  if (!user) {
+    openSignIn();
+    return;
+  }
+
+
   state.user = user;
 
   showLoader(true);
 
 
   try {
-
     const [
       profile,
       courses,
@@ -1155,30 +1111,19 @@ async function loadDashboard(user) {
       certificates,
       claims
     ] = await Promise.all([
-
       loadProfile(user),
       loadAllCourses(),
       loadEnrollments(user),
       loadCertificates(user),
       loadClaims(user)
-
     ]);
 
 
-    state.profile =
-      profile;
-
-    state.courses =
-      courses;
-
-    state.enrollments =
-      enrollments;
-
-    state.certificates =
-      certificates;
-
-    state.claims =
-      claims;
+    state.profile = profile;
+    state.courses = courses;
+    state.enrollments = enrollments;
+    state.certificates = certificates;
+    state.claims = claims;
 
 
     renderStudentHeader();
@@ -1187,18 +1132,20 @@ async function loadDashboard(user) {
     renderClaims();
     renderCertificates();
 
+
     showDashboard();
 
 
   } catch (error) {
-
     console.error(
-      "Dashboard:",
+      "Dashboard load error:",
       error
     );
 
     showDashboard();
 
+  } finally {
+    showLoader(false);
   }
 }
 
@@ -1241,8 +1188,10 @@ async function handleSignUp(event) {
     $("#signUpStatus");
 
 
-  if (!name) {
+  setStatus(status, "");
 
+
+  if (!name) {
     setStatus(
       status,
       "Enter your full name.",
@@ -1253,10 +1202,18 @@ async function handleSignUp(event) {
   }
 
 
-  if (
-    password.length < 6
-  ) {
+  if (!email) {
+    setStatus(
+      status,
+      "Enter your email.",
+      "error"
+    );
 
+    return;
+  }
+
+
+  if (password.length < 6) {
     setStatus(
       status,
       "Password must be at least 6 characters.",
@@ -1267,10 +1224,7 @@ async function handleSignUp(event) {
   }
 
 
-  if (
-    password !== confirm
-  ) {
-
+  if (password !== confirm) {
     setStatus(
       status,
       "Passwords do not match.",
@@ -1290,25 +1244,19 @@ async function handleSignUp(event) {
 
 
   try {
-
     const { data, error } =
       await window.nabdSupabase
         .auth
         .signUp({
-
           email,
-
           password,
 
           options: {
-
             data: {
-              full_name:name,
-              name:name
+              full_name: name,
+              name
             }
-
           }
-
         });
 
 
@@ -1321,41 +1269,47 @@ async function handleSignUp(event) {
       data?.session &&
       data?.user
     ) {
-
       await loadDashboard(
         data.user
       );
 
-    } else {
-
-      setStatus(
-        status,
-        "Account created successfully.",
-        "success"
-      );
-
+      return;
     }
 
 
+    setStatus(
+      status,
+      "Account created successfully.",
+      "success"
+    );
+
+
   } catch (error) {
+    let message =
+      error?.message ||
+      "Could not create account.";
+
+
+    if (/rate limit/i.test(message)) {
+      message =
+        "Too many email requests. Please try again later.";
+    }
+
 
     setStatus(
       status,
-      error?.message ||
-      "Could not create account.",
+      message,
       "error"
     );
 
 
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Creating account…",
       "Create account"
     );
-
   }
 }
 
@@ -1387,6 +1341,20 @@ async function handleSignIn(event) {
     $("#signInStatus");
 
 
+  setStatus(status, "");
+
+
+  if (!email || !password) {
+    setStatus(
+      status,
+      "Enter your email and password.",
+      "error"
+    );
+
+    return;
+  }
+
+
   setButtonLoading(
     button,
     true,
@@ -1396,7 +1364,6 @@ async function handleSignIn(event) {
 
 
   try {
-
     const { data, error } =
       await window.nabdSupabase
         .auth
@@ -1411,13 +1378,19 @@ async function handleSignIn(event) {
     }
 
 
+    if (!data?.user) {
+      throw new Error(
+        "Login failed."
+      );
+    }
+
+
     await loadDashboard(
       data.user
     );
 
 
   } catch (error) {
-
     let message =
       error?.message ||
       "Could not sign in.";
@@ -1428,10 +1401,8 @@ async function handleSignIn(event) {
         message
       )
     ) {
-
       message =
         "Incorrect email or password.";
-
     }
 
 
@@ -1443,20 +1414,18 @@ async function handleSignIn(event) {
 
 
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Signing in…",
       "Sign in"
     );
-
   }
 }
 
 
 /* =========================================================
-   PASSWORD RESET EMAIL
+   SEND RESET EMAIL
    ========================================================= */
 
 async function handleForgotPassword(event) {
@@ -1477,8 +1446,10 @@ async function handleForgotPassword(event) {
     $("#forgotPasswordStatus");
 
 
-  if (!email) {
+  setStatus(status, "");
 
+
+  if (!email) {
     setStatus(
       status,
       "Enter your email address.",
@@ -1498,7 +1469,6 @@ async function handleForgotPassword(event) {
 
 
   try {
-
     const redirectTo =
       `${window.location.origin}${window.location.pathname}`;
 
@@ -1527,21 +1497,14 @@ async function handleForgotPassword(event) {
 
 
   } catch (error) {
-
     let message =
       error?.message ||
       "Could not send reset email.";
 
 
-    if (
-      /rate limit/i.test(
-        message
-      )
-    ) {
-
+    if (/rate limit/i.test(message)) {
       message =
-        "Too many email requests. Please wait and try again later.";
-
+        "Email rate limit reached. Please wait and try again later.";
     }
 
 
@@ -1553,20 +1516,18 @@ async function handleForgotPassword(event) {
 
 
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Sending…",
       "Send reset link"
     );
-
   }
 }
 
 
 /* =========================================================
-   SET NEW PASSWORD
+   UPDATE PASSWORD
    ========================================================= */
 
 async function handleNewPassword(event) {
@@ -1590,10 +1551,10 @@ async function handleNewPassword(event) {
     $("#resetPasswordStatus");
 
 
-  if (
-    password.length < 6
-  ) {
+  setStatus(status, "");
 
+
+  if (password.length < 6) {
     setStatus(
       status,
       "Password must be at least 6 characters.",
@@ -1604,10 +1565,7 @@ async function handleNewPassword(event) {
   }
 
 
-  if (
-    password !== confirm
-  ) {
-
+  if (password !== confirm) {
     setStatus(
       status,
       "Passwords do not match.",
@@ -1627,7 +1585,6 @@ async function handleNewPassword(event) {
 
 
   try {
-
     const { data, error } =
       await window.nabdSupabase
         .auth
@@ -1653,26 +1610,19 @@ async function handleNewPassword(event) {
 
     setTimeout(
       async () => {
-
         if (data?.user) {
-
           await loadDashboard(
             data.user
           );
-
         } else {
-
           openSignIn();
-
         }
-
       },
       800
     );
 
 
   } catch (error) {
-
     setStatus(
       status,
       error?.message ||
@@ -1682,20 +1632,18 @@ async function handleNewPassword(event) {
 
 
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Updating password…",
       "Update password"
     );
-
   }
 }
 
 
 /* =========================================================
-   SIGN OUT
+   LOGOUT
    ========================================================= */
 
 async function handleLogout() {
@@ -1705,40 +1653,32 @@ async function handleLogout() {
 
 
   try {
-
     await window.nabdSupabase
       .auth
       .signOut();
 
-
-    state.user = null;
-    state.profile = null;
-    state.courses = [];
-    state.enrollments = [];
-    state.certificates = [];
-    state.claims = [];
-
-
-    openSignIn();
-
-
   } catch (error) {
-
-    console.error(
-      "Logout:",
-      error
-    );
-
+    console.error(error);
   }
+
+
+  state.user = null;
+  state.profile = null;
+  state.courses = [];
+  state.enrollments = [];
+  state.certificates = [];
+  state.claims = [];
+
+
+  openSignIn();
 }
 
 
 /* =========================================================
-   PASSWORD SHOW / HIDE
+   PASSWORD VISIBILITY
    ========================================================= */
 
 function setupPasswordButtons() {
-
   document
     .querySelectorAll(
       "[data-password-target]"
@@ -1772,92 +1712,45 @@ function setupPasswordButtons() {
             showing
               ? "Show"
               : "Hide";
-
         }
       );
 
     });
-
 }
 
 
 /* =========================================================
-   SESSION
+   RECOVERY URL
    ========================================================= */
 
-async function checkSession() {
+function detectRecoveryURL() {
+  const hash =
+    window.location.hash || "";
 
-  if (!window.nabdSupabase) {
+  const query =
+    window.location.search || "";
 
-    showAuth();
 
-    setStatus(
-      $("#signInStatus"),
-      "Supabase connection failed.",
-      "error"
-    );
+  if (
+    hash.includes("type=recovery") ||
+    query.includes("type=recovery")
+  ) {
+    state.recoveryMode = true;
+    openResetPassword();
 
-    return;
+    return true;
   }
 
 
-  try {
-
-    const { data, error } =
-      await window.nabdSupabase
-        .auth
-        .getSession();
-
-
-    if (error) {
-      throw error;
-    }
-
-
-    /*
-      When a password recovery link is opened,
-      PASSWORD_RECOVERY event normally handles it.
-      We do not automatically show dashboard if
-      recovery mode has already been activated.
-    */
-
-    if (
-      data?.session?.user &&
-      !state.recoveryMode
-    ) {
-
-      await loadDashboard(
-        data.session.user
-      );
-
-    } else if (
-      !state.recoveryMode
-    ) {
-
-      openSignIn();
-
-    }
-
-
-  } catch (error) {
-
-    console.error(
-      "Session:",
-      error
-    );
-
-    openSignIn();
-
-  }
+  return false;
 }
 
 
 /* =========================================================
-   AUTH LISTENER
+   AUTH EVENTS
    ========================================================= */
 
 function listenForAuthChanges() {
-
   if (!window.nabdSupabase) {
     return;
   }
@@ -1866,17 +1759,18 @@ function listenForAuthChanges() {
   window.nabdSupabase
     .auth
     .onAuthStateChange(
-      async (
-        event,
-        session
-      ) => {
+      async (event, session) => {
+
+        console.log(
+          "NABD auth event:",
+          event
+        );
 
 
         if (
           event ===
           "PASSWORD_RECOVERY"
         ) {
-
           state.recoveryMode = true;
 
           openResetPassword();
@@ -1889,10 +1783,9 @@ function listenForAuthChanges() {
           event ===
           "SIGNED_OUT"
         ) {
-
-          state.user = null;
-
-          openSignIn();
+          if (!state.recoveryMode) {
+            openSignIn();
+          }
 
           return;
         }
@@ -1904,67 +1797,103 @@ function listenForAuthChanges() {
           session?.user &&
           !state.recoveryMode
         ) {
-
           if (
             state.user?.id !==
             session.user.id
           ) {
-
             await loadDashboard(
               session.user
             );
-
           }
-
         }
 
       }
     );
-
 }
 
 
 /* =========================================================
-   URL RECOVERY CHECK
+   SESSION CHECK
    ========================================================= */
 
-function detectRecoveryURL() {
-
-  const hash =
-    window.location.hash || "";
-
-  const query =
-    window.location.search || "";
-
-
-  if (
-    hash.includes(
-      "type=recovery"
-    ) ||
-    query.includes(
-      "type=recovery"
-    )
-  ) {
-
-    state.recoveryMode = true;
-
-    openResetPassword();
-
-    return true;
+async function checkSession() {
+  if (!window.nabdSupabase) {
+    throw new Error(
+      "Supabase client is not available."
+    );
   }
 
 
-  return false;
+  const { data, error } =
+    await window.nabdSupabase
+      .auth
+      .getSession();
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  const user =
+    data?.session?.user;
+
+
+  if (
+    user &&
+    !state.recoveryMode
+  ) {
+    await loadDashboard(user);
+
+    return;
+  }
+
+
+  if (!state.recoveryMode) {
+    openSignIn();
+  }
 }
 
 
 /* =========================================================
-   START
+   FAILSAFE
+   Prevent endless "Checking your account..."
+   ========================================================= */
+
+function startLoaderFailsafe() {
+  setTimeout(() => {
+    const loader =
+      $("#portalLoader");
+
+    if (
+      loader &&
+      loader.classList.contains(
+        "active"
+      )
+    ) {
+      console.warn(
+        "NABD portal loader timeout."
+      );
+
+      showLoader(false);
+
+      if (!state.user) {
+        openSignIn();
+      }
+    }
+  }, 8000);
+}
+
+
+/* =========================================================
+   START PORTAL
    ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
+
+    startLoaderFailsafe();
 
 
     $("#signInTab")
@@ -2041,5 +1970,54 @@ document.addEventListener(
       ?.addEventListener(
         "input",
         event => {
+          event.target.value =
+            normalizeCertificateId(
+              event.target.value
+            );
+        }
+      );
 
-         
+
+    setupPasswordButtons();
+
+
+    try {
+      if (!window.nabdSupabase) {
+        throw new Error(
+          "Supabase connection could not be loaded."
+        );
+      }
+
+
+      listenForAuthChanges();
+
+
+      const recovery =
+        detectRecoveryURL();
+
+
+      if (!recovery) {
+        await checkSession();
+      }
+
+
+    } catch (error) {
+      console.error(
+        "Portal startup error:",
+        error
+      );
+
+
+      showLoader(false);
+
+      openSignIn();
+
+
+      setStatus(
+        $("#signInStatus"),
+        "The portal could not load your session. Please try again.",
+        "error"
+      );
+    }
+  }
+);
