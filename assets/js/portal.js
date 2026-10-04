@@ -1,1442 +1,2142 @@
-<!doctype html>
-<html lang="en" dir="ltr">
+"use strict";
 
-<head>
+/* =========================================================
+   NABD ACADEMY STUDENT PORTAL v12
+   Auth + Dashboard + Courses + Certificates + Claims
+   ========================================================= */
 
-  <meta charset="utf-8">
+const $ = selector => document.querySelector(selector);
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <meta
-    name="description"
-    content="NABD Academy Student Portal"
-  >
-
-  <meta
-    name="theme-color"
-    content="#041b2a"
-  >
-
-  <title>
-    Student Portal | NABD Academy
-  </title>
+const state = {
+  user: null,
+  profile: null,
+  courses: [],
+  enrollments: [],
+  certificates: [],
+  claims: []
+};
 
 
-  <link
-    rel="stylesheet"
-    href="assets/css/styles.css?v=12"
-  >
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[character]));
+}
 
 
-  <style>
+function normalizeCertificateId(value = "") {
+  return String(value)
+    .trim()
+    .toUpperCase();
+}
 
-    /* =========================================
-       PORTAL HEADER
-       ========================================= */
 
-    .portal-topbar{
-      width:min(calc(100% - 28px),1180px);
-      margin:18px auto 0;
+function setStatus(element, message = "", type = "") {
+  if (!element) return;
 
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+  element.textContent = message;
 
-      gap:14px;
+  element.classList.remove(
+    "error",
+    "success"
+  );
+
+  if (type) {
+    element.classList.add(type);
+  }
+}
+
+
+function setButtonLoading(
+  button,
+  loading,
+  loadingText,
+  normalText
+) {
+  if (!button) return;
+
+  button.disabled = loading;
+
+  button.textContent = loading
+    ? loadingText
+    : normalText;
+}
+
+
+function showLoader(show = true) {
+  const loader = $("#portalLoader");
+
+  if (!loader) return;
+
+  loader.classList.toggle(
+    "active",
+    show
+  );
+}
+
+
+function showAuth() {
+  showLoader(false);
+
+  const auth = $("#authSection");
+  const dashboard = $("#dashboardSection");
+
+  if (auth) {
+    auth.hidden = false;
+  }
+
+  if (dashboard) {
+    dashboard.classList.remove("active");
+  }
+}
+
+
+function showDashboard() {
+  showLoader(false);
+
+  const auth = $("#authSection");
+  const dashboard = $("#dashboardSection");
+
+  if (auth) {
+    auth.hidden = true;
+  }
+
+  if (dashboard) {
+    dashboard.classList.add("active");
+  }
+}
+
+
+function normalizeProgress(value) {
+  let progress = Number(value);
+
+  if (!Number.isFinite(progress)) {
+    progress = 0;
+  }
+
+  if (
+    progress > 0 &&
+    progress <= 1
+  ) {
+    progress *= 100;
+  }
+
+  progress = Math.round(progress);
+
+  if (progress < 0) {
+    progress = 0;
+  }
+
+  if (progress > 100) {
+    progress = 100;
+  }
+
+  return progress;
+}
+
+
+function enrollmentProgress(enrollment) {
+  return normalizeProgress(
+    enrollment.progress_percent ??
+    enrollment.progress ??
+    enrollment.completion_percent ??
+    enrollment.percentage ??
+    0
+  );
+}
+
+
+function enrollmentStatus(enrollment) {
+  return String(
+    enrollment.status ||
+    enrollment.enrollment_status ||
+    "active"
+  ).trim();
+}
+
+
+function getProfileName(profile, user) {
+  return (
+    profile?.full_name ||
+    profile?.name ||
+    profile?.display_name ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    "Student"
+  );
+}
+
+
+/* =========================================================
+   AUTH TABS
+   ========================================================= */
+
+function openSignIn() {
+  $("#signInView")?.classList.add("active");
+  $("#signUpView")?.classList.remove("active");
+
+  $("#signInTab")?.classList.add("active");
+  $("#signUpTab")?.classList.remove("active");
+
+  $("#signInTab")?.setAttribute(
+    "aria-selected",
+    "true"
+  );
+
+  $("#signUpTab")?.setAttribute(
+    "aria-selected",
+    "false"
+  );
+
+  if ($("#authHeading")) {
+    $("#authHeading").textContent =
+      "Welcome back";
+  }
+
+  if ($("#authIntro")) {
+    $("#authIntro").textContent =
+      "Sign in to access your courses and certificates.";
+  }
+
+  setStatus($("#signInStatus"), "");
+  setStatus($("#signUpStatus"), "");
+}
+
+
+function openSignUp() {
+  $("#signUpView")?.classList.add("active");
+  $("#signInView")?.classList.remove("active");
+
+  $("#signUpTab")?.classList.add("active");
+  $("#signInTab")?.classList.remove("active");
+
+  $("#signUpTab")?.setAttribute(
+    "aria-selected",
+    "true"
+  );
+
+  $("#signInTab")?.setAttribute(
+    "aria-selected",
+    "false"
+  );
+
+  if ($("#authHeading")) {
+    $("#authHeading").textContent =
+      "Create account";
+  }
+
+  if ($("#authIntro")) {
+    $("#authIntro").textContent =
+      "Use the same email you used in course registration.";
+  }
+
+  setStatus($("#signInStatus"), "");
+  setStatus($("#signUpStatus"), "");
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+async function loadProfile(user) {
+  if (
+    !window.nabdSupabase ||
+    !user
+  ) {
+    return null;
+  }
+
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (
+      !error &&
+      data
+    ) {
+      return data;
     }
 
-    .portal-home{
-      min-height:46px;
+  } catch (error) {
+    console.warn(
+      "Profile id lookup:",
+      error
+    );
+  }
 
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
 
-      gap:7px;
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-      padding:10px 16px;
+    if (
+      !error &&
+      data
+    ) {
+      return data;
+    }
 
-      border-radius:14px;
+  } catch (error) {
+    console.warn(
+      "Profile user_id lookup:",
+      error
+    );
+  }
 
-      color:#fff;
 
-      background:
-        linear-gradient(
-          135deg,
-          #07394e,
-          #00aaa6
+  return null;
+}
+
+
+/* =========================================================
+   COURSES
+   ========================================================= */
+
+async function loadAllCourses() {
+  if (!window.nabdSupabase) {
+    return [];
+  }
+
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("courses")
+        .select("*")
+        .order("created_at");
+
+    if (error) {
+      console.warn(
+        "Courses query:",
+        error
+      );
+
+      return [];
+    }
+
+    return Array.isArray(data)
+      ? data
+      : [];
+
+  } catch (error) {
+    console.error(
+      "Courses load error:",
+      error
+    );
+
+    return [];
+  }
+}
+
+
+/* =========================================================
+   ENROLLMENTS
+   ========================================================= */
+
+async function loadEnrollments(user) {
+  if (
+    !window.nabdSupabase ||
+    !user
+  ) {
+    return [];
+  }
+
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("enrollments")
+        .select("*")
+        .eq(
+          "student_id",
+          user.id
+        )
+        .order(
+          "enrolled_at",
+          {
+            ascending: false
+          }
         );
 
-      font-weight:800;
+    if (!error) {
+      return Array.isArray(data)
+        ? data
+        : [];
     }
 
+    console.warn(
+      "Enrollments query:",
+      error
+    );
 
-    /* =========================================
-       PAGE
-       ========================================= */
-
-    .portal-page{
-      width:min(calc(100% - 28px),1100px);
-      margin:24px auto 70px;
-    }
-
-    .portal-auth-wrap{
-      max-width:620px;
-      margin-inline:auto;
-    }
-
-    .portal-heading{
-      margin-bottom:24px;
-    }
-
-    .portal-heading .eyebrow{
-      margin-bottom:10px;
-    }
-
-    .portal-heading h1{
-      margin:0 0 10px;
-
-      color:#041b2a;
-
-      font-size:clamp(38px,9vw,58px);
-
-      line-height:1.03;
-
-      letter-spacing:-.045em;
-    }
-
-    .portal-heading p{
-      margin:0;
-      color:#6b8290;
-    }
+  } catch (error) {
+    console.warn(error);
+  }
 
 
-    /* =========================================
-       AUTH TABS
-       ========================================= */
+  return [];
+}
 
-    .auth-tabs{
-      display:grid;
-      grid-template-columns:1fr 1fr;
 
-      gap:5px;
+/* =========================================================
+   CERTIFICATES
+   ========================================================= */
 
-      margin-bottom:22px;
-      padding:5px;
+async function loadCertificates(user) {
+  if (
+    !window.nabdSupabase ||
+    !user
+  ) {
+    return [];
+  }
 
-      border-radius:15px;
-
-      background:#edf6f7;
-    }
-
-    .auth-tab{
-      min-height:46px;
-
-      border:0;
-      border-radius:11px;
-
-      background:transparent;
-
-      color:#54717f;
-
-      font-weight:800;
-    }
-
-    .auth-tab.active{
-      color:#fff;
-
-      background:
-        linear-gradient(
-          135deg,
-          #07394e,
-          #00aaa6
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("certificates")
+        .select("*")
+        .eq(
+          "student_id",
+          user.id
+        )
+        .order(
+          "issue_date",
+          {
+            ascending: false
+          }
         );
 
-      box-shadow:
-        0 8px 22px
-        rgba(0,170,166,.18);
+    if (!error) {
+      return Array.isArray(data)
+        ? data
+        : [];
     }
 
-    .portal-view{
-      display:none;
-    }
+    console.warn(
+      "Certificates query:",
+      error
+    );
 
-    .portal-view.active{
-      display:block;
-    }
-
-
-    /* =========================================
-       PASSWORD
-       ========================================= */
-
-    .password-wrap{
-      position:relative;
-    }
-
-    .password-wrap input{
-      padding-inline-end:80px;
-    }
-
-    .password-toggle{
-      position:absolute;
-
-      top:50%;
-      right:9px;
-
-      transform:translateY(-50%);
-
-      min-height:36px;
-
-      padding:5px 9px;
-
-      border:0;
-      border-radius:9px;
-
-      color:#087f83;
-
-      background:#edf8f8;
-
-      font-size:11px;
-      font-weight:800;
-    }
-
-    [dir="rtl"] .password-toggle{
-      right:auto;
-      left:9px;
-    }
+  } catch (error) {
+    console.warn(error);
+  }
 
 
-    /* =========================================
-       AUTH ACTIONS
-       ========================================= */
-
-    .auth-actions{
-      display:grid;
-      gap:9px;
-    }
-
-    .auth-actions .btn{
-      width:100%;
-    }
-
-    .portal-status{
-      min-height:24px;
-
-      margin-top:12px;
-
-      color:#087f83;
-
-      font-size:13px;
-      font-weight:750;
-    }
-
-    .portal-status.error{
-      color:#c74858;
-    }
-
-    .portal-status.success{
-      color:#07815f;
-    }
-
-    .portal-note{
-      margin-top:18px;
-
-      padding:13px 14px;
-
-      border:1px solid #d5e7eb;
-      border-radius:13px;
-
-      color:#657f8b;
-
-      background:#f7fbfc;
-
-      font-size:12px;
-    }
+  return [];
+}
 
 
-    /* =========================================
-       DASHBOARD
-       ========================================= */
+/* =========================================================
+   CERTIFICATE CLAIMS
+   ========================================================= */
 
-    .dashboard-shell{
-      display:none;
-    }
+async function loadClaims(user) {
+  if (
+    !window.nabdSupabase ||
+    !user
+  ) {
+    return [];
+  }
 
-    .dashboard-shell.active{
-      display:block;
-    }
-
-    .dashboard-hero{
-      position:relative;
-      overflow:hidden;
-
-      display:grid;
-
-      gap:20px;
-
-      margin-bottom:20px;
-
-      padding:24px;
-
-      border-radius:24px;
-
-      color:#fff;
-
-      background:
-        radial-gradient(
-          circle at 90% 10%,
-          rgba(43,225,207,.23),
-          transparent 28%
-        ),
-        linear-gradient(
-          135deg,
-          #041b2a,
-          #075467
+  try {
+    const { data, error } =
+      await window.nabdSupabase
+        .from("certificate_claims")
+        .select("*")
+        .eq(
+          "student_id",
+          user.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
         );
 
-      box-shadow:
-        0 20px 55px
-        rgba(3,29,45,.16);
+    if (error) {
+      console.warn(
+        "Claims query:",
+        error
+      );
+
+      return [];
     }
 
-    .dashboard-hero h1{
-      margin:4px 0;
-
-      color:#fff;
-
-      font-size:clamp(30px,8vw,46px);
-
-      line-height:1.06;
-    }
-
-    .dashboard-hero p{
-      margin:0;
-      color:#c7dfe4;
-    }
-
-    .student-email{
-      overflow-wrap:anywhere;
-    }
-
-    .dashboard-actions{
-      display:flex;
-      flex-wrap:wrap;
-
-      gap:9px;
-    }
-
-    .logout-btn{
-      border:
-        1px solid
-        rgba(255,255,255,.30);
-
-      background:
-        rgba(255,255,255,.08);
-
-      box-shadow:none;
-    }
-
-
-    /* =========================================
-       METRICS
-       ========================================= */
-
-    .portal-metrics{
-      display:grid;
-
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(0,1fr)
-        );
-
-      gap:10px;
-
-      margin-bottom:20px;
-    }
-
-    .portal-metric{
-      min-width:0;
-
-      padding:17px;
-
-      border:
-        1px solid
-        #d8e7eb;
-
-      border-radius:17px;
-
-      background:#fff;
-
-      box-shadow:
-        0 8px 28px
-        rgba(3,29,45,.07);
-    }
-
-    .portal-metric strong{
-      display:block;
-
-      color:#041b2a;
-
-      font-size:27px;
-      font-weight:900;
-    }
-
-    .portal-metric span{
-      color:#6b8290;
-      font-size:11px;
-    }
-
-
-    /* =========================================
-       DASHBOARD SECTIONS
-       ========================================= */
-
-    .dashboard-section{
-      margin-top:20px;
-
-      padding:20px;
-
-      border:
-        1px solid
-        #d8e7eb;
-
-      border-radius:20px;
-
-      background:#fff;
-
-      box-shadow:
-        0 10px 32px
-        rgba(3,29,45,.07);
-    }
-
-    .dashboard-section-head{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-
-      gap:14px;
-
-      margin-bottom:17px;
-    }
-
-    .dashboard-section h2{
-      margin:0;
-
-      color:#041b2a;
-
-      font-size:24px;
-    }
-
-    .dashboard-section-head small{
-      color:#6b8290;
-    }
-
-
-    /* =========================================
-       COURSES
-       ========================================= */
-
-    .student-courses,
-    .student-certificates,
-    .student-claims{
-      display:grid;
-      gap:11px;
-    }
-
-    .student-course-card,
-    .student-certificate-card,
-    .student-claim-card{
-      min-width:0;
-
-      padding:16px;
-
-      border:
-        1px solid
-        #deeaed;
-
-      border-radius:15px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #fff,
-          #f7fbfc
-        );
-    }
-
-    .student-course-card h3,
-    .student-certificate-card h3,
-    .student-claim-card h3{
-      margin:0 0 6px;
-
-      color:#092a3b;
-
-      overflow-wrap:anywhere;
-    }
-
-    .student-course-card p,
-    .student-certificate-card p,
-    .student-claim-card p{
-      margin:0;
-
-      color:#6b8290;
-
-      font-size:12px;
-    }
-
-    .course-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-
-      gap:10px;
-
-      margin-top:13px;
-    }
-
-    .course-status{
-      display:inline-flex;
-
-      padding:5px 9px;
-
-      border-radius:999px;
-
-      color:#087d65;
-
-      background:#e4f8ef;
-
-      font-size:10px;
-      font-weight:850;
-    }
-
-    .portal-progress{
-      height:8px;
-
-      overflow:hidden;
-
-      margin-top:13px;
-
-      border-radius:999px;
-
-      background:#e5eef0;
-    }
-
-    .portal-progress span{
-      display:block;
-
-      height:100%;
-
-      border-radius:inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          #009c9d,
-          #25d7c6
-        );
-    }
-
-    .certificate-link{
-      display:inline-flex;
-
-      margin-top:11px;
-
-      color:#008d91;
-
-      font-size:12px;
-      font-weight:850;
-    }
-
-
-    /* =========================================
-       CLAIM CERTIFICATE
-       ========================================= */
-
-    .claim-box{
-      padding:18px;
-
-      border:
-        1px solid
-        #d9e9ec;
-
-      border-radius:16px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #fbffff,
-          #f2fafb
-        );
-    }
-
-    .claim-box .stack-form{
-      margin-top:0;
-    }
-
-    .claim-input{
-      text-transform:uppercase;
-    }
-
-    .claim-help{
-      margin-top:10px;
-
-      color:#70848e;
-
-      font-size:11px;
-    }
-
-    .claim-status-pill{
-      display:inline-flex;
-
-      padding:5px 9px;
-
-      border-radius:999px;
-
-      font-size:10px;
-      font-weight:850;
-    }
-
-    .claim-status-pill.pending{
-      color:#9a6800;
-      background:#fff3d3;
-    }
-
-    .claim-status-pill.approved{
-      color:#06775c;
-      background:#e2f8ef;
-    }
-
-    .claim-status-pill.rejected{
-      color:#b33f50;
-      background:#ffe8ec;
-    }
-
-
-    /* =========================================
-       EMPTY STATE
-       ========================================= */
-
-    .empty-state{
-      padding:24px 16px;
-
-      border:
-        1px dashed
-        #bdd2d8;
-
-      border-radius:14px;
-
-      color:#70858f;
-
-      background:#f8fbfc;
-
-      text-align:center;
-    }
-
-
-    /* =========================================
-       LOADER
-       ========================================= */
-
-    .portal-loader{
-      display:none;
-
-      min-height:180px;
-
-      place-items:center;
-
-      color:#69818d;
-
-      text-align:center;
-    }
-
-    .portal-loader.active{
-      display:grid;
-    }
-
-
-    /* =========================================
-       TABLET
-       ========================================= */
-
-    @media(min-width:700px){
-
-      .portal-topbar{
-        margin-top:24px;
-      }
-
-      .portal-page{
-        margin-top:30px;
-      }
-
-      .dashboard-hero{
-        grid-template-columns:
-          1fr
-          auto;
-
-        align-items:center;
-
-        padding:30px;
-      }
-
-      .portal-metrics{
-        grid-template-columns:
-          repeat(
-            4,
-            minmax(0,1fr)
+    return Array.isArray(data)
+      ? data
+      : [];
+
+  } catch (error) {
+    console.error(
+      "Claims load error:",
+      error
+    );
+
+    return [];
+  }
+}
+
+
+/* =========================================================
+   COURSE MATCHING
+   ========================================================= */
+
+function findCourseForEnrollment(enrollment) {
+  if (!enrollment) {
+    return null;
+  }
+
+  const courseId =
+    enrollment.course_id ??
+    null;
+
+  if (!courseId) {
+    return null;
+  }
+
+  return (
+    state.courses.find(
+      course =>
+        String(course.id) ===
+        String(courseId)
+    ) ||
+    null
+  );
+}
+
+
+function courseTitle(
+  course,
+  enrollment
+) {
+  return (
+    course?.title_en ||
+    course?.title ||
+    enrollment?.course_title ||
+    enrollment?.title ||
+    "NABD Academy Course"
+  );
+}
+
+
+/* =========================================================
+   STUDENT HEADER
+   ========================================================= */
+
+function renderStudentHeader() {
+  const name =
+    getProfileName(
+      state.profile,
+      state.user
+    );
+
+  if ($("#studentName")) {
+    $("#studentName").textContent =
+      name;
+  }
+
+  if ($("#studentEmail")) {
+    $("#studentEmail").textContent =
+      state.user?.email || "";
+  }
+}
+
+
+/* =========================================================
+   METRICS
+   ========================================================= */
+
+function renderMetrics() {
+  const enrollments =
+    state.enrollments;
+
+  const certificates =
+    state.certificates;
+
+
+  const completed =
+    enrollments.filter(
+      enrollment => {
+
+        const status =
+          enrollmentStatus(
+            enrollment
+          ).toLowerCase();
+
+        const progress =
+          enrollmentProgress(
+            enrollment
           );
+
+        return (
+          status === "completed" ||
+          status === "complete" ||
+          progress >= 100
+        );
       }
-
-      .student-courses,
-      .student-certificates,
-      .student-claims{
-        grid-template-columns:
-          repeat(
-            auto-fit,
-            minmax(240px,1fr)
-          );
-      }
-
-    }
-
-  </style>
-
-</head>
+    ).length;
 
 
+  let averageProgress = 0;
 
-<body class="portal-body">
+  if (enrollments.length) {
+
+    const total =
+      enrollments.reduce(
+        (sum, enrollment) =>
+          sum +
+          enrollmentProgress(
+            enrollment
+          ),
+        0
+      );
+
+    averageProgress =
+      Math.round(
+        total /
+        enrollments.length
+      );
+  }
 
 
-  <!-- =========================================
-       HEADER
-       ========================================= -->
+  if ($("#metricCourses")) {
+    $("#metricCourses").textContent =
+      enrollments.length;
+  }
 
-  <header class="portal-topbar">
+  if ($("#metricCompleted")) {
+    $("#metricCompleted").textContent =
+      completed;
+  }
+
+  if ($("#metricCertificates")) {
+    $("#metricCertificates").textContent =
+      certificates.length;
+  }
+
+  if ($("#metricProgress")) {
+    $("#metricProgress").textContent =
+      `${averageProgress}%`;
+  }
 
 
-    <a
-      class="brand"
-      href="index.html"
-      aria-label="NABD Academy home"
-    >
+  if ($("#courseSummary")) {
+    $("#courseSummary").textContent =
+      enrollments.length
+        ? `${enrollments.length} enrolled course${enrollments.length === 1 ? "" : "s"}`
+        : "No enrolled courses yet";
+  }
+}
 
-      <span class="brand-mark">
-        N
-      </span>
 
-      <span class="brand-copy">
+/* =========================================================
+   COURSES RENDERING
+   ========================================================= */
+
+function renderCourses() {
+  const container =
+    $("#studentCourses");
+
+  if (!container) {
+    return;
+  }
+
+
+  if (!state.enrollments.length) {
+
+    container.innerHTML = `
+      <div class="empty-state">
 
         <strong>
-          NABD Academy
+          No courses found yet.
         </strong>
 
-        <small>
-          Student Portal
-        </small>
+        <br>
 
-      </span>
+        When your course enrollment is approved,
+        it will appear here automatically.
 
-    </a>
+      </div>
+    `;
 
-
-
-    <a
-      class="portal-home"
-      href="index.html"
-    >
-      ← Home
-    </a>
+    return;
+  }
 
 
-  </header>
+  container.innerHTML =
+    state.enrollments
+      .map(enrollment => {
+
+        const course =
+          findCourseForEnrollment(
+            enrollment
+          );
+
+        const title =
+          courseTitle(
+            course,
+            enrollment
+          );
+
+        const status =
+          enrollmentStatus(
+            enrollment
+          );
+
+        const progress =
+          enrollmentProgress(
+            enrollment
+          );
+
+        const courseSlug =
+          course?.slug ||
+          course?.id ||
+          enrollment.course_id ||
+          "";
 
 
+        return `
+          <article class="student-course-card">
 
-  <main class="portal-page">
+            <h3>
+              ${escapeHTML(title)}
+            </h3>
 
+            <p>
+              ${escapeHTML(
+                course?.description_en ||
+                course?.description ||
+                "NABD Academy medical learning course."
+              )}
+            </p>
 
-    <!-- =========================================
-         LOADING
-         ========================================= -->
+            <div class="portal-progress">
 
-    <div
-      id="portalLoader"
-      class="portal-loader active"
-    >
-      Checking your account…
-    </div>
-
-
-
-    <!-- =========================================
-         AUTHENTICATION
-         ========================================= -->
-
-    <section
-      id="authSection"
-      class="portal-auth-wrap"
-      hidden
-    >
-
-
-      <div class="auth-card wide">
-
-
-        <div class="portal-heading">
-
-          <span class="eyebrow">
-            Student Portal
-          </span>
-
-          <h1 id="authHeading">
-            Welcome back
-          </h1>
-
-          <p id="authIntro">
-            Sign in to access your courses and certificates.
-          </p>
-
-        </div>
-
-
-
-        <!-- AUTH TABS -->
-
-        <div
-          class="auth-tabs"
-          role="tablist"
-          aria-label="Authentication"
-        >
-
-
-          <button
-            id="signInTab"
-            class="auth-tab active"
-            type="button"
-            role="tab"
-            aria-selected="true"
-          >
-            Sign in
-          </button>
-
-
-          <button
-            id="signUpTab"
-            class="auth-tab"
-            type="button"
-            role="tab"
-            aria-selected="false"
-          >
-            Create account
-          </button>
-
-
-        </div>
-
-
-
-        <!-- =====================================
-             SIGN IN
-             ===================================== -->
-
-        <div
-          id="signInView"
-          class="portal-view active"
-        >
-
-
-          <form
-            id="signInForm"
-            class="stack-form"
-          >
-
-
-            <label>
-
-              Email
-
-              <input
-                id="signInEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="name@example.com"
-                required
-              >
-
-            </label>
-
-
-
-            <label>
-
-              Password
-
-              <div class="password-wrap">
-
-                <input
-                  id="signInPassword"
-                  type="password"
-                  autocomplete="current-password"
-                  minlength="6"
-                  required
-                >
-
-                <button
-                  class="password-toggle"
-                  type="button"
-                  data-password-target="signInPassword"
-                >
-                  Show
-                </button>
-
-              </div>
-
-            </label>
-
-
-
-            <div class="auth-actions">
-
-              <button
-                id="signInButton"
-                class="btn"
-                type="submit"
-              >
-                Sign in
-              </button>
+              <span
+                style="width:${progress}%"
+              ></span>
 
             </div>
 
+            <div class="course-row">
 
+              <span class="course-status">
+                ${escapeHTML(status)}
+              </span>
 
-            <div
-              id="signInStatus"
-              class="portal-status"
-              aria-live="polite"
-            ></div>
-
-
-          </form>
-
-
-        </div>
-
-
-
-        <!-- =====================================
-             CREATE ACCOUNT
-             ===================================== -->
-
-        <div
-          id="signUpView"
-          class="portal-view"
-        >
-
-
-          <form
-            id="signUpForm"
-            class="stack-form"
-          >
-
-
-            <label>
-
-              Full name
-
-              <input
-                id="signUpName"
-                type="text"
-                autocomplete="name"
-                placeholder="Your full name"
-                required
-              >
-
-            </label>
-
-
-
-            <label>
-
-              Email
-
-              <input
-                id="signUpEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="Use your course registration email"
-                required
-              >
-
-            </label>
-
-
-
-            <label>
-
-              Password
-
-              <div class="password-wrap">
-
-                <input
-                  id="signUpPassword"
-                  type="password"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                >
-
-                <button
-                  class="password-toggle"
-                  type="button"
-                  data-password-target="signUpPassword"
-                >
-                  Show
-                </button>
-
-              </div>
-
-            </label>
-
-
-
-            <label>
-
-              Confirm password
-
-              <div class="password-wrap">
-
-                <input
-                  id="signUpPasswordConfirm"
-                  type="password"
-                  autocomplete="new-password"
-                  minlength="6"
-                  required
-                >
-
-                <button
-                  class="password-toggle"
-                  type="button"
-                  data-password-target="signUpPasswordConfirm"
-                >
-                  Show
-                </button>
-
-              </div>
-
-            </label>
-
-
-
-            <div class="auth-actions">
-
-              <button
-                id="signUpButton"
-                class="btn"
-                type="submit"
-              >
-                Create account
-              </button>
+              <strong>
+                ${progress}%
+              </strong>
 
             </div>
 
+            ${
+              courseSlug
+                ? `
+                  <a
+                    class="certificate-link"
+                    href="course.html?id=${encodeURIComponent(courseSlug)}"
+                  >
+                    Open course →
+                  </a>
+                `
+                : ""
+            }
+
+          </article>
+        `;
+
+      })
+      .join("");
+}
 
 
-            <div
-              id="signUpStatus"
-              class="portal-status"
-              aria-live="polite"
-            ></div>
+/* =========================================================
+   CERTIFICATE RENDERING
+   ========================================================= */
+
+function certificateIdentifier(
+  certificate
+) {
+  return (
+    certificate.certificate_id ||
+    certificate.code ||
+    certificate.id ||
+    ""
+  );
+}
 
 
-          </form>
+function renderCertificates() {
+  const container =
+    $("#studentCertificates");
+
+  if (!container) {
+    return;
+  }
 
 
+  if (!state.certificates.length) {
 
-          <div class="portal-note">
+    container.innerHTML = `
+      <div class="empty-state">
 
-            Use the same email address
-            you used when registering
-            for a NABD Academy course.
+        <strong>
+          No certificates linked to this account yet.
+        </strong>
 
-          </div>
+        <br>
 
-
-        </div>
-
-
-      </div>
-
-
-    </section>
-
-
-
-    <!-- =========================================
-         STUDENT DASHBOARD
-         ========================================= -->
-
-    <section
-      id="dashboardSection"
-      class="dashboard-shell"
-    >
-
-
-      <!-- DASHBOARD HERO -->
-
-      <div class="dashboard-hero">
-
-
-        <div>
-
-          <span
-            class="eyebrow"
-            style="color:#56e7dc;"
-          >
-            Student Dashboard
-          </span>
-
-
-          <h1>
-
-            Welcome,
-
-            <span id="studentName">
-              Student
-            </span>
-
-          </h1>
-
-
-          <p
-            id="studentEmail"
-            class="student-email"
-          ></p>
-
-        </div>
-
-
-
-        <div class="dashboard-actions">
-
-
-          <a
-            class="btn btn-light"
-            href="index.html#courses"
-          >
-            Explore Courses
-          </a>
-
-
-          <button
-            id="logoutButton"
-            class="btn logout-btn"
-            type="button"
-          >
-            Sign out
-          </button>
-
-
-        </div>
-
+        Eligible certificates will appear here
+        after they are linked to your student account.
 
       </div>
+    `;
+
+    return;
+  }
 
 
+  container.innerHTML =
+    state.certificates
+      .map(certificate => {
 
-      <!-- =====================================
-           METRICS
-           ===================================== -->
+        const id =
+          certificateIdentifier(
+            certificate
+          );
 
-      <div class="portal-metrics">
+        const course =
+          certificate.course_title ||
+          "NABD Academy Certificate";
 
+        const issueDate =
+          certificate.issue_date ||
+          certificate.created_at ||
+          "";
 
-        <article class="portal-metric">
-
-          <strong id="metricCourses">
-            0
-          </strong>
-
-          <span>
-            Enrolled courses
-          </span>
-
-        </article>
-
-
-
-        <article class="portal-metric">
-
-          <strong id="metricCompleted">
-            0
-          </strong>
-
-          <span>
-            Completed
-          </span>
-
-        </article>
+        const status =
+          certificate.status ||
+          "valid";
 
 
+        return `
+          <article class="student-certificate-card">
 
-        <article class="portal-metric">
-
-          <strong id="metricCertificates">
-            0
-          </strong>
-
-          <span>
-            Certificates
-          </span>
-
-        </article>
-
-
-
-        <article class="portal-metric">
-
-          <strong id="metricProgress">
-            0%
-          </strong>
-
-          <span>
-            Overall progress
-          </span>
-
-        </article>
-
-
-      </div>
-
-
-
-      <!-- =====================================
-           MY COURSES
-           ===================================== -->
-
-      <section class="dashboard-section">
-
-
-        <div class="dashboard-section-head">
-
-          <div>
-
-            <span class="eyebrow">
-              Learning
+            <span class="course-status">
+              ${escapeHTML(status)}
             </span>
 
-            <h2>
-              My Courses
-            </h2>
+            <h3>
+              ${escapeHTML(course)}
+            </h3>
 
-          </div>
+            <p>
+              Certificate ID:
+              <strong>
+                ${escapeHTML(id)}
+              </strong>
+            </p>
 
+            ${
+              issueDate
+                ? `
+                  <p>
+                    Issue date:
+                    ${escapeHTML(
+                      String(issueDate)
+                        .slice(0,10)
+                    )}
+                  </p>
+                `
+                : ""
+            }
 
-          <small id="courseSummary">
-            Your enrolled courses
-          </small>
+            ${
+              id
+                ? `
+                  <a
+                    class="certificate-link"
+                    href="index.html?certificate=${encodeURIComponent(id)}#verify"
+                  >
+                    Verify certificate →
+                  </a>
+                `
+                : ""
+            }
 
-        </div>
+          </article>
+        `;
 
-
-
-        <div
-          id="studentCourses"
-          class="student-courses"
-        >
-
-          <div class="empty-state">
-            Loading your courses…
-          </div>
-
-        </div>
-
-
-      </section>
-
-
-
-      <!-- =====================================
-           CLAIM CERTIFICATE
-           ===================================== -->
-
-      <section class="dashboard-section">
-
-
-        <div class="dashboard-section-head">
-
-          <div>
-
-            <span class="eyebrow">
-              Certificate Claim
-            </span>
-
-            <h2>
-              Claim a Certificate
-            </h2>
-
-          </div>
+      })
+      .join("");
+}
 
 
-          <small>
-            Link an existing NABD certificate
-          </small>
+/* =========================================================
+   CLAIM HISTORY
+   ========================================================= */
 
-        </div>
+function renderClaims() {
+  const container =
+    $("#studentClaims");
 
-
-
-        <div class="claim-box">
-
-
-          <form
-            id="claimCertificateForm"
-            class="stack-form"
-          >
+  if (!container) {
+    return;
+  }
 
 
-            <label>
-
-              Certificate ID
-
-              <input
-                id="claimCertificateId"
-                class="claim-input"
-                type="text"
-                placeholder="NABD-MT-2026-0001"
-                autocomplete="off"
-                required
-              >
-
-            </label>
+  if (!state.claims.length) {
+    container.innerHTML = "";
+    return;
+  }
 
 
+  container.innerHTML =
+    state.claims
+      .map(claim => {
 
-            <button
-              id="claimCertificateButton"
-              class="btn"
-              type="submit"
+        const status =
+          String(
+            claim.status ||
+            "pending"
+          ).toLowerCase();
+
+        const created =
+          claim.created_at
+            ? String(
+                claim.created_at
+              ).slice(0,10)
+            : "";
+
+
+        return `
+          <article class="student-claim-card">
+
+            <span
+              class="claim-status-pill ${escapeHTML(status)}"
             >
-              Submit Claim
-            </button>
-
-
-
-            <div
-              id="claimCertificateStatus"
-              class="portal-status"
-              aria-live="polite"
-            ></div>
-
-
-          </form>
-
-
-
-          <p class="claim-help">
-
-            Enter the Certificate ID exactly as
-            printed on your NABD Academy certificate.
-            The request must be reviewed before
-            the certificate is linked to your account.
-
-          </p>
-
-
-        </div>
-
-
-
-        <!-- STUDENT CLAIM HISTORY -->
-
-        <div
-          id="studentClaims"
-          class="student-claims"
-          style="margin-top:16px;"
-        ></div>
-
-
-      </section>
-
-
-
-      <!-- =====================================
-           MY CERTIFICATES
-           ===================================== -->
-
-      <section class="dashboard-section">
-
-
-        <div class="dashboard-section-head">
-
-          <div>
-
-            <span class="eyebrow">
-              Credentials
+              ${escapeHTML(status)}
             </span>
 
-            <h2>
-              My Certificates
-            </h2>
+            <h3>
+              ${escapeHTML(
+                claim.certificate_id
+              )}
+            </h3>
 
-          </div>
+            ${
+              created
+                ? `
+                  <p>
+                    Submitted:
+                    ${escapeHTML(created)}
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              status === "pending"
+                ? `
+                  <p>
+                    Your claim is waiting for review.
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              status === "approved"
+                ? `
+                  <p>
+                    This certificate claim has been approved.
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              status === "rejected"
+                ? `
+                  <p>
+                    This claim was not approved.
+                  </p>
+                `
+                : ""
+            }
+
+          </article>
+        `;
+
+      })
+      .join("");
+}
 
 
-          <small>
-            Verified NABD certificates
-          </small>
+/* =========================================================
+   VERIFY CERTIFICATE EXISTS
+   ========================================================= */
+
+async function verifyClaimCertificate(
+  certificateId
+) {
+  if (!window.nabdSupabase) {
+    return false;
+  }
+
+  try {
+    const { data, error } =
+      await window.nabdSupabase.rpc(
+        "verify_certificate",
+        {
+          input_certificate_id:
+            certificateId
+        }
+      );
+
+    if (error) {
+      console.warn(
+        "Certificate verification error:",
+        error
+      );
+
+      return false;
+    }
+
+    return (
+      Array.isArray(data) &&
+      data.length > 0
+    );
+
+  } catch (error) {
+    console.error(
+      "Certificate verification failed:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+/* =========================================================
+   SUBMIT CERTIFICATE CLAIM
+   ========================================================= */
+
+async function handleCertificateClaim(
+  event
+) {
+  event.preventDefault();
+
+
+  const input =
+    $("#claimCertificateId");
+
+  const button =
+    $("#claimCertificateButton");
+
+  const statusBox =
+    $("#claimCertificateStatus");
+
+
+  const certificateId =
+    normalizeCertificateId(
+      input?.value || ""
+    );
+
+
+  setStatus(
+    statusBox,
+    ""
+  );
+
+
+  if (!state.user) {
+
+    setStatus(
+      statusBox,
+      "You must be signed in.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!certificateId) {
+
+    setStatus(
+      statusBox,
+      "Enter your Certificate ID.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!certificateId.startsWith("NABD-")) {
+
+    setStatus(
+      statusBox,
+      "Enter a valid NABD Certificate ID.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!window.nabdSupabase) {
+
+    setStatus(
+      statusBox,
+      "Certificate claim system is not connected.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  setButtonLoading(
+    button,
+    true,
+    "Checking certificate…",
+    "Submit Claim"
+  );
+
+
+  try {
+
+    /*
+      First confirm that the certificate exists
+      in NABD's verification database.
+    */
+
+    const exists =
+      await verifyClaimCertificate(
+        certificateId
+      );
+
+
+    if (!exists) {
+
+      setStatus(
+        statusBox,
+        "Certificate ID was not found in the NABD verification system.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    /*
+      Check whether this account already owns it.
+    */
+
+    const alreadyLinked =
+      state.certificates.some(
+        certificate =>
+          normalizeCertificateId(
+            certificate.certificate_id
+          ) === certificateId
+      );
+
+
+    if (alreadyLinked) {
+
+      setStatus(
+        statusBox,
+        "This certificate is already linked to your account.",
+        "success"
+      );
+
+      return;
+    }
+
+
+    /*
+      Check existing claims already loaded.
+    */
+
+    const existingClaim =
+      state.claims.find(
+        claim =>
+          normalizeCertificateId(
+            claim.certificate_id
+          ) === certificateId
+      );
+
+
+    if (existingClaim) {
+
+      const existingStatus =
+        existingClaim.status ||
+        "pending";
+
+      setStatus(
+        statusBox,
+        `A claim for this certificate already exists. Status: ${existingStatus}.`,
+        existingStatus === "rejected"
+          ? "error"
+          : "success"
+      );
+
+      return;
+    }
+
+
+    setButtonLoading(
+      button,
+      true,
+      "Submitting claim…",
+      "Submit Claim"
+    );
+
+
+    const { error } =
+      await window.nabdSupabase
+        .from("certificate_claims")
+        .insert([
+          {
+            student_id:
+              state.user.id,
+
+            certificate_id:
+              certificateId,
+
+            status:
+              "pending"
+          }
+        ]);
+
+
+    if (error) {
+
+      if (
+        error.code === "23505" ||
+        /duplicate/i.test(
+          error.message || ""
+        )
+      ) {
+
+        setStatus(
+          statusBox,
+          "A claim for this certificate already exists.",
+          "error"
+        );
+
+        return;
+      }
+
+      throw error;
+    }
+
+
+    if (input) {
+      input.value = "";
+    }
+
+
+    setStatus(
+      statusBox,
+      "Certificate claim submitted successfully ✓",
+      "success"
+    );
+
+
+    state.claims =
+      await loadClaims(
+        state.user
+      );
+
+
+    renderClaims();
+
+
+  } catch (error) {
+
+    console.error(
+      "Certificate claim error:",
+      error
+    );
+
+
+    setStatus(
+      statusBox,
+      error?.message ||
+      "Could not submit the certificate claim.",
+      "error"
+    );
+
+
+  } finally {
+
+    setButtonLoading(
+      button,
+      false,
+      "Submitting claim…",
+      "Submit Claim"
+    );
+
+  }
+}
+
+
+/* =========================================================
+   DASHBOARD LOAD
+   ========================================================= */
+
+async function loadDashboard(user) {
+  state.user = user;
+
+  showLoader(true);
+
+
+  try {
+
+    const [
+      profile,
+      courses,
+      enrollments,
+      certificates,
+      claims
+    ] = await Promise.all([
+
+      loadProfile(user),
+
+      loadAllCourses(),
+
+      loadEnrollments(user),
+
+      loadCertificates(user),
+
+      loadClaims(user)
+
+    ]);
+
+
+    state.profile =
+      profile;
+
+    state.courses =
+      courses;
+
+    state.enrollments =
+      enrollments;
+
+    state.certificates =
+      certificates;
+
+    state.claims =
+      claims;
+
+
+    renderStudentHeader();
+
+    renderMetrics();
+
+    renderCourses();
+
+    renderClaims();
+
+    renderCertificates();
+
+
+    showDashboard();
+
+
+  } catch (error) {
+
+    console.error(
+      "Dashboard load error:",
+      error
+    );
+
+
+    showDashboard();
+
+
+    const coursesContainer =
+      $("#studentCourses");
+
+
+    if (coursesContainer) {
+
+      coursesContainer.innerHTML = `
+        <div class="empty-state">
+
+          We could not load your dashboard data.
+          Please refresh the page.
 
         </div>
+      `;
+
+    }
+
+  }
+}
 
 
+/* =========================================================
+   SIGN UP
+   ========================================================= */
 
-        <div
-          id="studentCertificates"
-          class="student-certificates"
-        >
-
-          <div class="empty-state">
-            Loading your certificates…
-          </div>
-
-        </div>
+async function handleSignUp(event) {
+  event.preventDefault();
 
 
-      </section>
+  const name =
+    $("#signUpName")
+      ?.value
+      .trim() || "";
 
 
-    </section>
+  const email =
+    $("#signUpEmail")
+      ?.value
+      .trim()
+      .toLowerCase() || "";
 
 
-  </main>
+  const password =
+    $("#signUpPassword")
+      ?.value || "";
 
 
-
-  <!-- =========================================
-       SUPABASE
-       ========================================= -->
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+  const confirmation =
+    $("#signUpPasswordConfirm")
+      ?.value || "";
 
 
+  const button =
+    $("#signUpButton");
 
-  <!-- =========================================
-       NABD CONFIG
-       ========================================= -->
-
-  <script src="assets/js/config.js?v=12"></script>
-
-  <script src="assets/js/supabase-client.js?v=12"></script>
-
-  <script src="assets/js/portal.js?v=12"></script>
+  const status =
+    $("#signUpStatus");
 
 
-</body>
+  setStatus(
+    status,
+    ""
+  );
 
-</html>
+
+  if (!name) {
+
+    setStatus(
+      status,
+      "Please enter your full name.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!email) {
+
+    setStatus(
+      status,
+      "Please enter your email.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password.length < 6) {
+
+    setStatus(
+      status,
+      "Password must be at least 6 characters.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (
+    password !==
+    confirmation
+  ) {
+
+    setStatus(
+      status,
+      "Passwords do not match.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!window.nabdSupabase) {
+
+    setStatus(
+      status,
+      "The account system is not connected.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  setButtonLoading(
+    button,
+    true,
+    "Creating account…",
+    "Create account"
+  );
+
+
+  try {
+
+    const { data, error } =
+      await window.nabdSupabase
+        .auth
+        .signUp({
+
+          email,
+
+          password,
+
+          options: {
+
+            data: {
+              full_name:name,
+              name:name
+            }
+
+          }
+
+        });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.user) {
+
+      throw new Error(
+        "The account could not be created."
+      );
+
+    }
+
+
+    if (data.session) {
+
+      setStatus(
+        status,
+        "Account created successfully ✓",
+        "success"
+      );
+
+
+      await loadDashboard(
+        data.user
+      );
+
+
+      return;
+    }
+
+
+    setStatus(
+      status,
+      "Account created. Please confirm your email, then sign in.",
+      "success"
+    );
+
+
+    $("#signUpForm")
+      ?.reset();
+
+
+    setTimeout(
+      () => {
+
+        openSignIn();
+
+
+        if ($("#signInEmail")) {
+
+          $("#signInEmail").value =
+            email;
+
+        }
+
+      },
+      1000
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Sign up error:",
+      error
+    );
+
+
+    let message =
+      error?.message ||
+      "Could not create the account.";
+
+
+    if (
+      /already registered|already exists|user already/i.test(
+        message
+      )
+    ) {
+
+      message =
+        "An account with this email already exists. Please sign in.";
+
+    }
+
+
+    if (
+      /rate limit/i.test(
+        message
+      )
+    ) {
+
+      message =
+        "Too many email requests. Please wait and try again.";
+
+    }
+
+
+    setStatus(
+      status,
+      message,
+      "error"
+    );
+
+
+  } finally {
+
+    setButtonLoading(
+      button,
+      false,
+      "Creating account…",
+      "Create account"
+    );
+
+  }
+}
+
+
+/* =========================================================
+   SIGN IN
+   ========================================================= */
+
+async function handleSignIn(event) {
+  event.preventDefault();
+
+
+  const email =
+    $("#signInEmail")
+      ?.value
+      .trim()
+      .toLowerCase() || "";
+
+
+  const password =
+    $("#signInPassword")
+      ?.value || "";
+
+
+  const button =
+    $("#signInButton");
+
+
+  const status =
+    $("#signInStatus");
+
+
+  setStatus(
+    status,
+    ""
+  );
+
+
+  if (
+    !email ||
+    !password
+  ) {
+
+    setStatus(
+      status,
+      "Enter your email and password.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!window.nabdSupabase) {
+
+    setStatus(
+      status,
+      "The login system is not connected.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  setButtonLoading(
+    button,
+    true,
+    "Signing in…",
+    "Sign in"
+  );
+
+
+  try {
+
+    const { data, error } =
+      await window.nabdSupabase
+        .auth
+        .signInWithPassword({
+          email,
+          password
+        });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.user) {
+
+      throw new Error(
+        "Login failed."
+      );
+
+    }
+
+
+    setStatus(
+      status,
+      "Signed in successfully ✓",
+      "success"
+    );
+
+
+    await loadDashboard(
+      data.user
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Sign in error:",
+      error
+    );
+
+
+    let message =
+      error?.message ||
+      "Could not sign in.";
+
+
+    if (
+      /invalid login credentials/i.test(
+        message
+      )
+    ) {
+
+      message =
+        "Incorrect email or password.";
+
+    }
+
+
+    if (
+      /email not confirmed/i.test(
+        message
+      )
+    ) {
+
+      message =
+        "Please confirm your email before signing in.";
+
+    }
+
+
+    setStatus(
+      status,
+      message,
+      "error"
+    );
+
+
+  } finally {
+
+    setButtonLoading(
+      button,
+      false,
+      "Signing in…",
+      "Sign in"
+    );
+
+  }
+}
+
+
+/* =========================================================
+   SIGN OUT
+   ========================================================= */
+
+async function handleLogout() {
+  if (!window.nabdSupabase) {
+    return;
+  }
+
+
+  const button =
+    $("#logoutButton");
+
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.textContent =
+      "Signing out…";
+
+  }
+
+
+  try {
+
+    const { error } =
+      await window.nabdSupabase
+        .auth
+        .signOut();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    state.user = null;
+    state.profile = null;
+    state.courses = [];
+    state.enrollments = [];
+    state.certificates = [];
+    state.claims = [];
+
+
+    $("#dashboardSection")
+      ?.classList
+      .remove("active");
+
+
+    openSignIn();
+
+    showAuth();
+
+
+  } catch (error) {
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+
+    alert(
+      error?.message ||
+      "Could not sign out."
+    );
+
+
+  } finally {
+
+    if (button) {
+
+      button.disabled = false;
+
+      button.textContent =
+        "Sign out";
+
+    }
+
+  }
+}
+
+
+/* =========================================================
+   PASSWORD SHOW / HIDE
+   ========================================================= */
+
+function setupPasswordButtons() {
+
+  document
+    .querySelectorAll(
+      "[data-password-target]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const input =
+            document.getElementById(
+              button.dataset.passwordTarget
+            );
+
+
+          if (!input) {
+            return;
+          }
+
+
+          const showing =
+            input.type === "text";
+
+
+          input.type =
+            showing
+              ? "password"
+              : "text";
+
+
+          button.textContent =
+            showing
+              ? "Show"
+              : "Hide";
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   INITIAL SESSION
+   ========================================================= */
+
+async function checkSession() {
+
+  if (!window.nabdSupabase) {
+
+    showAuth();
+
+
+    setStatus(
+      $("#signInStatus"),
+      "Supabase connection could not be loaded.",
+      "error"
+    );
+
+
+    return;
+  }
+
+
+  try {
+
+    const { data, error } =
+      await window.nabdSupabase
+        .auth
+        .getSession();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const user =
+      data?.session?.user;
+
+
+    if (user) {
+
+      await loadDashboard(
+        user
+      );
+
+    } else {
+
+      showAuth();
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Session check error:",
+      error
+    );
+
+
+    showAuth();
+
+  }
+}
+
+
+/* =========================================================
+   AUTH CHANGE LISTENER
+   ========================================================= */
+
+function listenForAuthChanges() {
+
+  if (!window.nabdSupabase) {
+    return;
+  }
+
+
+  window.nabdSupabase
+    .auth
+    .onAuthStateChange(
+      async (
+        event,
+        session
+      ) => {
+
+        if (
+          event ===
+          "SIGNED_OUT"
+        ) {
+
+          showAuth();
+
+          return;
+        }
+
+
+        if (
+          event ===
+          "SIGNED_IN" &&
+          session?.user &&
+          state.user?.id !==
+          session.user.id
+        ) {
+
+          await loadDashboard(
+            session.user
+          );
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+
+    $("#signInTab")
+      ?.addEventListener(
+        "click",
+        openSignIn
+      );
+
+
+    $("#signUpTab")
+      ?.addEventListener(
+        "click",
+        openSignUp
+      );
+
+
+    $("#signInForm")
+      ?.addEventListener(
+        "submit",
+        handleSignIn
+      );
+
+
+    $("#signUpForm")
+      ?.addEventListener(
+        "submit",
+        handleSignUp
+      );
+
+
+    $("#claimCertificateForm")
+      ?.addEventListener(
+        "submit",
+        handleCertificateClaim
+      );
+
+
+    $("#logoutButton")
+      ?.addEventListener(
+        "click",
+        handleLogout
+      );
+
+
+    $("#claimCertificateId")
+      ?.addEventListener(
+        "input",
+        event => {
+
+          event.target.value =
+            normalizeCertificateId(
+              event.target.value
+            );
+
+        }
+      );
+
+
+    setupPasswordButtons();
+
+    listenForAuthChanges();
+
+    await checkSession();
+
+  }
+);
