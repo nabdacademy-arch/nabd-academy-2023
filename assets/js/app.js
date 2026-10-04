@@ -1,475 +1,240 @@
-const i18n={
-  en:{
-    "nav.home":"Home",
-    "nav.courses":"Courses",
-    "nav.research":"Research",
-    "nav.verify":"Verify",
-    "nav.achievements":"Achievements",
-    "nav.about":"About",
-    "nav.login":"Student Login",
-
-    "hero.eyebrow":"Medical Education • Research • Verification",
-    "hero.title":"Learn. Research. Verify. Grow.",
-    "hero.text":"A bilingual digital academy for medical learning, student development, research projects, and verifiable certificates.",
-    "hero.explore":"Explore Courses",
-    "hero.verify":"Verify Certificate",
-    "hero.bilingual":"Arabic & English",
-    "hero.qr":"QR Verification",
-    "hero.portal":"Student Portal",
-
-    "metrics.courses":"Medical Courses",
-    "metrics.research":"Research Projects",
-    "metrics.verify":"Certificate Verification",
-
-    "courses.eyebrow":"Learning",
-    "courses.title":"Medical Courses",
-    "courses.text":"Structured theoretical medical learning with completion certificates.",
-
-    "research.eyebrow":"NABD Research Center",
-    "research.title":"Research & Scientific Projects",
-    "research.text":"Transparent project pages that distinguish protocols, ongoing studies, and completed work.",
-
-    "verify.eyebrow":"Verify Certificate",
-    "verify.title":"Check the Authenticity of Your Certificate",
-    "verify.text":"Enter the certificate ID exactly as shown on the Certificate of Completion.",
-    "verify.button":"Verify Certificate",
-    "verify.empty":"Verification result will appear here.",
-
-    "achievements.eyebrow":"Milestones",
-    "achievements.title":"Research & Achievements",
-    "achievements.text":"Documented milestones, research activity, and transparent recognition.",
-    "achievements.pendingTitle":"Evidence-first Recognition",
-    "achievements.pendingText":"Awards and recognitions are published only after documentary verification.",
-
-    "about.eyebrow":"About NABD",
-    "about.title":"Accessible medical learning with verifiable outcomes",
-    "about.text":"NABD Academy for Medical Sciences is an educational initiative focused on theoretical medical courses, research development, and transparent certificates of completion.",
-    "about.transparency":"Academic Transparency",
-    "about.disclaimer":"Certificates are certificates of completion and do not represent a university degree or governmental accreditation unless explicitly stated and documented.",
-
-    "cta.form":"Start Learning",
-    "cta.whatsapp":"WhatsApp",
-
-    "footer.tagline":"Learn • Research • Verify • Grow",
-    "footer.contact":"Official contact channels"
+const I18N = {
+  en: {
+    "nav.home":"Home","nav.courses":"Courses","nav.research":"Research","nav.verify":"Verify","nav.founder":"Founder","nav.about":"About","nav.feedback":"Feedback","nav.login":"Student Login",
+    "hero.eyebrow":"Medical Education • Research • Verification","hero.text":"A bilingual digital academy for medical learning, student development, research projects, and verifiable certificates.","hero.explore":"Explore Courses","hero.verify":"Verify Certificate",
+    "hero.bilingual":"Arabic & English","hero.bilingualSub":"Bilingual learning","hero.qr":"QR Verification","hero.qrSub":"Secure credentials","hero.portal":"Student Portal","hero.portalSub":"Digital access",
+    "stats.courses":"Medical Courses","stats.research":"Research Projects","stats.verify":"Certificate Verification","stats.online":"Digital Learning",
+    "courses.eyebrow":"Learning","courses.title":"Medical Courses","courses.text":"Structured theoretical medical learning with completion certificates.",
+    "verify.eyebrow":"Certificate Verification","verify.title":"Check the authenticity of your certificate","verify.text":"Enter the certificate ID exactly as shown on the certificate.","verify.button":"Verify Certificate","verify.empty":"Verification result will appear here.",
+    "founder.label":"Founder & Director","founder.role":"Founder & Director — NABD Academy for Medical Sciences","founder.text":"Leading the development of NABD Academy's digital educational platform, medical-science learning environment, research initiatives, and transparent certificate verification system.","founder.tag1":"Medical Education","founder.tag2":"Research Development","founder.tag3":"Digital Learning","founder.tag4":"Certificate Verification","founder.visionTitle":"Leadership & Vision","founder.visionText":"Building an accessible, transparent, and research-driven digital environment for medical learning.",
+    "research.eyebrow":"NABD Research Center","research.title":"Research & Scientific Projects","research.text":"Transparent project pages for protocols, ongoing studies, and completed work.","research.more":"Explore Research →",
+    "achievements.eyebrow":"Milestones","achievements.title":"Research & Achievements","achievements.text":"Documented milestones, research activity, and transparent recognition.","achievements.researchTitle":"Research Projects","achievements.researchText":"Scientific protocols and medical research development.","achievements.verifyTitle":"Verifiable Credentials","achievements.verifyText":"Certificate ID and QR-based public verification.","achievements.pendingTitle":"Evidence-first Recognition","achievements.pendingText":"Awards and recognitions are published only after documentary verification.",
+    "about.eyebrow":"About NABD","about.title":"Accessible medical learning with verifiable outcomes","about.text":"NABD Academy for Medical Sciences is an educational initiative focused on theoretical medical courses, research development, and transparent certificates of completion.","about.transparency":"Academic Transparency","about.disclaimer":"Certificates are certificates of completion and do not represent a university degree or governmental accreditation unless explicitly stated and documented.",
+    "feedback.eyebrow":"Complaints & Feedback","feedback.title":"We value your feedback","feedback.text":"Submit a complaint, suggestion, technical issue, or general feedback.","feedback.name":"Name","feedback.email":"Email","feedback.type":"Type","feedback.complaint":"Complaint","feedback.suggestion":"Suggestion","feedback.technical":"Technical issue","feedback.other":"Other","feedback.message":"Message","feedback.send":"Send Feedback",
+    "cta.title":"Build your medical knowledge. Start learning today.","cta.text":"Learn • Research • Verify • Grow","cta.start":"Start Learning","cta.whatsapp":"WhatsApp",
+    "footer.tagline":"Learn • Research • Verify • Grow","footer.portal":"Student Portal","footer.policies":"Policies","footer.contactTitle":"Contact","footer.contact":"Official contact channels","footer.bottom":"Medical Education • Research • Verification"
   },
-
-  ar:{
-    "nav.home":"الرئيسية",
-    "nav.courses":"الدورات",
-    "nav.research":"الأبحاث",
-    "nav.verify":"التحقق",
-    "nav.achievements":"الإنجازات",
-    "nav.about":"من نحن",
-    "nav.login":"دخول الطالب",
-
-    "hero.eyebrow":"تعليم طبي • بحث علمي • تحقق من الشهادات",
-    "hero.title":"تعلّم • ابحث • تحقّق • تطوّر",
-    "hero.text":"أكاديمية رقمية ثنائية اللغة للتعليم الطبي، تطوير الطلاب، المشاريع البحثية، والشهادات القابلة للتحقق.",
-    "hero.explore":"استكشف الدورات",
-    "hero.verify":"تحقق من شهادة",
-    "hero.bilingual":"العربية والإنجليزية",
-    "hero.qr":"تحقق عبر QR",
-    "hero.portal":"بوابة الطالب",
-
-    "metrics.courses":"الدورات الطبية",
-    "metrics.research":"المشاريع البحثية",
-    "metrics.verify":"التحقق من الشهادات",
-
-    "courses.eyebrow":"التعليم",
-    "courses.title":"الدورات الطبية",
-    "courses.text":"تعليم طبي نظري منظم مع شهادات إتمام.",
-
-    "research.eyebrow":"مركز نبض للأبحاث",
-    "research.title":"الأبحاث والمشاريع العلمية",
-    "research.text":"صفحات شفافة توضح ما إذا كان المشروع بروتوكولًا أو دراسة جارية أو عملًا مكتملًا.",
-
-    "verify.eyebrow":"التحقق من الشهادة",
-    "verify.title":"تحقق من أصالة شهادتك",
-    "verify.text":"أدخل رقم الشهادة كما يظهر تمامًا على شهادة الإتمام.",
-    "verify.button":"تحقق من الشهادة",
-    "verify.empty":"ستظهر نتيجة التحقق هنا.",
-
-    "achievements.eyebrow":"محطات وإنجازات",
-    "achievements.title":"الأبحاث والإنجازات",
-    "achievements.text":"محطات موثقة ونشاط بحثي وتكريمات منشورة بشفافية.",
-    "achievements.pendingTitle":"التكريم القائم على الدليل",
-    "achievements.pendingText":"لا يتم نشر الجوائز والتكريمات إلا بعد التحقق من مستنداتها.",
-
-    "about.eyebrow":"عن نبض",
-    "about.title":"تعليم طبي متاح بنتائج قابلة للتحقق",
-    "about.text":"أكاديمية نبض للعلوم الطبية مبادرة تعليمية تركز على الدورات الطبية النظرية، تطوير البحث العلمي، وشهادات الإتمام الشفافة.",
-    "about.transparency":"الشفافية الأكاديمية",
-    "about.disclaimer":"الشهادات هي شهادات إتمام ولا تمثل درجة جامعية أو اعتمادًا حكوميًا إلا إذا ذُكر ذلك صراحة مع توثيق رسمي.",
-
-    "cta.form":"ابدأ التعلم",
-    "cta.whatsapp":"واتساب",
-
-    "footer.tagline":"تعلّم • ابحث • تحقّق • تطوّر",
-    "footer.contact":"قنوات التواصل الرسمية"
+  ar: {
+    "nav.home":"الرئيسية","nav.courses":"الدورات","nav.research":"الأبحاث","nav.verify":"التحقق","nav.founder":"المؤسس","nav.about":"من نحن","nav.feedback":"الشكاوى والملاحظات","nav.login":"دخول الطالب",
+    "hero.eyebrow":"تعليم طبي • بحث علمي • تحقق من الشهادات","hero.text":"أكاديمية رقمية ثنائية اللغة للتعليم الطبي، تطوير الطلاب، المشاريع البحثية، والشهادات القابلة للتحقق.","hero.explore":"استكشف الدورات","hero.verify":"تحقق من شهادة",
+    "hero.bilingual":"العربية والإنجليزية","hero.bilingualSub":"تعليم ثنائي اللغة","hero.qr":"تحقق عبر QR","hero.qrSub":"شهادات قابلة للتحقق","hero.portal":"بوابة الطالب","hero.portalSub":"وصول رقمي",
+    "stats.courses":"الدورات الطبية","stats.research":"المشاريع البحثية","stats.verify":"التحقق من الشهادات","stats.online":"التعليم الرقمي",
+    "courses.eyebrow":"التعليم","courses.title":"الدورات الطبية","courses.text":"تعليم طبي نظري منظم مع شهادات إتمام.",
+    "verify.eyebrow":"التحقق من الشهادات","verify.title":"تحقق من أصالة شهادتك","verify.text":"أدخل رقم الشهادة كما يظهر عليها تمامًا.","verify.button":"تحقق من الشهادة","verify.empty":"ستظهر نتيجة التحقق هنا.",
+    "founder.label":"المؤسس والمدير","founder.role":"المؤسس والمدير — أكاديمية نبض للعلوم الطبية","founder.text":"يقود تطوير المنصة التعليمية الرقمية لأكاديمية نبض وبيئة التعليم الطبي والمبادرات البحثية ونظام التحقق الشفاف من الشهادات.","founder.tag1":"التعليم الطبي","founder.tag2":"تطوير البحث","founder.tag3":"التعليم الرقمي","founder.tag4":"التحقق من الشهادات","founder.visionTitle":"القيادة والرؤية","founder.visionText":"بناء بيئة رقمية متاحة وشفافة وقائمة على البحث للتعليم الطبي.",
+    "research.eyebrow":"مركز نبض للأبحاث","research.title":"الأبحاث والمشاريع العلمية","research.text":"صفحات شفافة للبروتوكولات والدراسات الجارية والأعمال المكتملة.","research.more":"استكشف الأبحاث ←",
+    "achievements.eyebrow":"محطات وإنجازات","achievements.title":"الأبحاث والإنجازات","achievements.text":"محطات موثقة ونشاط بحثي وتكريمات منشورة بشفافية.","achievements.researchTitle":"المشاريع البحثية","achievements.researchText":"بروتوكولات علمية وتطوير أبحاث طبية.","achievements.verifyTitle":"شهادات قابلة للتحقق","achievements.verifyText":"تحقق عام من الشهادة باستخدام الرقم ورمز QR.","achievements.pendingTitle":"تكريم قائم على الدليل","achievements.pendingText":"لا تُنشر الجوائز والتكريمات إلا بعد التحقق من مستنداتها.",
+    "about.eyebrow":"عن نبض","about.title":"تعليم طبي متاح بنتائج قابلة للتحقق","about.text":"أكاديمية نبض للعلوم الطبية مبادرة تعليمية تركز على الدورات الطبية النظرية وتطوير البحث العلمي وشهادات الإتمام الشفافة.","about.transparency":"الشفافية الأكاديمية","about.disclaimer":"الشهادات هي شهادات إتمام ولا تمثل درجة جامعية أو اعتمادًا حكوميًا إلا إذا ذُكر ذلك صراحة مع توثيق رسمي.",
+    "feedback.eyebrow":"الشكاوى والملاحظات","feedback.title":"نقدّر ملاحظاتك","feedback.text":"أرسل شكوى أو اقتراحًا أو مشكلة تقنية أو ملاحظة عامة.","feedback.name":"الاسم","feedback.email":"البريد الإلكتروني","feedback.type":"النوع","feedback.complaint":"شكوى","feedback.suggestion":"اقتراح","feedback.technical":"مشكلة تقنية","feedback.other":"أخرى","feedback.message":"الرسالة","feedback.send":"إرسال",
+    "cta.title":"طوّر معرفتك الطبية وابدأ التعلم اليوم.","cta.text":"تعلّم • ابحث • تحقّق • تطوّر","cta.start":"ابدأ التعلم","cta.whatsapp":"واتساب",
+    "footer.tagline":"تعلّم • ابحث • تحقّق • تطوّر","footer.portal":"بوابة الطالب","footer.policies":"السياسات","footer.contactTitle":"التواصل","footer.contact":"قنوات التواصل الرسمية","footer.bottom":"تعليم طبي • بحث علمي • تحقق"
   }
 };
 
+let lang = localStorage.getItem("nabd_lang") || "en";
+let courses = [];
+let research = [];
+let sampleCertificates = [];
 
-let lang=
-  localStorage.getItem('nabd_lang')||
-  'en';
+const $ = selector => document.querySelector(selector);
 
+const COURSE_IMAGES = {
+  "medical-terminology":"assets/images/medical-terminology.jpg",
+  "general-anatomy":"assets/images/anatomy.jpg",
+  "anatomy":"assets/images/anatomy.jpg",
+  "physiology":"assets/images/physiology.jpg",
+  "biochemistry":"assets/images/biochemistry.jpg",
+  "pathology":"assets/images/pathology.jpg"
+};
 
-const $=
-  selector=>
-    document.querySelector(selector);
-
-
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
+function esc(value=""){
+  return String(value).replace(/[&<>'"]/g, ch => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "'":"&#39;",
+    '"':"&quot;"
+  }[ch]));
+}
 
 async function loadJSON(path){
-
-  const response=
-    await fetch(path);
-
-  if(!response.ok){
-
-    throw new Error(
-      'Failed to load '+path
-    );
-
-  }
-
+  const response = await fetch(path, {cache:"no-store"});
+  if(!response.ok) throw new Error(`Failed to load ${path}`);
   return response.json();
-
 }
 
-
-function esc(value=''){
-
-  return String(value)
-    .replace(
-      /[&<>'"]/g,
-      char=>({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        "'":'&#39;',
-        '"':'&quot;'
-      }[char])
-    );
-
-}
-
-
-let courses=[];
-let research=[];
-let sampleCertificates=[];
-
-
-/* =========================================================
-   COURSE IMAGES
-   ========================================================= */
-
-const COURSE_IMAGES={
-
-  'medical-terminology':
-    'assets/images/medical-terminology.jpg',
-
-  'general-anatomy':
-    'assets/images/anatomy.jpg',
-
-  'anatomy':
-    'assets/images/anatomy.jpg',
-
-  'physiology':
-    'assets/images/physiology.jpg',
-
-  'biochemistry':
-    'assets/images/biochemistry.jpg',
-
-  'pathology':
-    'assets/images/pathology.jpg'
-
-};
-
-
-function normalizeCourseKey(course){
-
+function courseKey(course){
   return String(
-    course?.slug||
-    course?.id||
-    course?.title_en||
-    course?.title||
-    ''
+    course?.slug ||
+    course?.id ||
+    course?.title_en ||
+    course?.title ||
+    ""
   )
-  .trim()
-  .toLowerCase()
-  .replace(/&/g,'and')
-  .replace(/[^a-z0-9]+/g,'-')
-  .replace(/^-+|-+$/g,'');
-
+    .trim()
+    .toLowerCase()
+    .replace(/&/g,"and")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"");
 }
-
 
 function courseImage(course){
+  const key = courseKey(course);
 
-  const key=
-    normalizeCourseKey(course);
+  if(COURSE_IMAGES[key]) return COURSE_IMAGES[key];
 
+  const title = String(
+    course?.title_en ||
+    course?.title ||
+    ""
+  ).toLowerCase();
 
-  if(COURSE_IMAGES[key]){
-
-    return COURSE_IMAGES[key];
-
+  if(title.includes("terminology")){
+    return COURSE_IMAGES["medical-terminology"];
   }
 
-
-  const title=
-    String(
-      course?.title_en||
-      course?.title||
-      ''
-    )
-    .toLowerCase();
-
-
-  if(title.includes('terminology')){
-
-    return COURSE_IMAGES[
-      'medical-terminology'
-    ];
-
+  if(title.includes("anatom")){
+    return COURSE_IMAGES["anatomy"];
   }
 
-
-  if(title.includes('anatom')){
-
-    return COURSE_IMAGES[
-      'anatomy'
-    ];
-
+  if(title.includes("physio")){
+    return COURSE_IMAGES["physiology"];
   }
 
-
-  if(title.includes('physio')){
-
-    return COURSE_IMAGES[
-      'physiology'
-    ];
-
+  if(title.includes("biochem")){
+    return COURSE_IMAGES["biochemistry"];
   }
 
-
-  if(title.includes('biochem')){
-
-    return COURSE_IMAGES[
-      'biochemistry'
-    ];
-
+  if(title.includes("patholog")){
+    return COURSE_IMAGES["pathology"];
   }
 
-
-  if(title.includes('patholog')){
-
-    return COURSE_IMAGES[
-      'pathology'
-    ];
-
-  }
-
-
-  return 'assets/images/hero-medical.jpg';
-
+  return "assets/images/hero-medical.jpg";
 }
-
-
-/* =========================================================
-   LOAD PUBLIC DATA
-   ========================================================= */
 
 async function loadPublicData(){
 
   if(window.nabdSupabase){
 
+    try{
 
-    const [
-      {
-        data:c,
-        error:ce
-      },
-      {
-        data:r,
-        error:re
+      const [courseRes, researchRes] = await Promise.all([
+
+        window.nabdSupabase
+          .from("courses")
+          .select("*")
+          .eq("status","active")
+          .order("created_at"),
+
+        window.nabdSupabase
+          .from("research_projects")
+          .select("*")
+          .eq("published",true)
+          .order("project_no")
+
+      ]);
+
+      if(
+        !courseRes.error &&
+        Array.isArray(courseRes.data)
+      ){
+        courses = courseRes.data.map(x => ({
+          ...x,
+          id:x.slug,
+          level:x.level_en
+        }));
       }
-    ]=
-    await Promise.all([
 
+      if(
+        !researchRes.error &&
+        Array.isArray(researchRes.data)
+      ){
+        research = researchRes.data.map(x => ({
+          ...x,
+          id:x.slug,
+          title:x.title_en,
+          subtitle:x.subtitle_en,
+          summary:x.summary_en
+        }));
+      }
 
-      window.nabdSupabase
-        .from('courses')
-        .select('*')
-        .eq('status','active')
-        .order('created_at'),
-
-
-      window.nabdSupabase
-        .from('research_projects')
-        .select('*')
-        .eq('published',true)
-        .order('project_no')
-
-
-    ]);
-
-
-    if(
-      !ce &&
-      Array.isArray(c)
-    ){
-
-      courses=
-        c.map(
-          x=>({
-
-            ...x,
-
-            id:x.slug,
-
-            level:x.level_en,
-
-            status:x.status
-
-          })
-        );
-
-    }
-
-
-    if(
-      !re &&
-      Array.isArray(r)
-    ){
-
-      research=
-        r.map(
-          x=>({
-
-            ...x,
-
-            id:x.slug,
-
-            slug:x.slug,
-
-            project_no:x.project_no,
-
-            title:x.title_en,
-
-            subtitle:x.subtitle_en,
-
-            field:x.field,
-
-            status:x.status,
-
-            summary:x.summary_en,
-
-            title_ar:x.title_ar,
-
-            summary_ar:x.summary_ar
-
-          })
-        );
-
+    }catch(error){
+      console.error(
+        "Supabase public-data error:",
+        error
+      );
     }
 
   }
-
 
   if(!courses.length){
-
-    courses=
-      await loadJSON(
-        'data/courses.json'
+    try{
+      courses = await loadJSON(
+        "data/courses.json?v=10"
       );
-
+    }catch(error){
+      console.error(error);
+    }
   }
-
 
   if(!research.length){
-
-    research=
-      await loadJSON(
-        'data/research.json'
+    try{
+      research = await loadJSON(
+        "data/research.json?v=10"
       );
-
+    }catch(error){
+      console.error(error);
+    }
   }
-
 
   try{
 
-    sampleCertificates=
-      await loadJSON(
-        'data/certificates.sample.json'
-      );
+    sampleCertificates = await loadJSON(
+      "data/certificates.sample.json?v=10"
+    );
 
   }catch(_){
 
-    sampleCertificates=[];
+    sampleCertificates = [];
 
   }
 
 }
 
+function applyLanguage(){
 
-/* =========================================================
-   LANGUAGE
-   ========================================================= */
+  document.documentElement.lang = lang;
 
-function applyLang(){
-
-  document.documentElement.lang=
-    lang;
-
-  document.documentElement.dir=
-    lang==='ar'
-      ?'rtl'
-      :'ltr';
-
+  document.documentElement.dir =
+    lang === "ar"
+      ? "rtl"
+      : "ltr";
 
   document
-    .querySelectorAll(
-      '[data-i18n]'
-    )
-    .forEach(
-      element=>{
+    .querySelectorAll("[data-i18n]")
+    .forEach(el => {
 
-        const key=
-          element.dataset.i18n;
+      const key = el.dataset.i18n;
 
-        if(
-          i18n[lang]?.[key]
-        ){
+      const text =
+        I18N[lang]?.[key];
 
-          element.textContent=
-            i18n[lang][key];
-
-        }
-
+      if(text){
+        el.textContent = text;
       }
-    );
 
+    });
 
-  const langButton=
-    $('#langBtn');
+  const langBtn = $("#langBtn");
 
+  if(langBtn){
 
-  if(langButton){
-
-    langButton.textContent=
-      lang==='en'
-        ?'العربية'
-        :'English';
+    langBtn.textContent =
+      lang === "en"
+        ? "العربية"
+        : "English";
 
   }
-
 
   renderDynamic();
 
@@ -477,594 +242,378 @@ function applyLang(){
 
 }
 
-
-/* =========================================================
-   COURSES + RESEARCH
-   ========================================================= */
-
 function renderDynamic(){
 
-  const courseGrid=
-    $('#courseGrid');
-
+  const courseGrid = $("#courseGrid");
 
   if(courseGrid){
 
-    courseGrid.innerHTML=
-      courses
-      .map(
-        (
-          course,
-          index
-        )=>{
+    courseGrid.innerHTML = courses
+      .map((course,index) => {
 
+        const title =
+          lang === "ar"
+            ? (
+              course.title_ar ||
+              course.title_en ||
+              course.title ||
+              ""
+            )
+            : (
+              course.title_en ||
+              course.title ||
+              ""
+            );
 
-          const title=
-            lang==='ar'
-              ?(
-                course.title_ar||
-                course.title_en||
-                course.title
-              )
-              :(
-                course.title_en||
-                course.title||
-                ''
-              );
+        const description =
+          lang === "ar"
+            ? (
+              course.description_ar ||
+              course.description_en ||
+              course.description ||
+              ""
+            )
+            : (
+              course.description_en ||
+              course.description ||
+              ""
+            );
 
+        const level =
+          lang === "ar"
+            ? (
+              course.level_ar ||
+              course.level_en ||
+              course.level ||
+              ""
+            )
+            : (
+              course.level_en ||
+              course.level ||
+              ""
+            );
 
-          const description=
-            lang==='ar'
-              ?(
-                course.description_ar||
-                course.description_en||
-                ''
-              )
-              :(
-                course.description_en||
-                course.description||
-                ''
-              );
+        const slug =
+          course.slug ||
+          course.id ||
+          "";
 
+        return `
+          <article class="course-card">
 
-          const level=
-            lang==='ar'
-              ?(
-                course.level_ar||
-                course.level||
-                ''
-              )
-              :(
-                course.level_en||
-                course.level||
-                ''
-              );
+            <div class="course-media">
 
-
-          const slug=
-            course.slug||
-            course.id||
-            '';
-
-
-          const image=
-            courseImage(course);
-
-
-          return `
-
-            <article
-              class="course-card"
-            >
-
-
-              <div
-                class="course-media"
+              <img
+                src="${esc(courseImage(course))}"
+                alt="${esc(title)}"
+                loading="lazy"
+                decoding="async"
               >
 
-                <img
-                  src="${esc(image)}"
-                  alt="${esc(title)}"
-                  loading="lazy"
-                  decoding="async"
-                >
-
-
-                <span
-                  class="course-index"
-                >
-                  ${
-                    String(
-                      index+1
-                    )
-                    .padStart(
-                      2,
-                      '0'
-                    )
-                  }
-                </span>
-
-              </div>
-
-
-
-              <span class="badge">
-
-                ${
-                  esc(
-                    course.status||
-                    'active'
-                  )
-                }
-
+              <span class="course-index">
+                ${String(index+1).padStart(2,"0")}
               </span>
 
+            </div>
 
+            <span class="badge">
+              ${esc(course.status || "active")}
+            </span>
 
-              <h3>
+            <h3>
+              ${esc(title)}
+            </h3>
 
-                ${esc(title)}
+            <p>
+              ${esc(description)}
+            </p>
 
-              </h3>
+            <div class="meta">
 
+              <span>
+                ${esc(course.hours || "")}
+                ${lang === "ar" ? "ساعة" : "hrs"}
+              </span>
 
+              ${
+                level
+                  ? `<span>${esc(level)}</span>`
+                  : ""
+              }
 
-              <p>
+            </div>
 
-                ${esc(description)}
+            <div class="card-actions">
 
-              </p>
-
-
-
-              <div class="meta">
-
-                <span>
-
-                  ${
-                    esc(
-                      course.hours||
-                      ''
-                    )
-                  }
-
-                  ${
-                    lang==='ar'
-                      ?'ساعة'
-                      :'hrs'
-                  }
-
-                </span>
-
-
-                <span>
-
-                  ${esc(level)}
-
-                </span>
-
-              </div>
-
-
-
-              <div
-                class="card-actions"
+              <a
+                class="text-link"
+                href="course.html?id=${encodeURIComponent(slug)}"
               >
+                ${lang === "ar" ? "التفاصيل" : "Details"} →
+              </a>
 
+              <a
+                class="text-link"
+                href="enroll.html?course=${encodeURIComponent(slug)}"
+              >
+                ${lang === "ar" ? "التسجيل" : "Enroll"} →
+              </a>
 
-                <a
-                  class="text-link"
-                  href="course.html?id=${encodeURIComponent(slug)}"
-                >
+            </div>
 
-                  ${
-                    lang==='ar'
-                      ?'التفاصيل'
-                      :'Details'
-                  }
+          </article>
+        `;
 
-                  →
-
-                </a>
-
-
-                <a
-                  class="text-link"
-                  href="enroll.html?course=${encodeURIComponent(slug)}"
-                >
-
-                  ${
-                    lang==='ar'
-                      ?'التسجيل'
-                      :'Enroll'
-                  }
-
-                  →
-
-                </a>
-
-
-              </div>
-
-
-            </article>
-
-          `;
-
-        }
-      )
-      .join('');
+      })
+      .join("");
 
   }
 
 
-
-  const researchGrid=
-    $('#researchGrid');
-
+  const researchGrid = $("#researchGrid");
 
   if(researchGrid){
 
-    researchGrid.innerHTML=
-      research
-      .map(
-        item=>{
+    researchGrid.innerHTML = research
+      .map(item => {
 
+        const title =
+          lang === "ar"
+            ? (
+              item.title_ar ||
+              item.title ||
+              ""
+            )
+            : (
+              item.title ||
+              ""
+            );
 
-          const title=
-            lang==='ar'
-              ?(
-                item.title_ar||
-                item.title
-              )
-              :(
-                item.title||
-                ''
-              );
+        const summary =
+          lang === "ar"
+            ? (
+              item.summary_ar ||
+              item.summary ||
+              ""
+            )
+            : (
+              item.summary ||
+              ""
+            );
 
+        const subtitle =
+          lang === "ar"
+            ? (
+              item.subtitle_ar ||
+              item.subtitle ||
+              ""
+            )
+            : (
+              item.subtitle ||
+              ""
+            );
 
-          const summary=
-            lang==='ar'
-              ?(
-                item.summary_ar||
-                item.summary
-              )
-              :(
-                item.summary||
-                ''
-              );
+        const slug =
+          item.slug ||
+          item.id ||
+          "";
 
+        return `
+          <article class="research-card">
 
-          const slug=
-            item.slug||
-            item.id||
-            '';
+            <div class="project-no">
+              ${esc(item.project_no || "")}
+            </div>
 
+            <div>
 
-          return `
+              <span class="badge">
+                ${esc(item.status || "")}
+              </span>
 
-            <article
-              class="research-card"
-            >
+              <h3>
+                ${esc(title)}
+              </h3>
 
+              ${
+                subtitle
+                  ? `<h4>${esc(subtitle)}</h4>`
+                  : ""
+              }
 
-              <div
-                class="project-no"
+              <p>
+                ${esc(summary)}
+              </p>
+
+              <div class="meta">
+
+                ${
+                  item.field
+                    ? `<span>${esc(item.field)}</span>`
+                    : ""
+                }
+
+              </div>
+
+              <a
+                class="text-link"
+                href="research.html?id=${encodeURIComponent(slug)}"
               >
+                ${lang === "ar" ? "عرض المشروع" : "View project"} →
+              </a>
 
-                ${
-                  esc(
-                    item.project_no||
-                    ''
-                  )
-                }
+            </div>
 
-              </div>
+          </article>
+        `;
 
-
-
-              <div>
-
-
-                <span class="badge">
-
-                  ${
-                    esc(
-                      item.status||
-                      ''
-                    )
-                  }
-
-                </span>
-
-
-
-                <h3>
-
-                  ${esc(title)}
-
-                </h3>
-
-
-
-                ${
-                  item.subtitle
-                  ?`
-                    <h4>
-                      ${esc(item.subtitle)}
-                    </h4>
-                  `
-                  :''
-                }
-
-
-
-                <p>
-
-                  ${esc(summary)}
-
-                </p>
-
-
-
-                <div class="meta">
-
-                  <span>
-
-                    ${
-                      esc(
-                        item.field||
-                        ''
-                      )
-                    }
-
-                  </span>
-
-                </div>
-
-
-
-                <a
-                  class="text-link"
-                  href="research.html?id=${encodeURIComponent(slug)}"
-                >
-
-                  ${
-                    lang==='ar'
-                      ?'عرض المشروع'
-                      :'View project'
-                  }
-
-                  →
-
-                </a>
-
-
-              </div>
-
-
-            </article>
-
-          `;
-
-        }
-      )
-      .join('');
+      })
+      .join("");
 
   }
 
 
-
-  const courseCount=
-    $('#courseCount');
-
+  const courseCount = $("#courseCount");
 
   if(courseCount){
 
-    courseCount.textContent=
-      courses.length;
+    courseCount.textContent =
+      courses.length || "5";
 
   }
 
 
-
-  const researchCount=
-    $('#researchCount');
-
+  const researchCount = $("#researchCount");
 
   if(researchCount){
 
-    researchCount.textContent=
-      research.length;
+    researchCount.textContent =
+      research.length || "2";
 
   }
 
 }
-
-
-/* =========================================================
-   CONTACT
-   ========================================================= */
 
 function renderContact(){
 
-  const config=
-    window.NABD_CONFIG||
-    {};
+  const cfg =
+    window.NABD_CONFIG || {};
 
+  const wa =
+    cfg.contact?.whatsapp;
 
-  const whatsapp=
-    config.contact?.whatsapp;
-
-
-  const whatsappButton=
-    $('#whatsappCta');
-
+  const waBtn =
+    $("#whatsappCta");
 
   if(
-    whatsappButton &&
-    whatsapp &&
-    whatsapp!=='TO_CONFIRM'
+    waBtn &&
+    wa &&
+    wa !== "TO_CONFIRM"
   ){
 
-    whatsappButton.classList.remove(
-      'disabled'
+    waBtn.classList.remove("disabled");
+
+    waBtn.removeAttribute(
+      "aria-disabled"
     );
 
-    whatsappButton.removeAttribute(
-      'aria-disabled'
-    );
-
-    whatsappButton.href=
-      `https://wa.me/${
-        whatsapp.replace(
-          /\D/g,
-          ''
-        )
-      }`;
+    waBtn.href =
+      `https://wa.me/${wa.replace(/\D/g,"")}`;
 
   }
 
 
+  const box =
+    $("#contactBlock");
 
-  const contactBox=
-    $('#contactBlock');
-
-
-  if(!contactBox){
-
-    return;
-
-  }
+  if(!box) return;
 
 
-  const lines=[];
+  const lines = [];
 
 
   if(
-    config.contact?.email &&
-    config.contact.email!=='TO_CONFIRM'
+    cfg.contact?.email &&
+    cfg.contact.email !== "TO_CONFIRM"
   ){
 
     lines.push(
-
-      `<a href="mailto:${esc(config.contact.email)}">
-        ${esc(config.contact.email)}
-      </a>`
-
+      `<a href="mailto:${esc(cfg.contact.email)}">${esc(cfg.contact.email)}</a>`
     );
 
   }
 
 
   if(
-    whatsapp &&
-    whatsapp!=='TO_CONFIRM'
+    wa &&
+    wa !== "TO_CONFIRM"
   ){
 
     lines.push(
-
-      `<a href="https://wa.me/${whatsapp.replace(/\D/g,'')}">
-        WhatsApp: ${esc(whatsapp)}
-      </a>`
-
+      `<a href="https://wa.me/${wa.replace(/\D/g,"")}">WhatsApp: ${esc(wa)}</a>`
     );
 
   }
 
 
   if(
-    config.contact?.telegram &&
-    config.contact.telegram!=='TO_CONFIRM'
+    cfg.contact?.telegram &&
+    cfg.contact.telegram !== "TO_CONFIRM"
   ){
 
     lines.push(
-
-      `<span>
-        Telegram:
-        ${esc(config.contact.telegram)}
-      </span>`
-
+      `<span>Telegram: ${esc(cfg.contact.telegram)}</span>`
     );
 
   }
 
 
-  contactBox.innerHTML=
+  box.innerHTML = `
+    <strong>
+      ${esc(I18N[lang]["footer.contactTitle"])}
+    </strong>
 
-    `
-      <strong>
-        ${
-          lang==='ar'
-            ?'التواصل'
-            :'Contact'
-        }
-      </strong>
-
-      ${
-        lines.length
-          ?lines.join('')
-          :i18n[lang]['footer.contact']
-      }
-    `;
+    ${
+      lines.length
+        ? lines.join("")
+        : `<span>${esc(I18N[lang]["footer.contact"])}</span>`
+    }
+  `;
 
 }
 
-
-/* =========================================================
-   PDF LIBRARY
-   ========================================================= */
-
 async function ensureJsPDF(){
 
-  if(
-    window.jspdf?.jsPDF
-  ){
-
+  if(window.jspdf?.jsPDF){
     return window.jspdf.jsPDF;
-
   }
 
 
   await new Promise(
-    (
-      resolve,
-      reject
-    )=>{
+    (resolve,reject) => {
 
+      const script =
+        document.createElement("script");
 
-      const script=
-        document.createElement(
-          'script'
-        );
+      script.src =
+        "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js";
 
-
-      script.src=
-        'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
-
-
-      script.onload=
+      script.onload =
         resolve;
 
-
-      script.onerror=
+      script.onerror =
         reject;
 
-
-      document.head.appendChild(
-        script
-      );
+      document.head.appendChild(script);
 
     }
   );
 
 
-  if(
-    !window.jspdf?.jsPDF
-  ){
+  if(!window.jspdf?.jsPDF){
 
     throw new Error(
-      'jsPDF library failed to load'
+      "jsPDF failed to load"
     );
 
   }
@@ -1074,415 +623,269 @@ async function ensureJsPDF(){
 
 }
 
-
 async function imageToDataURL(url){
 
-  const response=
+  const response =
     await fetch(url);
-
 
   if(!response.ok){
 
     throw new Error(
-      'Certificate image not found'
+      "Certificate image not found"
     );
 
   }
 
 
-  const blob=
+  const blob =
     await response.blob();
 
 
   return new Promise(
-    (
-      resolve,
-      reject
-    )=>{
+    (resolve,reject) => {
 
-
-      const reader=
+      const reader =
         new FileReader();
 
+      reader.onload =
+        () => resolve(reader.result);
 
-      reader.onload=
-        ()=>resolve(
-          reader.result
-        );
-
-
-      reader.onerror=
+      reader.onerror =
         reject;
 
-
-      reader.readAsDataURL(
-        blob
-      );
+      reader.readAsDataURL(blob);
 
     }
   );
 
 }
 
+async function verifyCertificate(id){
 
-/* =========================================================
-   CERTIFICATE VERIFICATION
-   ========================================================= */
-
-async function verify(id){
-
-  const box=
-    $('#verifyResult');
-
+  const box =
+    $("#verifyResult");
 
   if(
-    !box||
+    !box ||
     !id
-  ){
-
-    return;
-
-  }
+  ) return;
 
 
-  box.className=
-    'verify-result empty';
+  box.className =
+    "verify-result empty";
+
+  box.textContent =
+    lang === "ar"
+      ? "جاري التحقق…"
+      : "Checking…";
 
 
-  box.textContent=
-    lang==='ar'
-      ?'جاري التحقق…'
-      :'Checking…';
+  let hit = null;
 
 
-  let hit=null;
-
-
-  if(
-    window.nabdSupabase
-  ){
-
+  if(window.nabdSupabase){
 
     try{
 
-
-      const {
-        data,
-        error
-      }=
-      await window.nabdSupabase.rpc(
-
-        'verify_certificate',
-
-        {
-          input_certificate_id:id
-        }
-
-      );
-
-
-      if(error){
-
-        console.error(
-          'Certificate verification error:',
-          error
+      const {data,error} =
+        await window.nabdSupabase.rpc(
+          "verify_certificate",
+          {
+            input_certificate_id:id
+          }
         );
-
-      }
-
 
       if(
         !error &&
         Array.isArray(data) &&
         data.length
       ){
-
-        hit=data[0];
-
+        hit = data[0];
       }
 
+      if(error){
+        console.error(error);
+      }
 
     }catch(error){
 
-
-      console.error(
-        'Certificate verification error:',
-        error
-      );
-
+      console.error(error);
 
     }
-
-
-  }else{
-
-
-    hit=
-      sampleCertificates
-      .find(
-        item=>
-
-          String(
-            item.certificate_id||
-            ''
-          )
-          .toLowerCase()
-
-          ===
-
-          id.toLowerCase()
-
-      );
-
 
   }
 
 
   if(!hit){
 
+    hit =
+      sampleCertificates.find(
+        x =>
+          String(
+            x.certificate_id || ""
+          ).toLowerCase() ===
+          id.toLowerCase()
+      ) || null;
 
-    box.className=
-      'verify-result invalid';
+  }
 
 
-    box.innerHTML=`
+  if(!hit){
 
+    box.className =
+      "verify-result invalid";
+
+    box.innerHTML = `
       <strong>
-
         ${
-          lang==='ar'
-            ?'لم يتم العثور على الشهادة'
-            :'Certificate not found'
+          lang === "ar"
+            ? "لم يتم العثور على الشهادة"
+            : "Certificate not found"
         }
-
       </strong>
 
-
       <p>
-
         ${
-          lang==='ar'
-            ?'تحقق من الرقم أو تواصل مع الأكاديمية.'
-            :'Check the certificate ID or contact the academy.'
+          lang === "ar"
+            ? "تحقق من الرقم أو تواصل مع الأكاديمية."
+            : "Check the certificate ID or contact the academy."
         }
-
       </p>
-
     `;
-
 
     return;
 
   }
 
 
-
-  const valid=
-
+  const valid =
     String(
-      hit.status||
-      ''
-    )
-    .toLowerCase()
-
-    ===
-
-    'valid';
+      hit.status || ""
+    ).toLowerCase() === "valid";
 
 
-
-  const verificationUrl=
-
+  const verificationUrl =
     `${location.origin}${location.pathname}?certificate=${encodeURIComponent(hit.certificate_id)}#verify`;
 
 
-
-  const certificateImageUrl=
-
+  const imageUrl =
     `assets/certificates/${encodeURIComponent(hit.certificate_id)}.jpg`;
 
 
-
-  box.className=
-
-    `verify-result ${
-      valid
-        ?'valid'
-        :'invalid'
-    }`;
+  box.className =
+    `verify-result ${valid ? "valid" : "invalid"}`;
 
 
-
-  box.innerHTML=`
+  box.innerHTML = `
 
     <span class="status-pill">
-
       ${
         valid
-
-          ?(
-            lang==='ar'
-              ?'صالحة ✓'
-              :'VALID ✓'
+          ? (
+            lang === "ar"
+              ? "صالحة ✓"
+              : "VALID ✓"
           )
-
-          :(
-            lang==='ar'
-              ?'ملغاة'
-              :'REVOKED'
+          : (
+            lang === "ar"
+              ? "ملغاة"
+              : "REVOKED"
           )
       }
-
     </span>
 
 
-
     <h3>
-
-      ${
-        esc(
-          hit.public_name||
-          hit.student_name||
-          ''
-        )
-      }
-
+      ${esc(
+        hit.public_name ||
+        hit.student_name ||
+        ""
+      )}
     </h3>
 
 
-
     <p>
-
       <strong>
-
-        ${
-          esc(
-            hit.course_title||
-            hit.course||
-            ''
-          )
-        }
-
+        ${esc(
+          hit.course_title ||
+          hit.course ||
+          ""
+        )}
       </strong>
-
     </p>
-
 
 
     <dl>
 
-
       <div>
-
-        <dt>
-          ID
-        </dt>
-
-        <dd>
-          ${esc(hit.certificate_id)}
-        </dd>
-
+        <dt>ID</dt>
+        <dd>${esc(hit.certificate_id)}</dd>
       </div>
 
-
+      <div>
+        <dt>
+          ${lang === "ar" ? "الساعات" : "Hours"}
+        </dt>
+        <dd>
+          ${esc(hit.hours || "")}
+        </dd>
+      </div>
 
       <div>
-
         <dt>
-
           ${
-            lang==='ar'
-              ?'الساعات'
-              :'Hours'
+            lang === "ar"
+              ? "تاريخ الإصدار"
+              : "Issue date"
           }
-
         </dt>
-
         <dd>
-          ${esc(hit.hours||'')}
+          ${esc(hit.issue_date || "")}
         </dd>
-
       </div>
-
-
-
-      <div>
-
-        <dt>
-
-          ${
-            lang==='ar'
-              ?'تاريخ الإصدار'
-              :'Issue date'
-          }
-
-        </dt>
-
-        <dd>
-          ${esc(hit.issue_date||'')}
-        </dd>
-
-      </div>
-
 
     </dl>
 
 
-
-    <div
-      class="certificate-preview-wrap"
-    >
+    <div class="certificate-preview-wrap">
 
       <img
         id="certificateImage"
-        src="${certificateImageUrl}"
+        src="${imageUrl}"
         alt="NABD Certificate ${esc(hit.certificate_id)}"
         loading="lazy"
-        decoding="async"
       >
 
     </div>
 
 
-
-    <div
-      class="certificate-actions"
-    >
-
+    <div class="certificate-actions">
 
       <a
         id="viewCertificate"
-        href="${certificateImageUrl}"
+        href="${imageUrl}"
         target="_blank"
         rel="noopener"
       >
-
         ${
-          lang==='ar'
-            ?'عرض الشهادة'
-            :'View Certificate'
+          lang === "ar"
+            ? "عرض الشهادة"
+            : "View Certificate"
         }
-
       </a>
-
-
 
       <button
         id="downloadCertificatePdf"
         type="button"
       >
-
         ${
-          lang==='ar'
-            ?'تنزيل الشهادة PDF'
-            :'Download Certificate PDF'
+          lang === "ar"
+            ? "تنزيل الشهادة PDF"
+            : "Download Certificate PDF"
         }
-
       </button>
 
-
     </div>
-
 
 
     <div
@@ -1491,808 +894,511 @@ async function verify(id){
     ></div>
 
 
-
     <button
       class="text-btn"
       id="copyVerifyLink"
       type="button"
     >
-
       ${
-        lang==='ar'
-          ?'نسخ رابط التحقق'
-          :'Copy verification link'
+        lang === "ar"
+          ? "نسخ رابط التحقق"
+          : "Copy verification link"
       }
-
     </button>
 
   `;
 
 
+  const certificateImage =
+    $("#certificateImage");
 
-  const certificateImage=
-    $('#certificateImage');
+  const pdfButton =
+    $("#downloadCertificatePdf");
 
-
-  const pdfButton=
-    $('#downloadCertificatePdf');
-
-
-  const viewButton=
-    $('#viewCertificate');
+  const viewButton =
+    $("#viewCertificate");
 
 
   if(certificateImage){
 
+    certificateImage.onerror =
+      () => {
 
-    certificateImage.onerror=
-      ()=>{
-
-
-        certificateImage.style.display=
-          'none';
-
+        certificateImage.style.display =
+          "none";
 
         if(pdfButton){
-
-          pdfButton.style.display=
-            'none';
-
+          pdfButton.style.display =
+            "none";
         }
-
 
         if(viewButton){
-
-          viewButton.style.display=
-            'none';
-
+          viewButton.style.display =
+            "none";
         }
-
 
       };
 
+  }
+
+
+  const qr =
+    $("#verifyQr");
+
+  if(
+    qr &&
+    window.QRCode
+  ){
+
+    new QRCode(
+      qr,
+      {
+        text:verificationUrl,
+        width:128,
+        height:128
+      }
+    );
 
   }
 
 
-
-  if(window.QRCode){
-
-
-    const qrElement=
-      $('#verifyQr');
-
-
-    if(qrElement){
-
-
-      new QRCode(
-
-        qrElement,
-
-        {
-
-          text:verificationUrl,
-
-          width:128,
-
-          height:128
-
-        }
-
-      );
-
-
-    }
-
-
-  }
-
-
-
-  const copyButton=
-    $('#copyVerifyLink');
-
+  const copyButton =
+    $("#copyVerifyLink");
 
   if(copyButton){
 
-
-    copyButton.onclick=
-      async()=>{
-
+    copyButton.onclick =
+      async () => {
 
         try{
 
+          await navigator.clipboard.writeText(
+            verificationUrl
+          );
 
-          await navigator
-            .clipboard
-            .writeText(
-              verificationUrl
-            );
-
-
-          copyButton.textContent=
-
-            lang==='ar'
-              ?'تم النسخ ✓'
-              :'Copied ✓';
-
+          copyButton.textContent =
+            lang === "ar"
+              ? "تم النسخ ✓"
+              : "Copied ✓";
 
         }catch(error){
 
-
-          console.error(
-            'Clipboard error:',
-            error
-          );
-
+          console.error(error);
 
         }
 
-
       };
 
-
   }
-
 
 
   if(pdfButton){
 
+    pdfButton.onclick =
+      async () => {
 
-    pdfButton.onclick=
-      async()=>{
-
-
-        const originalText=
+        const original =
           pdfButton.textContent;
-
 
         try{
 
+          pdfButton.disabled =
+            true;
 
-          pdfButton.disabled=true;
-
-
-          pdfButton.textContent=
-
-            lang==='ar'
-              ?'جاري إنشاء PDF…'
-              :'Creating PDF…';
+          pdfButton.textContent =
+            lang === "ar"
+              ? "جاري إنشاء PDF…"
+              : "Creating PDF…";
 
 
-
-          const dataUrl=
-
+          const dataUrl =
             await imageToDataURL(
-              certificateImageUrl
+              imageUrl
             );
 
 
-
-          const image=
+          const image =
             new Image();
 
-
-          image.src=
+          image.src =
             dataUrl;
 
 
-
           await new Promise(
+            (resolve,reject) => {
 
-            (
-              resolve,
-              reject
-            )=>{
-
-
-              image.onload=
+              image.onload =
                 resolve;
 
-
-              image.onerror=
+              image.onerror =
                 reject;
 
-
             }
-
           );
 
 
-
-          const jsPDF=
+          const jsPDF =
             await ensureJsPDF();
 
 
-
-          const orientation=
-
-            image.width>=image.height
-              ?'landscape'
-              :'portrait';
+          const orientation =
+            image.width >= image.height
+              ? "landscape"
+              : "portrait";
 
 
-
-          const pdf=
-
+          const pdf =
             new jsPDF({
-
               orientation,
-
-              unit:'mm',
-
-              format:'a4'
-
+              unit:"mm",
+              format:"a4"
             });
 
 
+          const pw =
+            pdf.internal.pageSize.getWidth();
 
-          const pageWidth=
-
-            pdf
-            .internal
-            .pageSize
-            .getWidth();
+          const ph =
+            pdf.internal.pageSize.getHeight();
 
 
-
-          const pageHeight=
-
-            pdf
-            .internal
-            .pageSize
-            .getHeight();
+          const margin = 5;
 
 
-
-          const margin=5;
-
-
-          const availableWidth=
-
-            pageWidth-
-            (
-              margin*2
-            );
-
-
-          const availableHeight=
-
-            pageHeight-
-            (
-              margin*2
-            );
-
-
-          const ratio=
-
+          const ratio =
             Math.min(
-
-              availableWidth/
-              image.width,
-
-              availableHeight/
-              image.height
-
+              (pw - margin*2) / image.width,
+              (ph - margin*2) / image.height
             );
 
 
-          const width=
+          const w =
+            image.width * ratio;
 
-            image.width*
-            ratio;
-
-
-          const height=
-
-            image.height*
-            ratio;
-
-
-          const x=
-
-            (
-              pageWidth-
-              width
-            )/2;
-
-
-          const y=
-
-            (
-              pageHeight-
-              height
-            )/2;
-
+          const h =
+            image.height * ratio;
 
 
           pdf.addImage(
-
             dataUrl,
-
-            'JPEG',
-
-            x,
-
-            y,
-
-            width,
-
-            height,
-
+            "JPEG",
+            (pw - w) / 2,
+            (ph - h) / 2,
+            w,
+            h,
             undefined,
-
-            'FAST'
-
+            "FAST"
           );
-
 
 
           pdf.save(
-
             `${hit.certificate_id}.pdf`
-
           );
-
 
         }catch(error){
 
-
-          console.error(
-            'PDF generation error:',
-            error
-          );
-
+          console.error(error);
 
           alert(
-
-            lang==='ar'
-              ?'تعذر إنشاء ملف PDF. حاول مرة أخرى.'
-              :'Could not create the PDF. Please try again.'
-
+            lang === "ar"
+              ? "تعذر إنشاء ملف PDF. حاول مرة أخرى."
+              : "Could not create the PDF. Please try again."
           );
-
 
         }finally{
 
+          pdfButton.disabled =
+            false;
 
-          pdfButton.disabled=false;
-
-
-          pdfButton.textContent=
-            originalText;
-
+          pdfButton.textContent =
+            original;
 
         }
 
-
       };
-
 
   }
 
 }
 
-
-/* =========================================================
-   COMPLAINTS & FEEDBACK
-   ========================================================= */
-
 async function submitFeedback(){
 
-  const form=
-    $('#feedbackForm');
+  const status =
+    $("#feedbackStatus");
 
-
-  const status=
-    $('#feedbackStatus');
-
+  const form =
+    $("#feedbackForm");
 
   if(
-    !form||
-    !status
-  ){
-
-    return;
-
-  }
+    !status ||
+    !form
+  ) return;
 
 
-
-  const name=
-
-    $('#feedbackName')
+  const message =
+    $("#feedbackMessage")
       ?.value
-      .trim()||
-    '';
-
-
-
-  const email=
-
-    $('#feedbackEmail')
-      ?.value
-      .trim()||
-    '';
-
-
-
-  const category=
-
-    $('#feedbackCategory')
-      ?.value||
-    'other';
-
-
-
-  const message=
-
-    $('#feedbackMessage')
-      ?.value
-      .trim()||
-    '';
-
+      .trim() || "";
 
 
   if(!message){
 
-
-    status.textContent=
-
-      lang==='ar'
-        ?'اكتب رسالتك أولًا.'
-        :'Please write your message first.';
-
+    status.textContent =
+      lang === "ar"
+        ? "اكتب رسالتك أولًا."
+        : "Please write your message first.";
 
     return;
 
   }
-
-
-
-  status.textContent=
-
-    lang==='ar'
-      ?'جاري الإرسال…'
-      :'Sending…';
-
 
 
   if(!window.nabdSupabase){
 
-
-    status.textContent=
-
-      lang==='ar'
-        ?'نظام الملاحظات غير متصل حاليًا.'
-        :'Feedback system is not connected yet.';
-
+    status.textContent =
+      lang === "ar"
+        ? "نظام الملاحظات غير متصل حاليًا."
+        : "Feedback system is not connected yet.";
 
     return;
 
   }
 
 
+  status.textContent =
+    lang === "ar"
+      ? "جاري الإرسال…"
+      : "Sending…";
+
 
   try{
 
+    const {error} =
+      await window.nabdSupabase
+        .from("feedback")
+        .insert([
+          {
+            name:
+              $("#feedbackName")
+                ?.value
+                .trim() || null,
 
-    const {
-      error
-    }=
+            email:
+              $("#feedbackEmail")
+                ?.value
+                .trim() || null,
 
-    await window.nabdSupabase
-      .from('feedback')
-      .insert([
+            category:
+              $("#feedbackCategory")
+                ?.value || "other",
 
-        {
+            message,
 
-          name:
-            name||
-            null,
-
-          email:
-            email||
-            null,
-
-          category,
-
-          message,
-
-          status:'new'
-
-        }
-
-      ]);
-
+            status:"new"
+          }
+        ]);
 
 
     if(error){
-
       throw error;
-
     }
-
 
 
     form.reset();
 
 
-
-    status.textContent=
-
-      lang==='ar'
-        ?'تم إرسال رسالتك بنجاح ✓'
-        :'Your message was sent successfully ✓';
-
-
+    status.textContent =
+      lang === "ar"
+        ? "تم إرسال رسالتك بنجاح ✓"
+        : "Your message was sent successfully ✓";
 
   }catch(error){
 
+    console.error(error);
 
-    console.error(
-      'Feedback submission error:',
-      error
-    );
-
-
-    status.textContent=
-
-      lang==='ar'
-        ?'نظام الشكاوى قيد التجهيز. سنربطه بقاعدة البيانات في الخطوة التالية.'
-        :'The feedback system is being prepared. Database connection is the next step.';
-
+    status.textContent =
+      lang === "ar"
+        ? "نظام الشكاوى يحتاج ربط جدول feedback في قاعدة البيانات."
+        : "The feedback table still needs to be connected in the database.";
 
   }
 
 }
 
-
-/* =========================================================
-   PAGE START
-   ========================================================= */
-
 document.addEventListener(
-  'DOMContentLoaded',
-  async()=>{
-
+  "DOMContentLoaded",
+  async () => {
 
     try{
 
-
       await loadPublicData();
-
 
     }catch(error){
 
-
-      console.error(
-        'Public data error:',
-        error
-      );
-
+      console.error(error);
 
     }
 
 
-
-    applyLang();
-
+    applyLanguage();
 
 
-    const year=
-      $('#year');
-
+    const year =
+      $("#year");
 
     if(year){
 
-      year.textContent=
-        new Date()
-        .getFullYear();
+      year.textContent =
+        new Date().getFullYear();
 
     }
 
 
+    const langBtn =
+      $("#langBtn");
 
-    const langButton=
-      $('#langBtn');
+    if(langBtn){
 
+      langBtn.onclick =
+        () => {
 
-    if(langButton){
-
-
-      langButton.onclick=
-        ()=>{
-
-
-          lang=
-
-            lang==='en'
-              ?'ar'
-              :'en';
-
-
+          lang =
+            lang === "en"
+              ? "ar"
+              : "en";
 
           localStorage.setItem(
-
-            'nabd_lang',
-
+            "nabd_lang",
             lang
-
           );
 
-
-
-          applyLang();
-
+          applyLanguage();
 
         };
 
-
     }
 
 
+    const menuBtn =
+      $("#menuBtn");
 
-    const menuButton=
-      $('#menuBtn');
-
-
-    const mainNav=
-      $('#mainNav');
+    const mainNav =
+      $("#mainNav");
 
 
     if(
-      menuButton &&
+      menuBtn &&
       mainNav
     ){
 
+      menuBtn.onclick =
+        () => {
 
-      menuButton.onclick=
-        ()=>{
-
-
-          mainNav
-            .classList
-            .toggle(
-              'open'
+          const open =
+            mainNav.classList.toggle(
+              "open"
             );
 
+          menuBtn.setAttribute(
+            "aria-expanded",
+            String(open)
+          );
 
         };
-
 
 
       mainNav
-        .querySelectorAll(
-          'a'
-        )
-        .forEach(
-          link=>{
+        .querySelectorAll("a")
+        .forEach(link => {
 
+          link.addEventListener(
+            "click",
+            () => {
 
-            link.addEventListener(
-              'click',
-              ()=>{
+              mainNav.classList.remove(
+                "open"
+              );
 
+              menuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+              );
 
-                mainNav
-                  .classList
-                  .remove(
-                    'open'
-                  );
+            }
+          );
 
-
-              }
-            );
-
-
-          }
-        );
-
+        });
 
     }
 
 
-
-    const verifyForm=
-      $('#verifyForm');
-
+    const verifyForm =
+      $("#verifyForm");
 
     if(verifyForm){
 
-
-      verifyForm.onsubmit=
-        event=>{
-
+      verifyForm.onsubmit =
+        event => {
 
           event.preventDefault();
 
+          const id =
+            $("#certificateId")
+              ?.value
+              .trim() || "";
 
-          const input=
-            $('#certificateId');
+          if(id){
 
-
-          if(input){
-
-
-            verify(
-              input.value.trim()
-            );
-
+            verifyCertificate(id);
 
           }
 
-
         };
-
 
     }
 
 
-
-    const feedbackForm=
-      $('#feedbackForm');
-
+    const feedbackForm =
+      $("#feedbackForm");
 
     if(feedbackForm){
 
-
-      feedbackForm.onsubmit=
-        event=>{
-
+      feedbackForm.onsubmit =
+        event => {
 
           event.preventDefault();
 
-
           submitFeedback();
 
-
         };
-
 
     }
 
 
-
-    const preset=
-
+    const preset =
       new URLSearchParams(
         location.search
-      )
-      .get(
-        'certificate'
-      );
+      ).get("certificate");
 
 
-
-    const certificateInput=
-      $('#certificateId');
+    const input =
+      $("#certificateId");
 
 
     if(
       preset &&
-      certificateInput
+      input
     ){
 
-
-      certificateInput.value=
+      input.value =
         preset;
 
-
       setTimeout(
-
-        ()=>verify(
-          preset
-        ),
-
+        () => verifyCertificate(preset),
         50
-
       );
 
-
     }
-
 
   }
 );
