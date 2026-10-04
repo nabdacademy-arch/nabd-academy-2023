@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -25,10 +26,11 @@
 
   <link
     rel="stylesheet"
-    href="assets/css/styles.css?v=11"
+    href="assets/css/styles.css?v=13"
   >
 
   <style>
+
     .portal-topbar{
       width:min(calc(100% - 28px),1180px);
       margin:18px auto 0;
@@ -77,10 +79,6 @@
 
     .portal-heading{
       margin-bottom:24px;
-    }
-
-    .portal-heading .eyebrow{
-      margin-bottom:10px;
     }
 
     .portal-heading h1{
@@ -136,10 +134,6 @@
           #07394e,
           #00aaa6
         );
-
-      box-shadow:
-        0 8px 22px
-        rgba(0,170,166,.18);
     }
 
     .portal-view{
@@ -195,8 +189,33 @@
       width:100%;
     }
 
+    .forgot-row{
+      display:flex;
+      justify-content:flex-end;
+
+      margin-top:-3px;
+    }
+
+    .forgot-btn,
+    .back-auth-btn{
+      border:0;
+      padding:6px 0;
+
+      color:#008d91;
+      background:transparent;
+
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .back-auth-btn{
+      display:inline-flex;
+      margin-bottom:14px;
+    }
+
     .portal-status{
       min-height:24px;
+
       margin-top:12px;
 
       color:#087f83;
@@ -226,6 +245,28 @@
       background:#f7fbfc;
 
       font-size:12px;
+    }
+
+    .recovery-card{
+      padding:18px;
+
+      border:1px solid #d7e8eb;
+      border-radius:16px;
+
+      background:#f8fcfd;
+    }
+
+    .recovery-card h2{
+      margin:0 0 8px;
+
+      color:#041b2a;
+
+      font-size:27px;
+    }
+
+    .recovery-card>p{
+      margin:0 0 18px;
+      color:#6b8290;
     }
 
     .dashboard-shell{
@@ -289,18 +330,29 @@
     .dashboard-actions{
       display:flex;
       flex-wrap:wrap;
+
       gap:9px;
     }
 
     .logout-btn{
-      border:1px solid rgba(255,255,255,.30);
-      background:rgba(255,255,255,.08);
+      border:
+        1px solid
+        rgba(255,255,255,.30);
+
+      background:
+        rgba(255,255,255,.08);
+
       box-shadow:none;
     }
 
     .portal-metrics{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0,1fr)
+        );
 
       gap:10px;
 
@@ -374,13 +426,15 @@
     }
 
     .student-courses,
-    .student-certificates{
+    .student-certificates,
+    .student-claims{
       display:grid;
       gap:11px;
     }
 
     .student-course-card,
-    .student-certificate-card{
+    .student-certificate-card,
+    .student-claim-card{
       min-width:0;
 
       padding:16px;
@@ -397,18 +451,20 @@
     }
 
     .student-course-card h3,
-    .student-certificate-card h3{
+    .student-certificate-card h3,
+    .student-claim-card h3{
       margin:0 0 6px;
 
       color:#092a3b;
-
-      overflow-wrap:anywhere;
     }
 
     .student-course-card p,
-    .student-certificate-card p{
+    .student-certificate-card p,
+    .student-claim-card p{
       margin:0;
+
       color:#6b8290;
+
       font-size:12px;
     }
 
@@ -451,6 +507,7 @@
 
     .portal-progress span{
       display:block;
+
       height:100%;
 
       border-radius:inherit;
@@ -474,6 +531,58 @@
       font-weight:850;
     }
 
+    .claim-box{
+      padding:18px;
+
+      border:1px solid #d9e9ec;
+      border-radius:16px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #fbffff,
+          #f2fafb
+        );
+    }
+
+    .claim-input{
+      text-transform:uppercase;
+    }
+
+    .claim-help{
+      margin-top:10px;
+
+      color:#70848e;
+
+      font-size:11px;
+    }
+
+    .claim-status-pill{
+      display:inline-flex;
+
+      padding:5px 9px;
+
+      border-radius:999px;
+
+      font-size:10px;
+      font-weight:850;
+    }
+
+    .claim-status-pill.pending{
+      color:#9a6800;
+      background:#fff3d3;
+    }
+
+    .claim-status-pill.approved{
+      color:#06775c;
+      background:#e2f8ef;
+    }
+
+    .claim-status-pill.rejected{
+      color:#b33f50;
+      background:#ffe8ec;
+    }
+
     .empty-state{
       padding:24px 16px;
 
@@ -481,6 +590,7 @@
       border-radius:14px;
 
       color:#70858f;
+
       background:#f8fbfc;
 
       text-align:center;
@@ -503,12 +613,9 @@
     }
 
     @media(min-width:700px){
+
       .portal-topbar{
         margin-top:24px;
-      }
-
-      .portal-page{
-        margin-top:30px;
       }
 
       .dashboard-hero{
@@ -519,18 +626,25 @@
       }
 
       .portal-metrics{
-        grid-template-columns:repeat(4,minmax(0,1fr));
+        grid-template-columns:
+          repeat(
+            4,
+            minmax(0,1fr)
+          );
       }
 
       .student-courses,
-      .student-certificates{
+      .student-certificates,
+      .student-claims{
         grid-template-columns:
           repeat(
             auto-fit,
             minmax(240px,1fr)
           );
       }
+
     }
+
   </style>
 
 </head>
@@ -544,7 +658,6 @@
     <a
       class="brand"
       href="index.html"
-      aria-label="NABD Academy home"
     >
 
       <span class="brand-mark">
@@ -580,8 +693,6 @@
   <main class="portal-page">
 
 
-    <!-- Loading -->
-
     <div
       id="portalLoader"
       class="portal-loader active"
@@ -591,13 +702,16 @@
 
 
 
-    <!-- Authentication -->
+    <!-- =====================================
+         AUTH
+         ===================================== -->
 
     <section
       id="authSection"
       class="portal-auth-wrap"
       hidden
     >
+
 
       <div class="auth-card wide">
 
@@ -621,211 +735,235 @@
 
 
         <div
-          class="auth-tabs"
-          role="tablist"
-          aria-label="Authentication"
+          id="normalAuthArea"
         >
 
-          <button
-            id="signInTab"
-            class="auth-tab active"
-            type="button"
-            role="tab"
-            aria-selected="true"
-          >
-            Sign in
-          </button>
 
-          <button
-            id="signUpTab"
-            class="auth-tab"
-            type="button"
-            role="tab"
-            aria-selected="false"
-          >
-            Create account
-          </button>
-
-        </div>
+          <div class="auth-tabs">
 
 
+            <button
+              id="signInTab"
+              class="auth-tab active"
+              type="button"
+            >
+              Sign in
+            </button>
 
-        <!-- SIGN IN -->
 
-        <div
-          id="signInView"
-          class="portal-view active"
-        >
+            <button
+              id="signUpTab"
+              class="auth-tab"
+              type="button"
+            >
+              Create account
+            </button>
 
-          <form
-            id="signInForm"
-            class="stack-form"
+
+          </div>
+
+
+
+          <!-- SIGN IN -->
+
+          <div
+            id="signInView"
+            class="portal-view active"
           >
 
-            <label>
 
-              Email
-
-              <input
-                id="signInEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="name@example.com"
-                required
-              >
-
-            </label>
+            <form
+              id="signInForm"
+              class="stack-form"
+            >
 
 
-            <label>
+              <label>
 
-              Password
-
-              <div class="password-wrap">
+                Email
 
                 <input
-                  id="signInPassword"
-                  type="password"
-                  autocomplete="current-password"
-                  minlength="6"
+                  id="signInEmail"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="name@example.com"
                   required
                 >
 
+              </label>
+
+
+
+              <label>
+
+                Password
+
+                <div class="password-wrap">
+
+                  <input
+                    id="signInPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    minlength="6"
+                    required
+                  >
+
+                  <button
+                    class="password-toggle"
+                    type="button"
+                    data-password-target="signInPassword"
+                  >
+                    Show
+                  </button>
+
+                </div>
+
+              </label>
+
+
+
+              <div class="forgot-row">
+
                 <button
-                  class="password-toggle"
+                  id="forgotPasswordButton"
+                  class="forgot-btn"
                   type="button"
-                  data-password-target="signInPassword"
                 >
-                  Show
+                  Forgot password?
                 </button>
 
               </div>
 
-            </label>
 
 
-            <div class="auth-actions">
+              <div class="auth-actions">
 
-              <button
-                id="signInButton"
-                class="btn"
-                type="submit"
-              >
-                Sign in
-              </button>
+                <button
+                  id="signInButton"
+                  class="btn"
+                  type="submit"
+                >
+                  Sign in
+                </button>
 
-            </div>
-
-
-            <div
-              id="signInStatus"
-              class="portal-status"
-              aria-live="polite"
-            ></div>
-
-          </form>
-
-        </div>
+              </div>
 
 
 
-        <!-- CREATE ACCOUNT -->
+              <div
+                id="signInStatus"
+                class="portal-status"
+                aria-live="polite"
+              ></div>
 
-        <div
-          id="signUpView"
-          class="portal-view"
-        >
 
-          <form
-            id="signUpForm"
-            class="stack-form"
+            </form>
+
+
+          </div>
+
+
+
+          <!-- CREATE ACCOUNT -->
+
+          <div
+            id="signUpView"
+            class="portal-view"
           >
 
-            <label>
 
-              Full name
-
-              <input
-                id="signUpName"
-                type="text"
-                autocomplete="name"
-                placeholder="Your full name"
-                required
-              >
-
-            </label>
+            <form
+              id="signUpForm"
+              class="stack-form"
+            >
 
 
-            <label>
+              <label>
 
-              Email
-
-              <input
-                id="signUpEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="Use your course registration email"
-                required
-              >
-
-            </label>
-
-
-            <label>
-
-              Password
-
-              <div class="password-wrap">
+                Full name
 
                 <input
-                  id="signUpPassword"
-                  type="password"
-                  autocomplete="new-password"
-                  minlength="6"
+                  id="signUpName"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="Your full name"
                   required
                 >
 
-                <button
-                  class="password-toggle"
-                  type="button"
-                  data-password-target="signUpPassword"
-                >
-                  Show
-                </button>
-
-              </div>
-
-            </label>
+              </label>
 
 
-            <label>
 
-              Confirm password
+              <label>
 
-              <div class="password-wrap">
+                Email
 
                 <input
-                  id="signUpPasswordConfirm"
-                  type="password"
-                  autocomplete="new-password"
-                  minlength="6"
+                  id="signUpEmail"
+                  type="email"
+                  autocomplete="email"
                   required
                 >
 
-                <button
-                  class="password-toggle"
-                  type="button"
-                  data-password-target="signUpPasswordConfirm"
-                >
-                  Show
-                </button>
-
-              </div>
-
-            </label>
+              </label>
 
 
-            <div class="auth-actions">
+
+              <label>
+
+                Password
+
+                <div class="password-wrap">
+
+                  <input
+                    id="signUpPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                  >
+
+                  <button
+                    class="password-toggle"
+                    type="button"
+                    data-password-target="signUpPassword"
+                  >
+                    Show
+                  </button>
+
+                </div>
+
+              </label>
+
+
+
+              <label>
+
+                Confirm password
+
+                <div class="password-wrap">
+
+                  <input
+                    id="signUpPasswordConfirm"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                  >
+
+                  <button
+                    class="password-toggle"
+                    type="button"
+                    data-password-target="signUpPasswordConfirm"
+                  >
+                    Show
+                  </button>
+
+                </div>
+
+              </label>
+
+
 
               <button
                 id="signUpButton"
@@ -835,33 +973,228 @@
                 Create account
               </button>
 
-            </div>
 
 
-            <div
-              id="signUpStatus"
-              class="portal-status"
-              aria-live="polite"
-            ></div>
-
-          </form>
+              <div
+                id="signUpStatus"
+                class="portal-status"
+              ></div>
 
 
-          <div class="portal-note">
-            Use the same email address you used when registering
-            for a NABD Academy course.
+            </form>
+
+
           </div>
+
+
+        </div>
+
+
+
+        <!-- =====================================
+             FORGOT PASSWORD
+             ===================================== -->
+
+        <div
+          id="forgotPasswordView"
+          class="portal-view"
+        >
+
+
+          <button
+            id="backToSignInButton"
+            class="back-auth-btn"
+            type="button"
+          >
+            ← Back to sign in
+          </button>
+
+
+          <div class="recovery-card">
+
+
+            <h2>
+              Reset password
+            </h2>
+
+
+            <p>
+              Enter your account email and we will send you
+              a secure password reset link.
+            </p>
+
+
+            <form
+              id="forgotPasswordForm"
+              class="stack-form"
+            >
+
+
+              <label>
+
+                Email
+
+                <input
+                  id="forgotPasswordEmail"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="name@example.com"
+                  required
+                >
+
+              </label>
+
+
+              <button
+                id="sendResetButton"
+                class="btn"
+                type="submit"
+              >
+                Send reset link
+              </button>
+
+
+              <div
+                id="forgotPasswordStatus"
+                class="portal-status"
+                aria-live="polite"
+              ></div>
+
+
+            </form>
+
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- =====================================
+             SET NEW PASSWORD
+             ===================================== -->
+
+        <div
+          id="resetPasswordView"
+          class="portal-view"
+        >
+
+
+          <div class="recovery-card">
+
+
+            <span class="eyebrow">
+              Account Recovery
+            </span>
+
+
+            <h2>
+              Set a new password
+            </h2>
+
+
+            <p>
+              Choose a new password for your NABD Academy account.
+            </p>
+
+
+            <form
+              id="resetPasswordForm"
+              class="stack-form"
+            >
+
+
+              <label>
+
+                New password
+
+                <div class="password-wrap">
+
+                  <input
+                    id="newPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                  >
+
+                  <button
+                    class="password-toggle"
+                    type="button"
+                    data-password-target="newPassword"
+                  >
+                    Show
+                  </button>
+
+                </div>
+
+              </label>
+
+
+
+              <label>
+
+                Confirm new password
+
+                <div class="password-wrap">
+
+                  <input
+                    id="confirmNewPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                  >
+
+                  <button
+                    class="password-toggle"
+                    type="button"
+                    data-password-target="confirmNewPassword"
+                  >
+                    Show
+                  </button>
+
+                </div>
+
+              </label>
+
+
+              <button
+                id="updatePasswordButton"
+                class="btn"
+                type="submit"
+              >
+                Update password
+              </button>
+
+
+              <div
+                id="resetPasswordStatus"
+                class="portal-status"
+                aria-live="polite"
+              ></div>
+
+
+            </form>
+
+
+          </div>
+
 
         </div>
 
 
       </div>
 
+
     </section>
 
 
 
-    <!-- STUDENT DASHBOARD -->
+    <!-- =====================================
+         DASHBOARD
+         ===================================== -->
 
     <section
       id="dashboardSection"
@@ -874,7 +1207,10 @@
 
         <div>
 
-          <span class="eyebrow" style="color:#56e7dc;">
+          <span
+            class="eyebrow"
+            style="color:#56e7dc;"
+          >
             Student Dashboard
           </span>
 
@@ -893,7 +1229,9 @@
         </div>
 
 
+
         <div class="dashboard-actions">
+
 
           <a
             class="btn btn-light"
@@ -901,6 +1239,7 @@
           >
             Explore Courses
           </a>
+
 
           <button
             id="logoutButton"
@@ -910,175 +1249,5 @@
             Sign out
           </button>
 
-        </div>
 
-
-      </div>
-
-
-
-      <!-- Dashboard metrics -->
-
-      <div class="portal-metrics">
-
-
-        <article class="portal-metric">
-
-          <strong id="metricCourses">
-            0
-          </strong>
-
-          <span>
-            Enrolled courses
-          </span>
-
-        </article>
-
-
-        <article class="portal-metric">
-
-          <strong id="metricCompleted">
-            0
-          </strong>
-
-          <span>
-            Completed
-          </span>
-
-        </article>
-
-
-        <article class="portal-metric">
-
-          <strong id="metricCertificates">
-            0
-          </strong>
-
-          <span>
-            Certificates
-          </span>
-
-        </article>
-
-
-        <article class="portal-metric">
-
-          <strong id="metricProgress">
-            0%
-          </strong>
-
-          <span>
-            Overall progress
-          </span>
-
-        </article>
-
-
-      </div>
-
-
-
-      <!-- Courses -->
-
-      <section class="dashboard-section">
-
-
-        <div class="dashboard-section-head">
-
-          <div>
-
-            <span class="eyebrow">
-              Learning
-            </span>
-
-            <h2>
-              My Courses
-            </h2>
-
-          </div>
-
-          <small id="courseSummary">
-            Your enrolled courses
-          </small>
-
-        </div>
-
-
-        <div
-          id="studentCourses"
-          class="student-courses"
-        >
-
-          <div class="empty-state">
-            Loading your courses…
-          </div>
-
-        </div>
-
-
-      </section>
-
-
-
-      <!-- Certificates -->
-
-      <section class="dashboard-section">
-
-
-        <div class="dashboard-section-head">
-
-          <div>
-
-            <span class="eyebrow">
-              Credentials
-            </span>
-
-            <h2>
-              My Certificates
-            </h2>
-
-          </div>
-
-          <small>
-            Verified NABD certificates
-          </small>
-
-        </div>
-
-
-        <div
-          id="studentCertificates"
-          class="student-certificates"
-        >
-
-          <div class="empty-state">
-            Loading your certificates…
-          </div>
-
-        </div>
-
-
-      </section>
-
-
-    </section>
-
-
-  </main>
-
-
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
-
-  <script src="assets/js/config.js?v=11"></script>
-
-  <script src="assets/js/supabase-client.js?v=11"></script>
-
-  <script src="assets/js/portal.js?v=11"></script>
-
-
-</body>
-
-</html>
+ 
