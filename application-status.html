@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Check your NABD Academy Executive Council application status.">
+  <title>NABD Academy | Application Status</title>
+  <link rel="stylesheet" href="assets/css/styles.css?v=31">
+  <style>
+    :root{
+      --page-bg:#061722;
+      --panel:#0b2634;
+      --line:rgba(255,255,255,.12);
+      --muted:#b9ced8;
+      --white:#f7fbff;
+      --teal:#27d6bd;
+      --gold:#e9bd62;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 12% 8%,rgba(39,214,189,.12),transparent 26rem),
+        radial-gradient(circle at 90% 35%,rgba(54,184,255,.09),transparent 28rem),
+        var(--page-bg);
+      color:var(--white);
+      min-height:100vh;
+    }
+    .status-header{
+      padding:18px 0;
+      border-bottom:1px solid var(--line);
+      background:rgba(6,23,34,.92);
+      backdrop-filter:blur(16px);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    .status-nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .status-brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      direction:ltr;
+    }
+    .status-brand .brand-mark{width:46px;height:46px}
+    .status-brand strong{display:block;color:#fff}
+    .status-brand small{display:block;color:var(--muted)}
+    .lang-switch{
+      border:1px solid rgba(39,214,189,.3);
+      background:rgba(39,214,189,.08);
+      color:#9ff3e2;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:800;
+    }
+    .status-main{padding:58px 0 80px}
+    .status-shell{
+      width:min(760px,100%);
+      margin:auto;
+      border:1px solid var(--line);
+      background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+      border-radius:28px;
+      padding:30px;
+      box-shadow:0 20px 55px rgba(0,0,0,.2);
+    }
+    .eyebrow{
+      color:var(--teal);
+      font-size:.78rem;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:12px 0 10px;
+      color:#fff;
+      font-size:clamp(2rem,7vw,3.4rem);
+      line-height:1.06;
+    }
+    .lead{
+      margin:0 0 26px;
+      color:var(--muted);
+      line-height:1.8;
+    }
+    .form-grid{
+      display:grid;
+      gap:16px;
+    }
+    .field label{
+      display:block;
+      margin-bottom:7px;
+      color:#dcebf0;
+      font-weight:800;
+    }
+    .field input{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:15px;
+      background:#0d3141;
+      color:#f8fcff;
+      padding:14px;
+      outline:none;
+    }
+    .field input:focus{
+      border-color:rgba(39,214,189,.8);
+      box-shadow:0 0 0 4px rgba(39,214,189,.1);
+    }
+    .submit-btn{width:100%;margin-top:8px}
+    .message{
+      display:none;
+      margin-top:20px;
+      padding:15px 17px;
+      border-radius:15px;
+      line-height:1.7;
+    }
+    .message.show{display:block}
+    .message.error{
+      background:rgba(199,72,88,.12);
+      border:1px solid rgba(237,152,165,.35);
+      color:#ffd9df;
+    }
+    .result{
+      display:none;
+      margin-top:24px;
+      border:1px solid rgba(39,214,189,.25);
+      background:rgba(39,214,189,.06);
+      border-radius:22px;
+      padding:22px;
+    }
+    .result.show{display:block}
+    .result-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .result h2{margin:0;color:#fff}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:6px 11px;
+      border-radius:999px;
+      background:rgba(39,214,189,.12);
+      border:1px solid rgba(39,214,189,.28);
+      color:#a9f6e8;
+      font-weight:900;
+    }
+    .details{
+      display:grid;
+      gap:0;
+      margin:0;
+    }
+    .details div{
+      padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.09);
+    }
+    .details div:last-child{border-bottom:0}
+    .details dt{
+      color:#8faab5;
+      font-size:.86rem;
+      margin-bottom:4px;
+    }
+    .details dd{
+      margin:0;
+      color:#fff;
+      font-weight:800;
+      overflow-wrap:anywhere;
+    }
+    .note{
+      margin:18px 0 0;
+      color:#cde0e6;
+      line-height:1.7;
+      font-size:.94rem;
+    }
+    .back{
+      display:inline-block;
+      margin-top:22px;
+      color:#9ff3e2;
+      font-weight:800;
+    }
+    @media(max-width:620px){
+      .status-main{padding:32px 0 60px}
+      .status-shell{padding:22px 18px;border-radius:24px}
+    }
+  </style>
+</head>
+<body>
+  <header class="status-header">
+    <div class="container status-nav">
+      <a class="status-brand" href="index.html">
+        <span class="brand-mark">N</span>
+        <span>
+          <strong>NABD Academy</strong>
+          <small>for Medical Sciences</small>
+        </span>
+      </a>
+      <button id="langBtn" class="lang-switch" type="button">English</button>
+    </div>
+  </header>
+
+  <main class="status-main">
+    <div class="container">
+      <section class="status-shell">
+        <span class="eyebrow" data-ar="المجلس التنفيذي • متابعة الطلب" data-en="Executive Council • Application Tracking">المجلس التنفيذي • متابعة الطلب</span>
+        <h1 data-ar="تحقق من حالة طلبك" data-en="Check your application status">تحقق من حالة طلبك</h1>
+        <p class="lead"
+           data-ar="أدخل رقم الطلب والبريد الإلكتروني المستخدم عند التقديم. ستظهر لك حالة الطلب الحالية فقط."
+           data-en="Enter your application number and the email used when applying. Only your current application status will be shown.">
+          أدخل رقم الطلب والبريد الإلكتروني المستخدم عند التقديم. ستظهر لك حالة الطلب الحالية فقط.
+        </p>
+
+        <form id="statusForm" class="form-grid">
+          <div class="field">
+            <label data-ar="رقم الطلب" data-en="Application ID">رقم الطلب</label>
+            <input id="applicationNumber" dir="ltr" placeholder="NABD-EC-2026-0001" required>
+          </div>
+
+          <div class="field">
+            <label data-ar="البريد الإلكتروني" data-en="Email address">البريد الإلكتروني</label>
+            <input id="email" type="email" dir="ltr" placeholder="name@example.com" required>
+          </div>
+
+          <button id="submitBtn" class="btn submit-btn" type="submit"
+                  data-ar="فحص حالة الطلب" data-en="Check Application Status">
+            فحص حالة الطلب
+          </button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <section id="result" class="result">
+          <div class="result-head">
+            <h2 data-ar="حالة الطلب" data-en="Application Status">حالة الطلب</h2>
+            <span id="statusPill" class="pill"></span>
+          </div>
+
+          <dl class="details">
+            <div>
+              <dt data-ar="رقم الطلب" data-en="Application ID">رقم الطلب</dt>
+              <dd id="resultNumber" dir="ltr"></dd>
+            </div>
+            <div>
+              <dt data-ar="المنصب المتقدم له" data-en="Applied role">المنصب المتقدم له</dt>
+              <dd id="resultRole"></dd>
+            </div>
+            <div>
+              <dt data-ar="تاريخ التقديم" data-en="Submitted on">تاريخ التقديم</dt>
+              <dd id="resultDate"></dd>
+            </div>
+          </dl>
+
+          <p id="statusNote" class="note"></p>
+        </section>
+
+        <a class="back" href="index.html"
+           data-ar="← العودة إلى موقع الأكاديمية"
+           data-en="← Back to NABD Academy">
+          ← العودة إلى موقع الأكاديمية
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db = supabase.createClient(
+      "https://zsmmmljgguycrvyrmakl.supabase.co",
+      "sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM"
+    );
+
+    const $ = id => document.getElementById(id);
+    let lang = "ar";
+
+    const statuses = {
+      new: {
+        ar:"جديد",
+        en:"New",
+        arNote:"تم استلام طلبك وهو بانتظار بدء المراجعة.",
+        enNote:"Your application has been received and is waiting for review."
+      },
+      under_review: {
+        ar:"قيد المراجعة",
+        en:"Under Review",
+        arNote:"يتم حاليًا تقييم طلبك من فريق الأكاديمية.",
+        enNote:"Your application is currently being reviewed by the academy team."
+      },
+      shortlisted: {
+        ar:"ضمن القائمة المختصرة",
+        en:"Shortlisted",
+        arNote:"تم اختيار طلبك ضمن القائمة المختصرة للمرحلة التالية.",
+        enNote:"Your application has been shortlisted for the next stage."
+      },
+      interview: {
+        ar:"مرحلة المقابلة",
+        en:"Interview",
+        arNote:"انتقل طلبك إلى مرحلة المقابلة. قد يتم التواصل معك لترتيبها.",
+        enNote:"Your application has moved to the interview stage. You may be contacted to arrange it."
+      },
+      selected: {
+        ar:"تم الاختيار",
+        en:"Selected",
+        arNote:"تهانينا، تم اختيارك. سيتم التواصل معك بشأن الخطوات التالية.",
+        enNote:"Congratulations, you have been selected. You will be contacted about the next steps."
+      },
+      waitlisted: {
+        ar:"قائمة الانتظار",
+        en:"Waitlisted",
+        arNote:"تم وضع طلبك على قائمة الانتظار وقد يتم التواصل معك إذا توفر شاغر مناسب.",
+        enNote:"Your application is on the waitlist and you may be contacted if a suitable opening becomes available."
+      },
+      rejected: {
+        ar:"غير مختار",
+        en:"Not Selected",
+        arNote:"لم يتم اختيار الطلب في هذه الجولة. نشكرك على اهتمامك بأكاديمية نبض.",
+        enNote:"Your application was not selected in this round. Thank you for your interest in NABD Academy."
+      }
+    };
+
+    function setLang(next){
+      lang = next;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      document.querySelectorAll("[data-ar][data-en]").forEach(el => {
+        el.textContent = el.dataset[lang];
+      });
+      $("langBtn").textContent = lang === "ar" ? "English" : "العربية";
+    }
+
+    $("langBtn").onclick = () => setLang(lang === "ar" ? "en" : "ar");
+
+    function showMessage(text){
+      $("message").textContent = text;
+      $("message").className = "message show error";
+      $("result").classList.remove("show");
+    }
+
+    function formatDate(value){
+      if(!value) return "—";
+      const d = new Date(value);
+      return new Intl.DateTimeFormat(lang === "ar" ? "ar" : "en", {
+        year:"numeric", month:"long", day:"numeric"
+      }).format(d);
+    }
+
+    $("statusForm").onsubmit = async e => {
+      e.preventDefault();
+
+      const applicationNumber = $("applicationNumber").value.trim();
+      const email = $("email").value.trim();
+      const btn = $("submitBtn");
+
+      $("message").className = "message";
+      $("result").classList.remove("show");
+
+      btn.disabled = true;
+      btn.textContent = lang === "ar" ? "جارٍ التحقق..." : "Checking...";
+
+      const { data, error } = await db.rpc("check_executive_application_status", {
+        p_application_number: applicationNumber,
+        p_email: email
+      });
+
+      btn.disabled = false;
+      btn.textContent = lang === "ar" ? "فحص حالة الطلب" : "Check Application Status";
+
+      if(error){
+        console.error(error);
+        showMessage(
+          lang === "ar"
+            ? "تعذر التحقق من الطلب حاليًا. حاول مرة أخرى."
+            : "Could not check the application right now. Please try again."
+        );
+        return;
+      }
+
+      const row = Array.isArray(data) ? data[0] : data;
+
+      if(!row){
+        showMessage(
+          lang === "ar"
+            ? "لم يتم العثور على طلب مطابق. تأكد من رقم الطلب والبريد الإلكتروني."
+            : "No matching application was found. Check the application ID and email address."
+        );
+        return;
+      }
+
+      const st = statuses[row.status] || {
+        ar: row.status || "—",
+        en: row.status || "—",
+        arNote:"هذه هي الحالة الحالية لطلبك.",
+        enNote:"This is the current status of your application."
+      };
+
+      $("statusPill").textContent = lang === "ar" ? st.ar : st.en;
+      $("statusNote").textContent = lang === "ar" ? st.arNote : st.enNote;
+      $("resultNumber").textContent = row.application_number || "—";
+      $("resultRole").textContent = row.position_applied || "—";
+      $("resultDate").textContent = formatDate(row.created_at);
+      $("result").classList.add("show");
+      $("result").scrollIntoView({behavior:"smooth", block:"center"});
+    };
+  </script>
+</body>
+</html>
