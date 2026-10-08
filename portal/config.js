@@ -1,9 +1,10 @@
+
 /*
-  NABD Executive Portal — configuration
-  Paste your Supabase Project URL and PUBLISHABLE / ANON key only.
-  NEVER paste a service_role / secret key into any public HTML or JavaScript file.
+  NABD Academy for Medical Sciences — Executive Portal
+  Public Supabase connection settings.
+  Never put secret or service_role keys in this file.
 */
 window.NABD_PORTAL_CONFIG = {
-  supabaseUrl: '',
-  supabasePublishableKey: ''
+  supabaseUrl: 'https://zsmmmljgguycrvyrmakl.supabase.co',
+  supabasePublishableKey: 'sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM'
 };
