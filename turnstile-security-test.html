@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#102b38">
+  <title>اختبار وتشخيص Turnstile | أكاديمية نبض</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;padding:18px;background:linear-gradient(150deg,#092b37,#115961);color:#163a44;font:15px/1.7 Tahoma,Arial,sans-serif}
+    main{width:min(620px,100%);margin:16px auto;background:#fff;border-radius:24px;padding:clamp(18px,5vw,32px);box-shadow:0 20px 65px #0003}
+    h1{font-size:clamp(23px,5vw,30px);line-height:1.4;margin:6px 0;color:#09515c;text-align:center}
+    h2{font-size:17px;margin:24px 0 9px}
+    p{color:#557079;margin:8px 0}
+    .center{text-align:center}.icon{font-size:40px}
+    .notice{padding:14px;background:#fff8e6;border:1px solid #eeddb2;border-radius:14px;color:#64522b;margin:20px 0}
+    #widget{display:flex;justify-content:center;min-height:75px;margin:20px 0;overflow-wrap:anywhere}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+    button{border:0;border-radius:12px;background:#078889;color:#fff;padding:12px 18px;font:700 14px Tahoma,Arial,sans-serif;cursor:pointer;min-height:46px}
+    button:disabled{opacity:.43;cursor:not-allowed}
+    button.secondary{background:#edf6f5;color:#12646d;border:1px solid #c9e2e0}
+    .log{background:#eff7f6;border:1px solid #d5e5e4;border-radius:14px;padding:14px;margin-top:18px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .error{background:#fff0eb;border-color:#ebc9c3;color:#8a3230}.success{background:#e9f7ef;border-color:#badac8;color:#126042}
+    .code{font-size:22px;font-weight:800;direction:ltr;unicode-bidi:isolate;display:inline-block;letter-spacing:.4px}
+    .small{font-size:12px;color:#5f7580}
+    .readout{padding:11px;border:1px dashed #d6e4e3;border-radius:10px;font-size:12px;margin-top:8px}
+    .readout b{font-size:14px}
+    a{color:#0b6175;text-decoration:underline}
+  </style>
+</head>
+<body>
+<main>
+  <div class="center icon">🛡️</div>
+  <h1>تشخيص حماية استشارات نبض</h1>
+  <p class="center">اختبار تقني فقط — بدون بيانات مرضى وبدون إنشاء طلبات.</p>
+  <div class="notice">هذه الصفحة المؤقتة تبيّن <b>رمز الخطأ الفعلي</b> من Cloudflare. لا تطلب كلمة مرور أو مفاتيح سرية، ولا تعرض أو تحفظ رموز Turnstile.</div>
+
+  <h2>1. التحقق بمفتاح الأكاديمية</h2>
+  <p id="modeDescription">جارٍ تحميل مكتبة Cloudflare…</p>
+  <div id="widget" aria-label="نافذة اختبار Cloudflare Turnstile"></div>
+  <div class="btns">
+    <button id="validateButton" disabled>اختبار الرمز على Supabase</button>
+    <button id="retryButton" class="secondary" disabled>إعادة المحاولة</button>
+  </div>
+  <div id="widgetStatus" class="log" role="status" aria-live="polite">جارٍ تحميل أداة التحقق…</div>
+
+  <h2>2. تشخيص إضافي (اختياري)</h2>
+  <p class="small">اختبار المفتاح الرسمي التجريبي يحدد هل يتعطّل Turnstile في المتصفح أو الشبكة. هذا الاختبار <b>لا يتحقق من مفتاح الأكاديمية</b> ولا يرسل رمزًا إلى خادم الاستشارات.</p>
+  <div class="btns">
+    <button id="demoButton" class="secondary" disabled>اختبار مفتاح Cloudflare التجريبي</button>
+    <button id="realButton" class="secondary" disabled>العودة إلى مفتاح الأكاديمية</button>
+    <button id="backendButton" class="secondary">فحص الاتصال بخادم Supabase (GET)</button>
+  </div>
+  <div id="backendStatus" class="readout">لم يُجرَ فحص الخادم بعد.</div>
+
+  <h2>3. التقرير</h2>
+  <p class="small">يمكنك نسخ النتيجة وإرسالها للمساعدة في التشخيص. لا يحتوي التقرير على مفاتيح أو رموز دخول.</p>
+  <div class="btns"><button id="copyButton" class="secondary">نسخ تقرير التشخيص</button></div>
+  <div id="report" class="readout" aria-live="polite">لم تظهر نتيجة بعد.</div>
+  <p class="small">بعد الانتهاء احذف هذه الصفحة ودالة الاختبار <code>nabd-turnstile-test</code>. لا تغيّر دالة الاستشارات الأصلية.</p>
+</main>
+<script>
+'use strict';
+// Public site key (not a secret). Keep the production key unchanged.
+const REAL_SITE_KEY='0x4AAAAAAFW8jGnVSDwdHdLz';
+// Cloudflare's public official test sitekey; not for production.
+const DEMO_SITE_KEY='1x00000000000000000000AA';
+const ENDPOINT='https://zsmmmljgguycrvyrmakl.supabase.co/functions/v1/nabd-turnstile-test';
+const $=id=>document.getElementById(id);
+let widgetId=null, mode='real', token='', lastCode='', lastKind='', backendResult='لم يُفحص';
+const interpretations={
+ '110100':'المفتاح العام Site Key غير صالح. قارن المفتاح بحساب Cloudflare.',
+ '110110':'لم يعثر Cloudflare على المفتاح العام. تحقّق من نسخه بدقة.',
+ '110200':'النطاق غير مصرح به. أضف nabdacademy-arch.github.io في Hostname Management.',
+ '110600':'انتهت مهلة التحدي. افحص وقت الجهاز ثم أعد المحاولة.',
+ '110620':'انتهى وقت التفاعل. أعد المحاولة.',
+ '200100':'مشكلة في ساعة الجهاز أو التخزين المؤقت.',
+ '200500':'لم يتم تحميل إطار Cloudflare. قد تمنع الشبكة أو المتصفح الاتصال بـ challenges.cloudflare.com.',
+ '400020':'المفتاح العام غير صالح.',
+ '400021':'عدم تطابق بين المفتاح والنطاق في إعدادات Cloudflare.',
+ '400070':'مفتاح Cloudflare معطّل في لوحة التحكم.'
+};
+function explain(code){if(interpretations[code])return interpretations[code];if(/^300/.test(code)||/^600/.test(code))return 'فشل التحقق الأمني. افحص إعدادات المتصفح والاتصال وجرب شبكة أخرى إن أمكن.';return 'رمز غير مصنّف؛ راجع توثيق Cloudflare لمعرفة تفاصيله.';}
+function status(text,kind=''){$('widgetStatus').className='log'+(kind?' '+kind:'');$('widgetStatus').textContent=text;lastKind=kind;updateReport();}
+function updateReport(){
+ const desc=[
+  'Turnstile diagnostic (no tokens or secrets)',
+  'Mode: '+(mode==='real'?'Academy site key':'Cloudflare public test key'),
+  'Hostname: '+location.hostname,
+  'Widget error: '+(lastCode||'none reported'),
+  'Widget state: '+(lastKind||'pending'),
+  'Supabase GET: '+backendResult,
+ ];
+ $('report').textContent=desc.join('\n');
+}
+function activate(modeName){
+ mode=modeName;token='';lastCode='';
+ $('validateButton').disabled=true;
+ if(!window.turnstile){status('تعذر تحميل مكتبة Cloudflare. تأكد من الاتصال بـ challenges.cloudflare.com.','error');return;}
+ try{if(widgetId!==null){window.turnstile.remove(widgetId);widgetId=null;} }catch(_){widgetId=null;}
+ $('widget').textContent='';
+ const isReal=mode==='real';
+ $('modeDescription').textContent=isReal?'مفتاح الأكاديمية الحقيقي: ننتظر رمزًا ثم نتحقق من صحته على Supabase.':'مفتاح Cloudflare التجريبي: فحص المتصفح والشبكة فقط، دون التحقق على Supabase.';
+ status('جارٍ تشغيل أداة التحقق…');
+ try{
+  widgetId=window.turnstile.render('#widget',{
+   sitekey:isReal?REAL_SITE_KEY:DEMO_SITE_KEY,
+   theme:'light',language:'ar',retry:'never',
+   callback:value=>{
+    token=value;
+    $('validateButton').disabled=!isReal;
+    status(isReal?'✅ نجح تحدي Cloudflare في المتصفح. اضغط «اختبار الرمز على Supabase».':'✅ المفتاح التجريبي يعمل. إذا فشل المفتاح الأصلي، افحص Site Key وHostname Management.', 'success');
+   },
+   'error-callback':code=>{
+    token='';$('validateButton').disabled=true;
+    lastCode=String(code||'غير متاح');
+    status('فشل التحقق من Cloudflare.\nرمز الخطأ: '+lastCode+'\n'+explain(lastCode),'error');
+    return true;
+   },
+   'expired-callback':()=>{token='';$('validateButton').disabled=true;status('انتهت صلاحية الرمز؛ اضغط إعادة المحاولة.','error');},
+   'timeout-callback':()=>{token='';$('validateButton').disabled=true;status('انتهت مهلة الاختبار. اضغط إعادة المحاولة.','error');}
+  });
+  if(widgetId===undefined||widgetId===null)throw Error('تعذر إنشاء أداة التحقق');
+  status('أكمل تحدي Cloudflare إن ظهر. إذا فشل، سيظهر رمز الخطأ هنا.');
+ }catch(e){status('فشل تهيئة Turnstile: '+String(e.message||e),'error');}
+}
+$('retryButton').onclick=()=>activate(mode);
+$('demoButton').onclick=()=>activate('demo');
+$('realButton').onclick=()=>activate('real');
+$('backendButton').onclick=async()=>{
+ $('backendButton').disabled=true;
+ $('backendStatus').textContent='جارٍ فحص الاتصال دون إرسال بيانات…';
+ try{
+   const r=await fetch(ENDPOINT,{method:'GET',mode:'cors',cache:'no-store',credentials:'omit'});
+   const body=await r.json().catch(()=>({}));
+   backendResult='HTTP '+r.status+'; ok='+String(body.ok);
+   $('backendStatus').textContent=backendResult;
+ }catch(_){backendResult='failed (network/CORS)';$('backendStatus').textContent='لم يتصل المتصفح بدالة Supabase. قد يكون السبب الشبكة أو CORS.';}
+ $('backendButton').disabled=false;updateReport();
+};
+$('validateButton').onclick=async()=>{
+ if(mode!=='real'||!token)return;
+ $('validateButton').disabled=true;
+ status('جارٍ فحص الرمز على Supabase دون تسجيل بيانات…');
+ try{
+  const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},mode:'cors',credentials:'omit',cache:'no-store',body:JSON.stringify({turnstile_token:token})});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok&&d.ok===true&&d.hostname_verified===true){status('✅ نجح التحقق على خادم Supabase، ولا تُحفظ بيانات مرضى.','success');}
+  else status('لم ينجح التحقق الخادمي. HTTP '+r.status+'؛ verification='+String(d.verification||'غير معروف')+'؛ hostname_verified='+String(d.hostname_verified||false),'error');
+ }catch(_){status('تعذّر الاتصال بخادم Supabase أو قراءة استجابته.','error');}
+ token='';
+};
+$('copyButton').onclick=()=>{
+ const v=$('report').textContent;
+ if(navigator.clipboard){navigator.clipboard.writeText(v).then(()=>{$('copyButton').textContent='✓ تم نسخ التقرير'}).catch(()=>{$('copyButton').textContent='انسخ التقرير يدويًا'});}
+ else $('copyButton').textContent='انسخ التقرير يدويًا';
+};
+(function loadTurnstile(){
+ const script=document.createElement('script');script.async=true;
+ script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+ script.onload=()=>{$('retryButton').disabled=false;$('demoButton').disabled=false;$('realButton').disabled=false;activate('real');};
+ script.onerror=()=>status('تعذر تحميل مكتبة Turnstile من challenges.cloudflare.com؛ افحص اتصال المتصفح أو الشبكة.','error');
+ document.head.append(script);
+})();
+</script>
+</body>
+</html>
