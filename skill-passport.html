@@ -1,98 +1,280 @@
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#07111f">
+  <meta name="theme-color" content="#071321">
   <title>Medical Skill Passport | Nabd Academy</title>
+
   <link rel="stylesheet" href="assets/css/styles.css?v=14">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg:#07111f;
-      --panel:#101e30;
-      --panel2:#14253a;
-      --text:#edf5ff;
-      --muted:#9db0c7;
-      --accent:#43dfc1;
-      --blue:#68a9ff;
+      --bg:#071321;
+      --surface:#0e2032;
+      --surface2:#142b40;
+      --text:#eff7ff;
+      --muted:#9eb2c7;
+      --accent:#49e0c1;
+      --blue:#75b5ff;
       --border:rgba(255,255,255,.1);
       --danger:#ff7777;
+      --success:#62e3a3;
+      --radius:20px;
     }
+
     * {box-sizing:border-box}
+
     body {
       margin:0;
-      background:radial-gradient(ellipse at top,#142c43 0%,var(--bg) 55%);
-      color:var(--text);
-      font-family:Inter,sans-serif;
       min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(ellipse at 80% 0%,#153650 0%,transparent 45%),
+        radial-gradient(ellipse at 0% 50%,#10283a 0%,transparent 40%),
+        var(--bg);
+      font-family:Inter,Cairo,sans-serif;
     }
+
     body[dir="rtl"] {font-family:Cairo,sans-serif}
-    a {color:var(--accent)}
-    .container {width:min(1100px,92%);margin:auto}
-    header {
-      padding:22px 0;
-      border-bottom:1px solid var(--border);
-      background:rgba(7,17,31,.65);
-    }
-    .nav {display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-    .brand {font-weight:800;letter-spacing:.5px;font-size:19px}
-    .brand span {color:var(--accent)}
+
     button,input,textarea,select {font:inherit}
-    button {
-      cursor:pointer;border:0;border-radius:12px;padding:11px 17px;
-      font-weight:700;transition:.2s;
+    button {cursor:pointer}
+    a {color:var(--accent)}
+
+    .container {width:min(1120px,92%);margin:auto}
+
+    header {
+      border-bottom:1px solid var(--border);
+      background:rgba(7,19,33,.82);
+      backdrop-filter:blur(14px);
+      position:sticky;
+      top:0;
+      z-index:10;
     }
-    button:hover {transform:translateY(-1px);filter:brightness(1.1)}
-    .btn-primary {background:var(--accent);color:#06201d}
-    .btn-secondary {background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-    .hero {padding:54px 0 28px}
-    .eyebrow {color:var(--accent);font-size:12px;font-weight:800;letter-spacing:2px}
-    h1 {font-size:clamp(30px,5vw,54px);line-height:1.15;margin:12px 0}
-    .hero p {color:var(--muted);max-width:700px;line-height:1.8}
-    .grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+
+    .nav {
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+    }
+
+    .brand {
+      font-weight:800;
+      letter-spacing:.8px;
+      font-size:19px;
+    }
+
+    .brand span {color:var(--accent)}
+
+    .nav-actions {display:flex;align-items:center;gap:12px}
+
+    .hero {padding:55px 0 28px}
+
+    .eyebrow {
+      color:var(--accent);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:2px;
+    }
+
+    h1 {
+      font-size:clamp(32px,5vw,55px);
+      line-height:1.2;
+      margin:13px 0;
+    }
+
+    .hero p {
+      max-width:760px;
+      color:var(--muted);
+      line-height:1.9;
+      font-size:15px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+    }
+
     .card {
-      background:linear-gradient(145deg,rgba(20,37,58,.96),rgba(13,27,44,.96));
-      border:1px solid var(--border);border-radius:20px;padding:23px;
-      box-shadow:0 15px 40px rgba(0,0,0,.18);
+      background:linear-gradient(145deg,rgba(20,43,64,.95),rgba(12,29,46,.96));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:0 18px 45px rgba(0,0,0,.18);
+      min-width:0;
     }
-    .card h2,.card h3 {margin-top:0}
-    .muted {color:var(--muted);line-height:1.7}
-    .field {margin:13px 0}
-    label {display:block;font-size:13px;color:var(--muted);margin-bottom:7px}
+
+    .card h2 {margin:0 0 12px;font-size:21px}
+    .muted {color:var(--muted);line-height:1.8}
+    .small {font-size:12px}
+
+    .field {margin:15px 0}
+
+    label {
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+
     input,textarea,select {
-      width:100%;background:#081626;color:var(--text);
-      border:1px solid var(--border);border-radius:11px;padding:13px;
+      width:100%;
+      color:var(--text);
+      background:#081727;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:13px 14px;
       outline:none;
     }
-    input:focus,textarea:focus,select:focus {border-color:var(--accent)}
-    textarea {min-height:115px;resize:vertical}
-    .actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-    .status {margin-top:14px;color:var(--muted);font-size:14px;line-height:1.7}
-    .skill {
-      background:rgba(5,16,29,.55);border:1px solid var(--border);
-      border-radius:14px;padding:16px;margin:12px 0;
+
+    input:focus,textarea:focus,select:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(73,224,193,.08);
     }
-    .skill h3 {font-size:16px;margin:0 0 8px}
-    .tag {
-      display:inline-block;padding:5px 9px;border-radius:20px;
-      background:rgba(67,223,193,.12);color:var(--accent);
-      font-size:11px;font-weight:700;margin:4px 0;
+
+    textarea {min-height:105px;resize:vertical}
+    select option {background:#102338}
+
+    .btn {
+      border:0;
+      border-radius:12px;
+      padding:12px 18px;
+      font-weight:800;
+      transition:.2s;
     }
-    .record {border-bottom:1px solid var(--border);padding:13px 0}
-    .record:last-child {border:0}
+
+    .btn:hover {filter:brightness(1.1);transform:translateY(-1px)}
+    .btn:disabled {opacity:.55;cursor:not-allowed;transform:none}
+
+    .primary {background:var(--accent);color:#06231d}
+    .secondary {background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+    .danger {background:rgba(255,119,119,.12);color:#ffaaaa;border:1px solid rgba(255,119,119,.2)}
+
+    .actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
     .notice {
-      border:1px solid rgba(104,169,255,.25);
-      background:rgba(104,169,255,.08);border-radius:14px;
-      padding:15px;color:#c9dcf6;font-size:13px;line-height:1.8;
-      margin:20px 0;
+      padding:16px 18px;
+      margin:15px 0 22px;
+      border-radius:15px;
+      border:1px solid rgba(117,181,255,.25);
+      background:rgba(117,181,255,.08);
+      color:#d1e4fa;
+      font-size:13px;
+      line-height:1.9;
     }
+
+    .status {
+      min-height:24px;
+      margin-top:12px;
+      font-size:13px;
+      line-height:1.7;
+      color:var(--muted);
+      overflow-wrap:anywhere;
+    }
+
+    .status.error {color:var(--danger)}
+    .status.success {color:var(--success)}
+
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .stat {
+      padding:17px;
+      border:1px solid var(--border);
+      border-radius:15px;
+      background:rgba(4,17,30,.5);
+    }
+
+    .stat strong {
+      display:block;
+      font-size:27px;
+      color:var(--accent);
+      margin-top:5px;
+    }
+
+    .skill-list {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      margin-top:20px;
+    }
+
+    .skill {
+      padding:18px;
+      border-radius:15px;
+      border:1px solid var(--border);
+      background:rgba(4,17,30,.48);
+      min-width:0;
+    }
+
+    .skill h3 {font-size:16px;margin:9px 0}
+    .skill p {font-size:13px;color:var(--muted);line-height:1.8}
+
+    .tag {
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:30px;
+      background:rgba(73,224,193,.12);
+      color:var(--accent);
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .objective-list {
+      margin:10px 0 0;
+      padding-inline-start:20px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.9;
+    }
+
+    .history-item {
+      padding:15px 0;
+      border-bottom:1px solid var(--border);
+    }
+
+    .history-item:last-child {border-bottom:0}
+    .history-item h3 {font-size:15px;margin:0 0 7px}
+    .history-item p {font-size:13px;color:var(--muted);line-height:1.8}
+
+    .empty {
+      padding:20px;
+      text-align:center;
+      border:1px dashed var(--border);
+      border-radius:14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.8;
+    }
+
+    .section {margin-top:20px}
     .hidden {display:none!important}
-    footer {padding:35px 0;color:var(--muted);font-size:12px;text-align:center}
-    @media(max-width:720px) {.grid{grid-template-columns:1fr}.hero{padding-top:35px}}
+
+    footer {
+      padding:35px 0;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media(max-width:760px) {
+      .grid,.skill-list {grid-template-columns:1fr}
+      .hero {padding-top:35px}
+      .card {padding:19px}
+      .nav {min-height:65px}
+    }
   </style>
 </head>
 
@@ -100,124 +282,154 @@
 <header>
   <div class="container nav">
     <div class="brand">NABD <span>ACADEMY</span></div>
-    <div class="actions" style="margin:0">
-      <button class="btn-secondary" id="languageBtn" type="button">العربية</button>
-      <a href="index.html" style="text-decoration:none;align-self:center" data-i18n="home">Home</a>
+    <div class="nav-actions">
+      <a href="index.html" data-i18n="home">الرئيسية</a>
+      <button class="btn secondary" id="languageBtn" type="button">English</button>
     </div>
   </div>
 </header>
 
 <main class="container">
+
   <section class="hero">
-    <div class="eyebrow">NABD ACADEMY · LEARNING & DEVELOPMENT</div>
-    <h1 data-i18n="title">Medical Skill Passport</h1>
+    <div class="eyebrow">NABD ACADEMY · MEDICAL EDUCATION</div>
+    <h1 data-i18n="title">جواز المهارات الطبية</h1>
     <p data-i18n="intro">
-      A personal learning record designed to document your progress,
-      reflections, and development across foundational medical skills.
+      مساحة تعليمية شخصية لتوثيق تطورك في المهارات الطبية الأساسية،
+      ومتابعة أهدافك التعليمية وتأملاتك في رحلة التعلم.
     </p>
   </section>
 
   <div class="notice" data-i18n="notice">
-    Educational notice: This passport documents learning activities and
-    self-reflections only. It does not certify clinical competence,
-    authorize independent clinical practice, or replace supervised
-    assessment. Never enter patient-identifiable information.
+    تنبيه: هذا الجواز أداة تعليمية لتوثيق التعلم والتأمل الذاتي فقط.
+    لا يمثل شهادة كفاءة سريرية أو ترخيصًا للممارسة الطبية المستقلة،
+    ولا يغني عن التدريب والتقييم المباشر تحت إشراف مختص.
+    استخدم سيناريوهات افتراضية فقط، ولا تُدخل أي معلومات تكشف هوية المرضى.
   </div>
 
   <section class="grid">
-    <div class="card" id="authCard">
-      <h2 data-i18n="accountTitle">Student account</h2>
+
+    <div class="card">
+      <h2 data-i18n="accountTitle">حساب الطالب</h2>
       <p class="muted" data-i18n="accountIntro">
-        Sign in using your existing Nabd Academy student account.
+        استخدم حسابك الحالي في أكاديمية نبض لتسجيل الدخول.
       </p>
+
       <div class="field">
-        <label data-i18n="email">Email address</label>
-        <input id="email" type="email" autocomplete="email">
+        <label for="email" data-i18n="email">البريد الإلكتروني</label>
+        <input id="email" type="email" autocomplete="username">
       </div>
+
       <div class="field">
-        <label data-i18n="password">Password</label>
+        <label for="password" data-i18n="password">كلمة المرور</label>
         <input id="password" type="password" autocomplete="current-password">
       </div>
+
       <div class="actions">
-        <button class="btn-primary" id="loginBtn" type="button" data-i18n="login">Sign in</button>
-        <button class="btn-secondary" id="logoutBtn" type="button" data-i18n="logout">Sign out</button>
+        <button class="btn primary" id="loginBtn" type="button" data-i18n="login">تسجيل الدخول</button>
+        <button class="btn danger" id="logoutBtn" type="button" data-i18n="logout">تسجيل الخروج</button>
       </div>
-      <div class="status" id="authStatus" aria-live="polite"></div>
+
+      <div id="authStatus" class="status" aria-live="polite"></div>
     </div>
 
     <div class="card">
-      <h2 data-i18n="profileTitle">Passport overview</h2>
-      <p class="muted" data-i18n="profileIntro">
-        Your learning record will appear here after signing in.
+      <h2 data-i18n="overviewTitle">ملخص جوازك</h2>
+      <p class="muted" data-i18n="overviewIntro">
+        ستظهر معلومات حسابك ونشاطك التعليمي بعد تسجيل الدخول.
       </p>
-      <div class="skill">
-        <div class="eyebrow" data-i18n="identity">STUDENT IDENTITY</div>
-        <p id="studentEmail" class="muted">—</p>
+
+      <div class="stat">
+        <span class="muted" data-i18n="student">الطالب</span>
+        <div id="studentEmail" style="margin-top:8px;overflow-wrap:anywhere">—</div>
       </div>
-      <div class="skill">
-        <div class="eyebrow" data-i18n="progress">RECORDED ACTIVITIES</div>
-        <h2 id="recordCount">0</h2>
-      </div>
-      <div class="skill">
-        <div class="eyebrow" data-i18n="scope">LEARNING SCOPE</div>
-        <p class="muted" data-i18n="scopeText">Foundational medical learning and reflection</p>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="muted" data-i18n="activities">الأنشطة المرسلة</span>
+          <strong id="recordCount">0</strong>
+        </div>
+        <div class="stat">
+          <span class="muted" data-i18n="availableSkills">المهارات المتاحة</span>
+          <strong id="skillCount">0</strong>
+        </div>
       </div>
     </div>
+
   </section>
 
-  <section class="card" style="margin-top:20px">
-    <h2 data-i18n="catalogTitle">Skill catalog</h2>
+  <section class="card section">
+    <h2 data-i18n="catalogTitle">كتالوج المهارات الطبية</h2>
     <p class="muted" data-i18n="catalogIntro">
-      Explore the foundational skills available in the academy.
+      استكشف المهارات التعليمية المنشورة وأهداف التعلم المرتبطة بكل منها.
     </p>
-    <div id="skillCatalog">
-      <p class="muted" data-i18n="signinCatalog">Sign in to load the skill catalog.</p>
+    <div id="skillCatalog" class="skill-list">
+      <div class="empty" data-i18n="signInCatalog">سجّل الدخول لعرض المهارات.</div>
     </div>
   </section>
 
-  <section class="grid" style="margin-top:20px">
+  <section class="grid section">
+
     <div class="card">
-      <h2 data-i18n="reflectionTitle">Learning reflection</h2>
+      <h2 data-i18n="reflectionTitle">التأمل التعليمي</h2>
       <p class="muted" data-i18n="reflectionIntro">
-        Record what you learned, what challenged you, and what you plan to improve.
+        سجّل ما تعلمته، والتحديات التي واجهتك، وخطوتك التعليمية القادمة.
       </p>
+
       <div class="field">
-        <label data-i18n="selectSkill">Select a skill</label>
+        <label for="skillSelect" data-i18n="selectSkill">اختر المهارة</label>
         <select id="skillSelect">
-          <option value="" data-i18n="chooseSkill">Choose a skill</option>
+          <option value="" data-i18n="chooseSkill">اختر مهارة</option>
         </select>
       </div>
+
       <div class="field">
-        <label data-i18n="whatLearned">What did you learn?</label>
+        <label for="learned" data-i18n="learned">ماذا تعلمت؟</label>
         <textarea id="learned" maxlength="3000"></textarea>
       </div>
+
       <div class="field">
-        <label data-i18n="challenge">What was challenging?</label>
-        <textarea id="challengeText" maxlength="2000"></textarea>
+        <label for="challenge" data-i18n="challenge">ما التحدي الذي واجهته؟</label>
+        <textarea id="challenge" maxlength="2000"></textarea>
       </div>
+
       <div class="field">
-        <label data-i18n="nextStep">What will you practice next?</label>
+        <label for="nextStep" data-i18n="nextStep">ما خطوتك التعليمية القادمة؟</label>
         <textarea id="nextStep" maxlength="2000"></textarea>
       </div>
-      <button class="btn-primary" id="submitReflection" type="button" data-i18n="submit">Submit reflection</button>
-      <div class="status" id="reflectionStatus" aria-live="polite"></div>
+
+      <button class="btn primary" id="submitBtn" type="button" data-i18n="submit">
+        إرسال التأمل
+      </button>
+
+      <div id="reflectionStatus" class="status" aria-live="polite"></div>
     </div>
 
     <div class="card">
-      <h2 data-i18n="historyTitle">My learning history</h2>
+      <h2 data-i18n="historyTitle">سجلي التعليمي</h2>
       <p class="muted" data-i18n="historyIntro">
-        Your submitted learning reflections will be listed here.
+        تابع التأملات التعليمية التي أرسلتها سابقًا.
       </p>
+
       <div id="history">
-        <p class="muted" data-i18n="signinHistory">Sign in to view your history.</p>
+        <div class="empty" data-i18n="signInHistory">سجّل الدخول لعرض سجلك.</div>
       </div>
-      <button class="btn-secondary" id="refreshBtn" type="button" data-i18n="refresh">Refresh history</button>
+
+      <button class="btn secondary" id="refreshBtn" type="button" data-i18n="refresh">
+        تحديث السجل
+      </button>
+
+      <div id="historyStatus" class="status" aria-live="polite"></div>
     </div>
+
   </section>
+
 </main>
 
 <footer class="container">
-  NABD ACADEMY FOR MEDICAL SCIENCES · LEARN · PRACTICE · REFLECT
+  NABD ACADEMY FOR MEDICAL SCIENCES
+  <br>
+  <span data-i18n="footer">التعلم · الممارسة التعليمية · التطور المستمر</span>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -228,303 +440,481 @@
 (() => {
   "use strict";
 
-  const translations = {
-    en: {
-      home:"Home", title:"Medical Skill Passport",
-      intro:"A personal learning record designed to document your progress, reflections, and development across foundational medical skills.",
-      notice:"Educational notice: This passport documents learning activities and self-reflections only. It does not certify clinical competence, authorize independent clinical practice, or replace supervised assessment. Never enter patient-identifiable information.",
-      accountTitle:"Student account", accountIntro:"Sign in using your existing Nabd Academy student account.",
-      email:"Email address", password:"Password", login:"Sign in", logout:"Sign out",
-      profileTitle:"Passport overview", profileIntro:"Your learning record will appear here after signing in.",
-      identity:"STUDENT IDENTITY", progress:"RECORDED ACTIVITIES", scope:"LEARNING SCOPE",
-      scopeText:"Foundational medical learning and reflection", catalogTitle:"Skill catalog",
-      catalogIntro:"Explore the foundational skills available in the academy.",
-      signinCatalog:"Sign in to load the skill catalog.", reflectionTitle:"Learning reflection",
-      reflectionIntro:"Record what you learned, what challenged you, and what you plan to improve.",
-      selectSkill:"Select a skill", chooseSkill:"Choose a skill", whatLearned:"What did you learn?",
-      challenge:"What was challenging?", nextStep:"What will you practice next?",
-      submit:"Submit reflection", historyTitle:"My learning history",
-      historyIntro:"Your submitted learning reflections will be listed here.",
-      signinHistory:"Sign in to view your history.", refresh:"Refresh history",
-      loginSuccess:"Signed in successfully.", logoutSuccess:"You have signed out.",
-      loginFailed:"Sign-in failed: ", loading:"Loading...", noSkills:"No published skills are available.",
-      noHistory:"No submitted reflections yet.", selectRequired:"Please select a skill.",
-      fieldsRequired:"Please complete all reflection fields.",
-      submitSuccess:"Your reflection has been submitted.",
-      submitFailed:"Could not submit reflection: ", loadFailed:"Could not load data: ",
-      unknown:"Untitled skill", status:"Status: ", submitted:"Submitted",
-      signInFirst:"Please sign in first.", missingClient:"Supabase client was not found. Check the academy client configuration.",
-      missingConfig:"Supabase configuration is incomplete."
-    },
+  const TEXT = {
     ar: {
-      home:"الرئيسية", title:"جواز المهارات الطبية",
-      intro:"سجل تعليمي شخصي يوثق تقدمك وتأملاتك وتطورك في المهارات الطبية الأساسية.",
-      notice:"تنبيه تعليمي: يوثق هذا الجواز الأنشطة التعليمية والتأملات الذاتية فقط. ولا يُعد شهادة كفاءة سريرية أو تصريحًا للممارسة المستقلة أو بديلًا عن التقييم تحت الإشراف. يُمنع إدخال أي معلومات تكشف هوية المرضى.",
-      accountTitle:"حساب الطالب", accountIntro:"سجّل الدخول باستخدام حسابك الحالي في أكاديمية نبض.",
-      email:"البريد الإلكتروني", password:"كلمة المرور", login:"تسجيل الدخول", logout:"تسجيل الخروج",
-      profileTitle:"ملخص الجواز", profileIntro:"سيظهر سجلك التعليمي هنا بعد تسجيل الدخول.",
-      identity:"هوية الطالب", progress:"الأنشطة المسجلة", scope:"النطاق التعليمي",
-      scopeText:"التعلم الطبي الأساسي والتأمل التعليمي", catalogTitle:"كتالوج المهارات",
-      catalogIntro:"استكشف المهارات الأساسية المتاحة في الأكاديمية.",
-      signinCatalog:"سجّل الدخول لتحميل كتالوج المهارات.", reflectionTitle:"التأمل التعليمي",
-      reflectionIntro:"دوّن ما تعلمته، وما واجهته من تحديات، وما تخطط لتحسينه.",
-      selectSkill:"اختر المهارة", chooseSkill:"اختر مهارة", whatLearned:"ماذا تعلمت؟",
-      challenge:"ما الصعوبة التي واجهتك؟", nextStep:"ما الذي ستتدرب عليه لاحقًا؟",
-      submit:"إرسال التأمل", historyTitle:"سجلي التعليمي",
-      historyIntro:"ستظهر هنا التأملات التعليمية التي أرسلتها.",
-      signinHistory:"سجّل الدخول لعرض سجلك.", refresh:"تحديث السجل",
-      loginSuccess:"تم تسجيل الدخول بنجاح.", logoutSuccess:"تم تسجيل الخروج.",
-      loginFailed:"تعذر تسجيل الدخول: ", loading:"جارٍ التحميل...", noSkills:"لا توجد مهارات منشورة حاليًا.",
-      noHistory:"لا توجد تأملات مرسلة حتى الآن.", selectRequired:"يرجى اختيار مهارة.",
-      fieldsRequired:"يرجى تعبئة جميع حقول التأمل.",
-      submitSuccess:"تم إرسال تأملك التعليمي بنجاح.",
-      submitFailed:"تعذر إرسال التأمل: ", loadFailed:"تعذر تحميل البيانات: ",
-      unknown:"مهارة دون عنوان", status:"الحالة: ", submitted:"تم الإرسال",
-      signInFirst:"يرجى تسجيل الدخول أولًا.", missingClient:"لم يتم العثور على عميل Supabase. تحقق من إعدادات الأكاديمية.",
-      missingConfig:"إعدادات Supabase غير مكتملة."
+      home:"الرئيسية",
+      title:"جواز المهارات الطبية",
+      intro:"مساحة تعليمية شخصية لتوثيق تطورك في المهارات الطبية الأساسية، ومتابعة أهدافك التعليمية وتأملاتك في رحلة التعلم.",
+      notice:"تنبيه: هذا الجواز أداة تعليمية لتوثيق التعلم والتأمل الذاتي فقط. لا يمثل شهادة كفاءة سريرية أو ترخيصًا للممارسة الطبية المستقلة، ولا يغني عن التدريب والتقييم المباشر تحت إشراف مختص. استخدم سيناريوهات افتراضية فقط، ولا تُدخل أي معلومات تكشف هوية المرضى.",
+      accountTitle:"حساب الطالب",
+      accountIntro:"استخدم حسابك الحالي في أكاديمية نبض لتسجيل الدخول.",
+      email:"البريد الإلكتروني",
+      password:"كلمة المرور",
+      login:"تسجيل الدخول",
+      logout:"تسجيل الخروج",
+      overviewTitle:"ملخص جوازك",
+      overviewIntro:"ستظهر معلومات حسابك ونشاطك التعليمي بعد تسجيل الدخول.",
+      student:"الطالب",
+      activities:"الأنشطة المرسلة",
+      availableSkills:"المهارات المتاحة",
+      catalogTitle:"كتالوج المهارات الطبية",
+      catalogIntro:"استكشف المهارات التعليمية المنشورة وأهداف التعلم المرتبطة بكل منها.",
+      signInCatalog:"سجّل الدخول لعرض المهارات.",
+      reflectionTitle:"التأمل التعليمي",
+      reflectionIntro:"سجّل ما تعلمته، والتحديات التي واجهتك، وخطوتك التعليمية القادمة.",
+      selectSkill:"اختر المهارة",
+      chooseSkill:"اختر مهارة",
+      learned:"ماذا تعلمت؟",
+      challenge:"ما التحدي الذي واجهته؟",
+      nextStep:"ما خطوتك التعليمية القادمة؟",
+      submit:"إرسال التأمل",
+      historyTitle:"سجلي التعليمي",
+      historyIntro:"تابع التأملات التعليمية التي أرسلتها سابقًا.",
+      signInHistory:"سجّل الدخول لعرض سجلك.",
+      refresh:"تحديث السجل",
+      footer:"التعلم · الممارسة التعليمية · التطور المستمر",
+      loading:"جارٍ التحميل...",
+      signedIn:"تم تسجيل الدخول بنجاح.",
+      signedOut:"تم تسجيل الخروج.",
+      loginError:"تعذر تسجيل الدخول: ",
+      missingClient:"تعذر العثور على اتصال Supabase. تحقق من ملفات إعدادات الأكاديمية.",
+      noSkills:"لا توجد مهارات منشورة حاليًا.",
+      noHistory:"لا توجد تأملات تعليمية مرسلة حتى الآن.",
+      needLogin:"يرجى تسجيل الدخول أولًا.",
+      needSkill:"يرجى اختيار مهارة.",
+      needFields:"يرجى تعبئة جميع حقول التأمل.",
+      submitted:"تم إرسال التأمل بنجاح.",
+      submitError:"تعذر إرسال التأمل: ",
+      loadError:"تعذر تحميل البيانات: ",
+      refreshError:"تعذر تحديث السجل: ",
+      status:"الحالة",
+      submittedStatus:"تم الإرسال",
+      objectives:"أهداف التعلم",
+      safety:"ملاحظة السلامة",
+      domain:"المجال",
+      level:"المستوى",
+      foundation:"تأسيسي",
+      noObjectives:"لا توجد أهداف مسجلة.",
+      noSafety:"اتبع تعليمات المشرف الأكاديمي.",
+      learnedLabel:"ما تعلمته",
+      challengeLabel:"التحدي",
+      nextLabel:"الخطوة القادمة",
+      date:"تاريخ الإرسال",
+      selectBefore:"اختر مهارة أولًا.",
+      genericError:"حدث خطأ غير متوقع."
+    },
+
+    en: {
+      home:"Home",
+      title:"Medical Skill Passport",
+      intro:"A personal learning space to document your development in foundational medical skills, learning objectives, and reflections.",
+      notice:"Educational notice: This passport documents learning and self-reflection only. It is not a clinical competency certificate or authorization for independent practice, and does not replace supervised training and assessment. Use fictional scenarios only. Never enter patient-identifiable information.",
+      accountTitle:"Student account",
+      accountIntro:"Sign in with your existing Nabd Academy account.",
+      email:"Email address",
+      password:"Password",
+      login:"Sign in",
+      logout:"Sign out",
+      overviewTitle:"Passport overview",
+      overviewIntro:"Your account and learning activity will appear here after signing in.",
+      student:"Student",
+      activities:"Submitted activities",
+      availableSkills:"Available skills",
+      catalogTitle:"Medical skill catalog",
+      catalogIntro:"Explore published learning skills and their associated objectives.",
+      signInCatalog:"Sign in to view the skill catalog.",
+      reflectionTitle:"Learning reflection",
+      reflectionIntro:"Record what you learned, the challenges you faced, and your next learning step.",
+      selectSkill:"Select a skill",
+      chooseSkill:"Choose a skill",
+      learned:"What did you learn?",
+      challenge:"What challenged you?",
+      nextStep:"What is your next learning step?",
+      submit:"Submit reflection",
+      historyTitle:"My learning history",
+      historyIntro:"Review the learning reflections you have previously submitted.",
+      signInHistory:"Sign in to view your history.",
+      refresh:"Refresh history",
+      footer:"Learn · Practice · Progress",
+      loading:"Loading...",
+      signedIn:"Signed in successfully.",
+      signedOut:"You have signed out.",
+      loginError:"Sign-in failed: ",
+      missingClient:"Supabase connection was not found. Check the academy configuration files.",
+      noSkills:"No published skills are currently available.",
+      noHistory:"No learning reflections have been submitted yet.",
+      needLogin:"Please sign in first.",
+      needSkill:"Please select a skill.",
+      needFields:"Please complete all reflection fields.",
+      submitted:"Reflection submitted successfully.",
+      submitError:"Could not submit reflection: ",
+      loadError:"Could not load data: ",
+      refreshError:"Could not refresh history: ",
+      status:"Status",
+      submittedStatus:"Submitted",
+      objectives:"Learning objectives",
+      safety:"Safety note",
+      domain:"Domain",
+      level:"Level",
+      foundation:"Foundation",
+      noObjectives:"No objectives recorded.",
+      noSafety:"Follow your academic supervisor's instructions.",
+      learnedLabel:"What I learned",
+      challengeLabel:"Challenge",
+      nextLabel:"Next step",
+      date:"Submission date",
+      selectBefore:"Select a skill first.",
+      genericError:"An unexpected error occurred."
     }
   };
 
-  let lang = "en";
-  let supabase = null;
-  let currentUser = null;
+  let language = "ar";
+  let db = null;
+  let user = null;
   let skills = [];
 
   const $ = id => document.getElementById(id);
-  const t = key => translations[lang][key] || key;
+  const tr = key => TEXT[language][key] || key;
 
-  function setStatus(id, message, error = false) {
-    const el = $(id);
-    el.textContent = message;
-    el.style.color = error ? "var(--danger)" : "var(--accent)";
-  }
-
-  function applyLanguage() {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.body.dir = lang === "ar" ? "rtl" : "ltr";
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (translations[lang][key]) el.textContent = t(key);
-    });
-    $("languageBtn").textContent = lang === "en" ? "العربية" : "English";
-    renderSkills();
-  }
-
-  $("languageBtn").addEventListener("click", () => {
-    lang = lang === "en" ? "ar" : "en";
-    applyLanguage();
-  });
-
-  function getClient() {
-    if (window.nabdSupabase && typeof window.nabdSupabase.from === "function") {
-      return window.nabdSupabase;
-    }
-
-    if (window.supabaseClient && typeof window.supabaseClient.from === "function") {
-      return window.supabaseClient;
-    }
-
-    const cfg = window.NABD_CONFIG || window.SUPABASE_CONFIG || window.supabaseConfig;
-    const url = cfg && (cfg.url || cfg.supabaseUrl || cfg.SUPABASE_URL);
-    const key = cfg && (cfg.anonKey || cfg.publishableKey || cfg.supabaseAnonKey || cfg.SUPABASE_ANON_KEY);
-
-    if (url && key && window.supabase) {
-      return window.supabase.createClient(url, key);
-    }
-
-    return null;
-  }
-
-  function escapeHTML(value) {
+  function safe(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
     })[char]);
   }
 
+  function setStatus(id, message, type = "") {
+    const el = $(id);
+    el.textContent = message;
+    el.className = "status" + (type ? " " + type : "");
+  }
+
+  function setBusy(button, busy) {
+    button.disabled = busy;
+    button.dataset.busy = busy ? "1" : "0";
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return new Intl.DateTimeFormat(
+      language === "ar" ? "ar" : "en",
+      { dateStyle:"medium", timeStyle:"short" }
+    ).format(date);
+  }
+
+  function getSkillTitle(skill) {
+    return language === "ar" ? skill.title_ar : skill.title_en;
+  }
+
+  function getObjectives(skill) {
+    const list = Array.isArray(skill.learning_objectives)
+      ? skill.learning_objectives
+      : [];
+
+    return list.map(item => {
+      if (typeof item === "string") return item;
+      if (!item || typeof item !== "object") return "";
+      return language === "ar"
+        ? (item.ar || item.title_ar || item.text_ar || item.en || item.title_en || "")
+        : (item.en || item.title_en || item.text_en || item.ar || item.title_ar || "");
+    }).filter(Boolean);
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    document.body.dir = language === "ar" ? "rtl" : "ltr";
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      if (TEXT[language][key]) el.textContent = tr(key);
+    });
+
+    $("languageBtn").textContent = language === "ar" ? "English" : "العربية";
+
+    renderCatalog();
+    renderHistory(lastHistory);
+  }
+
+  $("languageBtn").addEventListener("click", () => {
+    language = language === "ar" ? "en" : "ar";
+    applyLanguage();
+  });
+
+  function getSupabaseClient() {
+    if (
+      window.nabdSupabase &&
+      typeof window.nabdSupabase.from === "function"
+    ) {
+      return window.nabdSupabase;
+    }
+    return null;
+  }
+
   async function loadSkills() {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from("nabd_skill_catalog")
-      .select("*")
-      .eq("is_published", true);
+      .select("id, code, title_en, title_ar, domain, level, learning_objectives, safety_note")
+      .eq("active", true)
+      .order("domain", { ascending:true })
+      .order("code", { ascending:true });
 
     if (error) throw error;
+
     skills = data || [];
-    renderSkills();
+    $("skillCount").textContent = skills.length;
+    renderCatalog();
+    renderSkillOptions();
   }
 
-  function skillName(skill) {
-    return lang === "ar"
-      ? (skill.title_ar || skill.name_ar || skill.title || skill.name || t("unknown"))
-      : (skill.title_en || skill.name_en || skill.title || skill.name || t("unknown"));
-  }
+  function renderCatalog() {
+    const container = $("skillCatalog");
 
-  function renderSkills() {
-    const catalog = $("skillCatalog");
-    const select = $("skillSelect");
-
-    if (!skills.length) {
-      catalog.textContent = currentUser ? t("noSkills") : t("signinCatalog");
+    if (!user) {
+      container.innerHTML = `<div class="empty">${safe(tr("signInCatalog"))}</div>`;
       return;
     }
 
-    catalog.innerHTML = skills.map(skill => `
-      <div class="skill">
-        <span class="tag">${escapeHTML(skill.category || "MEDICAL SKILL")}</span>
-        <h3>${escapeHTML(skillName(skill))}</h3>
-        <p class="muted">${escapeHTML(
-          lang === "ar"
-            ? (skill.description_ar || skill.description || "")
-            : (skill.description_en || skill.description || "")
-        )}</p>
-      </div>
-    `).join("");
+    if (!skills.length) {
+      container.innerHTML = `<div class="empty">${safe(tr("noSkills"))}</div>`;
+      return;
+    }
 
+    container.innerHTML = skills.map(skill => {
+      const objectives = getObjectives(skill);
+      const objectiveHtml = objectives.length
+        ? objectives.map(item => `<li>${safe(item)}</li>`).join("")
+        : `<li>${safe(tr("noObjectives"))}</li>`;
+
+      return `
+        <article class="skill">
+          <span class="tag">${safe(skill.domain)}</span>
+          <h3>${safe(getSkillTitle(skill))}</h3>
+          <div class="muted small">${safe(tr("level"))}: ${safe(skill.level || tr("foundation"))}</div>
+          <p><strong>${safe(tr("objectives"))}</strong></p>
+          <ul class="objective-list">${objectiveHtml}</ul>
+          <p><strong>${safe(tr("safety"))}:</strong><br>${safe(skill.safety_note || tr("noSafety"))}</p>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderSkillOptions() {
+    const select = $("skillSelect");
     const previous = select.value;
-    select.innerHTML = `<option value="">${escapeHTML(t("chooseSkill"))}</option>`;
+
+    select.innerHTML = `<option value="">${safe(tr("chooseSkill"))}</option>`;
+
     skills.forEach(skill => {
       const option = document.createElement("option");
       option.value = skill.id;
-      option.textContent = skillName(skill);
+      option.textContent = getSkillTitle(skill);
       select.appendChild(option);
     });
-    if (skills.some(s => String(s.id) === previous)) select.value = previous;
+
+    if (skills.some(skill => skill.id === previous)) {
+      select.value = previous;
+    }
   }
 
-  async function loadHistory() {
-    if (!currentUser) return;
+  let lastHistory = [];
 
-    const { data, error } = await supabase
+  async function loadHistory() {
+    if (!user) return;
+
+    const { data, error } = await db
       .from("nabd_skill_assessment_attempts")
-      .select("*")
-      .eq("student_id", currentUser.id)
-      .order("created_at", { ascending: false });
+      .select("id, skill_id, response_payload, status, submitted_at, score, reviewer_feedback")
+      .eq("student_id", user.id)
+      .order("submitted_at", { ascending:false });
 
     if (error) throw error;
 
-    const records = data || [];
-    $("recordCount").textContent = records.length;
-    $("history").innerHTML = records.length ? records.map(record => {
-      const skill = skills.find(s => String(s.id) === String(record.skill_id));
-      const payload = record.response_payload || {};
-      const reflection = payload.reflection || {};
-      const learned = reflection.learned || "";
-      const submittedAt = record.created_at
-        ? new Date(record.created_at).toLocaleDateString(lang === "ar" ? "ar" : "en")
-        : "";
+    lastHistory = data || [];
+    $("recordCount").textContent = lastHistory.length;
+    renderHistory(lastHistory);
+  }
+
+  function renderHistory(records) {
+    const container = $("history");
+
+    if (!user) {
+      container.innerHTML = `<div class="empty">${safe(tr("signInHistory"))}</div>`;
+      return;
+    }
+
+    if (!records || !records.length) {
+      container.innerHTML = `<div class="empty">${safe(tr("noHistory"))}</div>`;
+      return;
+    }
+
+    container.innerHTML = records.map(record => {
+      const skill = skills.find(item => item.id === record.skill_id);
+      const reflection = record.response_payload?.reflection || {};
+      const title = skill ? getSkillTitle(skill) : tr("selectBefore");
 
       return `
-        <div class="record">
-          <strong>${escapeHTML(skill ? skillName(skill) : t("unknown"))}</strong>
-          <p class="muted">${escapeHTML(submittedAt)}</p>
-          <p>${escapeHTML(learned)}</p>
-          <span class="tag">${escapeHTML(t("status") + t("submitted"))}</span>
-        </div>
+        <article class="history-item">
+          <h3>${safe(title)}</h3>
+          <div class="muted small">${safe(tr("date"))}: ${safe(formatDate(record.submitted_at))}</div>
+          <p><strong>${safe(tr("learnedLabel"))}:</strong><br>${safe(reflection.learned || "—")}</p>
+          <p><strong>${safe(tr("challengeLabel"))}:</strong><br>${safe(reflection.challenge || "—")}</p>
+          <p><strong>${safe(tr("nextLabel"))}:</strong><br>${safe(reflection.next_step || "—")}</p>
+          <span class="tag">${safe(tr("status"))}: ${safe(record.status || tr("submittedStatus"))}</span>
+        </article>
       `;
-    }).join("") : `<p class="muted">${escapeHTML(t("noHistory"))}</p>`;
+    }).join("");
   }
 
-  async function refreshAll() {
-    if (!currentUser) return;
+  async function refreshDashboard() {
+    if (!user) return;
+
     try {
-      setStatus("authStatus", t("loading"));
+      setStatus("authStatus", tr("loading"));
       await loadSkills();
       await loadHistory();
-      $("studentEmail").textContent = currentUser.email || "—";
-      setStatus("authStatus", t("loginSuccess"));
+      $("studentEmail").textContent = user.email || "—";
+      setStatus("authStatus", tr("signedIn"), "success");
     } catch (error) {
-      setStatus("authStatus", t("loadFailed") + (error.message || ""), true);
+      setStatus("authStatus", tr("loadError") + error.message, "error");
     }
   }
 
-  async function initializeAuth() {
-    supabase = getClient();
+  async function initialize() {
+    db = getSupabaseClient();
 
-    if (!supabase) {
-      setStatus("authStatus", t("missingClient"), true);
+    if (!db) {
+      setStatus("authStatus", tr("missingClient"), "error");
       return;
     }
 
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      setStatus("authStatus", error.message, true);
-      return;
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+
+      user = data.session?.user || null;
+
+      if (user) {
+        await refreshDashboard();
+      }
+    } catch (error) {
+      setStatus("authStatus", tr("loadError") + error.message, "error");
     }
 
-    currentUser = data.session?.user || null;
-    if (currentUser) await refreshAll();
+    db.auth.onAuthStateChange((_event, session) => {
+      user = session?.user || null;
+
+      if (user) {
+        $("studentEmail").textContent = user.email || "—";
+        refreshDashboard();
+      } else {
+        skills = [];
+        lastHistory = [];
+        $("studentEmail").textContent = "—";
+        $("recordCount").textContent = "0";
+        $("skillCount").textContent = "0";
+        renderCatalog();
+        renderSkillOptions();
+        renderHistory([]);
+      }
+    });
   }
 
   $("loginBtn").addEventListener("click", async () => {
-    if (!supabase) {
-      supabase = getClient();
-      if (!supabase) {
-        setStatus("authStatus", t("missingClient"), true);
-        return;
-      }
+    if (!db) {
+      db = getSupabaseClient();
+    }
+
+    if (!db) {
+      setStatus("authStatus", tr("missingClient"), "error");
+      return;
     }
 
     const email = $("email").value.trim();
     const password = $("password").value;
 
     if (!email || !password) {
-      setStatus("authStatus", t("fieldsRequired"), true);
+      setStatus("authStatus", tr("needFields"), "error");
       return;
     }
 
-    $("loginBtn").disabled = true;
+    const button = $("loginBtn");
+    setBusy(button, true);
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
       if (error) throw error;
-      currentUser = data.user;
-      await refreshAll();
+
+      user = data.user;
+      await refreshDashboard();
     } catch (error) {
-      setStatus("authStatus", t("loginFailed") + error.message, true);
+      setStatus("authStatus", tr("loginError") + error.message, "error");
     } finally {
-      $("loginBtn").disabled = false;
+      setBusy(button, false);
     }
   });
 
   $("logoutBtn").addEventListener("click", async () => {
-    if (!supabase) return;
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      setStatus("authStatus", error.message, true);
-      return;
+    if (!db) return;
+
+    try {
+      const { error } = await db.auth.signOut();
+      if (error) throw error;
+
+      user = null;
+      skills = [];
+      lastHistory = [];
+      $("studentEmail").textContent = "—";
+      $("recordCount").textContent = "0";
+      $("skillCount").textContent = "0";
+      renderCatalog();
+      renderSkillOptions();
+      renderHistory([]);
+      setStatus("authStatus", tr("signedOut"), "success");
+    } catch (error) {
+      setStatus("authStatus", error.message, "error");
     }
-    currentUser = null;
-    skills = [];
-    $("studentEmail").textContent = "—";
-    $("recordCount").textContent = "0";
-    $("skillCatalog").textContent = t("signinCatalog");
-    $("history").textContent = t("signinHistory");
-    $("skillSelect").innerHTML = `<option value="">${escapeHTML(t("chooseSkill"))}</option>`;
-    setStatus("authStatus", t("logoutSuccess"));
   });
 
-  $("submitReflection").addEventListener("click", async () => {
-    if (!currentUser) {
-      setStatus("reflectionStatus", t("signInFirst"), true);
+  $("submitBtn").addEventListener("click", async () => {
+    if (!user) {
+      setStatus("reflectionStatus", tr("needLogin"), "error");
       return;
     }
 
     const skillId = $("skillSelect").value;
     const learned = $("learned").value.trim();
-    const challenge = $("challengeText").value.trim();
+    const challenge = $("challenge").value.trim();
     const nextStep = $("nextStep").value.trim();
 
     if (!skillId) {
-      setStatus("reflectionStatus", t("selectRequired"), true);
+      setStatus("reflectionStatus", tr("needSkill"), "error");
       return;
     }
 
     if (!learned || !challenge || !nextStep) {
-      setStatus("reflectionStatus", t("fieldsRequired"), true);
+      setStatus("reflectionStatus", tr("needFields"), "error");
       return;
     }
 
-    const button = $("submitReflection");
-    button.disabled = true;
+    const selectedSkill = skills.find(skill => skill.id === skillId);
+
+    if (!selectedSkill) {
+      setStatus("reflectionStatus", tr("selectBefore"), "error");
+      return;
+    }
+
+    const button = $("submitBtn");
+    setBusy(button, true);
 
     try {
       const payload = {
@@ -532,51 +922,60 @@
           learned,
           challenge,
           next_step: nextStep,
-          language: lang,
-          submitted_at: new Date().toISOString()
+          language,
+          skill_code: selectedSkill.code
         }
       };
 
-      const { error } = await supabase
+      const { error } = await db
         .from("nabd_skill_assessment_attempts")
         .insert({
-          student_id: currentUser.id,
+          student_id: user.id,
           skill_id: skillId,
+          response_payload: payload,
           status: "submitted",
-          score: null,
-          response_payload: payload
+          score: null
         });
 
       if (error) throw error;
 
       $("learned").value = "";
-      $("challengeText").value = "";
+      $("challenge").value = "";
       $("nextStep").value = "";
-      setStatus("reflectionStatus", t("submitSuccess"));
+      $("skillSelect").value = "";
+
+      setStatus("reflectionStatus", tr("submitted"), "success");
       await loadHistory();
     } catch (error) {
-      setStatus("reflectionStatus", t("submitFailed") + error.message, true);
+      setStatus("reflectionStatus", tr("submitError") + error.message, "error");
     } finally {
-      button.disabled = false;
+      setBusy(button, false);
     }
   });
 
   $("refreshBtn").addEventListener("click", async () => {
-    if (!currentUser) {
-      setStatus("authStatus", t("signInFirst"), true);
+    if (!user) {
+      setStatus("historyStatus", tr("needLogin"), "error");
       return;
     }
+
+    const button = $("refreshBtn");
+    setBusy(button, true);
+
     try {
       await loadHistory();
-      setStatus("authStatus", t("loginSuccess"));
+      setStatus("historyStatus", tr("signedIn"), "success");
     } catch (error) {
-      setStatus("authStatus", t("loadFailed") + error.message, true);
+      setStatus("historyStatus", tr("refreshError") + error.message, "error");
+    } finally {
+      setBusy(button, false);
     }
   });
 
   applyLanguage();
-  initializeAuth();
+  initialize();
 })();
 </script>
+
 </body>
 </html>
