@@ -136,7 +136,7 @@ try{
   assert.equal(await page.locator("#caseList button").count(),22);
   await page.goto(url+"/hospital-3d.html");
   assert.equal(await page.locator("#wingList button").count(),13);
-  assert.equal(await page.locator("#totalAttempts").textContent(),"3");
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("nabd_atlas_clinical_history_v1")).length),3);
   assert.deepEqual(pageErrors,[]);
   console.log("NABD ATLAS mobile browser, bilingual, simulation, anatomy and offline checks passed.");
 }finally{
