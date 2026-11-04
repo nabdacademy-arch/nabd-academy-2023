@@ -5,7 +5,7 @@ import {resolve,extname,sep} from "node:path";
 import {fileURLToPath} from "node:url";
 import {chromium} from "playwright";
 
-const root=fileURLToPath(new URL("../",import.meta.url));
+const root=resolve(fileURLToPath(new URL("../",import.meta.url)));
 const types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json"};
 const server=createServer((req,res)=>{
   try{
@@ -26,7 +26,8 @@ try{
   const page=await context.newPage();
   const pageErrors=[];
   page.on("pageerror",e=>pageErrors.push(e.message));
-  await page.goto(url+"/index.html");
+  const initialResponse=await page.goto(url+"/index.html");
+  assert.equal(initialResponse?.status(),200,"The browser test server must serve index.html");
   assert.match(await page.title(),/NABD ATLAS/);
   assert.equal(await page.locator('[data-view-button="case"]').count(),1);
   await page.locator('[data-view-button="case"]').click();
