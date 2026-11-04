@@ -1,1 +1,40 @@
 .hub-main{width:min(1260px,94%);margin:auto;padding:36px 0 28px}.hub-intro{display:flex;justify-content:space-between;align-items:end;gap:26px;margin-bottom:30px}.hub-intro h1{font-size:clamp(28px,4.8vw,50px);line-height:1.25;margin:14px 0}.hub-intro p{max-width:720px;color:#bcd1d9;font-size:14px;line-height:2}.hub-kpi{min-width:178px;padding:17px 22px;background:#123748;border:1px solid #416c73;border-radius:16px}.hub-kpi span,.hub-kpi small{display:block;font-size:12px;color:#b5d3dc}.hub-kpi strong{display:block;font-size:37px;color:#87f5d9}.hub-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:17px;align-items:start}.hub-sidebar,.hub-panel,.hub-learning-history{border:1px solid #315565;background:#0b2637;border-radius:20px;padding:24px}.hub-sidebar h2{font-size:18px}.hub-case-list{display:grid;gap:10px;margin:20px 0}.hub-case-button{border:1px solid #446a7b;background:#143546;padding:15px;border-radius:13px;text-align:start;color:#e7f5f9;cursor:pointer}.hub-case-button:hover{border-color:#71dfcd}.hub-case-button[aria-pressed=true]{border-color:#69e3cc;background:#19524f}.hub-case-button strong,.hub-case-button small{display:block}.hub-case-button small{font-size:12px;color:#abccd3;margin-top:5px}.hub-sidebar .small{font-size:11px;line-height:1.9}.hub-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}.hub-panel h2{font-size:22px}.hub-panel h3{font-size:19px;margin:19px 0 9px}.hub-panel .vitals{margin:15px 0 22px}.hub-panel .answers button{background:#12384a}.hub-panel .answers button.chosen{background:#1b5855}.hub-panel .feedback{white-space:pre-wrap}.hub-score{font-size:42px;color:#83ead0;font-weight:800;margin:15px 0}.counter{font-size:12px;color:#aed5d7}.hub-history{display:grid;gap:10px;margin-top:18px}.hub-decision{padding:15px;border-radius:12px;background:#123243;border:1px solid #416171}.hub-decision strong{display:block;margin-bottom:7px}.hub-decision p{font-size:13px;color:#bdd4db;line-height:1.9;margin-bottom:8px}.hub-decision button{border:1px solid #5d948f;background:#1b4d4d;color:#d8fff1;border-radius:10px;padding:9px 13px;cursor:pointer}.hub-learning-history{margin-top:26px}.history-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.history-item{padding:15px;background:#102f40;border-radius:13px;border:1px solid #3a5968}.history-item strong,.history-item span{display:block}.history-item span{font-size:12px;color:#a8c8d3;margin-top:5px}.history-empty{color:#a7c2cc;font-size:13px}.notice{margin-top:19px}.hub-pending{padding:13px;border:1px solid #46647a;border-radius:12px;background:#102f40;color:#cce1e9;font-size:12px;margin-bottom:12px}.hub-report-actions{display:flex;flex-wrap:wrap;gap:9px}.hub-score span{font-size:12px;font-weight:500;color:#b6d6dd}.small{font-size:12px}@media(max-width:900px){.hub-layout{grid-template-columns:1fr}.hub-intro{align-items:start}.hub-sidebar,.hub-panel,.hub-learning-history{padding:19px}.hub-case-list{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.hub-main{padding-top:24px}.hub-intro{display:block}.hub-kpi{max-width:200px}.hub-case-list{grid-template-columns:1fr}.hub-panel h2{font-size:19px}.hub-score{font-size:34px}}
+
+/* NABD MEDVERSE: expandable virtual-hospital catalog and evidence-first report */
+.hub-kpis{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.hub-kpis .hub-kpi{min-width:148px;flex:1}
+.hub-filters{display:grid;gap:7px;margin:12px 0 18px}
+.hub-filters label{font-size:12px;font-weight:700;color:#b9d5dc;margin-top:8px}
+.hub-filters input,.hub-filters select{display:block;width:100%;max-width:100%;min-height:44px;border:1px solid #527382;border-radius:11px;background:#081e2e;color:#e7f7fa;padding:11px 13px;font:inherit;font-size:13px}
+.hub-filters input:focus-visible,.hub-filters select:focus-visible{outline:3px solid #8cf4d4;outline-offset:2px}
+.hub-filters input::placeholder{color:#9dbac5}
+.filter-count{font-size:12px;color:#86e5d0;margin:10px 0 2px}
+.hub-case-list{max-height:680px;overflow-y:auto;overscroll-behavior:contain;padding-inline-end:4px;scrollbar-color:#4a8d90 #0a2937}
+.hub-case-button{width:100%;transition:background-color .15s,border-color .15s}
+.case-filter-tag{display:inline-block;margin-top:10px;padding:3px 8px;background:#1c5360;border:1px solid #497f80;border-radius:20px;color:#c8f5e8;font-size:10px}
+.hub-context{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.difficulty-badge{font-size:11px;color:#d7f6ea;background:#1c4e56;border:1px solid #437e81;padding:6px 10px;border-radius:99px}
+.case-objectives{color:#a6eadb;font-size:12px;line-height:1.9;margin:6px 0 15px;border-inline-start:2px solid #61d4bf;padding-inline-start:13px}
+.hub-stage-progress{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:18px 0 20px}
+.stage-chip{font-size:10px;text-align:center;color:#9cbac5;background:#102d3c;border:1px solid #335969;border-radius:9px;padding:9px 5px}
+.stage-chip.done{color:#9deacb;border-color:#388272;background:#16413c}
+.stage-chip.current{color:#062c23;background:#73e6c8;border-color:#a0f5dd;font-weight:800}
+#skillLabel{margin:13px 0 6px}
+.skill-report{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0 25px}
+.skill-row{display:grid;grid-template-columns:1fr auto;gap:5px;border:1px solid #365a68;background:#0e2a39;border-radius:12px;padding:12px}
+.skill-row span{font-size:12px;color:#d2e8ec}
+.skill-row span:nth-child(2){color:#8fe7d4;font-weight:800}
+.skill-meter{grid-column:1/-1;background:#173746;height:8px;border-radius:99px;overflow:hidden}
+.skill-meter-fill{height:100%;background:linear-gradient(90deg,#267c88,#75efd0);border-radius:99px}
+.report-section-title{font-size:17px;margin:18px 0 12px}
+.hub-reference-panel{margin-top:24px;border-top:1px solid #355667;padding-top:17px}
+.hub-reference-panel h3{font-size:15px;margin:0 0 7px}
+.hub-reference-panel .small{font-size:11px}
+.reference-links{display:flex;gap:8px;flex-wrap:wrap}
+.reference-links a{font-size:12px;border:1px solid #426b73;color:#a9f9e4;background:#173b48;border-radius:9px;padding:8px 11px}
+.reference-links a:hover{background:#20505a}
+.clear-history{margin:18px 0 8px}
+@media(max-width:1060px){.hub-layout{grid-template-columns:275px minmax(0,1fr)}.hub-kpis .hub-kpi{min-width:130px}.hub-kpis .hub-kpi strong{font-size:31px}}
+@media(max-width:900px){.hub-layout{grid-template-columns:1fr}.hub-case-list{max-height:340px}.hub-case-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.hub-kpis{margin-top:20px}}
+@media(max-width:620px){.hub-case-list{grid-template-columns:1fr;max-height:370px}.hub-stage-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.skill-report{grid-template-columns:1fr}.hub-intro{display:block}.hub-kpis{display:grid;grid-template-columns:repeat(2,1fr)}.hub-kpis .hub-kpi{min-width:0;padding:12px}.hub-kpis .hub-kpi strong{font-size:26px}.hub-heading{align-items:flex-start}.hub-context{justify-content:flex-end}.hub-reference-panel{margin-top:16px}}
+@media(prefers-reduced-motion:reduce){.hub-case-button{transition:none}}
