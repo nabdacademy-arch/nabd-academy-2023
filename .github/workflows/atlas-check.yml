@@ -26,5 +26,12 @@ jobs:
           node --check atlas/app.mjs
           node --check atlas/scenario-data.mjs
           node --check atlas/sw.js
+          node --check atlas/tests/browser.mjs
       - name: Scenario integrity and security guardrails
         run: node atlas/tests/verify.mjs
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Mobile browser and offline end-to-end checks
+        run: node atlas/tests/browser.mjs
