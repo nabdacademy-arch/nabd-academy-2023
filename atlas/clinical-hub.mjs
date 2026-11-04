@@ -25,7 +25,7 @@ const I18N={
     referenceNote:"روابط للقراءة العامة؛ لا تعني اعتماد السيناريو أو التحقق من دقته سريريًا.",
     clearHistory:"مسح سجل المحاولات المحلي",confirmClear:"هل تريد حذف سجل النتائج المحلي فقط؟ لا يمكن التراجع عن الحذف.",
     triage:"تمييز الخطورة",assessment:"جمع المعلومات",reasoning:"الاستدلال السريري",communication:"التسليم والتواصل",
-    objective:"الهدف التعليمي",completeLabel:"تم الإنجاز",unreviewed:"مسودة غير معتمدة",noReferences:"لا توجد مراجع مضافة لهذه الحالة."
+    objective:"الهدف التعليمي",completeLabel:"تم الإنجاز",unreviewed:"مسودة غير معتمدة",noReferences:"لا توجد مراجع مضافة لهذه الحالة.",exploreWings:"استكشف أجنحة المستشفى الافتراضي",wingsHint:"اختر القسم",wingsNote:"خريطة تفاعلية للأقسام التعليمية، وليست مستشفى فعليًا أو مبنى ثلاثي الأبعاد.",wingCases:"حالة"
   },
   en:{
     skip:"Skip to content",pilot:"Educational pilot",title:"NABD Virtual Hospital",
@@ -48,7 +48,7 @@ const I18N={
     referenceNote:"Background links only; they do not validate or clinically endorse this scenario.",
     clearHistory:"Clear local attempt history",confirmClear:"Delete locally saved completion history only? This cannot be undone.",
     triage:"Recognize urgency",assessment:"Gather information",reasoning:"Clinical reasoning",communication:"Handover and communication",
-    objective:"Learning goal",completeLabel:"Completed",unreviewed:"Unreviewed draft",noReferences:"No references listed for this case."
+    objective:"Learning goal",completeLabel:"Completed",unreviewed:"Unreviewed draft",noReferences:"No references listed for this case.",exploreWings:"Explore the virtual hospital wings",wingsHint:"Choose a department",wingsNote:"An interactive directory of educational departments, not a real hospital or 3D facility.",wingCases:"cases"
   }
 };
 const $=id=>document.getElementById(id);
@@ -128,6 +128,26 @@ function renderFilters(){
   $("levelFilter").value=selectedLevel;
   $("searchCases").placeholder=tr("searchPlaceholder");
   $("totalCases").textContent=clinicalCases.length;
+}
+function renderDepartments(){
+  const host=$("departmentTiles");host.replaceChildren();
+  const icons={cardiology:"♡",neurology:"◈",emergency:"✚",respiratory:"◉",endocrine:"◇",gastro:"◎",surgery:"⚕",pediatrics:"✿",obstetrics:"◌",renal:"♢",toxicology:"△",trauma:"✦",mentalhealth:"☼"};
+  clinicalDepartments.filter(item=>item.id!=="all").forEach(department=>{
+    const count=clinicalCases.filter(item=>caseDepartment(item)===department.id).length;
+    const button=document.createElement("button");button.type="button";button.className="wing-tile";
+    button.setAttribute("aria-label",department[lang]+" · "+count+" "+tr("wingCases"));
+    const icon=document.createElement("span");icon.className="wing-icon";icon.textContent=icons[department.id]||"✚";
+    const name=document.createElement("strong");name.textContent=department[lang];
+    const number=document.createElement("small");number.textContent=count+" "+tr("wingCases");
+    button.append(icon,name,number);
+    button.addEventListener("click",()=>{
+      selectedDepartment=department.id;selectedLevel="all";searchQuery="";
+      $("searchCases").value="";
+      renderFilters();renderCatalog();
+      $("caseList").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+    host.append(button);
+  });
 }
 function renderCatalog(){
   const target=$("caseList");target.replaceChildren();
@@ -304,7 +324,7 @@ function translate(){
   document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
   document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=tr(el.dataset.i18n));
   $("languageToggle").textContent=lang==="ar"?"English":"العربية";
-  updateConnection();renderFilters();renderHistory();renderCatalog();renderReferences();
+  updateConnection();renderFilters();renderDepartments();renderHistory();renderCatalog();renderReferences();
   if(reportMode)renderReport();else renderStep();
 }
 $("languageToggle").addEventListener("click",()=>{lang=lang==="ar"?"en":"ar";safeWrite(LANGUAGE_KEY,lang);translate();});
