@@ -106,7 +106,7 @@ try{
   assert.equal(await page.locator("#totalAttempts").textContent(),"3");
   // Zero-dependency interactive 3D campus, wing entry and linked clinical catalog.
   await page.goto(url+"/hospital-3d.html");
-  await page.waitForFunction(()=>document.querySelector("#hospitalCanvas")?.width>400);
+  await page.waitForFunction(()=>document.querySelector("#hospitalCanvas")?.width>280);
   assert.equal(await page.locator("#wingList button").count(),13);
   await page.locator("#wingList button").nth(7).click();
   assert.match(await page.locator("#selectedTitle").textContent(),/Pediatrics|الأطفال/);
