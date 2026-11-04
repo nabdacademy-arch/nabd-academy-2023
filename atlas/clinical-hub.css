@@ -38,3 +38,20 @@
 @media(max-width:900px){.hub-layout{grid-template-columns:1fr}.hub-case-list{max-height:340px}.hub-case-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.hub-kpis{margin-top:20px}}
 @media(max-width:620px){.hub-case-list{grid-template-columns:1fr;max-height:370px}.hub-stage-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.skill-report{grid-template-columns:1fr}.hub-intro{display:block}.hub-kpis{display:grid;grid-template-columns:repeat(2,1fr)}.hub-kpis .hub-kpi{min-width:0;padding:12px}.hub-kpis .hub-kpi strong{font-size:26px}.hub-heading{align-items:flex-start}.hub-context{justify-content:flex-end}.hub-reference-panel{margin-top:16px}}
 @media(prefers-reduced-motion:reduce){.hub-case-button{transition:none}}
+
+
+/* Virtual hospital wing directory: useful without WebGL or network. */
+.hospital-directory{margin:0 0 20px;border:1px solid #375e6d;border-radius:21px;background:linear-gradient(140deg,#113747,#0b2536);overflow:hidden}
+.hospital-directory summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 23px;cursor:pointer;color:#c8fff0;font-size:16px;font-weight:800;list-style-position:inside}
+.hospital-directory summary:hover{background:#194658}
+.hospital-directory .map-summary-hint{font-size:11px;font-weight:500;color:#9dbbc5}
+.hospital-directory>p{padding:0 23px;margin:3px 0 15px}
+.department-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding:0 18px 19px}
+.wing-tile{border:1px solid #3a6b78;border-radius:13px;background:#123545;padding:13px 10px;text-align:start;color:#e8fafb;cursor:pointer;display:grid;gap:4px;min-height:94px}
+.wing-tile:hover,.wing-tile:focus-visible{border-color:#7bf0d5;background:#1e5358}
+.wing-icon{color:#8df8d5;font-size:22px;font-weight:700;line-height:1.1}
+.wing-tile strong{font-size:12px;line-height:1.5}
+.wing-tile small{font-size:11px;color:#a6c6ce}
+@media(max-width:1000px){.department-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:720px){.department-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.hospital-directory summary{font-size:13px}}
+@media(max-width:440px){.department-tiles{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 10px 14px}.hospital-directory summary{padding:14px;align-items:start;flex-direction:column}.hospital-directory>p{padding:0 14px}}
