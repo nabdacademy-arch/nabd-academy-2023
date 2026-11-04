@@ -4,6 +4,7 @@ import {readFileSync} from "node:fs";
 import {resolve,extname,sep} from "node:path";
 import {fileURLToPath} from "node:url";
 import {chromium} from "playwright";
+import {clinicalCases} from "../clinical-cases.mjs";
 
 const root=resolve(fileURLToPath(new URL("../",import.meta.url)));
 const types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json"};
@@ -54,7 +55,20 @@ try{
   // Virtual hospital multi-case flow, resume, replay, local history and report.
   await page.goto(url+"/clinical-hub.html");
   assert.match(await page.title(),/Virtual Hospital/);
+  assert.equal(await page.locator("#caseList button").count(),22);
+  assert.equal(await page.locator("#totalCases").textContent(),"22");
+  await page.locator("#departmentFilter").selectOption("pediatrics");
   assert.equal(await page.locator("#caseList button").count(),2);
+  await page.locator("#levelFilter").selectOption("advanced");
+  assert.equal(await page.locator("#caseList button").count(),1);
+  await page.locator("#searchCases").fill("infant");
+  assert.equal(await page.locator("#caseList button").count(),1);
+  await page.locator("#searchCases").fill("not-a-real-case-xyz");
+  assert.equal(await page.locator("#caseList button").count(),0);
+  await page.locator("#searchCases").fill("");
+  await page.locator("#departmentFilter").selectOption("all");
+  await page.locator("#levelFilter").selectOption("all");
+  assert.equal(await page.locator("#caseList button").count(),22);
   await page.locator("#caseList button").nth(1).click();
   assert.equal(await page.locator("#optionList button").count(),3);
   await page.locator("#optionList button").first().click();
@@ -78,6 +92,18 @@ try{
   assert.match(await page.locator("#caseTitle").textContent(),/عصبية/);
   await page.locator("#languageToggle").click();
   assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
+  // Four-stage nuanced scenario, with a competency report.
+  await page.locator("#caseList button").nth(2).click();
+  const sample=clinicalCases[2];
+  assert.equal(sample.steps.length,4);
+  for(const stage of sample.steps){
+    const bestIndex=stage.options.findIndex(o=>o.points===2);
+    await page.locator("#optionList button").nth(bestIndex).click();
+    await page.locator("#nextStep").click();
+  }
+  assert.equal(await page.locator("#finalScore").textContent(),"8 / 8");
+  assert.equal(await page.locator("#skillReport .skill-row").count(),4);
+  assert.equal(await page.locator("#totalAttempts").textContent(),"3");
   await page.goto(url+"/index.html");
   await page.locator('[data-view-button="offline"]').click();
   await page.locator("#downloadBtn").click();
@@ -90,7 +116,8 @@ try{
   await page.goto(url+"/heart-lab.html");
   assert.equal(await page.locator("#chambers button").count(),4);
   await page.goto(url+"/clinical-hub.html");
-  assert.equal(await page.locator("#caseList button").count(),2);
+  assert.equal(await page.locator("#caseList button").count(),22);
+  assert.equal(await page.locator("#totalAttempts").textContent(),"3");
   assert.deepEqual(pageErrors,[]);
   console.log("NABD ATLAS mobile browser, bilingual, simulation, anatomy and offline checks passed.");
 }finally{
