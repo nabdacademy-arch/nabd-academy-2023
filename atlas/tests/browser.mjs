@@ -104,6 +104,22 @@ try{
   assert.equal(await page.locator("#finalScore").textContent(),"8 / 8");
   assert.equal(await page.locator("#skillReport .skill-row").count(),4);
   assert.equal(await page.locator("#totalAttempts").textContent(),"3");
+  // Zero-dependency interactive 3D campus, wing entry and linked clinical catalog.
+  await page.goto(url+"/hospital-3d.html");
+  await page.waitForFunction(()=>document.querySelector("#hospitalCanvas")?.width>400);
+  assert.equal(await page.locator("#wingList button").count(),13);
+  await page.locator("#wingList button").nth(7).click();
+  assert.match(await page.locator("#selectedTitle").textContent(),/Pediatrics|الأطفال/);
+  assert.match(await page.locator("#openCases").getAttribute("href"),/department=pediatrics/);
+  await page.locator("#openWing").click();
+  assert.equal(await page.locator("#viewStatus").textContent(),"WING");
+  await page.locator("#openWing").click();
+  assert.equal(await page.locator("#viewStatus").textContent(),"CAMPUS");
+  await page.locator("#toggleLanguage").click();
+  assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
+  await page.locator("#openCases").click();
+  assert.equal(await page.locator("#departmentFilter").inputValue(),"pediatrics");
+  assert.equal(await page.locator("#caseList button").count(),2);
   await page.goto(url+"/index.html");
   await page.locator('[data-view-button="offline"]').click();
   await page.locator("#downloadBtn").click();
@@ -117,6 +133,8 @@ try{
   assert.equal(await page.locator("#chambers button").count(),4);
   await page.goto(url+"/clinical-hub.html");
   assert.equal(await page.locator("#caseList button").count(),22);
+  await page.goto(url+"/hospital-3d.html");
+  assert.equal(await page.locator("#wingList button").count(),13);
   assert.equal(await page.locator("#totalAttempts").textContent(),"3");
   assert.deepEqual(pageErrors,[]);
   console.log("NABD ATLAS mobile browser, bilingual, simulation, anatomy and offline checks passed.");

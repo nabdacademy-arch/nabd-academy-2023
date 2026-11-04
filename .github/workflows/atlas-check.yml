@@ -32,6 +32,7 @@ jobs:
           node --check atlas/clinical-hub.mjs
           node --check atlas/clinical-cases.mjs
           node --check atlas/clinical-engine.mjs
+          node --check atlas/hospital-3d.mjs
           node --check atlas/clinical-authoring.mjs
           node --check atlas/cases-critical.mjs
           node --check atlas/cases-general.mjs

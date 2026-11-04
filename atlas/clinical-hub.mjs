@@ -5,7 +5,7 @@ import {grade,isFinished,comparePath,validateCase} from "./clinical-engine.mjs";
 // This module does not access student accounts or real patient records.
 const I18N={
   ar:{
-    skip:"انتقل للمحتوى",pilot:"نسخة تعليمية تجريبية",title:"مستشفى نبض الافتراضي",
+    skip:"انتقل للمحتوى",view3d:"المستشفى 3D",pilot:"نسخة تعليمية تجريبية",title:"مستشفى نبض الافتراضي",
     lead:"اختر حالة سريرية خيالية، واتخذ قراراتك، ثم أعد أي قرار وقارن المسارات. تُحفظ محاولاتك على هذا الجهاز فقط.",
     attempts:"المحاولات المكتملة",storedLocal:"في هذا المتصفح فقط",casesCount:"حالات تدريبية",departmentsCount:"تخصصات متنوعة",
     selectCase:"اختر المهمة الطبية",disclaimer:"تدريب تعليمي غير معتمد، ولا يُستخدم لاتخاذ قرارات حول مرضى حقيقيين.",
@@ -28,7 +28,7 @@ const I18N={
     objective:"الهدف التعليمي",completeLabel:"تم الإنجاز",unreviewed:"مسودة غير معتمدة",noReferences:"لا توجد مراجع مضافة لهذه الحالة.",exploreWings:"استكشف أجنحة المستشفى الافتراضي",wingsHint:"اختر القسم",wingsNote:"خريطة تفاعلية للأقسام التعليمية، وليست مستشفى فعليًا أو مبنى ثلاثي الأبعاد.",wingCases:"حالة"
   },
   en:{
-    skip:"Skip to content",pilot:"Educational pilot",title:"NABD Virtual Hospital",
+    skip:"Skip to content",view3d:"3D WORLD",pilot:"Educational pilot",title:"NABD Virtual Hospital",
     lead:"Choose a fictional clinical case, make decisions, then replay any choice and compare learning paths. Your attempts stay on this device.",
     attempts:"Completed attempts",storedLocal:"On this browser only",casesCount:"Learning cases",departmentsCount:"Across specialties",
     selectCase:"Choose a clinical mission",disclaimer:"Unvalidated educational training; not for making decisions about real patients.",
@@ -63,8 +63,10 @@ function safeRead(key,fallback){
 }
 function safeWrite(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
 let lang=safeRead(LANGUAGE_KEY,"ar")==="en"?"en":"ar";
-let selectedDepartment="all",selectedLevel="all",searchQuery="";
-let current=clinicalCases.find(item=>item.id===safeRead(LAST_CASE_KEY,null))??clinicalCases[0],picks=[],stepIndex=0,selectedAnswer=null;
+const requestedDepartment=new URLSearchParams(location.search).get("department");
+let selectedDepartment=clinicalDepartments.some(d=>d.id===requestedDepartment&&d.id!=="all")?requestedDepartment:"all";
+let selectedLevel="all",searchQuery="";
+let current=(selectedDepartment!=="all"?clinicalCases.find(item=>item.department===selectedDepartment):null)??clinicalCases.find(item=>item.id===safeRead(LAST_CASE_KEY,null))??clinicalCases[0],picks=[],stepIndex=0,selectedAnswer=null;
 let replayBefore=null,reportMode=false,lastRecorded=null,lastGrade=null;
 const tr=key=>I18N[lang][key]??key;
 const tx=pair=>pair?.[lang]??"";

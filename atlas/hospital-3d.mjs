@@ -185,7 +185,6 @@ function drawCampus(){
     if(active)glow(dep.x,dep.z,3.55,"#56ddc426");
     const a=active?{back:"#1a7072",front:"#287e7b",left:"#15575e",right:"#206b6d",roof:"#69d7b6"}:
       {back:"#183d53",front:"#1d5365",left:"#113548",right:"#1b4658",roof:"#357484"};
-    const base=active?.12:.04;
     addBox(faces,dep.x,0,dep.z,3.7,dep.h,3.45,a,dep.id);
     const dx=dep.x/Math.hypot(dep.x,dep.z),dz=dep.z/Math.hypot(dep.x,dep.z);
     drawLine(project(dep.x-dx*1.8,.04,dep.z-dz*1.8),project(dep.x-dx*5,.04,dep.z-dz*5),active?"#79ebc8c0":"#4c919570",active?4:2);
