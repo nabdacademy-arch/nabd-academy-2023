@@ -48,7 +48,7 @@ function setView(view){
     button.classList.toggle("active",active);
     if(active){button.setAttribute("aria-current","page");}else{button.removeAttribute("aria-current");}
   });
-  if(view==="case") renderStep();
+  if(view==="case") {$("report").hidden ? renderStep() : showReport();}
   if(view==="offline") checkPack();
   window.scrollTo({top:0,behavior:"auto"});
 }
@@ -66,7 +66,7 @@ function applyLanguage(value){
   $("patientTitle").textContent=local(scenario.title);
   $("patientDetail").textContent=local(scenario.patient);
   renderConnection();
-  renderStep();
+  $("report").hidden ? renderStep() : showReport();
   updateLastScore();
   checkPack();
 }
@@ -81,6 +81,7 @@ function updateLastScore(){
   $("lastScore").textContent=(recent && typeof recent.score==="number") ? recent.score+"/6" : "—";
 }
 function restart(){
+  lastReportSignature="";
   picks=[];
   stepIndex=0;
   selectedIndex=-1;
