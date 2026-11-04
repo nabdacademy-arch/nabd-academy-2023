@@ -1,6 +1,6 @@
 /* Scope is restricted to /atlas/; never cache student or admin pages. */
-const CACHE="nabd-atlas-foundation-v5";
-const FILES=["./","./index.html","./heart-lab.html","./clinical-hub.html","./hospital-3d.html","./hospital-3d.css","./hospital-3d.mjs","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-authoring.mjs","./cases-critical.mjs","./cases-general.mjs","./cases-specialist.mjs","./cases-injury.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js"];
+const CACHE="nabd-atlas-foundation-v6";
+const FILES = ["./","./index.html","./heart-lab.html","./clinical-hub.html","./hospital-3d.html","./hospital-3d.css","./hospital-3d.mjs","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-authoring.mjs","./cases-critical.mjs","./cases-general.mjs","./cases-specialist.mjs","./cases-injury.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js","./images/hero.webp","./images/emergency.webp","./images/pediatrics.webp","./images/simulation.webp"];
 self.addEventListener("install",(event)=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });

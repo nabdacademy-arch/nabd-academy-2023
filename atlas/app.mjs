@@ -26,8 +26,8 @@ const COPY = {
     online:"Network detected",offline:"Offline",step:"Decision",of:"of",next:"Next decision",finish:"Complete simulation",showReport:"View report",good:"Appropriate choice",review:"Review this choice",reportTitle:"Simulation report",total:"Educational score",outOf:"out of 6 points",replay:"Replay this decision",old:"Previous points",new:"New points",compare:"Decision replay comparison",ready:"Offline pack ready",notReady:"Not downloaded",unsupported:"Storage unsupported",downloading:"Saving offline files...",downloaded:"Core files are saved. To test, disconnect and open this URL again.",downloadError:"Some files could not be saved. Check your connection and storage, then retry.",complete:"Case complete. Review your decisions or replay a step to compare choices.",stepResult:"Decision points",noStorage:"Your result could not be saved on this device.",notReviewed:"Pilot content requires clinical review before use in formal assessments."
   }
 };
-const PACK = ["./","./index.html","./heart-lab.html","./clinical-hub.html","./hospital-3d.html","./hospital-3d.css","./hospital-3d.mjs","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-authoring.mjs","./cases-critical.mjs","./cases-general.mjs","./cases-specialist.mjs","./cases-injury.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js"];
-const CACHE = "nabd-atlas-foundation-v5";
+const PACK = ["./","./index.html","./heart-lab.html","./clinical-hub.html","./hospital-3d.html","./hospital-3d.css","./hospital-3d.mjs","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-authoring.mjs","./cases-critical.mjs","./cases-general.mjs","./cases-specialist.mjs","./cases-injury.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js","./images/hero.webp","./images/emergency.webp","./images/pediatrics.webp","./images/simulation.webp"];
+const CACHE = "nabd-atlas-foundation-v6";
 const STORAGE = "nabd_atlas_demo_scores_v1";
 const $ = (id) => document.getElementById(id);
 let lang = "ar";

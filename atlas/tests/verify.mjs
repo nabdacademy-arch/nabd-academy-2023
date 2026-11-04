@@ -6,7 +6,7 @@ const html=readFileSync(new URL("index.html",root),"utf8");
 const app=readFileSync(new URL("app.mjs",root),"utf8");
 const sw=readFileSync(new URL("sw.js",root),"utf8");
 const manifest=JSON.parse(readFileSync(new URL("manifest.webmanifest",root),"utf8"));
-for(const file of ["index.html","heart-lab.html","clinical-hub.html","hospital-3d.html","hospital-3d.css","hospital-3d.mjs","clinical-hub.css","clinical-hub.mjs","clinical-engine.mjs","clinical-cases.mjs","clinical-authoring.mjs","cases-critical.mjs","cases-general.mjs","cases-specialist.mjs","cases-injury.mjs","app.mjs","styles.css","sw.js","scenario-data.mjs","manifest.webmanifest","icon.svg"])assert.ok(existsSync(new URL(file,root)),file);
+for(const file of ["index.html","heart-lab.html","clinical-hub.html","hospital-3d.html","hospital-3d.css","hospital-3d.mjs","clinical-hub.css","clinical-hub.mjs","clinical-engine.mjs","clinical-cases.mjs","clinical-authoring.mjs","cases-critical.mjs","cases-general.mjs","cases-specialist.mjs","cases-injury.mjs","app.mjs","styles.css","sw.js","scenario-data.mjs","manifest.webmanifest","icon.svg","images/hero.webp","images/emergency.webp","images/pediatrics.webp","images/simulation.webp"])assert.ok(existsSync(new URL(file,root)),file);
 assert.equal(scenario.steps.length,3);
 assert.equal(scenario.maxPoints,6);
 scenario.steps.forEach((step,i)=>{
@@ -23,11 +23,18 @@ assert.match(html,/lang="ar" dir="rtl"/);
 assert.match(html,/data-view-button="case"/);
 assert.match(html,/data-view-button="offline"/);
 assert.match(html,/heart-lab.html/);
-assert.match(sw,/nabd-atlas-foundation-v5/);
+assert.match(sw,/nabd-atlas-foundation-v6/);
 assert.match(html,/clinical-hub.html/);
 assert.match(html,/hospital-3d.html/);
 assert.match(app,/hospital-3d\.mjs/);
 assert.match(app,/clinical-hub\.mjs/);
+for(const asset of ["hero","emergency","pediatrics","simulation"]){
+  const binary=readFileSync(new URL("images/"+asset+".webp",root));
+  assert.equal(binary.toString("ascii",0,4),"RIFF",asset);
+  assert.equal(binary.toString("ascii",8,12),"WEBP",asset);
+  assert.match(sw,new RegExp("images/"+asset+"\\.webp"));
+  assert.match(app,new RegExp("images/"+asset+"\\.webp"));
+}
 assert.match(sw,/cases-critical\.mjs/);
 assert.match(sw,/cases-general\.mjs/);
 assert.match(sw,/cases-specialist\.mjs/);
