@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071827">
+  <meta name="description" content="NABD ATLAS — تجربة تعليمية طبية تفاعلية خفيفة تدعم العمل دون اتصال بالإنترنت.">
+  <title>NABD ATLAS | أكاديمية نبض للعلوم الطبية</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#content" data-i18n="skip">تخطَّ إلى المحتوى</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html" aria-label="NABD Academy">
+        <img src="./icon.svg" width="40" height="40" alt="">
+        <span><strong>NABD</strong><small>ATLAS · MEDICAL LEARNING</small></span>
+      </a>
+      <div class="header-actions">
+        <span class="connection" id="connection" role="status" aria-live="polite">● <span id="connectionLabel">جارٍ الفحص</span></span>
+        <button class="lang-button" type="button" id="langBtn" aria-label="Switch language">English</button>
+      </div>
+    </div>
+  </header>
+  <div class="app-layout">
+    <nav class="side-nav" aria-label="NABD ATLAS">
+      <span class="nav-eyebrow" data-i18n="navigation">استكشف أطلس</span>
+      <button class="nav-link active" type="button" data-view-button="home" aria-current="page"><span aria-hidden="true">◈</span><span data-i18n="navHome">الصفحة الرئيسية</span></button>
+      <button class="nav-link" type="button" data-view-button="case"><span aria-hidden="true">✚</span><span data-i18n="navCase">محاكاة الطوارئ</span></button>
+      <button class="nav-link" type="button" data-view-button="offline"><span aria-hidden="true">↧</span><span data-i18n="navOffline">التعلم دون إنترنت</span></button>
+      <div class="sidebar-bottom"><span class="mini-dot"></span><span data-i18n="beta">نموذج تجريبي مستقل وآمن</span></div>
+    </nav>
+    <main id="content" class="main-content">
+      <section class="page-view" id="view-home">
+        <div class="eyebrow"><span class="mini-dot"></span> NABD ATLAS / FOUNDATION 01</div>
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="pill" data-i18n="heroPill">مستقبل التعليم الطبي يبدأ هنا</span>
+            <h1 data-i18n="heroTitle">تعلَّم الطب.<br>عِش التجربة.</h1>
+            <p data-i18n="heroDesc">بيئة تعليم طبي تفاعلية تجمع التعلم مع اتخاذ القرار السريري، وتبقى متاحة بعد تنزيل ملفاتها حتى عند انقطاع الإنترنت.</p>
+            <div class="hero-actions">
+              <button type="button" class="btn primary" id="startHero"><span data-i18n="startNow">ابدأ المحاكاة</span> <span aria-hidden="true">←</span></button>
+              <button type="button" class="btn outline" id="offlineHero" data-i18n="prepareOffline">جهّز النسخة دون إنترنت</button>
+            </div>
+            <span class="disclaimer" data-i18n="disclaimer">للتعليم والمحاكاة فقط؛ ليست إرشادات لعلاج المرضى.</span>
+          </div>
+          <div class="hero-illustration" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="vital"><span>ECG • SIMULATOR</span><svg viewBox="0 0 280 75" focusable="false"><path d="M0 43 H46 L57 32 L68 52 L83 12 L100 65 L115 43 H180 L191 33 L203 51 L216 12 L234 65 L245 43 H280" fill="none" stroke="#56e4ca" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg><small>CLINICAL DECISION ENGINE</small></div>
+            <div class="float-label float-top">MEDVERSE · 01</div><div class="float-label float-bottom">NABD / HUMAN FIRST</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><span data-i18n="statOne">محاكاة تعليمية</span><strong>01</strong><small data-i18n="statOneSub">الطوارئ القلبية</small></div>
+          <div class="stat-card"><span data-i18n="statTwo">خطوات قرار</span><strong>03</strong><small data-i18n="statTwoSub">مع تغذية راجعة</small></div>
+          <div class="stat-card"><span data-i18n="statThree">العمل دون إنترنت</span><strong>✓</strong><small data-i18n="statThreeSub">بعد تجهيز الملفات</small></div>
+          <div class="stat-card"><span data-i18n="statFour">آخر نتيجة</span><strong id="lastScore">—</strong><small data-i18n="statFourSub">محفوظة على هذا الجهاز</small></div>
+        </div>
+        <div class="section-top"><div><span class="eyebrow" data-i18n="discover">ابدأ الاستكشاف</span><h2 data-i18n="featuresTitle">مساحتك الطبية الجديدة</h2></div></div>
+        <div class="feature-grid">
+          <button type="button" class="feature-card" id="caseCard"><span class="feature-icon" aria-hidden="true">✚</span><span class="feature-type">NABD MEDVERSE</span><strong data-i18n="featureCase">أول حالة طوارئ افتراضية</strong><span data-i18n="featureCaseDesc">تدرّب على ترتيب الأولويات وتلقي شرح لكل اختيار.</span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+          <button type="button" class="feature-card" id="offlineCard"><span class="feature-icon" aria-hidden="true">↧</span><span class="feature-type">NABD OFFLINE</span><strong data-i18n="featureOffline">تعلّم حتى دون اتصال</strong><span data-i18n="featureOfflineDesc">نزّل هذه التجربة إلى ذاكرة المتصفح للاستخدام لاحقًا.</span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+        </div>
+      </section>
+      <section class="page-view" id="view-case" hidden>
+        <div class="eyebrow">NABD MEDVERSE / EMERGENCY</div>
+        <div class="section-top"><div><h1 class="inner-title" data-i18n="simTitle">قسم الطوارئ الافتراضي</h1><p class="muted" data-i18n="simSubtitle">محاكاة قرارات سريرية تعليمية قصيرة، من دون بيانات مرضى حقيقيين.</p></div></div>
+        <div class="case-layout">
+          <div class="case-panel">
+            <div class="panel-heading"><span class="pill muted-pill" data-i18n="demoBadge">حالة تدريبية افتراضية</span><span id="caseProgress" aria-live="polite"></span></div>
+            <div class="patient-bar"><div class="patient-avatar" aria-hidden="true">✚</div><div><strong id="patientTitle"></strong><span id="patientDetail"></span></div></div>
+            <div class="vitals"><span>HR <strong>112/min</strong></span><span>BP <strong>95/60</strong></span><span>SpO₂ <strong>93%</strong></span></div>
+            <div class="question-block"><h2 id="questionTitle"></h2><p id="questionDescription"></p><div id="answers" class="answers"></div></div>
+            <div id="feedback" class="feedback" hidden role="status" aria-live="polite"></div>
+            <div class="case-actions">
+              <button class="btn primary" type="button" id="nextBtn" hidden></button>
+              <button class="btn outline" type="button" id="restartBtn" data-i18n="restart">ابدأ من جديد</button>
+            </div>
+            <div id="report" class="report" hidden></div>
+          </div>
+          <aside class="case-aside">
+            <span class="eyebrow" data-i18n="patientSafety">سلامة التعلم</span>
+            <h3 data-i18n="asideTitle">تعلّم اتخاذ القرار</h3>
+            <p data-i18n="asideText">السيناريو مبسط وغير معتمد للاستخدام في رعاية مرضى حقيقيين. تم تصميمه لتوضيح أولويات التقييم والتصعيد.</p>
+            <div class="aside-divider"></div>
+            <p class="muted" data-i18n="asideFoot">يمكنك إعادة التجربة وتغيير قراراتك. النتيجة محفوظة محليًا على جهازك فقط.</p>
+          </aside>
+        </div>
+      </section>
+      <section class="page-view" id="view-offline" hidden>
+        <div class="eyebrow">NABD RESCUE / OFFLINE FIRST</div>
+        <h1 class="inner-title" data-i18n="offlineTitle">تعليم مستمر، حتى عند انقطاع الشبكة.</h1>
+        <p class="muted intro" data-i18n="offlineIntro">يخزن هذا النموذج ملفات الواجهة والسيناريو محليًا. افتح هذه الصفحة مرة متصلًا بالإنترنت وجهّز النسخة، ثم يمكنك العودة لها لاحقًا دون اتصال.</p>
+        <div class="offline-panel">
+          <div class="offline-icon" aria-hidden="true">↧</div>
+          <div><h2 data-i18n="offlinePack">حزمة NABD ATLAS التجريبية</h2><p class="muted" data-i18n="offlinePackDesc">الواجهة + البرمجيات + الحالة السريرية الأولى. لا تشمل محاضرات خارجية أو تسجيل دخول Supabase.</p></div>
+          <span id="cacheBadge" class="cache-badge" role="status" aria-live="polite">...</span>
+          <button type="button" class="btn primary" id="downloadBtn" data-i18n="download">تنزيل الحزمة / تحديثها</button>
+          <p id="downloadMessage" class="small muted" aria-live="polite"></p>
+        </div>
+        <div class="how-grid"><div><span class="step-number">01</span><h3 data-i18n="offlineStepOne">افتح التجربة متصلًا</h3><p data-i18n="offlineStepOneDesc">يحتاج التحميل الأول إلى اتصال عبر HTTPS.</p></div><div><span class="step-number">02</span><h3 data-i18n="offlineStepTwo">حمّل الملفات</h3><p data-i18n="offlineStepTwoDesc">اضغط زر التنزيل وانتظر تأكيد جاهزية الملفات.</p></div><div><span class="step-number">03</span><h3 data-i18n="offlineStepThree">أكمل بلا إنترنت</h3><p data-i18n="offlineStepThreeDesc">افتح المسار نفسه، وخض المحاكاة؛ تحفظ نتائجك على هذا الجهاز.</p></div></div>
+        <p class="notice" data-i18n="offlineCaveat">تنبيه: قد يحذف المتصفح الملفات المخزنة عند نقص المساحة أو مسح بيانات الموقع. الاتصال بين الأجهزة والمزامنة مع حساب الطالب ميزتان مستقبليتان غير مفعّلتين في هذا النموذج.</p>
+      </section>
+      <footer class="footer">NABD ACADEMY FOR MEDICAL SCIENCES <span>•</span> NABD ATLAS FOUNDATION <span>•</span> 2026</footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "NABD ATLAS — Medical Learning Pilot",
+  "short_name": "NABD ATLAS",
+  "description": "Bilingual medical simulation with offline support",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071827",
+  "theme_color": "#071827",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
