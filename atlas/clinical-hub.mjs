@@ -55,6 +55,7 @@ const $=id=>document.getElementById(id);
 const DRAFT_KEY="nabd_atlas_clinical_drafts_v1";
 const HISTORY_KEY="nabd_atlas_clinical_history_v1";
 const LANGUAGE_KEY="nabd_atlas_lang_v1";
+const LAST_CASE_KEY="nabd_atlas_last_case_v1";
 const SKILLS=["triage","assessment","reasoning","communication"];
 const LINK_HOSTS=new Set(["www.who.int","www.cdc.gov","www.heart.org"]);
 function safeRead(key,fallback){
@@ -63,7 +64,7 @@ function safeRead(key,fallback){
 function safeWrite(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
 let lang=safeRead(LANGUAGE_KEY,"ar")==="en"?"en":"ar";
 let selectedDepartment="all",selectedLevel="all",searchQuery="";
-let current=clinicalCases[0],picks=[],stepIndex=0,selectedAnswer=null;
+let current=clinicalCases.find(item=>item.id===safeRead(LAST_CASE_KEY,null))??clinicalCases[0],picks=[],stepIndex=0,selectedAnswer=null;
 let replayBefore=null,reportMode=false,lastRecorded=null,lastGrade=null;
 const tr=key=>I18N[lang][key]??key;
 const tx=pair=>pair?.[lang]??"";
@@ -210,6 +211,7 @@ function activateCase(id,{reset=false}={}){
   const item=clinicalCases.find(candidate=>candidate.id===id);
   if(!item||!validateCase(item))return;
   current=item;
+  safeWrite(LAST_CASE_KEY,id);
   if(reset)clearDraft(id);
   const draft=reset?null:readDraft(id);
   picks=draft?[...draft.picks]:[];
