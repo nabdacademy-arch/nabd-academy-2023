@@ -6,7 +6,7 @@ const html=readFileSync(new URL("index.html",root),"utf8");
 const app=readFileSync(new URL("app.mjs",root),"utf8");
 const sw=readFileSync(new URL("sw.js",root),"utf8");
 const manifest=JSON.parse(readFileSync(new URL("manifest.webmanifest",root),"utf8"));
-for(const file of ["index.html","app.mjs","styles.css","sw.js","scenario-data.mjs","manifest.webmanifest","icon.svg"])assert.ok(existsSync(new URL(file,root)),file);
+for(const file of ["index.html","heart-lab.html","app.mjs","styles.css","sw.js","scenario-data.mjs","manifest.webmanifest","icon.svg"])assert.ok(existsSync(new URL(file,root)),file);
 assert.equal(scenario.steps.length,3);
 assert.equal(scenario.maxPoints,6);
 scenario.steps.forEach((step,i)=>{
@@ -22,6 +22,8 @@ assert.equal(manifest.scope,"./");
 assert.match(html,/lang="ar" dir="rtl"/);
 assert.match(html,/data-view-button="case"/);
 assert.match(html,/data-view-button="offline"/);
+assert.match(html,/heart-lab.html/);
+assert.match(sw,/nabd-atlas-foundation-v2/);
 assert.match(app,/import \{scenario\}/);
 assert.match(app,/localStorage/);
 assert.match(app,/caches\.open/);
