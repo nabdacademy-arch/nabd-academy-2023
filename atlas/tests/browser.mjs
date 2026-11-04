@@ -118,6 +118,7 @@ try{
   await page.locator("#toggleLanguage").click();
   assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
   await page.locator("#openCases").click();
+  await page.waitForFunction(()=>document.querySelector("#departmentFilter")?.options.length>=14);
   assert.equal(await page.locator("#departmentFilter").inputValue(),"pediatrics");
   assert.equal(await page.locator("#caseList button").count(),2);
   await page.goto(url+"/index.html");
