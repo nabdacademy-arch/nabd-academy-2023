@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 import {clinicalCases} from "../clinical-cases.mjs";
 
 const root=resolve(fileURLToPath(new URL("../",import.meta.url)));
-const types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json"};
+const types={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".svg":"image/svg+xml",".webmanifest":"application/manifest+json",".webp":"image/webp"};
 const server=createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
@@ -30,6 +30,8 @@ try{
   const initialResponse=await page.goto(url+"/index.html");
   assert.equal(initialResponse?.status(),200,"The browser test server must serve index.html");
   assert.match(await page.title(),/NABD ATLAS/);
+  assert.equal(await page.locator(".hospital-hero-shot").count(),1);
+  await page.waitForFunction(()=>document.querySelector(".hospital-hero-shot")?.naturalWidth>0);
   assert.equal(await page.locator('[data-view-button="case"]').count(),1);
   await page.locator('[data-view-button="case"]').click();
   for(let i=0;i<3;i++){
@@ -57,6 +59,11 @@ try{
   assert.match(await page.title(),/Virtual Hospital/);
   assert.equal(await page.locator("#caseList button").count(),22);
   assert.equal(await page.locator("#totalCases").textContent(),"22");
+  assert.equal(await page.locator(".hospital-photo-card").count(),3);
+  await page.waitForFunction(()=>document.querySelector(".hospital-photo-hero img")?.naturalWidth>0);
+  await page.locator('[data-gallery-department="emergency"]').click();
+  assert.equal(await page.locator("#departmentFilter").inputValue(),"emergency");
+  await page.locator("#departmentFilter").selectOption("all");
   await page.locator("#departmentFilter").selectOption("pediatrics");
   assert.equal(await page.locator("#caseList button").count(),2);
   await page.locator("#levelFilter").selectOption("advanced");
@@ -136,6 +143,12 @@ try{
   assert.equal(await page.locator("#caseList button").count(),22);
   await page.goto(url+"/hospital-3d.html");
   assert.equal(await page.locator("#wingList button").count(),13);
+  const offlineImage=await page.evaluate(async()=>{
+    const response=await fetch("./images/hero.webp");
+    return {ok:response.ok,type:response.headers.get("content-type")};
+  });
+  assert.equal(offlineImage.ok,true);
+  assert.match(offlineImage.type||"",/image\/webp/);
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem("nabd_atlas_clinical_history_v1")).length),3);
   assert.deepEqual(pageErrors,[]);
   console.log("NABD ATLAS mobile browser, bilingual, simulation, anatomy and offline checks passed.");

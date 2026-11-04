@@ -58,3 +58,10 @@ Latest browser and structure CI must pass; conduct qualified clinical reviews, a
 ## MEDVERSE 3D World v0.5 (experimental)
 
 Explore `atlas/hospital-3d.html` for a **self-contained perspective-projected 3D medical campus**, including 13 selectable departments, zoom/orbit/drag controls, animated orbit (opt-in), a conceptual 3D wing interior, bilingual interface, mobile touch interaction, and links into department-filtered clinical cases. Everything is original browser code; no CDN, paid services or analytics are required. The 3D representation is intentionally schematic and *not* a photorealistic, anatomically precise, walkable hospital or clinical training device. The 3D assets are cached in the offline pack v5. The latest GitHub Actions browser test covers the 3D scene and cross-linking. All medical cases remain unreviewed educational examples.
+
+
+## Visual refresh — user-approved NABD hospital artwork
+- Four original generated hospital renderings: atrium, emergency, pediatrics and simulation lab.
+- Optimized WebP assets under `atlas/images/`, each below 20 KB, with Arabic/English overlay content and responsive presentation.
+- Photos are illustrative images of a **fictional** training campus, not images of a real operational hospital.
+- The four images are included in the scoped offline pack v6; the hospital 3D campus remains a schematic educational rendering.

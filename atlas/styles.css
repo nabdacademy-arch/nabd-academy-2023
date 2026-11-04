@@ -9,3 +9,9 @@
 @media(max-width:790px){.app-layout{display:block}.side-nav{position:sticky;top:69px;z-index:11;flex-direction:row;padding:8px 12px;border-inline-end:0;border-bottom:1px solid var(--edge);background:#081b2bf2;overflow:auto}.nav-eyebrow,.sidebar-bottom{display:none}.nav-link{width:auto;white-space:nowrap;padding:10px 12px;flex-shrink:0}.main-content{padding:24px 15px}.hero{grid-template-columns:1fr}.hero-illustration{min-height:175px}.orbit{width:210px;height:210px}.orbit-two{width:270px;height:135px}.vital{width:230px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.feature-grid{grid-template-columns:1fr}.how-grid{grid-template-columns:1fr}}
 @media(max-width:430px){.brand small{font-size:8px}.connection{font-size:10px;padding:7px}.header-actions{gap:5px}.lang-button{padding:7px;font-size:11px}.hero{padding:24px}.hero-illustration{min-height:145px}.float-top{top:0}.float-bottom{bottom:0}.stat-card{padding:12px}.case-panel,.offline-panel{padding:17px}.offline-panel{grid-template-columns:1fr}.cache-badge{justify-self:start}.offline-icon{width:48px;height:48px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+/* NABD approved visual identity — main hero hospital illustration */
+.hero-illustration{isolation:isolate}
+.hospital-hero-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:18px;opacity:.89;z-index:-2}
+.hero-illustration:after{content:"";position:absolute;inset:0;border-radius:18px;background:linear-gradient(120deg,#04233288,#08304533);z-index:-1}
+.hero-illustration .orbit{z-index:0}.hero-illustration .vital,.hero-illustration .float-label{position:relative;z-index:1}
+@media(max-width:560px){.hospital-hero-shot{object-position:center 37%}}
