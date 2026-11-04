@@ -5,7 +5,7 @@ import {grade,isFinished,comparePath,validateCase} from "./clinical-engine.mjs";
 // This module does not access student accounts or real patient records.
 const I18N={
   ar:{
-    skip:"انتقل للمحتوى",view3d:"المستشفى 3D",pilot:"نسخة تعليمية تجريبية",title:"مستشفى نبض الافتراضي",
+    visualTitle:"كل تخصص... عالم جديد من الاكتشاف.",visualSubtitle:"استكشف أجنحة نبض، تعلّم بالمحاكاة، واصنع تجربة تعليمية مختلفة.",visual3d:"استكشف العالم ثلاثي الأبعاد",visualDepartments:"استعرض الأقسام",galleryTitle:"أجنحة تنبض بالحياة",gallerySubtitle:"اختر جناحًا لتبدأ التدريب، أو ادخل إلى عالم المحاكاة.",emergencyWing:"جناح الطوارئ",emergencyDesc:"التعرف إلى الحالات الحرجة",pediatricsWing:"جناح الأطفال",pediatricsDesc:"تعلم الرعاية المناسبة للأطفال",simulationWing:"مختبر المحاكاة",simulationDesc:"اكتشف أقسام المجمع ثلاثي الأبعاد",skip:"انتقل للمحتوى",view3d:"المستشفى 3D",pilot:"نسخة تعليمية تجريبية",title:"مستشفى نبض الافتراضي",
     lead:"اختر حالة سريرية خيالية، واتخذ قراراتك، ثم أعد أي قرار وقارن المسارات. تُحفظ محاولاتك على هذا الجهاز فقط.",
     attempts:"المحاولات المكتملة",storedLocal:"في هذا المتصفح فقط",casesCount:"حالات تدريبية",departmentsCount:"تخصصات متنوعة",
     selectCase:"اختر المهمة الطبية",disclaimer:"تدريب تعليمي غير معتمد، ولا يُستخدم لاتخاذ قرارات حول مرضى حقيقيين.",
@@ -28,7 +28,7 @@ const I18N={
     objective:"الهدف التعليمي",completeLabel:"تم الإنجاز",unreviewed:"مسودة غير معتمدة",noReferences:"لا توجد مراجع مضافة لهذه الحالة.",exploreWings:"استكشف أجنحة المستشفى الافتراضي",wingsHint:"اختر القسم",wingsNote:"خريطة تفاعلية للأقسام التعليمية، وليست مستشفى فعليًا أو مبنى ثلاثي الأبعاد.",wingCases:"حالة"
   },
   en:{
-    skip:"Skip to content",view3d:"3D WORLD",pilot:"Educational pilot",title:"NABD Virtual Hospital",
+    visualTitle:"Discover a new world in every department.",visualSubtitle:"Explore NABD hospital wings, practice clinical simulations, and experience a new way to learn medicine.",visual3d:"Explore the 3D world",visualDepartments:"Browse departments",galleryTitle:"Hospital wings brought to life",gallerySubtitle:"Choose a wing to start training or enter the simulation campus.",emergencyWing:"Emergency wing",emergencyDesc:"Recognize urgent clinical presentations",pediatricsWing:"Pediatrics wing",pediatricsDesc:"Learn compassionate child care",simulationWing:"Simulation lab",simulationDesc:"Discover the 3D campus",skip:"Skip to content",view3d:"3D WORLD",pilot:"Educational pilot",title:"NABD Virtual Hospital",
     lead:"Choose a fictional clinical case, make decisions, then replay any choice and compare learning paths. Your attempts stay on this device.",
     attempts:"Completed attempts",storedLocal:"On this browser only",casesCount:"Learning cases",departmentsCount:"Across specialties",
     selectCase:"Choose a clinical mission",disclaimer:"Unvalidated educational training; not for making decisions about real patients.",
@@ -331,6 +331,13 @@ function translate(){
   updateConnection();renderFilters();renderDepartments();renderHistory();renderCatalog();renderReferences();
   if(reportMode)renderReport();else renderStep();
 }
+document.querySelectorAll("[data-gallery-department]").forEach(button=>button.addEventListener("click",()=>{
+  selectedDepartment=button.dataset.galleryDepartment;
+  selectedLevel="all";searchQuery="";
+  $("searchCases").value="";
+  renderFilters();renderCatalog();
+  $("caseList").scrollIntoView({behavior:"smooth",block:"start"});
+}));
 $("languageToggle").addEventListener("click",()=>{lang=lang==="ar"?"en":"ar";safeWrite(LANGUAGE_KEY,lang);translate();});
 $("searchCases").addEventListener("input",e=>{searchQuery=e.target.value;renderCatalog();});
 $("departmentFilter").addEventListener("change",e=>{selectedDepartment=e.target.value;renderCatalog();});

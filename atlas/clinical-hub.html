@@ -25,6 +25,18 @@
   </header>
   <main class="hub-main" id="hubMain">
     <div class="eyebrow">NABD MEDVERSE / CLINICAL MISSIONS</div>
+    <section class="hospital-photo-hero" aria-label="NABD Virtual Hospital illustration">
+      <img src="./images/hero.webp" alt="تصور فني لردهة مستشفى نبض الافتراضي بإضاءة تركوازية" width="800" height="450" decoding="async" fetchpriority="high">
+      <div class="hospital-photo-shade">
+        <span class="eyebrow">NABD / THE VIRTUAL MEDICAL CAMPUS</span>
+        <h2 data-i18n="visualTitle">كل تخصص... عالم جديد من الاكتشاف.</h2>
+        <p data-i18n="visualSubtitle">استكشف أجنحة نبض، تعلّم بالمحاكاة، واصنع تجربة تعليمية مختلفة.</p>
+        <div class="hospital-photo-actions">
+          <a href="./hospital-3d.html" class="visual-primary" data-i18n="visual3d">استكشف العالم ثلاثي الأبعاد</a>
+          <a href="#departmentTiles" class="visual-secondary" data-i18n="visualDepartments">استعرض الأقسام</a>
+        </div>
+      </div>
+    </section>
     <div class="hub-intro">
       <div>
         <span class="pill" data-i18n="pilot">نسخة تعليمية تجريبية</span>
@@ -36,6 +48,23 @@
         <div class="hub-kpi"><span data-i18n="attempts">المحاولات المكتملة</span><strong id="totalAttempts">0</strong><small data-i18n="storedLocal">في هذا المتصفح فقط</small></div>
       </div>
     </div>
+    <section class="hospital-photo-gallery" aria-labelledby="galleryTitle">
+      <div class="hospital-gallery-heading"><div><span class="eyebrow">NABD / EXPLORE THE HOSPITAL</span><h2 id="galleryTitle" data-i18n="galleryTitle">أجنحة تنبض بالحياة</h2></div><p data-i18n="gallerySubtitle">اختر جناحًا لتبدأ التدريب، أو ادخل إلى عالم المحاكاة.</p></div>
+      <div class="hospital-photo-grid">
+        <button type="button" class="hospital-photo-card" data-gallery-department="emergency">
+          <img src="./images/emergency.webp" alt="تصور فني لجناح الطوارئ الافتراضي" width="480" height="360" loading="lazy" decoding="async">
+          <span class="photo-card-info"><small>01 · EMERGENCY</small><strong data-i18n="emergencyWing">جناح الطوارئ</strong><span data-i18n="emergencyDesc">التعرف إلى الحالات الحرجة</span></span>
+        </button>
+        <button type="button" class="hospital-photo-card" data-gallery-department="pediatrics">
+          <img src="./images/pediatrics.webp" alt="تصور فني لجناح الأطفال الافتراضي" width="480" height="360" loading="lazy" decoding="async">
+          <span class="photo-card-info"><small>02 · PEDIATRICS</small><strong data-i18n="pediatricsWing">جناح الأطفال</strong><span data-i18n="pediatricsDesc">تعلم الرعاية المناسبة للأطفال</span></span>
+        </button>
+        <a class="hospital-photo-card" href="./hospital-3d.html">
+          <img src="./images/simulation.webp" alt="تصور فني لمختبر المحاكاة الطبية" width="480" height="360" loading="lazy" decoding="async">
+          <span class="photo-card-info"><small>03 · SIMULATION</small><strong data-i18n="simulationWing">مختبر المحاكاة</strong><span data-i18n="simulationDesc">اكتشف أقسام المجمع ثلاثي الأبعاد</span></span>
+        </a>
+      </div>
+    </section>
     <details class="hospital-directory">
       <summary><span data-i18n="exploreWings">استكشف أجنحة المستشفى الافتراضي</span> <span class="map-summary-hint" data-i18n="wingsHint">اختر قسمًا للوصول إلى حالاته</span></summary>
       <p class="muted small" data-i18n="wingsNote">هذه خريطة تعليمية تفاعلية للأقسام، وليست مبنى ثلاثي الأبعاد أو مستشفى فعليًا.</p>

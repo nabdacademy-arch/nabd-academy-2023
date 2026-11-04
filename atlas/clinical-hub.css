@@ -55,3 +55,32 @@
 @media(max-width:1000px){.department-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:720px){.department-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.hospital-directory summary{font-size:13px}}
 @media(max-width:440px){.department-tiles{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 10px 14px}.hospital-directory summary{padding:14px;align-items:start;flex-direction:column}.hospital-directory>p{padding:0 14px}}
+
+/* Approved generated hospital imagery across the virtual hospital */
+.hospital-photo-hero{position:relative;display:flex;align-items:flex-end;min-height:clamp(310px,39vw,465px);overflow:hidden;isolation:isolate;background:#072338;border:1px solid #397a87;border-radius:24px;margin:16px 0 28px;box-shadow:0 24px 75px #0005}
+.hospital-photo-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.hospital-photo-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#041524 5%,#06283edb 37%,#083b4d35 90%);z-index:-1}
+.hospital-photo-shade{width:100%;max-width:800px;padding:clamp(22px,4vw,47px);text-shadow:0 2px 9px #031728}
+.hospital-photo-shade h2{font-size:clamp(29px,4.5vw,52px);line-height:1.2;margin:15px 0 9px}
+.hospital-photo-shade p{max-width:640px;color:#e1f6fa;line-height:1.9;font-size:14px}
+.hospital-photo-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.hospital-photo-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none}
+.visual-primary{background:#7cebd1;border:1px solid #b6f9e8;color:#072a2b}
+.visual-secondary{color:#f9ffff;border:1px solid #81bdc3;background:#0a2d43bd}
+.hospital-photo-gallery{margin:12px 0 27px}
+.hospital-gallery-heading{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:15px}
+.hospital-gallery-heading h2{font-size:clamp(22px,3vw,29px);margin:8px 0 0}
+.hospital-gallery-heading p{font-size:12px;line-height:1.8;color:#bad3d9;max-width:310px;margin:0}
+.hospital-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.hospital-photo-card{display:block;position:relative;isolation:isolate;overflow:hidden;aspect-ratio:4/3;min-height:180px;width:100%;padding:0;border:1px solid #3e747e;border-radius:19px;color:#fff;text-align:start;background:#123d4f;text-decoration:none;cursor:pointer}
+.hospital-photo-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .25s ease}
+.hospital-photo-card:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#031421e8 0%,#082c3daa 44%,transparent 90%)}
+.hospital-photo-card:hover img,.hospital-photo-card:focus-visible img{transform:scale(1.04)}
+.hospital-photo-card:hover,.hospital-photo-card:focus-visible{border-color:#8df5df}
+.photo-card-info{position:absolute;inset:auto 0 0;padding:16px 18px 18px;display:grid;gap:2px}
+.photo-card-info small{font-size:10px;color:#8af2d6;font-weight:800;letter-spacing:.12em}
+.photo-card-info strong{font-size:clamp(17px,2vw,23px);line-height:1.4}
+.photo-card-info span{font-size:11px;line-height:1.7;color:#d2e9ed}
+@media(max-width:800px){.hospital-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hospital-photo-card:last-child{grid-column:1/-1;aspect-ratio:2.7/1}.hospital-photo-hero{min-height:340px}}
+@media(max-width:480px){.hospital-photo-hero{min-height:355px;border-radius:18px}.hospital-photo-shade{padding:20px}.hospital-photo-actions a{width:100%}.hospital-photo-grid{grid-template-columns:1fr}.hospital-photo-card,.hospital-photo-card:last-child{grid-column:auto;aspect-ratio:1.65/1}.hospital-gallery-heading{display:block}.hospital-gallery-heading p{margin-top:5px;max-width:none}}
+@media(prefers-reduced-motion:reduce){.hospital-photo-card img{transition:none}}
