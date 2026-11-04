@@ -13,7 +13,8 @@ self.addEventListener("fetch",(event)=>{
   const url=new URL(request.url);
   if(url.origin!==self.location.origin||!url.pathname.startsWith(new URL("./",self.registration.scope).pathname))return;
   if(request.mode==="navigate"){
-    event.respondWith(fetch(request).catch(()=>caches.match("./index.html")));
+    // Return the requested offline page, not the main page, when navigation fails.
+    event.respondWith(fetch(request).catch(async()=>await caches.match(request)||await caches.match("./index.html")));
     return;
   }
   event.respondWith(caches.match(request).then(hit=>hit||fetch(request).then(response=>{
