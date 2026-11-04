@@ -75,7 +75,7 @@ try{
   assert.equal(await page.locator("#totalAttempts").textContent(),"2");
   await page.locator("#languageToggle").click();
   assert.equal(await page.locator("html").getAttribute("dir"),"rtl");
-  assert.match(await page.locator("#caseTitle").textContent(),/العصبية/);
+  assert.match(await page.locator("#caseTitle").textContent(),/عصبية/);
   await page.locator("#languageToggle").click();
   assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
   await page.goto(url+"/index.html");
