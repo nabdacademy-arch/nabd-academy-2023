@@ -1,4 +1,25 @@
 import {scenario as chestPainCase} from "./scenario-data.mjs";
+import {criticalCases} from "./cases-critical.mjs";
+import {generalCases} from "./cases-general.mjs";
+import {specialistCases} from "./cases-specialist.mjs";
+import {injuryCases} from "./cases-injury.mjs";
+
+export const clinicalDepartments = [
+  {id:"all",ar:"كل الأقسام",en:"All departments"},
+  {id:"cardiology",ar:"القلب",en:"Cardiology"},
+  {id:"neurology",ar:"الأعصاب",en:"Neurology"},
+  {id:"emergency",ar:"الطوارئ",en:"Emergency care"},
+  {id:"respiratory",ar:"التنفسية",en:"Respiratory"},
+  {id:"endocrine",ar:"الغدد والسكري",en:"Endocrinology"},
+  {id:"gastro",ar:"الجهاز الهضمي",en:"Gastroenterology"},
+  {id:"surgery",ar:"الجراحة",en:"Surgery"},
+  {id:"pediatrics",ar:"الأطفال",en:"Pediatrics"},
+  {id:"obstetrics",ar:"النساء والتوليد",en:"Obstetrics"},
+  {id:"renal",ar:"الكلى",en:"Renal"},
+  {id:"toxicology",ar:"السموم",en:"Toxicology"},
+  {id:"trauma",ar:"الإصابات",en:"Trauma"},
+  {id:"mentalhealth",ar:"الصحة النفسية",en:"Mental health"}
+];
 
 // Fictional medical education scenarios; content is not reviewed for formal assessment.
 // No patient-identifying information or prescribing/treatment instructions are included.
@@ -43,8 +64,20 @@ export const strokeCase = {
 export const clinicalCases = [
   {
     ...chestPainCase,
+    department:"cardiology",level:"intro",revision:1,reviewStatus:"unreviewed",
+    objectives:{ar:"ترتيب الأولويات وتفسير إنذار التخطيط والتسليم الآمن.",en:"Prioritize initial assessment, ECG alerts and safe handover."},
+    references:["https://www.heart.org/health-topics/heart-attack/warning-signs-of-a-heart-attack"],
     vitals:{hr:"112/min",bp:"95/60",spo2:"93%"},
     category:{ar:"طوارئ القلب",en:"Cardiac emergency"}
   },
-  strokeCase
+  {
+    ...strokeCase,
+    department:"neurology",level:"intermediate",revision:1,reviewStatus:"unreviewed",
+    objectives:{ar:"تمييز الأعراض العصبية العاجلة والتوقيت والتسليم المنظم.",en:"Recognize urgent neurological signs, symptom timing and structured handover."},
+    references:["https://www.heart.org/en/about-us/heart-attack-and-stroke-symptoms"]
+  },
+  ...criticalCases,
+  ...generalCases,
+  ...specialistCases,
+  ...injuryCases
 ];
