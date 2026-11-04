@@ -1,4 +1,7 @@
 name: NABD ATLAS pilot checks
+concurrency:
+  group: atlas-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   pull_request:
     paths:

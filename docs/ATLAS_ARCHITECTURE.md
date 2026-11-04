@@ -56,3 +56,7 @@ Before SQL migrations, inventory real production tables, column definitions, RLS
 - After downloading, the pilot loads with internet disabled and retains the local result.
 - Existing production URLs remain untouched by this branch.
 - Clinical review and browser QA remain required before a merge.
+
+## 2026-11-04 — MEDVERSE case library preview
+
+The foundation expands to 22 fictional bilingual cases and 86 decisions. Case content is split into topic packs, connected through a single index, loaded offline via the scoped cache v4. The interface includes patient context, keyboard-accessible filters, local case attempts, a competence learning chart, replay comparisons and public background reference links. **Cases are not clinically reviewed**. See `docs/MEDVERSE_CONTENT_REVIEW.md` before formal publication.
