@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061927">
+  <meta name="description" content="NABD MEDVERSE · Interactive 3D educational hospital and 22 fictional clinical learning cases.">
+  <title>NABD MEDVERSE 3D | Virtual Hospital</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./hospital-3d.css">
+  <script type="module" src="./hospital-3d.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#world" data-i18n="skip">تخطَّ إلى العالم التفاعلي</a>
+  <header class="topbar">
+    <div class="top-inner">
+      <a href="./index.html" class="brand" aria-label="NABD ATLAS home">
+        <img src="./icon.svg" alt="" width="42" height="42"/>
+        <span><b>NABD<span class="brand-em">MEDVERSE</span></b><small>THE DIGITAL MEDICAL UNIVERSE</small></span>
+      </a>
+      <div class="top-actions">
+        <span id="onlineStatus" class="status" role="status" aria-live="polite"></span>
+        <button id="toggleLanguage" type="button" class="small-btn" aria-label="Switch language">English</button>
+        <a class="back-link" href="./clinical-hub.html" data-i18n="caseLibrary">مكتبة الحالات</a>
+      </div>
+    </div>
+  </header>
+  <main id="world">
+    <section class="intro">
+      <div class="intro-copy">
+        <span class="eyebrow"><i class="live-dot"></i> NABD ATLAS / VIRTUAL HOSPITAL / 3D WORLD 01</span>
+        <h1 data-i18n="title">ادخل الطب.<br>واكتشف عالمه.</h1>
+        <p data-i18n="description">مستشفى تعليمي افتراضي ثلاثي الأبعاد يمكنك تدويره واستكشاف أجنحته، ثم الانتقال مباشرة إلى الحالات السريرية في كل قسم.</p>
+        <div class="intro-badges"><span><strong>13</strong> <span data-i18n="departments">جناحًا طبيًا</span></span><span><strong>22</strong> <span data-i18n="cases">حالة افتراضية</span></span><span class="open-access"><i class="live-dot"></i> <span data-i18n="offlineReady">متاح دون إنترنت بعد التنزيل</span></span></div>
+      </div>
+      <div class="intro-side"><span>01 / 03</span><strong>NABD</strong><small>IMMERSIVE LEARNING EXPERIENCE</small><div class="bar-code" aria-hidden="true"></div></div>
+    </section>
+
+    <div class="experience-layout">
+      <section class="experience" aria-label="Interactive three dimensional educational hospital">
+        <div class="experience-heading">
+          <div><span class="overline" data-i18n="experienceLabel">مخطط المستشفى ثلاثي الأبعاد</span><strong id="modeHeading" data-i18n="campus">مجمع نبض الطبي الافتراضي</strong></div>
+          <div class="mode-tags"><span class="tag">3D · REAL PERSPECTIVE</span><span class="tag tag-gold">EDUCATIONAL PREVIEW</span></div>
+        </div>
+        <div class="viewport" id="viewport">
+          <canvas id="hospitalCanvas" role="img" aria-label="Rotatable 3D map of the fictional medical hospital." tabindex="0"></canvas>
+          <div class="viewport-top">
+            <div class="coordinate"><span class="coordinate-dot"></span> NABD / MEDVERSE / <span id="viewStatus">CAMPUS</span></div>
+            <div class="compass" aria-hidden="true">N <span id="compassNeedle">▲</span></div>
+          </div>
+          <div class="viewport-bottom">
+            <div class="hint"><span class="mouse-icon" aria-hidden="true">✥</span><span data-i18n="dragHint">اسحب لتدوير المشهد · اختر جناحًا</span></div>
+            <div class="scene-counter">NABD-3D <span>V 01.0</span></div>
+          </div>
+          <p class="no-script" id="canvasFallback" hidden data-i18n="canvasFallback">لا يدعم جهازك الرسم ثلاثي الأبعاد؛ اختر القسم من القائمة.</p>
+        </div>
+        <div class="controls" aria-label="3D camera controls">
+          <div class="control-group">
+            <button id="rotateLeft" type="button" aria-label="Rotate left" title="Rotate left"><span aria-hidden="true">↶</span></button>
+            <button id="rotateRight" type="button" aria-label="Rotate right" title="Rotate right"><span aria-hidden="true">↷</span></button>
+            <span class="control-separator"></span>
+            <button id="zoomIn" type="button" aria-label="Zoom in" title="Zoom in"><span aria-hidden="true">+</span></button>
+            <button id="zoomOut" type="button" aria-label="Zoom out" title="Zoom out"><span aria-hidden="true">−</span></button>
+            <button id="resetView" type="button" data-i18n="reset" class="control-text">إعادة ضبط</button>
+          </div>
+          <div class="control-group">
+            <button id="toggleOrbit" type="button" class="orbit-button" aria-pressed="false"><span aria-hidden="true">◎</span><span data-i18n="autoOrbit">دوران تلقائي</span></button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="selection-panel">
+        <div class="selection-title"><span class="eyebrow-2" data-i18n="chooseWing">اختر الجناح</span><span class="selection-count">13 / DEPARTMENTS</span></div>
+        <div class="selected-panel">
+          <div class="selected-icon" id="selectedIcon" aria-hidden="true">✚</div>
+          <span class="selected-label" data-i18n="selectedWing">الجناح المحدد</span>
+          <h2 id="selectedTitle">قسم الطوارئ</h2>
+          <p id="selectedDescription"></p>
+          <div class="selected-meta"><span><i class="live-dot"></i> <span id="selectedCount"></span></span><span class="scenario-badge" data-i18n="demo">سيناريوهات تعليمية</span></div>
+          <div class="selected-actions"><button class="primary-action" id="openWing" type="button"><span data-i18n="enterWing">ادخل إلى الجناح</span><span aria-hidden="true">←</span></button><a id="openCases" href="./clinical-hub.html" class="secondary-action"><span data-i18n="startTraining">ابدأ الحالات</span><span aria-hidden="true">↗</span></a></div>
+        </div>
+        <div class="department-header"><strong data-i18n="allDepartments">كل الأقسام</strong><small data-i18n="selectAny">اختر أي تخصص أدناه</small></div>
+        <div id="wingList" class="wing-list"></div>
+      </aside>
+    </div>
+    <section class="lower-grid">
+      <article class="mission-card"><div class="card-icon">✚</div><div><span class="overline">NABD MEDVERSE / CLINICAL REASONING</span><h3 data-i18n="learningTitle">حالات لاكتساب مهارات القرار الطبي</h3><p data-i18n="learningText">86 خطوة تعليمية، وأسئلة تفاعلية، وتغذية راجعة لكل اختيار. النتائج محلية وغير معتمدة كشهادات.</p><a href="./clinical-hub.html" data-i18n="exploreCases">استكشف الحالات ←</a></div></article>
+      <article class="mission-card"><div class="card-icon">↧</div><div><span class="overline">NABD OFFLINE / ACCESS FOR ALL</span><h3 data-i18n="offlineTitle">تعلّم حتى عند انقطاع الشبكة</h3><p data-i18n="offlineText">بعد تحميل الحزمة من صفحة أطلس، تعمل مشاهد المستشفى والحالات على الجهاز نفسه دون إنترنت.</p><a href="./index.html" data-i18n="prepareOffline">جهّز الحزمة ←</a></div></article>
+    </section>
+    <footer>
+      <span>© 2026 NABD ACADEMY FOR MEDICAL SCIENCES · NABD MEDVERSE</span>
+      <span data-i18n="safety">محاكاة تعليمية خيالية غير مخصصة لعلاج المرضى، ولم تُراجع سريريًا للاعتماد.</span>
+    </footer>
+  </main>
+</body>
+</html>

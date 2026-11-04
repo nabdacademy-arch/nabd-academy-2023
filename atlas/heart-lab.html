@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071827">
+  <title>Heart Lab | NABD ATLAS</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    .lab-shell{max-width:1100px;margin:auto;padding:28px 17px 70px}
+    .lab-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:35px}
+    .lab-head a{color:#8cf2d8;font-size:13px}
+    .lab-head button{border:1px solid #507987;color:#eef;background:#123b48;border-radius:11px;padding:9px 14px;cursor:pointer}
+    .lab-lead{max-width:760px;color:#abcad5;font-size:14px;line-height:1.9;margin-bottom:28px}
+    .lab-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+    .lab-card{border:1px solid #42616b;background:#0c2939;border-radius:21px;padding:25px}
+    .heart-art{background:radial-gradient(ellipse at 50% 40%,#174856,#071827 78%)}
+    .heart-art svg{width:100%;height:auto;max-height:340px}
+    .heart-art .chamber{opacity:.7;stroke-width:2;stroke:#92dae6;transition:opacity .2s,stroke-width .2s}
+    .heart-art .chamber.oxygenated{stroke:#f4b3ad}
+    .heart-art .chamber.active{stroke-width:5;opacity:1}
+    .heart-art text{fill:#fff;font:700 18px system-ui;text-anchor:middle}
+    .legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;color:#bfdae0;font-size:12px}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:#3183a5;margin-inline-end:6px}
+    .dot.red{background:#c86e74}
+    .chamber-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}
+    .chamber-options button,.quiz-options button{border:1px solid #3d6979;border-radius:12px;background:#12394a;color:#ebf8fb;padding:12px;cursor:pointer;text-align:start;font-size:13px}
+    .chamber-options button:hover,.quiz-options button:hover{border-color:#72e2d1}
+    .chamber-options button[aria-pressed=true],.quiz-options button[aria-pressed=true]{background:#1d5a55;border-color:#77ebd3}
+    .chamber-options strong,.chamber-options small{display:block}
+    .chamber-options small{color:#b2cbd4;font-size:11px;margin-top:4px}
+    .info{min-height:127px;background:#071f2d;border:1px solid #426473;border-radius:12px;padding:17px;line-height:1.9}
+    .info h3{font-size:17px;margin-bottom:7px;color:#91ecd7}.info p{color:#c2d9e1;margin:0;font-size:13px}
+    .lab-card h2{font-size:19px;margin:0 0 10px}
+    .lab-card>p{font-size:13px;color:#b7d0da;line-height:1.9}
+    .quiz{grid-column:1/-1}.quiz-options{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+    .feedback{margin-top:14px;padding:14px;background:#123e41;border:1px solid #478b7d;border-radius:12px;color:#e7fff7;font-size:13px;line-height:1.8}
+    .feedback.warning{background:#3b322a;border-color:#86663d;color:#ffddba}
+    .footnote{font-size:12px;color:#abc2ca;line-height:1.9;margin-top:24px}
+    @media(max-width:800px){.lab-layout{grid-template-columns:1fr}.quiz{grid-column:1}.lab-card{padding:20px}}
+    @media(prefers-reduced-motion:reduce){.heart-art .chamber{transition:none}}
+  </style>
+  <script type="module">
+    const chambers=[
+      {id:"ra",code:"RA",ar:"الأذين الأيمن",en:"Right atrium",roleAr:"استقبال الدم من الجسم",roleEn:"Receives blood from body",detailAr:"يستقبل الدم العائد من الجسم عبر الوريدين الأجوفين، ويكون عادة منخفض الأكسجين.",detailEn:"Receives blood returning from the body through the venae cavae, usually low in oxygen."},
+      {id:"rv",code:"RV",ar:"البطين الأيمن",en:"Right ventricle",roleAr:"إرسال الدم إلى الرئتين",roleEn:"Pumps blood to lungs",detailAr:"يضخ الدم باتجاه الرئتين عبر الشريان الرئوي لاستكمال تبادل الغازات.",detailEn:"Pumps blood to the lungs via the pulmonary artery for gas exchange."},
+      {id:"la",code:"LA",ar:"الأذين الأيسر",en:"Left atrium",roleAr:"استقبال الدم من الرئتين",roleEn:"Receives blood from lungs",detailAr:"يستقبل الدم الغني بالأكسجين من الرئتين عبر الأوردة الرئوية.",detailEn:"Receives oxygen-rich blood from the lungs through the pulmonary veins."},
+      {id:"lv",code:"LV",ar:"البطين الأيسر",en:"Left ventricle",roleAr:"إرسال الدم إلى الجسم",roleEn:"Pumps blood to body",detailAr:"يضخ الدم الغني بالأكسجين إلى الجسم عبر الشريان الأبهر.",detailEn:"Pumps oxygen-rich blood to the body through the aorta."}
+    ];
+    const words={
+      ar:{back:"العودة إلى أطلس",heading:"مختبر القلب التفاعلي",intro:"استكشف حجرات القلب ومسار الدم ثم اختبر معلوماتك. الرسم توضيحي وليس نموذجًا تشريحيًا بالمقياس.",select:"اختر حجرة من القلب",instruction:"اضغط على اسم إحدى الحجرات لتظهر وظيفتها ويتم تمييزها في الرسم.",low:"دم منخفض الأكسجين",high:"دم غني بالأكسجين",fromBody:"من الجسم",toLungs:"إلى الرئتين",fromLungs:"من الرئتين",toBody:"إلى الجسم",quiz:"اختبر فهمك",question:"ما الحجرة التي تضخ الدم الغني بالأكسجين إلى الجسم عبر الشريان الأبهر؟",correct:"صحيح!",incorrect:"راجع إجابتك.",why:"البطين الأيسر يضخ الدم إلى الأبهر ثم الجسم. أما البطين الأيمن فيضخه إلى الرئتين.",safety:"رسم تخطيطي تعليمي ثنائي الأبعاد، غير مخصص للتشخيص أو علاج المرضى. يحتاج المحتوى مراجعة مختص قبل استخدامه في تقييم رسمي."},
+      en:{back:"Return to ATLAS",heading:"Interactive heart lab",intro:"Explore the four heart chambers and blood flow, then check what you learned. This conceptual illustration is not anatomically to scale.",select:"Select a heart chamber",instruction:"Choose a chamber to highlight its position and read its function.",low:"Low-oxygen blood",high:"Oxygen-rich blood",fromBody:"From body",toLungs:"To lungs",fromLungs:"From lungs",toBody:"To body",quiz:"Check your understanding",question:"Which chamber pumps oxygen-rich blood to the body through the aorta?",correct:"Correct!",incorrect:"Review your answer.",why:"The left ventricle pumps blood into the aorta and then to the body. The right ventricle pumps blood to the lungs.",safety:"This is a 2D conceptual teaching aid, not for diagnosis or patient treatment. Specialist review is required before formal assessment."}
+    };
+    let lang="ar",selected="ra",quizChoice=null;
+    function render(){
+      document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+      for(const el of document.querySelectorAll("[data-word]"))el.textContent=words[lang][el.dataset.word];
+      document.getElementById("switchLanguage").textContent=lang==="ar"?"English":"العربية";
+      document.querySelectorAll("[data-chamber]").forEach(el=>el.classList.toggle("active",el.dataset.chamber===selected));
+      const options=document.getElementById("chambers");options.replaceChildren();
+      chambers.forEach(chamber=>{
+        const button=document.createElement("button");button.type="button";
+        button.setAttribute("aria-pressed",String(selected===chamber.id));
+        const title=document.createElement("strong");title.textContent=chamber.code+" — "+chamber[lang];
+        const small=document.createElement("small");small.textContent=chamber[lang==="ar"?"roleAr":"roleEn"];
+        button.append(title,small);
+        button.addEventListener("click",()=>{selected=chamber.id;render();});
+        options.append(button);
+      });
+      const current=chambers.find(x=>x.id===selected);
+      document.getElementById("chamberName").textContent=current[lang];
+      document.getElementById("chamberInfo").textContent=current[lang==="ar"?"detailAr":"detailEn"];
+      const answers=document.getElementById("answers");answers.replaceChildren();
+      chambers.forEach(chamber=>{
+        const button=document.createElement("button");button.type="button";
+        button.textContent=chamber[lang];button.setAttribute("aria-pressed",String(quizChoice===chamber.id));
+        button.addEventListener("click",()=>{quizChoice=chamber.id;render();});answers.append(button);
+      });
+      const result=document.getElementById("feedback");result.hidden=quizChoice===null;
+      if(!result.hidden){const correct=quizChoice==="lv";result.classList.toggle("warning",!correct);result.textContent=words[lang][correct?"correct":"incorrect"]+" "+words[lang].why;}
+    }
+    document.getElementById("switchLanguage").addEventListener("click",()=>{lang=lang==="ar"?"en":"ar";render();});
+    if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});
+    render();
+  </script>
+</head>
+<body>
+  <main class="lab-shell">
+    <div class="lab-head"><a href="./index.html" data-word="back">العودة إلى أطلس</a><button type="button" id="switchLanguage" aria-label="Switch language">English</button></div>
+    <span class="eyebrow">NABD HUMAN UNIVERSE / LAB 01</span>
+    <h1 class="inner-title" data-word="heading">مختبر القلب التفاعلي</h1>
+    <p class="lab-lead" data-word="intro">استكشف حجرات القلب ومسار الدم ثم اختبر معلوماتك.</p>
+    <div class="lab-layout">
+      <section class="lab-card heart-art" aria-label="Conceptual heart chamber diagram">
+        <svg viewBox="0 0 400 340" role="img" aria-labelledby="heartTitle heartDesc">
+          <title id="heartTitle">Heart chambers: RA, RV, LA, LV</title><desc id="heartDesc">Conceptual four-chamber teaching schematic, not to scale</desc>
+          <path d="M108 25v35 M108 175v15 M108 295v20 M290 25v35 M290 175v15 M290 295v20" stroke="#93b5c4" stroke-dasharray="7 7" stroke-width="3" fill="none"/>
+          <rect class="chamber" data-chamber="ra" x="37" y="64" width="143" height="110" rx="28" fill="#195c78"/>
+          <rect class="chamber" data-chamber="rv" x="37" y="187" width="143" height="110" rx="25" fill="#256a89"/>
+          <rect class="chamber oxygenated" data-chamber="la" x="220" y="64" width="143" height="110" rx="28" fill="#994f59"/>
+          <rect class="chamber oxygenated" data-chamber="lv" x="220" y="187" width="143" height="110" rx="25" fill="#c1676d"/>
+          <text x="108" y="124">RA</text><text x="108" y="248">RV</text><text x="291" y="124">LA</text><text x="291" y="248">LV</text>
+          <text x="108" y="20" style="font-size:12px" data-word="fromBody">من الجسم</text>
+          <text x="108" y="336" style="font-size:12px" data-word="toLungs">إلى الرئتين</text>
+          <text x="291" y="20" style="font-size:12px" data-word="fromLungs">من الرئتين</text>
+          <text x="291" y="336" style="font-size:12px" data-word="toBody">إلى الجسم</text>
+        </svg>
+        <div class="legend"><span><i class="dot"></i><span data-word="low">دم منخفض الأكسجين</span></span><span><i class="dot red"></i><span data-word="high">دم غني بالأكسجين</span></span></div>
+      </section>
+      <section class="lab-card">
+        <h2 data-word="select">اختر حجرة من القلب</h2><p data-word="instruction">اضغط على اسم إحدى الحجرات لتظهر وظيفتها.</p>
+        <div class="chamber-options" id="chambers"></div>
+        <div class="info" aria-live="polite"><h3 id="chamberName"></h3><p id="chamberInfo"></p></div>
+      </section>
+      <section class="lab-card quiz">
+        <span class="eyebrow" data-word="quiz">اختبر فهمك</span>
+        <h2 data-word="question">ما الحجرة التي تضخ الدم الغني بالأكسجين إلى الجسم عبر الشريان الأبهر؟</h2>
+        <div class="quiz-options" id="answers"></div><div class="feedback" id="feedback" hidden role="status" aria-live="polite"></div>
+      </section>
+    </div>
+    <p class="footnote" data-word="safety">رسم تخطيطي تعليمي ثنائي الأبعاد، غير مخصص للتشخيص أو علاج المرضى.</p>
+  </main>
+</body></html>

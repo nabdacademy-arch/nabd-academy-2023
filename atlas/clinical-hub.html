@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071827">
+  <meta name="description" content="NABD Virtual Hospital — 22 fictional bilingual clinical teaching missions across medical specialties with offline learning.">
+  <title>NABD Virtual Hospital | NABD ATLAS</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./clinical-hub.css">
+  <script type="module" src="./clinical-hub.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#hubMain" data-i18n="skip">انتقل للمحتوى</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="./index.html" class="brand"><img src="./icon.svg" width="40" height="40" alt=""><span><strong>NABD</strong><small>ATLAS · VIRTUAL HOSPITAL</small></span></a>
+      <div class="header-actions">
+        <a class="lang-button" href="./hospital-3d.html" data-i18n="view3d">3D WORLD ✧</a>
+        <span class="connection" id="networkStatus" role="status"></span>
+        <button type="button" class="lang-button" id="languageToggle" aria-label="Switch language">English</button>
+      </div>
+    </div>
+  </header>
+  <main class="hub-main" id="hubMain">
+    <div class="eyebrow">NABD MEDVERSE / CLINICAL MISSIONS</div>
+    <div class="hub-intro">
+      <div>
+        <span class="pill" data-i18n="pilot">نسخة تعليمية تجريبية</span>
+        <h1 data-i18n="title">مستشفى نبض الافتراضي</h1>
+        <p data-i18n="lead">اختر حالة سريرية خيالية، واتخذ قراراتك، ثم أعد أي قرار وقارن المسارات. تُحفظ محاولاتك على هذا الجهاز فقط.</p>
+      </div>
+      <div class="hub-kpis" aria-live="polite">
+        <div class="hub-kpi"><span data-i18n="casesCount">حالات تدريبية</span><strong id="totalCases">22</strong><small data-i18n="departmentsCount">تخصصات متنوعة</small></div>
+        <div class="hub-kpi"><span data-i18n="attempts">المحاولات المكتملة</span><strong id="totalAttempts">0</strong><small data-i18n="storedLocal">في هذا المتصفح فقط</small></div>
+      </div>
+    </div>
+    <details class="hospital-directory">
+      <summary><span data-i18n="exploreWings">استكشف أجنحة المستشفى الافتراضي</span> <span class="map-summary-hint" data-i18n="wingsHint">اختر قسمًا للوصول إلى حالاته</span></summary>
+      <p class="muted small" data-i18n="wingsNote">هذه خريطة تعليمية تفاعلية للأقسام، وليست مبنى ثلاثي الأبعاد أو مستشفى فعليًا.</p>
+      <div id="departmentTiles" class="department-tiles"></div>
+    </details>
+    <div class="hub-layout">
+      <aside class="hub-sidebar">
+        <h2 data-i18n="selectCase">اختر المهمة الطبية</h2>
+        <div class="hub-filters">
+          <label for="searchCases" data-i18n="searchLabel">ابحث عن حالة</label>
+          <input type="search" id="searchCases" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث بالاسم أو التخصص" autocomplete="off">
+          <label for="departmentFilter" data-i18n="departmentLabel">التخصص</label>
+          <select id="departmentFilter" aria-label="Specialty filter"></select>
+          <label for="levelFilter" data-i18n="levelLabel">مستوى الحالة</label>
+          <select id="levelFilter">
+            <option value="all" data-i18n="allLevels">جميع المستويات</option>
+            <option value="intro" data-i18n="introLevel">مبتدئ</option>
+            <option value="intermediate" data-i18n="intermediateLevel">متوسط</option>
+            <option value="advanced" data-i18n="advancedLevel">متقدم</option>
+          </select>
+          <div id="filterCount" class="filter-count" role="status" aria-live="polite"></div>
+        </div>
+        <div id="caseList" class="hub-case-list"></div>
+        <p id="caseEmpty" class="muted small" hidden data-i18n="noMatches">لا توجد حالات مطابقة. جرّب تغيير البحث.</p>
+        <p class="muted small" data-i18n="disclaimer">تدريب تعليمي غير معتمد، ولا يُستخدم لاتخاذ قرارات حول مرضى حقيقيين.</p>
+      </aside>
+      <section class="hub-panel" aria-label="Clinical simulation">
+        <div class="hub-heading">
+          <span class="pill" data-i18n="fictional">حالة افتراضية</span>
+          <div class="hub-context"><span id="caseLevel" class="difficulty-badge"></span><span id="stepCounter" class="counter" aria-live="polite"></span></div>
+        </div>
+        <h2 id="caseTitle"></h2>
+        <p id="patientDescription" class="muted"></p>
+        <p id="caseObjectives" class="case-objectives"></p>
+        <div class="hub-stage-progress" id="stageProgress" aria-label="Simulation progress"></div>
+        <div class="vitals">
+          <span>HR <strong id="vitalHr"></strong></span>
+          <span>BP <strong id="vitalBp"></strong></span>
+          <span>SpO₂ <strong id="vitalSpo"></strong></span>
+        </div>
+        <div id="caseExercise">
+          <span class="eyebrow" id="skillLabel"></span>
+          <h3 id="stepTitle"></h3>
+          <p id="stepDescription" class="muted"></p>
+          <div id="optionList" class="answers"></div>
+          <div id="stepFeedback" class="feedback" role="status" aria-live="polite" hidden></div>
+          <div class="case-actions">
+            <button type="button" class="btn primary" id="nextStep" hidden></button>
+            <button type="button" class="btn outline" id="restartCase" data-i18n="restart">إعادة الحالة</button>
+          </div>
+        </div>
+        <div id="caseReport" hidden>
+          <p class="muted" data-i18n="completed">أنهيت المهمة التدريبية.</p>
+          <div class="hub-score" id="finalScore"></div>
+          <p class="muted" id="compareMessage" hidden></p>
+          <h3 data-i18n="skillsTitle" class="report-section-title">خريطة المهارات</h3>
+          <div id="skillReport" class="skill-report"></div>
+          <h3 data-i18n="decisionsTitle" class="report-section-title">مراجعة القرارات</h3>
+          <div class="hub-history" id="decisionHistory"></div>
+          <div class="case-actions">
+            <button type="button" class="btn outline" id="exportAttempt" data-i18n="downloadReport">تنزيل تقرير المحاولة</button>
+            <button type="button" class="btn primary" id="restartFromReport" data-i18n="tryAgain">إعادة التجربة</button>
+          </div>
+        </div>
+        <div class="hub-reference-panel">
+          <h3 data-i18n="referenceTitle">مراجع تعليمية ذات صلة</h3>
+          <p class="muted small" data-i18n="referenceNote">روابط للقراءة العامة؛ لا تعني اعتماد السيناريو أو التحقق من دقته سريريًا.</p>
+          <div id="referenceLinks" class="reference-links"></div>
+        </div>
+      </section>
+    </div>
+    <section class="hub-learning-history">
+      <div class="section-top"><div><div class="eyebrow">NABD LEARNING PASSPORT</div><h2 data-i18n="history">سجل التدريب على هذا الجهاز</h2></div></div>
+      <div id="attemptHistory" class="history-grid"></div>
+      <button type="button" class="btn outline clear-history" id="clearHistory" data-i18n="clearHistory">مسح سجل المحاولات المحلي</button>
+      <p class="muted small" data-i18n="historyNote">هذا سجل تدريب محلي وليس شهادة رسمية، ويمكن فقدانه عند مسح بيانات المتصفح. لا توجد مزامنة مع حساب الطالب بعد.</p>
+    </section>
+    <p class="notice" data-i18n="medicalNotice">تنبيه علمي: السيناريوهات مبسطة وغير معتمدة للاستخدام مع المرضى. يجب مراجعتها من مشرف طبي مختص قبل إتاحتها كتقييم رسمي.</p>
+    <footer class="footer">NABD ACADEMY FOR MEDICAL SCIENCES <span>•</span> NABD VIRTUAL HOSPITAL <span>•</span> 2026</footer>
+  </main>
+</body>
+</html>
