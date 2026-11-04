@@ -4,6 +4,19 @@
 export const LEVELS=["intro","intermediate","advanced"];
 export const SKILLS=["triage","assessment","reasoning","communication"];
 const multilingual=(ar,en)=>({ar,en});
+const CATEGORIES={
+  emergency:multilingual("الطوارئ","Emergency medicine"),
+  respiratory:multilingual("الجهاز التنفسي","Respiratory medicine"),
+  endocrine:multilingual("السكري والغدد","Endocrinology"),
+  gastro:multilingual("الجهاز الهضمي","Gastroenterology"),
+  surgery:multilingual("الجراحة","Surgery"),
+  pediatrics:multilingual("طب الأطفال","Pediatrics"),
+  obstetrics:multilingual("النساء والتوليد","Obstetrics"),
+  renal:multilingual("الكلى","Renal medicine"),
+  toxicology:multilingual("السموم","Toxicology"),
+  trauma:multilingual("إصابات الطوارئ","Trauma"),
+  mentalhealth:multilingual("الصحة النفسية","Mental health")
+};
 export function makeCase(spec){
   const [id,department,level,titleAr,titleEn,patientAr,patientEn,hr,bp,spo2,objectives,checkpoints,reference=[]]=spec;
   if(!Array.isArray(checkpoints)||checkpoints.length!==4)throw new Error("Four distinct checkpoints required: "+id);
@@ -29,7 +42,7 @@ export function makeCase(spec){
     return {id:SKILLS[index],skill:SKILLS[index],title:stages[index],description:multilingual(qa,qe),options:rotated};
   });
   return {
-    id,department,level,revision:1,reviewStatus:"unreviewed",
+    id,department,level,category:CATEGORIES[department]??multilingual("التعليم الطبي","Medical education"),revision:1,reviewStatus:"unreviewed",
     title:multilingual(titleAr,titleEn),patient:multilingual(patientAr,patientEn),
     vitals:{hr,bp,spo2},objectives:multilingual(objectives[0],objectives[1]),
     references:reference,maxPoints:8,steps
