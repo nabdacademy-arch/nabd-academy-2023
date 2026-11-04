@@ -29,6 +29,11 @@ jobs:
           node --check atlas/clinical-hub.mjs
           node --check atlas/clinical-cases.mjs
           node --check atlas/clinical-engine.mjs
+          node --check atlas/clinical-authoring.mjs
+          node --check atlas/cases-critical.mjs
+          node --check atlas/cases-general.mjs
+          node --check atlas/cases-specialist.mjs
+          node --check atlas/cases-injury.mjs
           node --check atlas/tests/browser.mjs
       - name: Scenario integrity and security guardrails
         run: |
