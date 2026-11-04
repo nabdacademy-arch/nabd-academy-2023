@@ -4,8 +4,9 @@ A standalone **proof of concept** for NABD Academy for Medical Sciences. It intr
 - A bilingual Arabic/English medical-learning interface.
 - A three-decision, fictional chest-pain learning simulation.
 - An accessible 2D bilingual interactive heart-chamber lab with a self-check quiz.
+- **NEW:** A multi-case virtual-hospital hub with a fictional neurological emergency scenario, saved incomplete attempts, educational score history, decision replay and JSON report export.
 - Local-only progress summary (no student identifiers).
-- A scoped Service Worker and a downloadable offline web pack covering both the simulation and heart lab.
+- A scoped Service Worker and an offline web pack covering the simulator, heart lab, and virtual hospital.
 - The beginnings of the NABD MEDVERSE and NABD OFFLINE modules.
 
 ## Try it

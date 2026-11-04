@@ -1,6 +1,6 @@
 /* Scope is restricted to /atlas/; never cache student or admin pages. */
-const CACHE="nabd-atlas-foundation-v2";
-const FILES=["./","./index.html","./heart-lab.html","./styles.css","./app.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js"];
+const CACHE="nabd-atlas-foundation-v3";
+const FILES=["./","./index.html","./heart-lab.html","./clinical-hub.html","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js"];
 self.addEventListener("install",(event)=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });

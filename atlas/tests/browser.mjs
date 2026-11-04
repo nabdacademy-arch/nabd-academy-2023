@@ -50,6 +50,34 @@ try{
   await page.locator("#switchLanguage").click();
   assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
   assert.match(await page.locator("#feedback").textContent(),/Correct/);
+
+  // Virtual hospital multi-case flow, resume, replay, local history and report.
+  await page.goto(url+"/clinical-hub.html");
+  assert.match(await page.title(),/Virtual Hospital/);
+  assert.equal(await page.locator("#caseList button").count(),2);
+  await page.locator("#caseList button").nth(1).click();
+  assert.equal(await page.locator("#optionList button").count(),3);
+  await page.locator("#optionList button").first().click();
+  await page.locator("#nextStep").click();
+  await page.reload();
+  assert.match(await page.locator("#stepCounter").textContent(),/2/);
+  for(let i=1;i<3;i++){
+    await page.locator("#optionList button").first().click();
+    await page.locator("#nextStep").click();
+  }
+  assert.equal(await page.locator("#finalScore").textContent(),"6 / 6");
+  assert.equal(await page.locator("#totalAttempts").textContent(),"1");
+  await page.locator("#decisionHistory button").first().click();
+  await page.locator("#optionList button").nth(1).click();
+  await page.locator("#nextStep").click();
+  assert.equal(await page.locator("#finalScore").textContent(),"4 / 6");
+  assert.match(await page.locator("#compareMessage").textContent(),/6/);
+  assert.equal(await page.locator("#totalAttempts").textContent(),"2");
+  await page.locator("#languageToggle").click();
+  assert.equal(await page.locator("html").getAttribute("dir"),"rtl");
+  assert.match(await page.locator("#caseTitle").textContent(),/العصبية/);
+  await page.locator("#languageToggle").click();
+  assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
   await page.goto(url+"/index.html");
   await page.locator('[data-view-button="offline"]').click();
   await page.locator("#downloadBtn").click();
@@ -61,6 +89,8 @@ try{
   assert.equal(await page.locator("#answers button").count(),3);
   await page.goto(url+"/heart-lab.html");
   assert.equal(await page.locator("#chambers button").count(),4);
+  await page.goto(url+"/clinical-hub.html");
+  assert.equal(await page.locator("#caseList button").count(),2);
   assert.deepEqual(pageErrors,[]);
   console.log("NABD ATLAS mobile browser, bilingual, simulation, anatomy and offline checks passed.");
 }finally{

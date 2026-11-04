@@ -25,6 +25,7 @@ Expand the existing NABD Academy (Arabic/English) into a cohesive learning platf
 ## Current deliverable
 A free, static, self-contained web pilot in \`atlas/\`:
 - Educational decision-tree simulation with reproducible feedback and a replay option.
+- Virtual hospital hub with cardiac and neurological fictional training cases, in-progress browser-only drafts and a local attempt history. These are not medical assessments.
 - Offline precache and user-initiated cache refresh.
 - Browser-only recent-score storage and no remote data collection.
 - Service Worker cache scope limited to \`atlas/\`.

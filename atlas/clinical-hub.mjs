@@ -201,7 +201,7 @@ function renderReport({record=false}={}){
     const detail=document.createElement("p");detail.textContent=label(answer.feedback);
     const button=document.createElement("button");button.type="button";button.textContent=t("replay");
     button.addEventListener("click",()=>{
-      oldPath=[...picks];replayIndex=index;stepIndex=index;selectedAnswer=null;
+      oldPath=[...picks];replayIndex=index;stepIndex=index;selectedAnswer=null;reportMode=false;
       renderStep();
     });
     box.append(title,detail,button);list.append(box);
@@ -236,4 +236,5 @@ window.addEventListener("online",updateNetwork);window.addEventListener("offline
 if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});}
 const storageWarning=document.createElement("p");storageWarning.id="storageWarning";storageWarning.className="muted small";
 $("caseReport").after(storageWarning);
+activateCase(current.id);
 translate();
