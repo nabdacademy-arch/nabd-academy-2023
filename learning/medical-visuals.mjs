@@ -155,6 +155,8 @@ export function createVisualCompanion(question,language="ar"){
   return card;
  }
  function render(items){
+  // Dispose old GPU contexts when a student switches between organ cards.
+  layout.querySelectorAll(".nabd-signature-lab").forEach(element=>element.nabdDispose?.());
   layout.replaceChildren(...items.map(makeCard));
  }
  render(chosen);

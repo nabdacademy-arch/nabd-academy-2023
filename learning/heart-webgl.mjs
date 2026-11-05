@@ -139,7 +139,7 @@ export function createHeartWebGL(canvas,{reducedMotion=false,onFrame=()=>{}}={})
   function render(ts){
    frame=0;if(dead||!canvas.isConnected||!visible)return;
    dimensions();const dt=previous?Math.min(.05,(ts-previous)*.001):0;previous=ts;
-   if(playing){clock+=dt;if(autoRotate)angle+=dt*.25;}
+   if(playing)clock+=dt;if(autoRotate)angle+=dt*.25;
    const rot=matrix(yaw(angle),pitch(vertical));
    const mvp=matrix(projection(canvas.width/canvas.height),matrix(translation(0,.05,-zoom),rot));
    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(P.prog);
@@ -159,7 +159,7 @@ export function createHeartWebGL(canvas,{reducedMotion=false,onFrame=()=>{}}={})
     }
    }
    onFrame({angle,vertical,zoom,route,focus});
-   frame=requestAnimationFrame(render);
+   if(playing||autoRotate)frame=requestAnimationFrame(render);
   }
   const start=()=>{if(!dead&&canvas.isConnected&&visible&&!frame)frame=requestAnimationFrame(render);};
   const stop=()=>{if(frame)cancelAnimationFrame(frame);frame=0;previous=0;};

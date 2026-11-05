@@ -1,6 +1,6 @@
 /* Only explicit PUBLIC learning assets. Never cache auth, API, account or private course responses. */
-const CACHE='nabd-learning-public-v3';
-const FILES=['./','./index.html','./styles.css','./visuals.css','./app.mjs','./medical-visuals.mjs','./anatomy-lightbox.mjs','./heart-simulator.mjs','./tutor-format.mjs','./core.mjs','./content.mjs','./icon.svg','./manifest.webmanifest'];
+const CACHE='nabd-learning-public-v4';
+const FILES=['./','./index.html','./styles.css','./visuals.css','./app.mjs','./medical-visuals.mjs','./anatomy-lightbox.mjs','./heart-studio.mjs','./heart-webgl.mjs','./heart-simulator.mjs','./tutor-format.mjs','./core.mjs','./content.mjs','./icon.svg','./manifest.webmanifest'];
 const allowed=new Set(FILES.map(path=>new URL(path,self.registration.scope).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('nabd-learning-public-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

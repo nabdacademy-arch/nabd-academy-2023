@@ -220,6 +220,7 @@ export function createHeartStudio(language="ar"){
  function onHash(){if(!location.hash.startsWith("#tutor"))unmount();}
  window.addEventListener("hashchange",onHash);
  window.addEventListener("pagehide",unmount,{once:true});
+ outer.nabdDispose=unmount;
  outer.addEventListener("toggle",()=>{
   if(outer.open){if(!engine)initialize();else engine.resume();}
   else engine?.pause();
