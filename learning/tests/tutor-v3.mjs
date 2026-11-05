@@ -9,7 +9,7 @@ const req=(image=null)=>new Request("https://edge.test/functions/v1/smart-proces
  body:JSON.stringify({question:"اشرح صورة تشريحية تعليمية",image})
 });
 const groq="https://api.groq.com/openai/v1/chat/completions";
-const gemini="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const gemini="https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent";
 function buildFake({groqStatus=200,geminiStatus=200,geminiSafety=false}={}){
  const calls=[];
  return {calls,fetcher:async(url,options)=>{
@@ -34,6 +34,8 @@ assert.equal(mock.calls.filter(x=>x.url===groq).length,1);
 assert.equal(mock.calls.filter(x=>x.url===gemini).length,0);
 const groqBody=JSON.parse(mock.calls.find(x=>x.url===groq).options.body);
 assert.equal(groqBody.model,"openai/gpt-oss-120b");
+assert.equal(groqBody.include_reasoning,false);
+assert.equal(Object.hasOwn(groqBody,"reasoning_format"),false);
 assert(!JSON.stringify(groqBody).includes("groq-secret"));
 assert(!JSON.stringify(groqBody).includes("user-learner"));
 // Provider 429 automatically routes to Gemini without another student quota charge.
@@ -51,6 +53,7 @@ output=await res.json();assert.equal(output.provider,"gemini");
 assert.equal(mock.calls.filter(x=>x.url===groq).length,0);
 const geminiCall=mock.calls.find(x=>x.url===gemini);
 const geminiBody=JSON.parse(geminiCall.options.body);
+assert.equal(Object.hasOwn(geminiBody.generationConfig,"thinkingConfig"),false);
 assert.equal(geminiBody.contents[0].parts[1].inline_data.mime_type,"image/png");
 assert.equal(geminiCall.options.headers["x-goog-api-key"],"gemini-secret");
 assert(!JSON.stringify(geminiBody).includes("gemini-secret"));
