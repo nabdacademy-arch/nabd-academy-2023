@@ -1,0 +1,41 @@
+name: NABD AI Tutor v3 free provider checks
+on:
+  push:
+    branches: ['feat/nabd-tutor-groq-gemini']
+    paths:
+      - 'supabase/functions/nabd-tutor/**'
+      - 'supabase/manual/nabd-tutor.ts'
+      - 'learning/core.mjs'
+      - 'learning/tests/tutor*.mjs'
+      - '.github/workflows/nabd-tutor-v3.yml'
+  pull_request:
+    paths:
+      - 'supabase/functions/nabd-tutor/**'
+      - 'supabase/manual/nabd-tutor.ts'
+      - 'learning/core.mjs'
+      - 'learning/tests/tutor*.mjs'
+      - '.github/workflows/nabd-tutor-v3.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  tutor-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check modular handlers and router syntax
+        run: |
+          node --check supabase/functions/nabd-tutor/handler.mjs
+          node --check supabase/functions/nabd-tutor/provider-router.mjs
+          node --check learning/core.mjs
+      - name: Security, provider mock contract and standalone parity
+        run: |
+          node learning/tests/tutor.mjs
+          node learning/tests/tutor-errors.mjs
+          node learning/tests/tutor-standalone.mjs
+          node learning/tests/tutor-v3.mjs
