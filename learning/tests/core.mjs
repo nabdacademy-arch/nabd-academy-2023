@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';
+import {CATALOG} from '../content.mjs';import {gradePractice,searchLessons,progressSummary,safeURL,escapeHTML,GRAPH} from '../core.mjs';
+assert.equal(new Set(CATALOG.lessons.map(l=>l.id)).size,CATALOG.lessons.length);
+for(const l of CATALOG.lessons){for(const id of l.source_ids)assert(CATALOG.sources.some(s=>s.id===id));for(const q of l.quiz){assert(q.answer>=0&&q.answer<q.choices.length);assert(q.explanation.ar&&q.explanation.en)}assert.equal(gradePractice(l,{}).score,0);const answers=Object.fromEntries(l.quiz.map(q=>[q.id,q.answer]));assert.equal(gradePractice(l,answers).score,l.quiz.length)}
+assert(searchLessons(CATALOG,'الدورة').length);assert(searchLessons(CATALOG,'blood').length);assert.equal(searchLessons(CATALOG,'nothing-should-match-999').length,0);
+const progress={};for(const l of CATALOG.lessons)progress[l.id]={completed:true,score:l.quiz.length};const summary=progressSummary(CATALOG.lessons,progress);assert.equal(summary.percent,100);assert.equal(summary.points,CATALOG.lessons.length*30);
+assert.equal(safeURL('javascript:alert(1)'),'');assert.equal(safeURL('http://example.org'),'');assert.equal(escapeHTML('<img onerror="x">'),'&lt;img onerror=&quot;x&quot;&gt;');
+for(const s of [...CATALOG.sources,...CATALOG.scholarships])assert(safeURL(s.url));for(const [a,b] of GRAPH.edges){assert(GRAPH.nodes.some(n=>n.id===a));assert(GRAPH.nodes.some(n=>n.id===b))}
+const original=execFileSync('git',['show','429e071:index.html'],{encoding:'utf8'});const current=readFileSync('index.html','utf8');const founder=html=>html.match(/<section class="founder-section" id="founder">[\s\S]*?<\/section>/)[0];assert.equal(founder(current),founder(original),'founder section must be unchanged');
+assert.equal(createHash('sha256').update(readFileSync('assets/images/founder.jpg')).digest('hex'),createHash('sha256').update(execFileSync('git',['show','429e071:assets/images/founder.jpg'],{maxBuffer:10*1024*1024})).digest('hex'));
+for(const term of ['Mohammed Khaled Al-Arja','محمد خالد العرجا','NABD Academy'])assert(current.includes(term));
+console.log('PASS: bilingual lesson/quiz integrity, safe URLs/HTML, search, non-duplicating local progress, graph/source integrity, unchanged founder section/photo and academy identity.');

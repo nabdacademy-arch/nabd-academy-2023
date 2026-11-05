@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';import {handleTutor} from '../../supabase/functions/nabd-tutor/index.ts';
+const env=name=>({SUPABASE_URL:'https://academy.test',SUPABASE_ANON_KEY:'public-test',OPENAI_API_KEY:'provider-test'}[name]);
+const request=(body,headers={})=>new Request('https://edge.test/nabd-tutor',{method:'POST',headers:{Authorization:'Bearer learner-test','Content-Type':'application/json',Origin:'https://nabdacademy-arch.github.io',...headers},body:JSON.stringify(body)});
+let calls=[];const fetcher=async(url,options)=>{calls.push([url,options]);if(url.endsWith('/auth/v1/user'))return Response.json({id:'u1'});if(url.endsWith('take_tutor_slot'))return Response.json(true);if(url==='https://api.openai.com/v1/responses')return Response.json({output:[{content:[{type:'output_text',text:'Educational explanation [medterms]'}]}]});throw Error('Unexpected fetch')};
+assert.equal((await handleTutor(request({question:'Heart'},{Origin:'https://attacker.test'}),env,fetcher)).status,403);assert.equal(calls.length,0);
+assert.equal((await handleTutor(request({question:'Heart'},{Authorization:''}),env,fetcher)).status,401);
+assert.equal((await handleTutor(request({question:'Heart'}),()=>null,fetcher)).status,503);
+assert.equal((await handleTutor(request({question:'Heart',image:'data:image/png;base64,AAAA'}),env,fetcher)).status,400);
+let r=await handleTutor(request({question:'Explain the heart',language:'en'}),env,fetcher);assert.equal(r.status,200);assert.equal(r.headers.get('cache-control'),'no-store');assert((await r.json()).answer.includes('Educational'));
+const body=JSON.parse(calls.find(([u])=>u.includes('openai.com'))[1].body);assert.equal(body.store,false);assert.equal(body.input[0].content[0].text,'Explain the heart');assert(body.instructions.includes('not retrieved full texts'));assert(!JSON.stringify(body).includes('learner-test'));
+r=await handleTutor(request({question:'Heart'}),env,async(url,options)=>url.endsWith('take_tutor_slot')?Response.json(false):fetcher(url,options));assert.equal(r.status,429);
+r=await handleTutor(request({question:'Heart'}),env,async()=>new Response('Unauthorized',{status:401}));assert.equal(r.status,401);
+r=await handleTutor(request({question:'Heart'}),env,async()=>{throw Error('provider-test sensitive detail')});assert.equal(r.status,502);assert(!(await r.text()).includes('sensitive'));
+console.log('PASS: tutor CORS, authentication, activation, image signature, quota, provider payload, no-store and redacted failures. No provider calls were made.');
