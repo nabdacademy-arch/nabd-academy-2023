@@ -47,10 +47,11 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  assert((await page.locator('.nabd-heart-scene').getAttribute('style')).includes('12.5deg'));
  await page.locator('.nabd-heart-toggle').click();
  await page.locator('.nabd-heart-toggle').click();
- await page.locator('.nabd-organ-browser summary').click();
+ assert.equal(await page.locator('#tutor-result .nabd-visual-path li').count(),7);
+  await page.locator('.nabd-organ-browser summary').click();
  await page.locator('[data-organ-choice="eye"]').click();
  assert.equal(await page.locator('#tutor-result [data-organ="eye"]').count(),1);
- assert((await page.locator('#tutor-result .nabd-visual-card figcaption').textContent()).includes('Wikimedia Commons'));assert.equal(await page.locator('#tutor-result .nabd-visual-path li').count(),7);await page.locator('#tutor-form button[value=ai]').click();assert((await page.locator('#tutor-result').textContent()).includes('اربط حسابك'));
+ assert((await page.locator('#tutor-result .nabd-visual-card figcaption').textContent()).includes('Wikimedia Commons'));assert.equal(await page.locator('#tutor-result .nabd-visual-path li').count(),4);await page.locator('#tutor-form button[value=ai]').click();assert((await page.locator('#tutor-result').textContent()).includes('اربط حسابك'));
  await page.goto('http://127.0.0.1:8000/learning/#rounds');await page.locator('[data-discussion]').click();await page.locator('[data-discussion]').click();assert((await page.locator('.discussion h2').textContent()).includes('المراجع'));
  await page.goto('http://127.0.0.1:8000/learning/#scholarships');assert.equal(await page.locator('.scholarship-card').count(),5);await page.locator('[data-checklist=cv]').check();
  await page.goto('http://127.0.0.1:8000/learning/#offline');
