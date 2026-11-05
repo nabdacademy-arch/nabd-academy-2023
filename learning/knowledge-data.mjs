@@ -6,7 +6,7 @@
  */
 export const SYSTEMS=[
  ["cardio","القلب والدورة الدموية","Cardiovascular","🫀","الدورة الدموية وتوزيع الأكسجين","Circulation and oxygen delivery","heart,blood,lungs,oxygen,hemoglobin,vessels,pressure,arteries,veins"],
- ["respiratory","الجهاز التنفسي","Respiratory","🫁","الهواء وتبادل الغازات والتنفس","Airflow, gas exchange and breathing","lung,trachea,alveoli,diaphragm,oxygen,hemoglobin,blood"],
+ ["respiratory","الجهاز التنفسي","Respiratory","🫁","الهواء وتبادل الغازات والتنفس","Airflow, gas exchange and breathing","lungs,trachea,alveoli,diaphragm,oxygen,hemoglobin,blood"],
  ["nervous","الجهاز العصبي","Nervous","🧠","الإشارات العصبية والإحساس والتحكم","Signals, sensation and control","brain,neuron,spinal,eye,ear,muscles,nerves"],
  ["digestive","الجهاز الهضمي","Digestive","◈","الهضم والامتصاص ووظائف الأعضاء","Digestion, absorption and organ function","digestive,stomach,liver,pancreas,intestine,gallbladder,nutrients"],
  ["renal","الجهاز البولي والكلى","Urinary & renal","💧","تنظيم السوائل والترشيح وإنتاج البول","Fluid regulation, filtration and urine","kidney,nephron,urinary,bladder,ureter,blood,electrolytes"],
