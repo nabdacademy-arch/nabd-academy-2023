@@ -18,3 +18,62 @@ export const GRAPH={nodes:[
  {id:'hypertension',label:{ar:'ارتفاع الضغط',en:'Hypertension'},group:'disease',x:85,y:385,summary:{ar:'حالة تتطلب قياسات وتقييمًا مناسبين؛ هذه الخريطة لا تشخّصها.',en:'A condition requiring appropriate measurements and assessment; this map does not diagnose it.'},sources:['medline','who']},
  {id:'medicines',label:{ar:'خافضات الضغط',en:'Antihypertensives'},group:'pharmacology',x:270,y:405,summary:{ar:'فئات دوائية تؤثر في تنظيم ضغط الدم بآليات مختلفة. ليست الخريطة توصية علاجية.',en:'Drug classes acting on blood-pressure regulation through different mechanisms. This map is not treatment advice.'},sources:['medline']}
 ],edges:[['heart','blood'],['heart','pressure'],['blood','hemoglobin'],['lungs','oxygen'],['oxygen','hemoglobin'],['blood','oxygen'],['pressure','hypertension'],['hypertension','medicines'],['medicines','pressure']]};
+
+// Show stable support codes only. Never render upstream error text, tokens or request headers.
+const TUTOR_FAILURES={
+ GATEWAY_INVALID_JWT:['رفضت بوابة Supabase رمز الجلسة قبل وصول الطلب إلى المساعد. تحتاج الإدارة إلى مراجعة إعداد مصادقة الدالة.','Supabase rejected the session token before the tutor ran. The academy must review function authentication settings.'],
+ AUTH_REQUIRED:['سجّل الدخول بحساب الأكاديمية ثم أعد المحاولة.','Sign in with your academy account and try again.'],
+ AUTH_INVALID:['تعذّر التحقق من جلسة حسابك. أعد تسجيل الدخول ثم حاول مجددًا.','Your account session could not be verified. Sign in again and retry.'],
+ FUNCTION_NOT_FOUND:['لم يُعثر على دالة المساعد المنشورة باسم nabd-tutor. على الإدارة مراجعة اسم الدالة والمشروع.','The deployed nabd-tutor function was not found. The academy must check its name and project.'],
+ CONFIG_MISSING:['وصل الطلب إلى المساعد، لكن إعدادات الخدمة على الخادم غير مكتملة. على الإدارة مراجعة الأسرار المطلوبة.','The tutor received the request, but its server configuration is incomplete. The academy must review the required secrets.'],
+ QUOTA_DATABASE_UNAVAILABLE:['وصل الطلب إلى المساعد، لكن تعذّر فحص حصة الاستخدام في قاعدة البيانات. على الإدارة مراجعة تفعيل دالة الحصة وصلاحياتها.','The tutor received the request but could not check its database usage quota. The academy must review quota setup and permissions.'],
+ TUTOR_RATE_LIMIT:['وصلت إلى حد طلبات المساعد لهذه الدقيقة. انتظر قليلًا ثم حاول مجددًا.','You reached the tutor request limit for this minute. Wait briefly before retrying.'],
+ PROVIDER_KEY_INVALID:['خدمة التوليد رفضت مفتاح الخادم. على الإدارة مراجعة مفتاح OpenAI المحفوظ وصلاحيته.','The generation provider rejected the server key. The academy must review the stored OpenAI key and its validity.'],
+ PROVIDER_PERMISSION_DENIED:['مفتاح خدمة التوليد لا يملك الصلاحية المطلوبة لهذا الطلب. على الإدارة مراجعة صلاحيات Responses والوصول للنموذج.','The generation key lacks permission for this request. The academy must review Responses permissions and model access.'],
+ PROVIDER_QUOTA_EXHAUSTED:['خدمة OpenAI أبلغت بنفاد الحصة أو بلوغ حد الفوترة. على الإدارة مراجعة رصيد API وحدود الاستخدام.','OpenAI reported an exhausted quota or billing limit. The academy must review API credit and usage limits.'],
+ PROVIDER_RATE_LIMIT:['خدمة التوليد مشغولة أو تجاوزت حد الطلبات مؤقتًا. انتظر قليلًا ثم حاول مجددًا.','The generation provider is busy or temporarily rate-limited. Wait briefly and retry.'],
+ PROVIDER_MODEL_UNAVAILABLE:['النموذج المحدد غير متاح لمشروع خدمة التوليد. على الإدارة مراجعة إعداد النموذج.','The configured model is unavailable to the provider project. The academy must review the model setting.'],
+ PROVIDER_REQUEST_REJECTED:['خدمة التوليد رفضت صيغة الطلب. على الإدارة مراجعة توافق الدالة مع النموذج.','The generation provider rejected the request format. The academy must review function and model compatibility.'],
+ PROVIDER_UNAVAILABLE:['وصل الطلب إلى المساعد، لكن الاتصال بخدمة التوليد فشل. على الإدارة مراجعة طلب OpenAI في سجلات الدالة.','The tutor received the request, but its generation provider failed. The academy must inspect the OpenAI request in function logs.'],
+ ORIGIN_NOT_ALLOWED:['عنوان الموقع غير مضاف إلى النطاق المسموح لخدمة المساعد. على الإدارة مراجعة إعداد النطاق.','This site origin is not allowed by the tutor. The academy must review its origin configuration.'],
+ NETWORK_OR_CORS_ERROR:['تعذّر الوصول إلى دالة المساعد من المتصفح. قد يكون السبب الاتصال أو إعداد السماح لعنوان الموقع.','The browser could not reach the tutor function. Check connectivity and the function’s allowed site origin.'],
+ REQUEST_TIMEOUT:['استغرقت خدمة المساعد وقتًا أطول من المتوقع. حاول مجددًا بعد قليل.','The tutor request took too long. Try again shortly.'],
+ INVALID_REQUEST:['تعذّر قبول السؤال أو الصورة. راجع طول السؤال ونوع الصورة وحجمها.','The question or image could not be accepted. Check question length and image type and size.'],
+ EMPTY_RESPONSE:['انتهى طلب المساعد دون إجابة قابلة للعرض. حاول مجددًا أو أرسل رمز الدعم للإدارة.','The tutor request finished without a displayable answer. Retry or share the support code with the academy.'],
+ EDGE_FUNCTION_ERROR:['فشل تنفيذ دالة المساعد على الخادم. أرسل رمز الدعم للإدارة لتحديد السبب.','The tutor function failed on the server. Share the support code with the academy.'],
+ SERVICE_RATE_LIMIT:['بلغت الخدمة حد الطلبات مؤقتًا. انتظر قليلًا ثم أعد المحاولة.','The service is temporarily rate-limited. Wait briefly before retrying.'],
+ UNKNOWN_ERROR:['تعذّر إكمال طلب المساعد. أرسل رمز الدعم للإدارة.','The tutor request could not be completed. Share the support code with the academy.']
+};
+const LEGACY_TUTOR_FAILURES={
+ 'Authentication required':'AUTH_INVALID','Tutor service has not been activated':'CONFIG_MISSING',
+ 'Tutor quota database is unavailable':'QUOTA_DATABASE_UNAVAILABLE','Please wait before asking another question':'TUTOR_RATE_LIMIT',
+ 'Tutor provider unavailable':'PROVIDER_UNAVAILABLE','Tutor returned no answer':'EMPTY_RESPONSE',
+ 'Tutor request could not be completed':'EDGE_FUNCTION_ERROR','Origin not allowed':'ORIGIN_NOT_ALLOWED',
+ 'Invalid educational image':'INVALID_REQUEST','Invalid image signature':'INVALID_REQUEST',
+ 'Question must be 1–1500 characters':'INVALID_REQUEST'
+};
+export async function tutorFailure(result){
+ const error=result?.error,response=error?.context;
+ const status=Number.isInteger(response?.status)&&response.status>=100&&response.status<=599?response.status:0;
+ let payload=result?.data&&typeof result.data==='object'?result.data:{};
+ if(response&&typeof response.clone==='function'){
+  try{const text=await response.clone().text();if(text.length<=8192){const parsed=JSON.parse(text);if(parsed&&typeof parsed==='object')payload=parsed}}catch{}
+ }
+ let code=typeof payload.code==='string'&&Object.hasOwn(TUTOR_FAILURES,payload.code)?payload.code:null;
+ if(!code&&status===401&&payload.message==='Invalid JWT')code='GATEWAY_INVALID_JWT';
+ if(!code&&typeof payload.error==='string')code=Object.hasOwn(LEGACY_TUTOR_FAILURES,payload.error)?LEGACY_TUTOR_FAILURES[payload.error]:null;
+ if(!code&&status===404)code='FUNCTION_NOT_FOUND';
+ if(!code&&status===401)code='AUTH_INVALID';
+ if(!code&&status===429)code='SERVICE_RATE_LIMIT';
+ if(!code&&status>=500)code='EDGE_FUNCTION_ERROR';
+ if(!code&&error?.name==='FunctionsFetchError')code='NETWORK_OR_CORS_ERROR';
+ if(!code&&error?.name==='AbortError')code='REQUEST_TIMEOUT';
+ if(!code)code=error?'UNKNOWN_ERROR':'EMPTY_RESPONSE';
+ return {code,status};
+}
+export function tutorFailureText(failure,language='ar'){
+ const code=Object.hasOwn(TUTOR_FAILURES,failure?.code)?failure.code:'UNKNOWN_ERROR';
+ const message=TUTOR_FAILURES[code][language==='en'?1:0];
+ const status=Number.isInteger(failure?.status)&&failure.status>=100&&failure.status<=599?` · HTTP ${failure.status}`:'';
+ return message+'\n\n'+(language==='en'?'Support code: ':'رمز الدعم: ')+code+status;
+}

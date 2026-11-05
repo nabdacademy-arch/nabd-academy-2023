@@ -1,5 +1,5 @@
 import {CATALOG} from './content.mjs';
-import {escapeHTML as esc,safeURL,gradePractice,searchLessons,relatedSources,progressSummary,GRAPH} from './core.mjs';
+import {escapeHTML as esc,safeURL,gradePractice,searchLessons,relatedSources,progressSummary,GRAPH,tutorFailure,tutorFailureText} from './core.mjs?v=2';
 const $=id=>document.getElementById(id);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}};
@@ -110,8 +110,9 @@ async function askTutor(form,button){
  if(!user||!db){target.textContent=t('اربط حسابك أولًا. يحتاج التوليد تفعيل الخدمة من الإدارة.','Connect your account first. Generation also requires academy service activation.');return}
  if(!navigator.onLine){target.textContent=t('المساعد التوليدي يحتاج اتصالًا. استخدم الحزمة المرجعية دون إنترنت.','The generative tutor needs connectivity. Use the reference pack offline.');return}
  let image=null;const file=form.elements.image.files[0];if(file){if(!['image/png','image/jpeg'].includes(file.type)||file.size>2*1024*1024){target.textContent=t('اختر PNG أو JPEG بحجم لا يتجاوز 2MB.','Choose PNG or JPEG no larger than 2MB.');return}image=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)})}
- const {data,error}=await db.functions.invoke('nabd-tutor',{body:{question:q,language:lang,image}});
- if(error||!data?.answer){target.textContent=t('خدمة AI Tutor غير متاحة الآن. يمكنك استخدام البحث المرجعي، وعلى الإدارة تفعيل الخدمة ومفتاح المزوّد.','AI Tutor is unavailable. Reference search still works; the academy must activate the service and provider key.');return}
+ let result;try{result=await db.functions.invoke('nabd-tutor',{body:{question:q,language:lang,image}})}catch(error){result={error}}
+ const {data,error}=result;
+ if(error||!data?.answer){target.textContent=tutorFailureText(await tutorFailure(result),lang);target.classList.add('prewrap');return}
  target.replaceChildren();const label=document.createElement('span');label.className='tag';label.textContent=t('إجابة مولّدة · تحقّق من المصادر','Generated answer · Verify against sources');const answer=document.createElement('p');answer.className='prewrap';answer.textContent=data.answer;target.append(label,answer);
  const sources=document.createElement('div');sources.className='sources';sources.innerHTML=sourceLinks(Array.isArray(data.source_ids)?data.source_ids.filter(id=>CATALOG.sources.some(s=>s.id===id)):[]);target.append(sources);form.elements.image.value='';
 }
