@@ -24,7 +24,7 @@ const TUTOR_FAILURES={
  GATEWAY_INVALID_JWT:['رفضت بوابة Supabase رمز الجلسة قبل وصول الطلب إلى المساعد. تحتاج الإدارة إلى مراجعة إعداد مصادقة الدالة.','Supabase rejected the session token before the tutor ran. The academy must review function authentication settings.'],
  AUTH_REQUIRED:['سجّل الدخول بحساب الأكاديمية ثم أعد المحاولة.','Sign in with your academy account and try again.'],
  AUTH_INVALID:['تعذّر التحقق من جلسة حسابك. أعد تسجيل الدخول ثم حاول مجددًا.','Your account session could not be verified. Sign in again and retry.'],
- FUNCTION_NOT_FOUND:['لم يُعثر على دالة المساعد المنشورة باسم nabd-tutor. على الإدارة مراجعة اسم الدالة والمشروع.','The deployed nabd-tutor function was not found. The academy must check its name and project.'],
+ FUNCTION_NOT_FOUND:['لم يُعثر على دالة المساعد المحددة في إعدادات الموقع. على الإدارة مراجعة رابط الدالة والمشروع.','The configured tutor function was not found. The academy must check its URL slug and project.'],
  CONFIG_MISSING:['وصل الطلب إلى المساعد، لكن إعدادات الخدمة على الخادم غير مكتملة. على الإدارة مراجعة الأسرار المطلوبة.','The tutor received the request, but its server configuration is incomplete. The academy must review the required secrets.'],
  QUOTA_DATABASE_UNAVAILABLE:['وصل الطلب إلى المساعد، لكن تعذّر فحص حصة الاستخدام في قاعدة البيانات. على الإدارة مراجعة تفعيل دالة الحصة وصلاحياتها.','The tutor received the request but could not check its database usage quota. The academy must review quota setup and permissions.'],
  TUTOR_RATE_LIMIT:['وصلت إلى حد طلبات المساعد لهذه الدقيقة. انتظر قليلًا ثم حاول مجددًا.','You reached the tutor request limit for this minute. Wait briefly before retrying.'],

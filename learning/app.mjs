@@ -1,5 +1,5 @@
 import {CATALOG} from './content.mjs';
-import {escapeHTML as esc,safeURL,gradePractice,searchLessons,relatedSources,progressSummary,GRAPH,tutorFailure,tutorFailureText} from './core.mjs?v=2';
+import {escapeHTML as esc,safeURL,gradePractice,searchLessons,relatedSources,progressSummary,GRAPH,tutorFailure,tutorFailureText} from './core.mjs?v=3';
 const $=id=>document.getElementById(id);
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const write=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}};
@@ -79,7 +79,7 @@ function render(){
 function loadScript(url){return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=url;script.onload=resolve;script.onerror=()=>reject(Error('Script load failed'));document.head.append(script);setTimeout(()=>reject(Error('Connection timeout')),7000)})}
 async function startBackend(){
  if(db)return db;if(!navigator.onLine)throw Error('Offline');if(backendPromise)return backendPromise;
- backendPromise=(async()=>{await loadScript('../assets/js/config.js');await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0');const cfg=window.NABD_CONFIG;if(!cfg?.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase)throw Error('Configuration unavailable');db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){epoch++;user=null;profile=null;enrollments=[];certificates=[];cloudCourses=[];cloudLessons=[];cloudQuestions=[];cloudProgress=[];cloudAttempts=[];cloudSubmissions=[];posts=[];accountStatus='';lmsStatus='';render()}});return db})().catch(error=>{backendPromise=null;throw error});return backendPromise;
+ backendPromise=(async()=>{await loadScript('../assets/js/config.js?v=2');await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0');const cfg=window.NABD_CONFIG;if(!cfg?.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase)throw Error('Configuration unavailable');db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){epoch++;user=null;profile=null;enrollments=[];certificates=[];cloudCourses=[];cloudLessons=[];cloudQuestions=[];cloudProgress=[];cloudAttempts=[];cloudSubmissions=[];posts=[];accountStatus='';lmsStatus='';render()}});return db})().catch(error=>{backendPromise=null;throw error});return backendPromise;
 }
 async function loadAccount(){
  const token=++epoch;try{await startBackend();const auth=await db.auth.getUser();if(token!==epoch)return;user=auth.data?.user||null;if(!user){accountReady=true;try{rounds=await checked(db.from('nabd_learning_rounds').select('*').eq('published',true).order('starts_at').limit(20));roundsStatus=''}catch(error){roundsStatus=statusMessage(error)}if(token!==epoch)return;render();return}
@@ -110,7 +110,7 @@ async function askTutor(form,button){
  if(!user||!db){target.textContent=t('اربط حسابك أولًا. يحتاج التوليد تفعيل الخدمة من الإدارة.','Connect your account first. Generation also requires academy service activation.');return}
  if(!navigator.onLine){target.textContent=t('المساعد التوليدي يحتاج اتصالًا. استخدم الحزمة المرجعية دون إنترنت.','The generative tutor needs connectivity. Use the reference pack offline.');return}
  let image=null;const file=form.elements.image.files[0];if(file){if(!['image/png','image/jpeg'].includes(file.type)||file.size>2*1024*1024){target.textContent=t('اختر PNG أو JPEG بحجم لا يتجاوز 2MB.','Choose PNG or JPEG no larger than 2MB.');return}image=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)})}
- let result;try{result=await db.functions.invoke('nabd-tutor',{body:{question:q,language:lang,image}})}catch(error){result={error}}
+ let result;try{result=await db.functions.invoke(window.NABD_CONFIG?.tutorFunction||'nabd-tutor',{body:{question:q,language:lang,image}})}catch(error){result={error}}
  const {data,error}=result;
  if(error||!data?.answer){target.textContent=tutorFailureText(await tutorFailure(result),lang);target.classList.add('prewrap');return}
  target.replaceChildren();const label=document.createElement('span');label.className='tag';label.textContent=t('إجابة مولّدة · تحقّق من المصادر','Generated answer · Verify against sources');const answer=document.createElement('p');answer.className='prewrap';answer.textContent=data.answer;target.append(label,answer);

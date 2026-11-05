@@ -1,6 +1,8 @@
 window.NABD_CONFIG = {
   supabaseUrl: "https://zsmmmljgguycrvyrmakl.supabase.co",
   supabaseAnonKey: "sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
+  // Use the URL slug from Supabase, which can differ from the display name.
+  tutorFunction: "smart-processor",
 
   academyName: "NABD Academy for Medical Sciences",
 
