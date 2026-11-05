@@ -60,6 +60,10 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  await page.locator('[data-atlas-action="fullscreen"]').click();
  await page.locator('.nabd-signature-dialog[open]').waitFor();
  assert.equal(await page.locator('.nabd-signature-dialog .nabd-signature-canvas').count(),1);
+ await page.locator('.nabd-signature-dialog [data-atlas-action="route-red"]').click();
+ assert.equal(await page.locator('.nabd-signature-dialog [data-atlas-action="route-red"]').getAttribute('aria-pressed'),'true');
+ await page.locator('.nabd-signature-dialog [data-atlas-action="focus-ra"]').click();
+ assert((await page.locator('.nabd-signature-dialog .nabd-chamber-explanation').textContent()).includes('الوريدين'));
  await page.locator('.nabd-signature-dialog-close').click();
  await page.locator('.nabd-signature-dialog').waitFor({state:'detached'});
  assert.equal(await page.locator('.nabd-signature-lab .nabd-signature-canvas').count(),1);

@@ -36,6 +36,7 @@ jobs:
           node --check learning/tutor-format.mjs
           node --check learning/sw.js
           node learning/tests/medical-visuals.mjs
+          node learning/tests/heart3d.mjs
       - name: Install browser test package (use runner preinstalled Chrome)
         run: |
           test -x /usr/bin/google-chrome || test -x /usr/bin/chromium
