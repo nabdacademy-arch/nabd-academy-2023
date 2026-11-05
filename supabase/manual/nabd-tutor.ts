@@ -245,8 +245,11 @@ function publicKey(env){
  return env('SUPABASE_ANON_KEY');
 }
 export async function handleTutor(request, env, fetcher=fetch){
- const origin=env('NABD_APP_ORIGIN')||'https://nabdacademy-arch.github.io';
- const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS'};
+ let origin='https://nabdacademy-arch.github.io';
+ try{const configured=new URL(env('NABD_APP_ORIGIN')||origin);if(['https:','http:'].includes(configured.protocol)&&configured.origin!=='null')origin=configured.origin}catch{}
+ // Include the official SDK retry/tracing headers as well as optional SDK region/version metadata.
+ const allowedHeaders='authorization,apikey,content-type,x-client-info,x-requested-with,x-retry-count,traceparent,tracestate,baggage,x-region,x-supabase-api-version,x-supabase-client-platform,x-supabase-client-platform-version,x-supabase-client-runtime,x-supabase-client-runtime-version';
+ const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Headers':allowedHeaders,'Access-Control-Allow-Methods':'POST,OPTIONS','Access-Control-Max-Age':'600'};
  const reply=(body,status=200)=>new Response(JSON.stringify(body),{status,headers});
  const fail=(code,error,status)=>reply({code,error},status);
  if(request.headers.get('Origin')&&request.headers.get('Origin')!==origin)return fail('ORIGIN_NOT_ALLOWED','Origin not allowed',403);
