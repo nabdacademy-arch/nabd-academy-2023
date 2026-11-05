@@ -28,6 +28,8 @@ jobs:
         run: |
           node --check learning/app.mjs
           node --check learning/medical-visuals.mjs
+          node --check learning/anatomy-lightbox.mjs
+          node --check learning/heart-simulator.mjs
           node --check learning/tutor-format.mjs
           node --check learning/sw.js
           node learning/tests/medical-visuals.mjs
