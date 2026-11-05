@@ -180,7 +180,7 @@ export function createVisualCompanion(question,language="ar"){
  }
  browse.append(chips);
  section.append(browse);
- const foot=node("p","nabd-visual-foot",ar?"رسم القلب المتحرك محاكاة مجسّمة المظهر (2.5D)، وليس تصويرًا حيًا أو نموذجًا ثلاثي الأبعاد دقيقًا. بقية الصور رسومات ثابتة قابلة للتكبير؛ لا تُستخدم للتشخيص.":"The moving heart is a 2.5D-style schematic, not live imaging or a precise 3D anatomy model. Other illustrations are zoomable static references, not diagnostic tools.");
+ const foot=node("p","nabd-visual-foot",ar?"المختبر يستخدم هندسة ثلاثية الأبعاد فعلية بطريقة WebGL، لكن شكل القلب ومسارات الدم تعليمية مبسطة وليست نموذجًا تشريحيًا طبيًا دقيقًا. عند عدم دعم 3D يظهر بديل ثنائي الأبعاد. بقية صور الأعضاء قابلة للتكبير وليست أداة تشخيص.":"The heart lab renders genuine depth-buffered WebGL 3D geometry, but organ forms and blood routes are simplified teaching diagrams, not clinical-grade anatomy. A 2D fallback is available. Other organ illustrations are zoomable reference images, not diagnostic tools.");
  section.append(foot);
  return section;
 }
