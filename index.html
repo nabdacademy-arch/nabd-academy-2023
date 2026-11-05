@@ -1120,131 +1120,6 @@
 </style>
 
 
-<style id="nabd-official-portals-v5">
-/* ==========================================================
-   NABD Academy - Executive Council & Volunteer portals v5
-   Scoped to the home portal hub. Existing links & JS untouched.
-   ========================================================== */
-#executive-recruitment.nabd-access-hub{
-  --hub-gold:#f1c776;--hub-teal:#5de4cb;--hub-blue:#86bcf0;
-  position:relative;isolation:isolate;overflow:hidden;scroll-margin-top:90px;
-  padding:clamp(64px,7.5vw,106px) 0 clamp(70px,8vw,110px);
-  background:radial-gradient(ellipse at 8% 25%,rgba(48,196,181,.12),transparent 40%),
-    radial-gradient(ellipse at 95% 76%,rgba(80,128,202,.12),transparent 42%),
-    linear-gradient(180deg,#061722,#092231 55%,#061925);
-  color:#f5fcff;
-}
-#executive-recruitment.nabd-access-hub *{box-sizing:border-box}
-#executive-recruitment .nabd-hub-container{width:min(1200px,calc(100% - 36px));margin:0 auto}
-#executive-recruitment .nabd-hub-heading{text-align:center;max-width:780px;margin:0 auto 39px}
-#executive-recruitment .nabd-hub-eyebrow{display:inline-flex;align-items:center;gap:10px;
-  padding:9px 16px;border:1px solid rgba(241,199,118,.31);border-radius:30px;
-  color:#ffe0a1;background:rgba(241,199,118,.08);font-weight:800;letter-spacing:.045em;
-  font-size:.78rem;line-height:1.4;margin-bottom:19px}
-#executive-recruitment .nabd-hub-eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:#ffd886;box-shadow:0 0 12px rgba(241,199,118,.5)}
-#executive-recruitment .nabd-hub-heading h2{font-size:clamp(2rem,4.5vw,3.4rem);font-weight:900;
-  line-height:1.24;letter-spacing:-.025em;margin:0 0 14px;color:#f9fdff}
-#executive-recruitment .nabd-hub-heading p{font-size:clamp(.93rem,1.6vw,1.08rem);
-  line-height:1.9;margin:0;color:#b9d1dd}
-#executive-recruitment .nabd-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:stretch}
-#executive-recruitment .nabd-hub-card{position:relative;overflow:hidden;border-radius:30px;
-  border:1px solid rgba(137,200,207,.19);box-shadow:0 25px 68px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.07);
-  padding:clamp(23px,3.25vw,40px);min-height:525px;display:flex;flex-direction:column;
-  background:linear-gradient(148deg,rgba(20,60,73,.98),rgba(7,29,43,.98));
-  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
-#executive-recruitment .nabd-hub-card::before{content:'';height:3px;position:absolute;inset:0 0 auto;
-  background:linear-gradient(90deg,transparent,#f1c776,rgba(105,231,212,.92),transparent)}
-#executive-recruitment .nabd-hub-card::after{content:'';position:absolute;pointer-events:none;
-  width:300px;height:300px;border-radius:100%;right:-158px;top:-165px;
-  border:1px solid rgba(255,255,255,.07);box-shadow:0 0 0 34px rgba(255,255,255,.013),0 0 0 70px rgba(255,255,255,.011)}
-#executive-recruitment .nabd-hub-card:hover{transform:translateY(-4px);border-color:rgba(241,199,118,.39);
-  box-shadow:0 30px 78px rgba(0,0,0,.31)}
-#executive-recruitment .nabd-hub-volunteer{background:linear-gradient(145deg,#123342,#082535 67%,#071c29)}
-#executive-recruitment .nabd-hub-volunteer::before{background:linear-gradient(90deg,transparent,#64dfcf,#78bded,transparent)}
-#executive-recruitment .nabd-hub-card-head{position:relative;z-index:1;display:flex;align-items:center;
-  justify-content:space-between;gap:12px;min-height:112px;margin-bottom:25px}
-#executive-recruitment .nabd-hub-seal{width:106px;height:106px;border-radius:28px;
-  display:grid;place-items:center;flex:0 0 auto;background:radial-gradient(circle at 30% 25%,rgba(240,208,132,.20),rgba(241,199,118,.04) 65%);
-  border:1px solid rgba(241,199,118,.3);box-shadow:0 14px 35px rgba(0,0,0,.18),inset 0 0 18px rgba(241,199,118,.04)}
-#executive-recruitment .nabd-hub-seal svg{display:block;width:85px;height:85px;filter:drop-shadow(0 4px 13px rgba(232,186,101,.22))}
-#executive-recruitment .nabd-hub-volunteer .nabd-hub-seal{background:radial-gradient(circle at 30% 25%,rgba(88,220,207,.18),rgba(88,220,207,.04) 65%);border-color:rgba(91,224,205,.34)}
-#executive-recruitment .nabd-hub-volunteer .nabd-hub-seal svg{width:66px;height:66px}
-#executive-recruitment .nabd-hub-access-label{display:inline-flex;align-items:center;gap:7px;
-  border:1px solid rgba(241,199,118,.27);background:rgba(241,199,118,.075);
-  border-radius:50px;padding:9px 12px;color:#ffe0a1;font-weight:800;font-size:.72rem;line-height:1.35;text-align:center}
-#executive-recruitment .nabd-hub-volunteer .nabd-hub-access-label{color:#a9f4e9;border-color:rgba(100,226,209,.31);background:rgba(100,226,209,.075)}
-#executive-recruitment .nabd-hub-access-label .nabd-hub-status-dot{width:6px;height:6px;background:currentColor;border-radius:50%;flex:0 0 auto}
-#executive-recruitment .nabd-hub-card-content{position:relative;z-index:1}
-#executive-recruitment .nabd-hub-card-kicker{color:#e0c68f;letter-spacing:.14em;
-  font-size:.72rem;font-weight:900;display:block;line-height:1.5;margin-bottom:12px}
-#executive-recruitment .nabd-hub-volunteer .nabd-hub-card-kicker{color:#86e7d8}
-#executive-recruitment .nabd-hub-card h3{font-size:clamp(1.6rem,2.5vw,2.15rem);
-  font-weight:900;letter-spacing:-.025em;line-height:1.3;color:#fff;margin:0 0 12px}
-#executive-recruitment .nabd-hub-card p{color:#c2d6df;font-size:.99rem;
-  line-height:1.9;margin:0 0 20px;max-width:49ch}
-#executive-recruitment .nabd-hub-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:25px}
-#executive-recruitment .nabd-hub-chip{display:inline-flex;gap:7px;align-items:center;padding:8px 11px;
-  border-radius:10px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);
-  color:#d3e4eb;font-size:.79rem;font-weight:700;line-height:1.4}
-#executive-recruitment .nabd-hub-chip-mark{color:#f3c979;font-weight:900}
-#executive-recruitment .nabd-hub-volunteer .nabd-hub-chip-mark{color:#6ce6d0}
-#executive-recruitment .nabd-hub-actions{position:relative;z-index:1;display:grid;gap:12px;margin-top:auto}
-#executive-recruitment .nabd-hub-action{display:flex;align-items:center;justify-content:center;gap:12px;
-  width:100%;min-height:59px;padding:14px 16px;border-radius:16px;text-decoration:none!important;
-  font-weight:900;font-size:1rem;line-height:1.45;transition:filter .2s ease,transform .2s ease;
-  box-shadow:0 13px 26px rgba(0,0,0,.11);text-align:center}
-#executive-recruitment .nabd-hub-action:hover{transform:translateY(-2px);filter:brightness(1.07)}
-#executive-recruitment .nabd-hub-action:focus-visible{outline:3px solid #fff;outline-offset:3px}
-#executive-recruitment .nabd-hub-action svg{width:21px;height:21px;flex-shrink:0}
-#executive-recruitment .nabd-hub-action-executive{background:linear-gradient(115deg,#ffe3a4,#f2c56b 55%,#e8ad48);color:#122630!important;border:1px solid rgba(255,241,203,.8)}
-#executive-recruitment .nabd-hub-action-apply{background:linear-gradient(110deg,#82f0db,#4ad5c4 67%,#6cdbed);color:#072d35!important;border:1px solid rgba(166,250,230,.6)}
-#executive-recruitment .nabd-hub-action-status{background:rgba(4,32,45,.6);color:#e3f5fa!important;border:1px solid rgba(119,219,218,.39)}
-#executive-recruitment .nabd-hub-private-note{color:#a8c5d1;text-align:center;font-size:.82rem;line-height:1.65;margin-top:14px;font-weight:650}
-#executive-recruitment .nabd-hub-private-note svg{width:13px;height:13px;vertical-align:-2px;margin-inline-end:4px}
-#executive-recruitment .nabd-hub-divider{display:flex;align-items:center;gap:14px;color:#b4d3da;
-  text-align:center;font-size:.79rem;font-weight:800;margin:0 0 1px}
-#executive-recruitment .nabd-hub-divider::before,#executive-recruitment .nabd-hub-divider::after{content:'';height:1px;background:rgba(137,214,215,.18);flex:1}
-#executive-recruitment .nabd-hub-bottomline{margin:28px 0 0;text-align:center;
-  color:#89abb8;line-height:1.75;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:10px}
-#executive-recruitment .nabd-hub-bottomline::before,#executive-recruitment .nabd-hub-bottomline::after{content:'✦';font-size:.65rem;color:#e3be78}
-.main-nav > a.nabd-nav-executive{
-  display:inline-flex;justify-content:center;align-items:center;border:1px solid rgba(238,195,108,.47)!important;
-  border-radius:999px!important;padding:9px 13px!important;
-  background:linear-gradient(135deg,rgba(230,189,103,.18),rgba(230,189,103,.04))!important;
-  color:#fbd68d!important;font-weight:800!important;white-space:nowrap
-}
-.main-nav > a.nabd-nav-volunteer{color:#92ebdc!important;font-weight:750!important}
-@media(max-width:1000px){
-  #executive-recruitment .nabd-hub-card{padding:24px}
-  #executive-recruitment .nabd-hub-card-head{gap:8px}
-  #executive-recruitment .nabd-hub-access-label{max-width:170px}
-}
-@media(max-width:790px){
-  #executive-recruitment .nabd-hub-grid{grid-template-columns:1fr;max-width:620px;margin:0 auto}
-  #executive-recruitment .nabd-hub-card{min-height:0;padding:29px}
-  #executive-recruitment .nabd-hub-heading{margin-bottom:30px}
-  #executive-recruitment .nabd-hub-card-head{margin-bottom:18px}
-}
-@media(max-width:450px){
-  #executive-recruitment .nabd-hub-container{width:calc(100% - 26px)}
-  #executive-recruitment .nabd-hub-card{border-radius:25px;padding:22px}
-  #executive-recruitment .nabd-hub-card-head{min-height:80px}
-  #executive-recruitment .nabd-hub-seal{width:76px;height:76px;border-radius:22px}
-  #executive-recruitment .nabd-hub-seal svg{width:66px;height:66px}
-  #executive-recruitment .nabd-hub-volunteer .nabd-hub-seal svg{width:52px;height:52px}
-  #executive-recruitment .nabd-hub-access-label{font-size:.65rem;padding:7px 9px}
-  #executive-recruitment .nabd-hub-card h3{font-size:1.65rem}
-  #executive-recruitment .nabd-hub-chip{font-size:.76rem}
-  #executive-recruitment .nabd-hub-action{font-size:.91rem;min-height:55px}
-  #executive-recruitment .nabd-hub-heading h2{font-size:2rem}
-}
-@media(prefers-reduced-motion:reduce){
-  #executive-recruitment .nabd-hub-card,#executive-recruitment .nabd-hub-action{transition:none}
-  #executive-recruitment .nabd-hub-card:hover,#executive-recruitment .nabd-hub-action:hover{transform:none}
-}
-</style>
-
-
 <!-- NABD medical consultations: isolated styles for the homepage -->
 <style id="nabd-medical-consultations-home-v1">
 #medical-consultations{--care-bg:#081d2b;--care-teal:#54dfc9;--care-gold:#f2cb85;scroll-margin-top:95px;position:relative;isolation:isolate;overflow:hidden;padding:clamp(64px,8vw,106px) 0;color:#f8fcff;background:radial-gradient(circle at 92% 18%,rgba(76,221,201,.14),transparent 33%),radial-gradient(circle at 8% 88%,rgba(237,194,112,.09),transparent 33%),linear-gradient(145deg,#061a29 0%,#0b2b37 68%,#082332 100%)}
@@ -1273,69 +1148,8 @@
 @media(prefers-reduced-motion:reduce){#medical-consultations .care-link{transition:none}#medical-consultations .care-link:hover{transform:none}}
 </style>
 
-<!-- NABD AI Executive v2: navigational integration -->
-<style id="nabd-ai-executive-navigation-v3">
-.main-nav > a.nabd-nav-ai{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:9px 14px;border-radius:999px;white-space:nowrap;
-  background:linear-gradient(135deg,rgba(241,199,118,.20),rgba(82,230,207,.14));
-  border:1px solid rgba(241,199,118,.6);
-  color:#ffdc97!important;font-weight:900!important;
-}
-.main-nav > a.nabd-nav-ai:hover,
-.main-nav > a.nabd-nav-ai:focus-visible{background:rgba(241,199,118,.24);outline-offset:3px}
-#executive-recruitment .nabd-ai-hub-card{
-  grid-column:1/-1;min-height:auto;
-  display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,315px);
-  gap:clamp(16px,4vw,42px);align-items:center;
-  padding:clamp(24px,3.5vw,39px);
-  background:radial-gradient(circle at 90% 10%,rgba(95,234,206,.15),transparent 40%),
-    linear-gradient(135deg,#133d4d,#102b3c 60%,#092433);
-  border:1px solid rgba(241,199,118,.34);
-}
-#executive-recruitment .nabd-ai-hub-card::before{
-  background:linear-gradient(90deg,transparent,#f2c779,#67e4d1,transparent);
-}
-#executive-recruitment .nabd-ai-hub-brow{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:.77rem;font-weight:850;letter-spacing:.06em;
-  color:#ffe0a1;margin-bottom:13px;
-}
-#executive-recruitment .nabd-ai-hub-card h3{
-  color:#fff;margin:0 0 10px;
-  font-weight:900;font-size:clamp(1.5rem,3vw,2.25rem);
-}
-#executive-recruitment .nabd-ai-hub-card p{color:#c9dce5;margin:0 0 14px;line-height:1.8;max-width:66ch}
-#executive-recruitment .nabd-ai-hub-tags{display:flex;flex-wrap:wrap;gap:8px}
-#executive-recruitment .nabd-ai-hub-tags span{
-  padding:7px 10px;border-radius:999px;color:#b4f2e3;
-  background:rgba(92,221,201,.08);border:1px solid rgba(92,221,201,.22);
-  font-size:.78rem;font-weight:750;
-}
-#executive-recruitment .nabd-ai-hub-side{position:relative;z-index:1;display:grid;gap:12px}
-#executive-recruitment .nabd-ai-hub-open{
-  display:flex;justify-content:center;align-items:center;gap:12px;min-height:62px;
-  border-radius:17px;padding:15px 18px;text-align:center;
-  font-size:1.04rem;font-weight:900;text-decoration:none!important;
-  color:#071d28!important;background:linear-gradient(120deg,#ffe5ad,#edc171 60%,#e8ac55);
-  box-shadow:0 16px 33px rgba(0,0,0,.2);transition:transform .2s ease,filter .2s ease;
-}
-#executive-recruitment .nabd-ai-hub-open:hover{transform:translateY(-2px);filter:brightness(1.05)}
-#executive-recruitment .nabd-ai-hub-open:focus-visible{outline:3px solid #fff;outline-offset:4px}
-#executive-recruitment .nabd-ai-hub-security{font-size:.82rem;line-height:1.75;color:#b4cdd8;text-align:center}
-@media(max-width:790px){
-  #executive-recruitment .nabd-ai-hub-card{grid-template-columns:1fr;gap:25px}
-  #executive-recruitment .nabd-ai-hub-side{width:100%}
-}
-@media(prefers-reduced-motion:reduce){
-  #executive-recruitment .nabd-ai-hub-open{transition:none}
-  #executive-recruitment .nabd-ai-hub-open:hover{transform:none}
-}
-</style>
 <meta name="nabd-ai-version" content="3.0 - verified policy decisions and AI analysis connector"/>
-<style>
-.nabd-pathways-banner{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:30px auto;padding:28px 32px;width:min(1180px,92%);border:1px solid #315362;border-radius:22px;background:linear-gradient(120deg,#112f40,#071d2c);color:#edf6f5}.nabd-pathways-banner small{color:#64e3d3;letter-spacing:1.5px}.nabd-pathways-banner h2{margin:8px 0;color:#edf6f5;font-size:26px}.nabd-pathways-banner p{color:#adc1ca;margin:0;line-height:1.9}.nabd-pathways-banner a{flex-shrink:0;border:1px solid #64e3d3;border-radius:12px;padding:12px 22px;color:#64e3d3;text-decoration:none}.nabd-pathways-banner a:focus-visible{outline:3px solid #edce87;outline-offset:4px}@media(max-width:650px){.nabd-pathways-banner{flex-direction:column;align-items:stretch;padding:22px}.nabd-pathways-banner a{text-align:center}}
-</style>
+<link rel="stylesheet" href="assets/css/home-portals.css?v=1">
 </head>
 <body>
 <header class="site-header">
@@ -1347,6 +1161,10 @@
 <small data-ar="للعلوم الطبية" data-en="for Medical Sciences">for Medical Sciences</small>
 </span>
 </a>
+<nav class="hp-header-shortcuts" aria-label="Academy quick access">
+<a data-ar="مسارات نبض" data-en="NABD Pathways" href="academy.html">NABD Pathways</a>
+<a data-ar="بوابة المحاضرين" data-en="Lecturer Portal" href="lecturers.html" class="hp-header-teach">Lecturer Portal</a>
+</nav>
 <button aria-expanded="false" aria-label="Open navigation" class="menu-btn" id="menuBtn" type="button">
         ☰
       </button>
@@ -1361,14 +1179,14 @@
 <a data-ar="أثر الطلبة" data-en="Student Impact" href="#student-impact">Student Impact</a><a data-ar="الأدلة" data-en="Evidence" href="#evidence">Evidence</a><a data-i18n="nav.research" href="#research">Research</a>
 <a data-i18n="nav.verify" href="#verify">Verify</a>
 <a data-i18n="nav.about" href="#about">About</a>
-<a class="nabd-nav-volunteer" data-ar="التطوع ومتابعة الطلب" data-en="Volunteer & Status" href="#executive-recruitment">Volunteer & Status</a>
+<a class="nabd-nav-volunteer" data-ar="بوابات الأكاديمية" data-en="Academy Portals" href="#executive-recruitment">Academy Portals</a>
 <a class="nabd-nav-donate" href="donate.html" data-ar="💚 ادعم أكاديمية نبض" data-en="💚 Support NABD" style="display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border:1px solid rgba(233,189,98,.5);border-radius:999px;background:linear-gradient(135deg,rgba(233,189,98,.16),rgba(233,189,98,.04));color:#f6d58d;font-weight:800;white-space:nowrap">💚 Support NABD</a>
 <a class="nabd-nav-executive" data-ar="🔐 دخول المجلس التنفيذي" data-en="🔐 Executive Sign-in" href="portal/">🔐 Executive Sign-in</a>
 <a class="nabd-nav-medical" data-ar="📚 موسوعة نبض الطبية" data-en="📚 Medical Knowledge Center" href="nabd-medical-knowledge.html">📚 Medical Knowledge</a>
 <a class="nabd-nav-ai" data-ar="🤖 المدير الذكي" data-en="🤖 AI Executive" href="nabd-ai-executive.html" aria-label="NABD AI Executive Dashboard / مركز المدير الذكي">🤖 AI Executive</a>
 <a data-ar="🏥 المستشفى الافتراضي ثلاثي الأبعاد (نسخة تجريبية)" data-en="🏥 3D Virtual Hospital (Preview)" href="atlas/hospital-3d.html" aria-label="NABD MEDVERSE 3D educational preview">🏥 3D Virtual Hospital</a>
 <a data-ar="مسارات نبض" data-en="NABD Pathways" href="academy.html">NABD Pathways</a>
-<a data-ar="بوابة المحاضرين" data-en="Teaching Studio" href="lecturers.html">Teaching Studio</a>
+<a data-ar="بوابة المحاضرين" data-en="Lecturer Portal" href="lecturers.html">Lecturer Portal</a>
 <a class="btn btn-small" data-i18n="nav.login" href="portal.html">Student Login</a>
 <button class="lang-btn" id="langBtn" type="button">العربية</button>
 </nav>
@@ -1397,26 +1215,14 @@
               student development, research projects,
               and verifiable certificates.
             </p>
-<div class="hero-actions">
-<a class="btn btn-glow" href="#courses">
-<span aria-hidden="true">
-                  🎓
-                </span>
-<span data-i18n="hero.explore">
-                  Explore Courses
-                </span>
-<span aria-hidden="true">
-                  →
-                </span>
-</a>
-<a class="btn btn-light" href="#verify">
-<span aria-hidden="true">
-                  ✓
-                </span>
-<span data-i18n="hero.verify">
-                  Verify Certificate
-                </span>
-</a>
+<nav class="hp-hero-access" aria-label="Your academy workspace">
+<a class="hp-button " href="academy.html"><span data-ar="اكتشف مسارات نبض" data-en="Explore NABD Pathways">Explore NABD Pathways</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+<a class="hp-button hp-button-outline" href="lecturers.html"><span data-ar="بوابة المحاضرين" data-en="Lecturer Portal">Lecturer Portal</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+</nav>
+<div class="hp-hero-secondary">
+<a data-ar="استكشف الدورات" data-en="Explore Courses" href="#courses">Explore Courses</a>
+<a data-ar="تحقق من شهادة" data-en="Verify a Certificate" href="#verify">Verify a Certificate</a>
+<a data-ar="جميع بوابات الأكاديمية" data-en="All Academy Portals" href="#executive-recruitment">All Academy Portals</a>
 </div>
 <div class="trust-grid">
 <article class="trust-card">
@@ -1464,119 +1270,24 @@
 </div>
 </section>
 
-<section class="nabd-pathways-banner" aria-labelledby="pathways-banner-title"><div><small>NABD · CONNECTED ACADEMY</small><h2 id="pathways-banner-title" data-ar="لكل طموح مسار. ولكل خطوة أثر." data-en="A pathway for every ambition.">A pathway for every ambition.</h2><p data-ar="الطلاب والمحاضرون والمجلس والتطوع: اكتشف مساحتك في نبض." data-en="Students, lecturers, leadership and volunteers: find your space in NABD.">Students, lecturers, leadership and volunteers: find your space in NABD.</p></div><a href="academy.html" data-ar="اكتشف مسارات نبض ←" data-en="Explore NABD Pathways →">Explore NABD Pathways →</a></section>
-<!-- NABD OFFICIAL ACCESS PORTALS: executive staff & volunteer applications -->
-<section class="nabd-access-hub" id="executive-recruitment" aria-labelledby="nabdHubTitle">
-  <div class="container nabd-hub-container">
-    <div class="nabd-hub-heading">
-      <span class="nabd-hub-eyebrow" data-ar="البوابات الرسمية · NABD" data-en="OFFICIAL NABD ACCESS">OFFICIAL NABD ACCESS</span>
-      <h2 id="nabdHubTitle" data-ar="بوابات أكاديمية نبض الرسمية" data-en="NABD Academy Official Portals">NABD Academy Official Portals</h2>
-      <p data-ar="بوابتان مخصصتان لإدارة العمل والتطوع؛ دخول آمن لأعضاء المجلس التنفيذي، ومسار واضح للتقديم ومتابعة الطلبات."
-         data-en="Two dedicated gateways: authorized executive access, and a clear path to apply for volunteer executive roles and track your application.">Two dedicated gateways: authorized executive access, and a clear path to apply for volunteer executive roles and track your application.</p>
-    </div>
-
-    <div class="nabd-hub-grid">
-      <!-- Executive Council: existing role-based login -->
-      <article class="nabd-hub-card nabd-hub-executive" aria-labelledby="nabdExecTitle">
-        <div class="nabd-hub-card-head">
-          <div class="nabd-hub-seal" aria-hidden="true">
-            <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" focusable="false">
-              <defs><linearGradient id="nabdCouncilSealGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffeab6"/><stop offset="1" stop-color="#c99235"/></linearGradient></defs>
-              <circle cx="55" cy="54" r="49" fill="none" stroke="#edcd86" stroke-opacity=".37" stroke-width="1.1"/>
-              <circle cx="55" cy="54" r="44" fill="none" stroke="#edcd86" stroke-opacity=".38" stroke-dasharray="1 5" stroke-width="2"/>
-              <path d="M55 16c-14 9-26 11-32 12v25c0 19 13 34 32 43 19-9 32-24 32-43V28C80 27 68 25 55 16Z" fill="#163443" stroke="url(#nabdCouncilSealGold)" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M37 53h10l5-10 8 20 6-10h9" fill="none" stroke="url(#nabdCouncilSealGold)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="m49 36 6-7 6 7" fill="none" stroke="#f5d991" stroke-width="1.8" stroke-linecap="round"/>
-              <text x="55" y="82" font-size="10.5" letter-spacing="2" text-anchor="middle" fill="#ffe2a0" font-family="Arial,sans-serif" font-weight="bold">NABD</text>
-            </svg>
-          </div>
-          <span class="nabd-hub-access-label"><span class="nabd-hub-status-dot" aria-hidden="true"></span><span data-ar="للعاملين المخوّلين فقط" data-en="AUTHORIZED STAFF ONLY">AUTHORIZED STAFF ONLY</span></span>
-        </div>
-        <div class="nabd-hub-card-content">
-          <span class="nabd-hub-card-kicker" data-ar="مجلس القيادة والإدارة" data-en="LEADERSHIP & GOVERNANCE">LEADERSHIP & GOVERNANCE</span>
-          <h3 id="nabdExecTitle" data-ar="المجلس التنفيذي" data-en="Executive Council">Executive Council</h3>
-          <p data-ar="المنصة الرسمية لإدارة أعمال المجلس التنفيذي؛ دخول أعضاء المجلس والعاملين المعتمدين لإدارة المسؤوليات والمهام والتقارير وفق صلاحيات كل منصب."
-             data-en="The official executive workspace. Authorized members sign in to manage departmental work, tasks and reports according to their assigned roles.">The official executive workspace. Authorized members sign in to manage departmental work, tasks and reports according to their assigned roles.</p>
-          <div class="nabd-hub-chips">
-            <span class="nabd-hub-chip"><span class="nabd-hub-chip-mark" aria-hidden="true">✦</span><span data-ar="حساب خاص بكل منصب" data-en="Role-specific access">Role-specific access</span></span>
-            <span class="nabd-hub-chip"><span class="nabd-hub-chip-mark" aria-hidden="true">✦</span><span data-ar="متابعة الأعمال والمراجعات" data-en="Work & review tracking">Work & review tracking</span></span>
-          </div>
-        </div>
-        <div class="nabd-hub-actions">
-          <a class="nabd-hub-action nabd-hub-action-executive" href="portal/" aria-label="Executive Council staff login / تسجيل دخول أعضاء المجلس التنفيذي">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg>
-            <span data-ar="تسجيل دخول أعضاء المجلس التنفيذي" data-en="Executive Council Sign In">Executive Council Sign In</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-        <div class="nabd-hub-private-note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m12 22 7-4V6l-7-4-7 4v12l7 4Z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span data-ar="هذه البوابة مخصصة للأعضاء المعتمدين، ولا تُستخدم لتقديم طلبات التطوع." data-en="For approved staff only. Volunteer applications are submitted through the other portal.">For approved staff only. Volunteer applications are submitted through the other portal.</span>
-        </div>
-      </article>
-
-      <!-- Volunteer applications: preserve the existing form + status pages -->
-      <article class="nabd-hub-card nabd-hub-volunteer" aria-labelledby="nabdVolunteerTitle">
-        <div class="nabd-hub-card-head">
-          <div class="nabd-hub-seal" aria-hidden="true">
-            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
-              <circle cx="40" cy="40" r="33" stroke="#85e9d9" stroke-opacity=".5" stroke-width="1.4"/>
-              <path d="M40 63S17 49 17 34c0-7 5-12 12-12 5 0 9 2 11 7 3-5 7-7 12-7 7 0 12 5 12 12 0 15-24 29-24 29Z" stroke="#79e9d8" stroke-width="2.4" fill="#44b6b3" fill-opacity=".12" stroke-linejoin="round"/>
-              <path d="M25 40h9l4-8 5 16 5-8h7" stroke="#a4f6e9" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <span class="nabd-hub-access-label"><span class="nabd-hub-status-dot" aria-hidden="true"></span><span data-ar="تقديم الطلبات ومتابعتها" data-en="APPLY & TRACK">APPLY & TRACK</span></span>
-        </div>
-        <div class="nabd-hub-card-content">
-          <span class="nabd-hub-card-kicker" data-ar="المشاركة وصناعة الأثر" data-en="VOLUNTEERING & OPPORTUNITIES">VOLUNTEERING & OPPORTUNITIES</span>
-          <h3 id="nabdVolunteerTitle" data-ar="بوابة التطوع والانضمام" data-en="Volunteer Application Portal">Volunteer Application Portal</h3>
-          <p data-ar="للمهتمين بالتطوع ضمن المجلس التنفيذي للأكاديمية: قدّم طلبك عبر النموذج المعتمد، أو تحقّق من حالة طلبك السابق باستخدام نظام المتابعة الحالي."
-             data-en="Interested in volunteering for the Academy’s Executive Council? Submit an application using the official form, or check the status of an earlier application.">Interested in volunteering for the Academy’s Executive Council? Submit an application using the official form, or check the status of an earlier application.</p>
-          <div class="nabd-hub-chips">
-            <span class="nabd-hub-chip"><span class="nabd-hub-chip-mark" aria-hidden="true">✦</span><span data-ar="تقديم طلب جديد" data-en="New application">New application</span></span>
-            <span class="nabd-hub-chip"><span class="nabd-hub-chip-mark" aria-hidden="true">✦</span><span data-ar="متابعة طلب سابق" data-en="Existing application status">Existing application status</span></span>
-          </div>
-        </div>
-        <div class="nabd-hub-actions">
-          <a class="nabd-hub-action nabd-hub-action-apply" href="executive-application.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/><circle cx="12" cy="12" r="10"/></svg>
-            <span data-ar="تقديم طلب تطوع جديد" data-en="Submit a Volunteer Application">Submit a Volunteer Application</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-          <div class="nabd-hub-divider"><span data-ar="قدّمت طلبًا بالفعل؟" data-en="Already applied?">Already applied?</span></div>
-          <a class="nabd-hub-action nabd-hub-action-status" href="application-status.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/><path d="m8.5 11 2 2 3.5-4"/></svg>
-            <span data-ar="التحقق من حالة طلب التطوع" data-en="Check Application Status">Check Application Status</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </article>
-      <!-- NABD AI Executive / internal operations (stage 1) -->
-      <article class="nabd-hub-card nabd-ai-hub-card" aria-labelledby="nabdAiHubTitle">
-        <div class="nabd-ai-hub-content">
-          <span class="nabd-ai-hub-brow" data-ar="🤖 الإدارة الذكية · NABD AI" data-en="🤖 INTELLIGENT ADMINISTRATION · NABD AI">🤖 INTELLIGENT ADMINISTRATION · NABD AI</span>
-          <h3 id="nabdAiHubTitle" data-ar="مركز المدير الذكي" data-en="AI Executive Operations Center">AI Executive Operations Center</h3>
-          <p data-ar="لوحة داخلية مخصصة للإدارة المخوّلة، تتابع طلبات التسجيل والتطوع والشهادات والملاحظات والاستشارات، وتصنّفها حسب الأولوية، وتُجهّز مسودات ردود للمراجعة."
-             data-en="An authorized staff dashboard that organizes course registrations, volunteer applications, certificate requests, feedback and consultation routing, and prepares reply drafts for review.">An authorized staff dashboard that organizes course registrations, volunteer applications, certificate requests, feedback and consultation routing, and prepares reply drafts for review.</p>
-          <div class="nabd-ai-hub-tags" aria-label="AI executive features">
-            <span data-ar="تصنيف الحالات" data-en="Case triage">Case triage</span>
-            <span data-ar="متابعة التطوع" data-en="Volunteer tracking">Volunteer tracking</span>
-            <span data-ar="طلبات الشهادات" data-en="Certificate claims">Certificate claims</span>
-            <span data-ar="مسودات الردود" data-en="Draft replies">Draft replies</span>
-          </div>
-        </div>
-        <div class="nabd-ai-hub-side">
-          <a class="nabd-ai-hub-open" href="nabd-ai-executive.html" aria-label="Open NABD AI Executive dashboard / فتح مركز المدير الذكي">
-            <span data-ar="فتح مركز المدير الذكي" data-en="Open AI Executive Dashboard">Open AI Executive Dashboard</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-          <div class="nabd-ai-hub-security" data-ar="🔒 للإدارة المصرّح لها فقط. الإصدار الحالي يفرز الطلبات ويتخذ قرارات تنظيمية موثقة ويتابعها. لا يُرسل رسائل أو يُصدر شهادات دون تكامل وشروط موثقة."
-               data-en="🔒 Authorized management only. This release handles triage, tracking and drafts; it does not automatically issue certificates or send messages.">🔒 Authorized management only. This release handles triage, tracking and drafts; it does not automatically issue certificates or send messages.</div>
-        </div>
-      </article>
-    </div>
-    <div class="nabd-hub-bottomline"><span data-ar="NABD Academy for Medical Sciences · تعلّم، ابحث، تحقّق، تطوّر" data-en="NABD Academy for Medical Sciences · Learn · Research · Verify · Grow">NABD Academy for Medical Sciences · Learn · Research · Verify · Grow</span></div>
-  </div>
+<!-- Unified academy access: retains the existing executive-recruitment anchor. -->
+<section class="hp-hub" id="executive-recruitment" aria-labelledby="nabdHubTitle">
+ <div class="hp-container">
+  <div class="hp-hub-heading"><div><span data-ar="بوابات الأكاديمية" data-en="THE NABD CONNECTION" class="hp-eyebrow">THE NABD CONNECTION</span><h2 data-ar="كل نبض، في مكان واحد." data-en="All of NABD. One place." id="nabdHubTitle">All of NABD. One place.</h2><p data-ar="تعلّم، علّم، شارك أو قُد. اختر مساحتك وواصل رحلتك في الأكاديمية." data-en="Learn, teach, contribute or lead. Find your space and continue your academy journey.">Learn, teach, contribute or lead. Find your space and continue your academy journey.</p></div><div class="hp-pulse" aria-hidden="true"><svg viewBox="0 0 240 70" fill="none"><path d="M0 36h55l15-12 15 24 20-43 25 60 20-38 15 9h75" stroke="currentColor" stroke-width="1.5"/></svg></div></div>
+  <div class="hp-feature-grid"><article class="hp-feature hp-feature-path" aria-labelledby="hp-path-title">
+ <div class="hp-card-top"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v6H4zM14 15h6v6h-6z"/></svg></span><span class="hp-index">01 / YOUR STARTING POINT</span></div>
+ <div><span data-ar="ابدأ من هنا" data-en="YOUR STARTING POINT" class="hp-kicker">YOUR STARTING POINT</span><h3 data-ar="مسارات نبض" data-en="NABD Pathways" id="hp-path-title">NABD Pathways</h3><p data-ar="كل بوابات الأكاديمية في مساحة واحدة. اختر دورك، واعرف من أين تبدأ خطوتك التالية." data-en="One home for every academy workspace. Choose your role and find your next step.">One home for every academy workspace. Choose your role and find your next step.</p></div>
+ <a class="hp-button " href="academy.html"><span data-ar="اكتشف مسارات نبض" data-en="Explore NABD Pathways">Explore NABD Pathways</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+</article><article class="hp-feature hp-feature-lecturer" aria-labelledby="hp-lecturer-title">
+ <div class="hp-card-top"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 4h18v12H3zM12 16v5M7 21h10M7 9h4M7 12h8"/></svg></span><span class="hp-index">02 / TEACHING STUDIO</span></div>
+ <div><span data-ar="مساحة التعليم" data-en="TEACHING STUDIO" class="hp-kicker">TEACHING STUDIO</span><h3 data-ar="بوابة المحاضرين" data-en="Lecturer Portal" id="hp-lecturer-title">Lecturer Portal</h3><p data-ar="مساحتك لتنظيم الجلسات وأهداف التعلّم والمراجع والمواد التعليمية للدورات المكلّف بها." data-en="Your space for sessions, learning objectives, references and teaching resources for assigned courses.">Your space for sessions, learning objectives, references and teaching resources for assigned courses.</p></div>
+ <a class="hp-button " href="lecturers.html"><span data-ar="الدخول إلى بوابة المحاضرين" data-en="Open the Lecturer Portal">Open the Lecturer Portal</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+</article></div>
+  <div class="hp-role-grid"><article class="hp-role hp-role-student"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m2 8 10-5 10 5-10 5L2 8ZM6 10v7c4 3 8 3 12 0v-7M22 8v7"/></svg></span><h3 data-ar="طلاب الأكاديمية" data-en="Academy students">Academy students</h3><p data-ar="دوراتك وتقدمك وشهاداتك وطلباتك التعليمية." data-en="Your courses, progress, certificates and learning requests.">Your courses, progress, certificates and learning requests.</p><div class="hp-role-actions"><a class="hp-button hp-button-outline" href="portal.html"><span data-ar="دخول الطلاب" data-en="Student sign in">Student sign in</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></article><article class="hp-role hp-role-council"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="3"/><path d="M6 21v-3a6 6 0 0 1 12 0v3M3 10a3 3 0 0 0 0 6M21 10a3 3 0 0 1 0 6"/></svg></span><h3 data-ar="المجلس التنفيذي" data-en="Executive Council">Executive Council</h3><p data-ar="مساحة كل إدارة لمتابعة المهام والتقارير والمراجعات." data-en="Department workspaces for tasks, reports and reviews.">Department workspaces for tasks, reports and reviews.</p><div class="hp-role-actions"><a class="hp-button hp-button-outline" href="portal/"><span data-ar="دخول المجلس" data-en="Council sign in">Council sign in</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></article><article class="hp-role hp-role-admin"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6l8-4Z"/><path d="m8 12 3 3 5-6"/></svg></span><h3 data-ar="مركز المدير العام" data-en="Director’s workspace">Director’s workspace</h3><p data-ar="إدارة الأكاديمية والتكليفات وأولويات المجلس في «نبض اليوم»." data-en="Academy management, teaching assignments and the council’s daily priorities.">Academy management, teaching assignments and the council’s daily priorities.</p><div class="hp-role-actions"><a class="hp-button hp-button-outline" href="admin.html"><span data-ar="دخول الإدارة" data-en="Admin sign in">Admin sign in</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div></article><article class="hp-role hp-role-volunteer"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21S2 15 2 8a5 5 0 0 1 10-1 5 5 0 0 1 10 1c0 7-10 13-10 13Z"/><path d="M6 12h3l2-4 3 8 2-4h2"/></svg></span><h3 data-ar="التطوع والانضمام" data-en="Volunteer with NABD">Volunteer with NABD</h3><p data-ar="شارك خبراتك ضمن المجلس التنفيذي، وقدّم طلبك أو تابع حالته." data-en="Contribute your skills to the Executive Council. Apply or track your application.">Contribute your skills to the Executive Council. Apply or track your application.</p><div class="hp-role-actions"><a class="hp-button hp-button-outline" href="executive-application.html"><span data-ar="تقديم طلب تطوع" data-en="Apply to volunteer">Apply to volunteer</span><svg class="hp-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a data-ar="متابعة طلبي" data-en="Track my application" href="application-status.html" class="hp-secondary-link">Track my application</a></div></article></div>
+  <div class="hp-resource-heading"><h3 data-ar="مساحات المعرفة والتطوير" data-en="Spaces to explore and grow">Spaces to explore and grow</h3><span data-ar="المزيد من تجربة نبض" data-en="MORE OF YOUR NABD EXPERIENCE">MORE OF YOUR NABD EXPERIENCE</span></div>
+  <div class="hp-resource-grid"><a class="hp-resource" href="atlas/hospital-3d.html"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 21V3h14v18M9 21v-4h6v4M12 6v6M9 9h6M2 21h20"/></svg></span><span><h4 data-ar="المستشفى الافتراضي" data-en="Virtual hospital">Virtual hospital</h4><span data-ar="محاكاة تعليمية ثلاثية الأبعاد · نسخة تجريبية" data-en="3D educational simulation · Preview" class="hp-resource-description">3D educational simulation · Preview</span></span><svg class="hp-resource-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="hp-resource" href="skill-passport.html"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="9" r="3"/><path d="M9 17h6"/></svg></span><span><h4 data-ar="جواز المهارات الطبي" data-en="Medical Skill Passport">Medical Skill Passport</h4><span data-ar="تأملاتك التعليمية وخطوتك القادمة" data-en="Learning reflections and your next step" class="hp-resource-description">Learning reflections and your next step</span></span><svg class="hp-resource-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="hp-resource" href="nabd-medical-knowledge.html"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/></svg></span><span><h4 data-ar="موسوعة نبض الطبية" data-en="Medical Knowledge">Medical Knowledge</h4><span data-ar="مساحة المعرفة والمراجعة الطبية" data-en="Explore medical knowledge and revision" class="hp-resource-description">Explore medical knowledge and revision</span></span><svg class="hp-resource-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a><a class="hp-resource" href="nabd-ai-executive.html"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/></svg></span><span><h4 data-ar="مركز المدير الذكي" data-en="AI Executive Center">AI Executive Center</h4><span data-ar="متابعة الحالات ومسودات الردود · للإدارة المخوّلة" data-en="Case tracking and reply drafts · Authorized staff" class="hp-resource-description">Case tracking and reply drafts · Authorized staff</span></span><svg class="hp-resource-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a></div>
+  <div class="hp-hub-footer"><span data-ar="حسابك واحد، ومساحتك بحسب دورك." data-en="Your account. Your role. Your workspace.">Your account. Your role. Your workspace.</span><a data-ar="استكشف الدورات الطبية" data-en="Explore medical courses" href="#courses">Explore medical courses</a></div>
+ </div>
 </section>
 
 <!-- OUR IMPACT -->
@@ -2251,6 +1962,10 @@
         </small>
 </div>
 <nav aria-label="Footer navigation" class="footer-links">
+<a data-ar="مسارات نبض" data-en="NABD Pathways" href="academy.html">NABD Pathways</a>
+<a data-ar="بوابة المحاضرين" data-en="Lecturer Portal" href="lecturers.html">Lecturer Portal</a>
+<a data-ar="جواز المهارات الطبي" data-en="Medical Skill Passport" href="skill-passport.html">Medical Skill Passport</a>
+<a data-ar="المستشفى الافتراضي" data-en="Virtual Hospital" href="atlas/hospital-3d.html">Virtual Hospital</a>
 <a href="donate.html" data-ar="💚 ادعم أكاديمية نبض" data-en="💚 Support NABD Academy">💚 Support NABD Academy</a>
 <a data-ar="الأثر" data-en="Impact" href="#impact">Impact</a>
 <a data-i18n="nav.courses" href="#courses">Courses</a>
