@@ -35,7 +35,7 @@ for(const handler of responses){
   assert.equal(payload.upstream_status,item.status);
   assert(!JSON.stringify(payload).includes("PRIVATE_PROVIDERMESSAGE"));
   assert(!JSON.stringify(payload).includes("secret-test"));
-  const failure=await tutorFailure({error:{context:response,name:"FunctionsHttpError"}});
+  const failure=await tutorFailure({error:{context:Response.json(payload,{status:response.status}),name:"FunctionsHttpError"}});
   assert.equal(failure.code,item.code);
   for(const l of ["ar","en"])assert(tutorFailureText(failure,l).includes(item.code));
  }
