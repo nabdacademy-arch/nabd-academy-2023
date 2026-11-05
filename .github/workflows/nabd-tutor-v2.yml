@@ -1,8 +1,8 @@
-name: NABD AI Tutor v2 diagnostics
+name: NABD AI Tutor compatibility diagnostics
 on:
   push:
     branches:
-      - 'feat/nabd-tutor-v2-provider-diagnostics'
+      - 'feat/nabd-tutor-groq-gemini'
     paths:
       - 'supabase/manual/nabd-tutor.ts'
       - 'supabase/functions/nabd-tutor/handler.mjs'
@@ -36,6 +36,7 @@ jobs:
           node --check supabase/functions/nabd-tutor/handler.mjs
           node --check learning/core.mjs
           node --check learning/tests/tutor-v2.mjs
+          node --check supabase/functions/nabd-tutor/provider-router.mjs
       - name: Authentication, secure provider diagnostics and standalone parity
         run: |
           node learning/tests/tutor.mjs
