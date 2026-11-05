@@ -185,3 +185,16 @@
 @media(prefers-reduced-motion:reduce){
  .nabd-signature-launch,.nabd-signature-canvas{transition:none!important;scroll-behavior:auto}
 }
+
+/* Public, account-free NABD ATLAS 3D route */
+.nabd-atlas-home{border:1px solid #386b82;border-radius:24px;padding:clamp(24px,5vw,42px);position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 78% 16%,#2baba534,transparent 38%),radial-gradient(ellipse at 17% 0%,#327bc831,transparent 53%),linear-gradient(132deg,#0d3b53,#071b36 72%);box-shadow:0 22px 60px #06101c55}
+.nabd-atlas-home::after{content:"⬡";position:absolute;right:3%;top:5%;font-size:clamp(110px,20vw,270px);line-height:1;color:#80dfd50b;z-index:-1;pointer-events:none}
+.nabd-atlas-home h2{font-size:clamp(25px,4vw,43px);line-height:1.28;color:#e8fff9;margin:12px 0;max-width:850px;letter-spacing:-.6px;font-weight:900}
+.nabd-atlas-home p{max-width:820px;color:#bbd9e0;font-size:clamp(13px,1.5vw,16px);line-height:2}
+.nabd-atlas-home-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.nabd-atlas-home-tags span{border:1px solid #4a858b;background:#0c4b59a8;color:#bcfff0;font-size:11px;font-weight:800;border-radius:999px;padding:9px 14px}
+#nabd-standalone-atlas>.nabd-visual-companion{margin-top:17px}
+#nabd-standalone-atlas .nabd-visual-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr))}
+#nabd-standalone-atlas .nabd-visual-card[data-organ="heart"]{grid-column:1/-1}
+#nabd-standalone-atlas .nabd-signature-lab{border-color:#61afba;box-shadow:0 22px 62px #031525bf}
+@media(max-width:640px){.nabd-atlas-home{border-radius:17px;padding:20px}.nabd-atlas-home-tags{gap:6px;margin-top:15px}.nabd-atlas-home-tags span{font-size:9px;padding:6px 9px}}

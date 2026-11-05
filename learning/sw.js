@@ -1,5 +1,5 @@
 /* Only explicit PUBLIC learning assets. Never cache auth, API, account or private course responses. */
-const CACHE='nabd-learning-public-v4';
+const CACHE='nabd-learning-public-v5';
 const FILES=['./','./index.html','./styles.css','./visuals.css','./app.mjs','./medical-visuals.mjs','./anatomy-lightbox.mjs','./heart-studio.mjs','./heart-webgl.mjs','./heart-simulator.mjs','./tutor-format.mjs','./core.mjs','./content.mjs','./icon.svg','./manifest.webmanifest'];
 const allowed=new Set(FILES.map(path=>new URL(path,self.registration.scope).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));

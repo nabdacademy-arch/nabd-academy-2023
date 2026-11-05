@@ -25,3 +25,7 @@ This is original **procedural 3D illustration** (spheres, tube surfaces, real de
 - No API credentials or payment configuration changes. No student data modifications.
 - Test \`node learning/tests/heart3d.mjs\` checks four chambers and continuous flow paths.
 - Chromium browser tests cover studio creation, route selection, chamber descriptions, guided tour, zoom, pause, fullscreen and original site routes at mobile/desktop widths.
+
+### الدخول المباشر دون استهلاك حصة AI
+
+أضفنا رابطًا مستقلًا تحت القائمة الجانبية: `learning/#atlas`. يمكن للطالب استكشاف 19 عضوًا والمختبر ثلاثي الأبعاد مجانًا، دون تسجيل دخول أو إرسال أي استدعاء إلى Groq/Gemini. لا تزال صور Wikimedia Commons تحتاج الإنترنت، بينما يحفظ Service Worker كود الواجهة العام فقط.

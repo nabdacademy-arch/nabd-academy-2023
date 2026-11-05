@@ -84,9 +84,9 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  await page.goto('http://127.0.0.1:8000/learning/#scholarships');assert.equal(await page.locator('.scholarship-card').count(),5);await page.locator('[data-checklist=cv]').check();
  await page.goto('http://127.0.0.1:8000/learning/#offline');
  const downloadPromise=page.waitForEvent('download');await page.locator('#export-pack').click();const file=await downloadPromise;assert.equal(file.suggestedFilename(),'nabd-foundation-reading.html');
- await page.locator('#save-offline').click();await page.waitForFunction(async()=>!!(await caches.keys()).find(k=>k==='nabd-learning-public-v4'));
+ await page.locator('#save-offline').click();await page.waitForFunction(async()=>!!(await caches.keys()).find(k=>k==='nabd-learning-public-v5'));
  await page.waitForFunction(()=>navigator.serviceWorker.controller!==null);
- const cachePaths=await page.evaluate(async()=>{const c=await caches.open('nabd-learning-public-v4');return (await c.keys()).map(r=>new URL(r.url).pathname)});assert(cachePaths.length>=15);assert(cachePaths.every(x=>x.startsWith('/learning/')));assert(!cachePaths.some(x=>/portal|supabase|account|admin/.test(x)));
+ const cachePaths=await page.evaluate(async()=>{const c=await caches.open('nabd-learning-public-v5');return (await c.keys()).map(r=>new URL(r.url).pathname)});assert(cachePaths.length>=15);assert(cachePaths.every(x=>x.startsWith('/learning/')));assert(!cachePaths.some(x=>/portal|supabase|account|admin/.test(x)));
  await context.setOffline(true);await page.reload();await page.locator('#view h2').first().waitFor();assert((await page.locator('#connectivity').textContent()).includes('دون اتصال'));
  await page.locator('#navigation a[href="#learn"]').click();await page.locator('.lesson-card').first().click();await page.locator('#practice-quiz').waitFor();assert.equal(await page.locator('#practice-quiz').count(),1);await page.screenshot({path:'/tmp/nabd-learning-offline-desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});await page.goto('http://127.0.0.1:8000/learning/#universe');await page.screenshot({path:'/tmp/nabd-student-universe-mobile.png',fullPage:true});
