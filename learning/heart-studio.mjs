@@ -125,7 +125,7 @@ export function createHeartStudio(language="ar"){
  tour.append(top,stepper);area.append(tour);
  area.append(elt("p","nabd-signature-disclaimer",t.caveat));
  outer.append(area);
- let engine=null,loading=false,step=0,active=true,fullscreen=null;
+ let engine=null,loading=false,step=0,active=true;
  function sync(){
   if(!engine)return;
   const s=engine.state;
@@ -200,10 +200,9 @@ export function createHeartStudio(language="ar"){
   dialogClose.focus();
  }
  function closeFullScreen(){
-  if(!outer.isConnected){fullDialog.remove();return;}
-  area.insertBefore(stage,tour.previousElementSibling===panels?panels:null);
-  // Restore original layout: scene first, controls after.
-  area.insertBefore(stage,panels);
+  if(!active||!outer.isConnected){fullDialog.remove();return;}
+  // Restore the original scene → controls → tour order after closing the dialog.
+  area.insertBefore(stage,tour);
   area.insertBefore(panels,tour);
   fullDialog.remove();
   engine?.resume();

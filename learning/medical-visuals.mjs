@@ -5,7 +5,7 @@
  * Media download requires Internet. Only the trusted filename is used for the image URL.
  */
 import {openAnatomyLightbox} from "./anatomy-lightbox.mjs";
-import {createHeartSimulation} from "./heart-simulator.mjs";
+import {createHeartStudio} from "./heart-studio.mjs";
 const COMMONS="https://commons.wikimedia.org/wiki/";
 const ITEMS=[
  {
@@ -151,7 +151,7 @@ export function createVisualCompanion(question,language="ar"){
   const path=node("ol","nabd-visual-path");
   for(const text of item.path[key])path.append(node("li","",text));
   card.append(mapTitle,path);
-  if(item.id==="heart")card.append(createHeartSimulation(language));
+  if(item.id==="heart")card.append(createHeartStudio(language));
   return card;
  }
  function render(items){
