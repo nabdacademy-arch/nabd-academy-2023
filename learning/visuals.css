@@ -27,3 +27,56 @@
 .nabd-visual-foot{margin:12px 0 0}
 @media(max-width:540px){.nabd-visual-companion{padding:12px;border-radius:13px}.nabd-visual-grid{grid-template-columns:minmax(0,1fr)}.nabd-visual-figure img{height:225px}.nabd-visual-title{font-size:16px}}
 @media(prefers-reduced-motion:reduce){.nabd-visual-card *{scroll-behavior:auto}}
+
+
+/* NABD Anatomy Atlas v2 — image lightbox, organ selector, animated heart. */
+.nabd-visual-companion{position:relative;isolation:isolate;background:linear-gradient(155deg,#124354,#071e32 65%,#0b2635);border:1px solid #467987;box-shadow:0 20px 60px #02131b55}
+.nabd-visual-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,315px),1fr));align-items:start;gap:17px}
+.nabd-visual-card{border-radius:18px;box-shadow:0 12px 26px #07101b55}
+.nabd-visual-figure>.nabd-visual-zoom{position:relative;width:100%;min-height:245px;border:0;border-bottom:1px solid #416776;background:radial-gradient(circle at 50% 40%,#fff,#ebf4f4);display:flex;align-items:center;justify-content:center;padding:0;color:#123748;cursor:zoom-in;overflow:hidden}
+.nabd-visual-zoom:hover,.nabd-visual-zoom:focus-visible{outline:3px solid #8bf4d5;outline-offset:-3px}
+.nabd-visual-zoom>img{width:100%;height:265px;max-width:unset;max-height:none;object-fit:contain;transition:transform .26s ease}
+.nabd-visual-zoom:hover>img{transform:scale(1.06)}
+.nabd-visual-zoom-hint{position:absolute;bottom:11px;right:12px;z-index:1;background:#103e51ed;border:1px solid #94e5de;border-radius:999px;color:#e5fff4;font-size:11px;font-weight:700;padding:7px 12px;pointer-events:none}
+.nabd-visual-open{display:inline-flex;width:fit-content;color:#8bf5d6!important;text-decoration:none;font-size:12px}
+.nabd-visual-open:hover{text-decoration:underline}
+.nabd-visual-empty{font-size:12px;color:#bdd7de}
+.nabd-organ-browser{margin-top:16px;background:#102e43;border:1px solid #44727d;border-radius:15px;overflow:hidden}
+.nabd-organ-browser>summary{padding:15px 18px;cursor:pointer;font-size:14px;font-weight:800;color:#c4ffec}
+.nabd-organ-browser>summary:hover{background:#1a4656}
+.nabd-organ-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;padding:0 15px 16px}
+.nabd-organ-choice{display:flex;align-items:center;min-height:46px;justify-content:flex-start;text-align:start;border:1px solid #416b7a;border-radius:10px;padding:10px 12px;font-size:12px;background:#10364a;color:#e1f9fc;cursor:pointer}
+.nabd-organ-choice:hover,.nabd-organ-choice:focus-visible,.nabd-organ-choice[aria-pressed="true"]{background:#17625b;border-color:#89f5d4;color:#fff}
+.nabd-heart-simulation{border-top:1px solid #456b76;background:linear-gradient(160deg,#10283a,#0b2135)}
+.nabd-heart-summary{padding:14px 16px;cursor:pointer;color:#b7fff0;font-weight:800;font-size:13px;list-style-position:inside}
+.nabd-heart-summary:hover{background:#215469}
+.nabd-heart-content{padding:0 12px 16px}
+.nabd-heart-heading{color:#cbfff5;font-size:16px;margin:10px 0 4px}
+.nabd-heart-disclaimer,.nabd-heart-caveat,.nabd-heart-flow-caption{font-size:11px;line-height:1.8;color:#aaccd2;margin:8px 0}
+.nabd-heart-scene{border:1px solid #3f7b8d;border-radius:16px;overflow:hidden;background:#071f32;perspective:1000px;min-width:0}
+.nabd-heart-scene svg{display:block;width:100%;height:auto;transform:rotateY(var(--nabd-yaw,0deg)) rotateX(5deg);transform-origin:50% 50%;transition:transform .45s ease;filter:drop-shadow(0 9px 19px #030a19)}
+.nabd-heart-scene[data-route="blue"] [data-flow="red"],.nabd-heart-scene[data-route="red"] [data-flow="blue"]{opacity:.12}
+.nabd-heart-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
+.nabd-heart-controls button{border:1px solid #497c8b;border-radius:9px;background:#154153;color:#eafaff;min-height:41px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.nabd-heart-controls button:hover,.nabd-heart-controls button:focus-visible{background:#225f65;border-color:#99f4da}
+.nabd-heart-controls .nabd-heart-toggle{grid-column:1/-1;background:#1c716c;color:#fff;font-size:13px}
+.nabd-heart-route.is-selected{background:#1f7770;border-color:#b0ffe9}
+.nabd-heart-caveat{display:block;margin-top:8px;color:#95b0bf}
+.nabd-anatomy-lightbox{box-sizing:border-box;border:1px solid #58979e;border-radius:19px;background:#0b2335;color:#f4faff;padding:0;width:min(96vw,1150px);max-width:1150px;max-height:94vh;max-height:94dvh;box-shadow:0 26px 90px #000b}
+.nabd-anatomy-lightbox::backdrop{background:#010b18db;backdrop-filter:blur(7px)}
+.nabd-lightbox-shell{display:flex;flex-direction:column;min-height:0;max-height:94vh;max-height:94dvh}
+.nabd-lightbox-top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid #467181}
+.nabd-lightbox-top h3{margin:0;font-size:16px;color:#d9fff8}
+.nabd-lightbox-close,.nabd-lightbox-tools button{min-height:40px;background:#1c4358;border:1px solid #598c98;border-radius:10px;color:#e9faff;padding:9px 13px;cursor:pointer;font-size:13px}
+.nabd-lightbox-close:hover,.nabd-lightbox-tools button:hover{background:#26746a}
+.nabd-lightbox-tools{display:flex;gap:9px;justify-content:center;align-items:center;padding:10px;border-bottom:1px solid #294a59}
+.nabd-lightbox-tools button:disabled{opacity:.45;cursor:not-allowed}
+.nabd-lightbox-scale{min-width:52px;text-align:center;font-weight:700;font-size:13px}
+.nabd-lightbox-viewport{display:flex;align-items:center;justify-content:center;min-height:150px;flex:1 1 auto;overflow:auto;overscroll-behavior:contain;background:#edf4f5;touch-action:pan-x pan-y}
+.nabd-lightbox-viewport img{display:block;max-width:100%;max-height:70vh;max-height:70dvh;object-fit:contain;transform-origin:center;transition:transform .18s ease;cursor:zoom-in}
+.nabd-lightbox-viewport.is-zoomed img{cursor:move}
+.nabd-lightbox-error{color:#174457;font-size:14px;padding:25px}
+.nabd-lightbox-footer{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;padding:12px 18px;font-size:12px;color:#b8d5db;border-top:1px solid #345b6b}
+.nabd-lightbox-footer a{color:#97f6d9;text-decoration:underline}
+@media(max-width:640px){.nabd-organ-picker{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 9px 10px}.nabd-organ-choice{font-size:11px;padding:8px}.nabd-heart-content{padding:0 8px 11px}.nabd-heart-controls button{font-size:10px;padding:5px}.nabd-anatomy-lightbox{width:98vw;border-radius:13px}.nabd-lightbox-top,.nabd-lightbox-footer{padding:10px}.nabd-lightbox-viewport img{max-height:65dvh}}
+@media(prefers-reduced-motion:reduce){.nabd-heart-scene svg,.nabd-lightbox-viewport img,.nabd-visual-zoom>img{transition:none}.nabd-visual-zoom:hover>img{transform:none}}
