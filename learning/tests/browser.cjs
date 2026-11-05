@@ -34,7 +34,7 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  assert.equal(await page.locator('.nabd-organ-choice').count(),19);
  await page.locator('.nabd-visual-zoom').first().click();
  await page.locator('dialog.nabd-anatomy-lightbox[open]').waitFor();
- await page.locator('.nabd-lightbox-tools button').nth(2).click();
+ await page.locator('.nabd-lightbox-tools button').nth(1).click();
  assert.equal(await page.locator('.nabd-lightbox-scale').textContent(),'125%');
  await page.keyboard.press('Escape');
  assert.equal(await page.locator('dialog.nabd-anatomy-lightbox').count(),0);
