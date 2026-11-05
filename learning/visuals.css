@@ -80,3 +80,108 @@
 .nabd-lightbox-footer a{color:#97f6d9;text-decoration:underline}
 @media(max-width:640px){.nabd-organ-picker{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 9px 10px}.nabd-organ-choice{font-size:11px;padding:8px}.nabd-heart-content{padding:0 8px 11px}.nabd-heart-controls button{font-size:10px;padding:5px}.nabd-anatomy-lightbox{width:98vw;border-radius:13px}.nabd-lightbox-top,.nabd-lightbox-footer{padding:10px}.nabd-lightbox-viewport img{max-height:65dvh}}
 @media(prefers-reduced-motion:reduce){.nabd-heart-scene svg,.nabd-lightbox-viewport img,.nabd-visual-zoom>img{transition:none}.nabd-visual-zoom:hover>img{transform:none}}
+
+/* ─────────────────────────────────────────────────────────────
+   NABD ATLAS // Signature 3D experience
+   Real interactive WebGL scene, responsive immersive UI.
+   ───────────────────────────────────────────────────────────── */
+.nabd-visual-card[data-organ="heart"]{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:0 17px;padding:15px}
+.nabd-visual-card[data-organ="heart"]>.nabd-visual-figure{grid-row:span 2;min-width:0}
+.nabd-visual-card[data-organ="heart"]>.nabd-visual-map-title{align-self:end;font-size:15px;padding-inline:5px}
+.nabd-visual-card[data-organ="heart"]>.nabd-visual-path{align-self:start}
+.nabd-signature-lab{grid-column:1/-1;min-width:0;position:relative;border-radius:19px;border:1px solid #477f97;background:#071a30;overflow:clip;isolation:isolate;margin-top:18px;box-shadow:0 15px 60px #010a1b7d}
+.nabd-signature-lab::before{content:"";position:absolute;inset:0 0 auto;height:150px;pointer-events:none;background:radial-gradient(ellipse at 19% 0%,#4dcaea22,transparent 68%),radial-gradient(ellipse at 84% 18%,#e88fac13,transparent 66%)}
+.nabd-signature-launch{display:flex;align-items:center;gap:14px;position:relative;cursor:pointer;padding:18px 22px;list-style:none;background:linear-gradient(110deg,#133d56,#091f3c 70%,#102c49);transition:filter .22s}
+.nabd-signature-launch::-webkit-details-marker{display:none}
+.nabd-signature-launch:hover{filter:brightness(1.17)}
+.nabd-signature-launch:focus-visible{outline:3px solid #86ffe0;outline-offset:-4px}
+.nabd-signature-mark{display:grid;place-items:center;font-size:14px;font-weight:900;letter-spacing:1px;color:#d2fff8;border-radius:15px;border:1px solid #66c8d0;background:linear-gradient(135deg,#176b77,#143453);box-shadow:0 0 25px #44d8d234;min-width:72px;height:66px}
+.nabd-signature-teaser{display:grid;gap:4px;min-width:0}
+.nabd-signature-teaser strong{color:#f0ffff;font-size:clamp(15px,2vw,20px);font-weight:900}
+.nabd-signature-teaser small{font-size:10px;letter-spacing:.8px;color:#76d7df;line-height:1.5}
+.nabd-signature-arrow{margin-inline-start:auto;border:1px solid #4b8292;color:#9ffff0;font-size:22px;border-radius:50%;width:39px;height:39px;display:grid;place-items:center}
+.nabd-signature-lab[open]>.nabd-signature-launch{border-bottom:1px solid #3d647a}
+.nabd-signature-body{position:relative;padding:24px;background:linear-gradient(175deg,#071b33,#0d2c3b 60%,#07192d)}
+.nabd-signature-kicker{color:#7eebd5;text-transform:uppercase;letter-spacing:1.9px;font-size:10px;font-weight:800}
+.nabd-signature-title{font-size:clamp(24px,4vw,34px);font-weight:900;line-height:1.2;color:#f4feff;letter-spacing:-.4px;margin:8px 0 5px}
+.nabd-signature-subtitle{color:#a5cbd6;font-size:13px;line-height:1.9;margin:0 0 17px}
+.nabd-signature-stage{isolation:isolate;position:relative;min-height:330px;border-radius:19px;overflow:hidden;border:1px solid #3c7487;background:radial-gradient(ellipse at 50% 48%,#1b5a70 0%,#0b3250 34%,#071d3a 70%,#05152a 100%);box-shadow:inset 0 0 95px #071226,0 15px 30px #03111d70}
+.nabd-signature-stage::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#72dfec05 1px,transparent 1px),linear-gradient(#72dfec04 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+.nabd-signature-stage::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 49%,transparent 34%,#040e2470 96%);z-index:0;pointer-events:none}
+.nabd-signature-canvas{position:relative;z-index:1;display:block;width:100%;height:clamp(355px,48vw,580px);cursor:grab;outline:none;touch-action:none}
+.nabd-signature-canvas:active{cursor:grabbing}
+.nabd-signature-canvas:focus-visible{box-shadow:inset 0 0 0 3px #7affdf}
+.nabd-signature-canvas[hidden]{display:none}
+.nabd-signature-hud{position:absolute;z-index:2;left:15px;right:15px;top:15px;display:flex;gap:9px;align-items:center;justify-content:space-between;pointer-events:none;direction:ltr}
+.nabd-hud-pill,.nabd-hud-led{font-size:10px;font-weight:850;letter-spacing:1px;border:1px solid #61dcb58a;background:#082e40db;color:#aef8e9;border-radius:999px;padding:8px 12px;backdrop-filter:blur(12px)}
+.nabd-hud-led{border-color:#8c7194a8;color:#d2dded;letter-spacing:0}
+.nabd-hud-led::before{content:"";display:inline-block;background:#5df2bb;width:7px;height:7px;border-radius:50%;margin-inline-end:6px;box-shadow:0 0 12px #55ffc6}
+.nabd-signature-hint{position:absolute;z-index:2;left:16px;right:16px;bottom:15px;text-align:center;font-size:11px;color:#b4dfe6;background:#061c2bd1;padding:7px 13px;border-radius:30px;pointer-events:none}
+.nabd-signature-loading{position:absolute;z-index:3;inset:0;display:grid;place-items:center;text-align:center;color:#d6fff5;font-weight:800;font-size:14px;padding:20px;background:#07293ccd}
+.nabd-signature-loading[hidden],.nabd-signature-hud[hidden],.nabd-signature-hint[hidden]{display:none!important}
+.nabd-signature-panels{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);gap:13px;margin-top:15px}
+.nabd-signature-controls,.nabd-signature-parts{min-width:0;border:1px solid #326273;border-radius:16px;padding:15px;background:#103449b8}
+.nabd-signature-routes{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.nabd-signature-route,.nabd-chamber-pill{cursor:pointer;color:#d5eff4;background:#153d54;border:1px solid #417385;border-radius:999px;font-size:11px;font-weight:800;padding:10px 15px;min-height:39px}
+.nabd-signature-route[aria-pressed="true"],.nabd-chamber-pill[aria-pressed="true"]{background:#1c776f;color:#fff;border-color:#80f7d4;box-shadow:0 0 0 2px #2ca7a224}
+.nabd-signature-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:stretch}
+.nabd-signature-toolbar button{border-radius:11px;cursor:pointer;min-height:42px;padding:9px 11px;flex:1 1 auto;background:#183d56;color:#dff9fc;border:1px solid #487e8c;font-size:11px;font-weight:700}
+.nabd-signature-toolbar button:hover,.nabd-signature-toolbar button:focus-visible,.nabd-signature-route:hover,.nabd-chamber-pill:hover{background:#236b69;border-color:#8cffdd;outline:none}
+.nabd-signature-toolbar .nabd-signature-primary{flex:2 1 140px;background:linear-gradient(135deg,#128c80,#23737b);border-color:#63d9cb;font-size:12px}
+.nabd-signature-parts h4,.nabd-signature-tour h4{font-size:14px;margin:0 0 12px;color:#b8ffe5}
+.nabd-chamber-pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.nabd-chamber-pill{padding:9px 8px;border-radius:10px;min-width:0}
+.nabd-chamber-explanation{color:#d2e6ed;font-size:12px;line-height:1.8;min-height:2.5em;margin:12px 0 0}
+.nabd-signature-tour{margin-top:16px;border:1px solid #47778d;border-radius:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;background:linear-gradient(120deg,#103d56,#123246);padding:18px}
+.nabd-signature-tour>h4{grid-column:1/-1;margin:0}
+.nabd-tour-top{min-width:0}
+.nabd-tour-count{font-size:10px;color:#8cf7db;letter-spacing:1px;font-weight:800}
+.nabd-tour-name{color:#fff;font-size:17px;margin:6px 0}
+.nabd-tour-explanation{color:#c7e4e8;font-size:12px;line-height:1.8;margin:4px 0}
+.nabd-tour-steps{display:flex;gap:8px;flex-wrap:wrap}
+.nabd-tour-steps button{background:#1a5463;border:1px solid #78aaad;color:#efffff;border-radius:10px;min-height:39px;padding:8px 13px;font-size:11px;font-weight:800;cursor:pointer}
+.nabd-tour-steps button:disabled{opacity:.4;cursor:not-allowed}
+.nabd-tour-steps button:not(:disabled):hover{background:#1e7973}
+.nabd-signature-disclaimer{font-size:11px;color:#a5c4ce;line-height:1.8;margin:15px 0 0;padding-inline:5px}
+.nabd-signature-stage[data-renderer="fallback"]{min-height:0;padding:12px}
+.nabd-signature-stage[data-renderer="fallback"] .nabd-heart-simulation{margin-top:65px}
+.nabd-signature-dialog{padding:0;margin:auto;width:min(97vw,1360px);height:min(95dvh,960px);max-width:unset;max-height:unset;border-radius:19px;border:1px solid #498295;background:#061d32;color:#ecfff7;overflow:auto}
+.nabd-signature-dialog::backdrop{background:#010917e6;backdrop-filter:blur(10px)}
+.nabd-signature-dialog-wrap{padding:16px;display:grid;gap:14px}
+.nabd-signature-dialog-close{justify-self:end;background:#204b5a;color:white;border:1px solid #7fc5bc;border-radius:12px;min-height:42px;padding:9px 17px;cursor:pointer}
+.nabd-signature-dialog .nabd-signature-stage{height:min(65dvh,670px)}
+.nabd-signature-dialog .nabd-signature-canvas{height:100%}
+.nabd-signature-dialog .nabd-signature-panels{margin:0}
+@media(max-width:900px){
+ .nabd-signature-panels{grid-template-columns:1fr}
+ .nabd-signature-tour{grid-template-columns:1fr}
+ .nabd-signature-stage{min-height:310px}
+}
+@media(max-width:650px){
+ .nabd-visual-card[data-organ="heart"]{display:block;padding:8px}
+ .nabd-visual-card[data-organ="heart"]>.nabd-visual-map-title{margin:10px}
+ .nabd-visual-card[data-organ="heart"]>.nabd-visual-path{padding:0 10px 12px!important}
+ .nabd-signature-lab{margin:8px 0 0;border-radius:15px}
+ .nabd-signature-launch{padding:12px;gap:10px}
+ .nabd-signature-mark{height:51px;min-width:51px;font-size:12px}
+ .nabd-signature-teaser strong{font-size:14px}
+ .nabd-signature-teaser small{font-size:9px}
+ .nabd-signature-arrow{width:32px;height:32px;font-size:17px}
+ .nabd-signature-body{padding:12px}
+ .nabd-signature-stage{min-height:270px;border-radius:13px}
+ .nabd-signature-canvas{height:clamp(275px,92vw,420px)}
+ .nabd-signature-hud{top:8px;left:8px;right:8px}
+ .nabd-hud-pill,.nabd-hud-led{padding:5px 7px;font-size:8px}
+ .nabd-signature-hint{font-size:9px;padding:5px 8px;bottom:7px}
+ .nabd-signature-controls,.nabd-signature-parts{padding:11px}
+ .nabd-signature-routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .nabd-signature-route{padding:8px 4px;min-height:39px;font-size:10px}
+ .nabd-signature-toolbar button{font-size:10px;min-height:42px;padding:7px}
+ .nabd-signature-disclaimer{font-size:10px}
+ .nabd-signature-dialog-wrap{padding:8px}
+ .nabd-signature-dialog{width:99vw;height:96dvh;border-radius:10px}
+ .nabd-signature-dialog .nabd-signature-stage{height:50dvh}
+}
+@media(prefers-reduced-motion:reduce){
+ .nabd-signature-launch,.nabd-signature-canvas{transition:none!important;scroll-behavior:auto}
+}
