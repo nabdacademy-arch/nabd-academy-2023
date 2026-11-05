@@ -37,6 +37,7 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  await page.locator('.nabd-lightbox-tools button').nth(1).click();
  assert.equal(await page.locator('.nabd-lightbox-scale').textContent(),'125%');
  await page.keyboard.press('Escape');
+ await page.locator('dialog.nabd-anatomy-lightbox').waitFor({state:'detached'});
  assert.equal(await page.locator('dialog.nabd-anatomy-lightbox').count(),0);
  await page.locator('.nabd-heart-summary').click();
  assert.equal(await page.locator('.nabd-heart-simulation[open]').count(),1);
