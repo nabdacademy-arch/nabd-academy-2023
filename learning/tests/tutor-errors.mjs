@@ -31,7 +31,10 @@ function fetcher(providerStatus=200,providerCode='',keys=[]){return async(url,op
 for(const [status,providerCode,expectedStatus,expectedCode] of [
  [401,'invalid_api_key',502,'PROVIDER_KEY_INVALID'],[403,'permission_denied',502,'PROVIDER_PERMISSION_DENIED'],
  [429,'insufficient_quota',503,'PROVIDER_QUOTA_EXHAUSTED'],[429,'rate_limit_exceeded',429,'PROVIDER_RATE_LIMIT'],
- [404,'model_not_found',502,'PROVIDER_MODEL_UNAVAILABLE'],[400,'bad_request',502,'PROVIDER_REQUEST_REJECTED'],[500,'unknown',502,'PROVIDER_UNAVAILABLE']
+ [404,'model_not_found',502,'PROVIDER_MODEL_UNAVAILABLE'],[400,'bad_request',502,'PROVIDER_REQUEST_REJECTED'],[500,'unknown',502,'PROVIDER_UPSTREAM_ERROR'],[503,'server_is_overloaded',502,'PROVIDER_UPSTREAM_ERROR'],
+ [429,'credit_balance_exhausted',503,'PROVIDER_QUOTA_EXHAUSTED'],
+ [429,'project_spend_limit_exceeded',503,'PROVIDER_QUOTA_EXHAUSTED'],
+ [422,'unprocessable_entity',502,'PROVIDER_REQUEST_REJECTED']
 ]){const response=await handleTutor(request(),env,fetcher(status,providerCode));assert.equal(response.status,expectedStatus);const body=await response.json();assert.equal(body.code,expectedCode);assert(!JSON.stringify(body).includes('sk-private-example'))}
 const keys=[];const modern=name=>name==='SUPABASE_PUBLISHABLE_KEYS'?JSON.stringify({default:'sb_publishable_new'}):env(name);
 assert.equal((await handleTutor(request(),modern,fetcher(200,'',keys))).status,200);assert.deepEqual(keys,['sb_publishable_new','sb_publishable_new']);
