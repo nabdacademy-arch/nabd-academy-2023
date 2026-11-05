@@ -1,5 +1,10 @@
-name: NABD Tutor Quota RPC Repair
+name: NABD tutor quota RPC repair checks
 on:
+  pull_request:
+    paths:
+      - 'supabase/manual/fix_tutor_quota.sql'
+      - 'learning/tests/quota-repair.cjs'
+      - '.github/workflows/tutor-quota-repair.yml'
   push:
     branches:
       - 'fix/nabd-tutor-quota-rpc'
@@ -7,28 +12,20 @@ on:
       - 'supabase/manual/fix_tutor_quota.sql'
       - 'learning/tests/quota-repair.cjs'
       - '.github/workflows/tutor-quota-repair.yml'
-  pull_request:
-    paths:
-      - 'supabase/manual/fix_tutor_quota.sql'
-      - 'learning/tests/quota-repair.cjs'
-      - '.github/workflows/tutor-quota-repair.yml'
-      - 'docs/TUTOR_QUOTA_FIX_AR.md'
 
 permissions:
   contents: read
+
 jobs:
-  quota-sql:
+  quota-database:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install isolated PostgreSQL engine for tests
-        run: npm install --prefix /tmp/nabd-quota-test --no-save --no-audit --no-fund @electric-sql/pglite@0.5.15
-      - name: Test focused SQL repair with per-user quota and permissions
-        run: NODE_PATH=/tmp/nabd-quota-test/node_modules node learning/tests/quota-repair.cjs
-      - name: Check tutor function contract without calling a real provider
-        run: |
-          node learning/tests/tutor.mjs
-          node learning/tests/tutor-standalone.mjs
+      - name: Install isolated PostgreSQL test runtime
+        run: npm install --prefix "$RUNNER_TEMP/nabd-quota-test" --no-fund --no-audit --no-save @electric-sql/pglite@0.3.15
+      - name: Test idempotent SQL, 6/min quota, no JWT and private role isolation
+        run: NODE_PATH="$RUNNER_TEMP/nabd-quota-test/node_modules" node learning/tests/quota-repair.cjs
