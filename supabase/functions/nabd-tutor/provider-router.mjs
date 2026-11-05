@@ -2,8 +2,8 @@
 // Groq hosts an open-weight 120B model; Gemini provides educational image support.
 // Keys are read ONLY from Edge Function Secrets, never from browser content.
 const GROQ_ENDPOINT="https://api.groq.com/openai/v1/chat/completions";
-const GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-const MODELS={groq:"openai/gpt-oss-120b",gemini:"gemini-2.5-flash"};
+const GEMINI_ENDPOINT="https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent";
+const MODELS={groq:"openai/gpt-oss-120b",gemini:"gemini-3.8-flash"};
 const BILLING_CODES=new Set([
  "insufficient_quota","billing_hard_limit_reached","billing_not_active",
  "usage_limit_reached","credit_balance_exhausted","project_spend_limit_exceeded",
@@ -41,7 +41,7 @@ function makeCall(route,{question,image,system,signal}){
   const body={
    model:MODELS.groq,
    messages:[{role:"system",content:system},{role:"user",content:question}],
-   reasoning_effort:"medium",reasoning_format:"hidden",
+   reasoning_effort:"medium",include_reasoning:false,
    max_completion_tokens:2400,temperature:0.4,stream:false
   };
   return {
@@ -59,7 +59,7 @@ function makeCall(route,{question,image,system,signal}){
  const body={
   systemInstruction:{parts:[{text:system}]},
   contents:[{role:"user",parts}],
-  generationConfig:{maxOutputTokens:2200,temperature:0.35,thinkingConfig:{thinkingBudget:512}}
+  generationConfig:{maxOutputTokens:2200,temperature:0.35}
  };
  return {
   url:GEMINI_ENDPOINT,
