@@ -165,7 +165,7 @@ export function createHeartStudio(language="ar"){
  }
  function onClick(event){
   const btn=event.target.closest?.("[data-atlas-action]");
-  if(!btn||!area.contains(btn))return;
+  if(!btn||!(area.contains(btn)||fullWrap.contains(btn)))return;
   const action=btn.dataset.atlasAction;
   if(!engine)return;
   if(action==="play")engine.play(!engine.state.playing);
@@ -189,6 +189,7 @@ export function createHeartStudio(language="ar"){
  const dialogClose=control("✕ "+t.close,"close-dialog","nabd-signature-dialog-close");
  fullWrap.append(dialogClose);
  fullDialog.append(fullWrap);
+ fullWrap.addEventListener("click",onClick);
  dialogClose.addEventListener("click",()=>fullDialog.close());
  fullDialog.addEventListener("click",event=>{if(event.target===fullDialog)fullDialog.close();});
  function openFullScreen(){
