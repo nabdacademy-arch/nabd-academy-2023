@@ -157,11 +157,7 @@ export function createVisualCompanion(question,language="ar"){
  function render(items){
   // Dispose old GPU contexts when a student switches between organ cards.
   layout.querySelectorAll(".nabd-signature-lab").forEach(element=>element.nabdDispose?.());
-  try{layout.replaceChildren(...items.map(makeCard));}
-  catch(error){
-   layout.dataset.atlasError=String(error?.stack||error);
-   console.warn("[NABD] organ studio rendering issue",error);
-  }
+  layout.replaceChildren(...items.map(makeCard));
  }
  render(chosen);
  if(!chosen.length)section.append(node("p","nabd-visual-empty",ar?"لا توجد صورة تلقائية لهذا السؤال؛ يمكنك اختيار عضو من المكتبة أدناه.":"No automatic image for this question. Choose an organ from the atlas below."));

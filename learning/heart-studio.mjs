@@ -139,9 +139,9 @@ export function createHeartStudio(language="ar"){
   for(const b of partButtons.children)b.setAttribute("aria-pressed",String(b.dataset.atlasAction==="focus-"+s.focus));
  }
  function showStep(){
-  const [name,desc,route,part]=t.steps[step];
+  const [stepTitle,desc,route,part]=t.steps[step];
   count.textContent=t.step+" "+(step+1)+" "+t.of+" "+t.steps.length;
-  name.textContent=name;expl.textContent=desc;
+  name.textContent=stepTitle;expl.textContent=desc;
   back.disabled=step===0;
   next.textContent=step===t.steps.length-1?(ar?"ابدأ من جديد ↺":"Restart ↺"):t.next+" →";
   if(engine){engine.setRoute(route);engine.setFocus(part);sync();}
