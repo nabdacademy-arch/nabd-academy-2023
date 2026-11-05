@@ -5,6 +5,7 @@ on:
     branches:
       - "feat/nabd-tutor-anatomy-visuals"
       - "feat/nabd-atlas-signature-3d-final"
+      - "feat/nabd-knowledge-atlas-premium"
     paths:
       - "learning/**"
       - ".github/workflows/learning-medical-visuals.yml"
@@ -33,10 +34,13 @@ jobs:
           node --check learning/heart-simulator.mjs
           node --check learning/heart-studio.mjs
           node --check learning/heart-webgl.mjs
+          node --check learning/knowledge-data.mjs
+          node --check learning/knowledge-atlas.mjs
           node --check learning/tutor-format.mjs
           node --check learning/sw.js
           node learning/tests/medical-visuals.mjs
           node learning/tests/heart3d.mjs
+          node learning/tests/knowledge-graph.mjs
       - name: Install browser test package (use runner preinstalled Chrome)
         run: |
           test -x /usr/bin/google-chrome || test -x /usr/bin/chromium
