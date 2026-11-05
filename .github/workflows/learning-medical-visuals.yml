@@ -1,0 +1,42 @@
+name: NABD Tutor visual learning companion
+
+on:
+  push:
+    branches:
+      - "feat/nabd-tutor-anatomy-visuals"
+    paths:
+      - "learning/**"
+      - ".github/workflows/learning-medical-visuals.yml"
+  pull_request:
+    paths:
+      - "learning/**"
+      - ".github/workflows/learning-medical-visuals.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  visual-companion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check syntax, license source catalog and safe rendering
+        run: |
+          node --check learning/app.mjs
+          node --check learning/medical-visuals.mjs
+          node --check learning/tutor-format.mjs
+          node --check learning/sw.js
+          node learning/tests/medical-visuals.mjs
+      - name: Install Chromium and browser test dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+      - name: Browser interactions and offline regression
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/nabd-http.log 2>&1 &
+          node learning/tests/browser.cjs
