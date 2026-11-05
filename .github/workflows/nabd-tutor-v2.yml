@@ -1,0 +1,44 @@
+name: NABD AI Tutor v2 diagnostics
+on:
+  push:
+    branches:
+      - 'feat/nabd-tutor-v2-provider-diagnostics'
+    paths:
+      - 'supabase/manual/nabd-tutor.ts'
+      - 'supabase/functions/nabd-tutor/handler.mjs'
+      - 'learning/core.mjs'
+      - 'learning/tests/tutor-errors.mjs'
+      - 'learning/tests/tutor-v2.mjs'
+      - '.github/workflows/nabd-tutor-v2.yml'
+  pull_request:
+    paths:
+      - 'supabase/manual/nabd-tutor.ts'
+      - 'supabase/functions/nabd-tutor/handler.mjs'
+      - 'learning/core.mjs'
+      - 'learning/tests/tutor-errors.mjs'
+      - 'learning/tests/tutor-v2.mjs'
+      - '.github/workflows/nabd-tutor-v2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  tutor-security-and-provider-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check supabase/functions/nabd-tutor/handler.mjs
+          node --check learning/core.mjs
+          node --check learning/tests/tutor-v2.mjs
+      - name: Authentication, secure provider diagnostics and standalone parity
+        run: |
+          node learning/tests/tutor.mjs
+          node learning/tests/tutor-errors.mjs
+          node learning/tests/tutor-standalone.mjs
+          node learning/tests/tutor-v2.mjs
