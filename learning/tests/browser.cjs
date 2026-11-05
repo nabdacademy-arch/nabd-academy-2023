@@ -9,7 +9,7 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  page.on('pageerror',e=>errors.push(e.message));await page.route('https://**/*',r=>r.abort());
  await page.goto('http://127.0.0.1:8000/learning/');await page.locator('.hero-panel').waitFor();
  await page.waitForTimeout(200);
- const routes=['universe','learn','tutor','library','graph','rounds','scholarships','community','offline','account'];
+ const routes=['universe','learn','tutor','atlas','library','graph','rounds','scholarships','community','offline','account'];
  for(const language of ['ar','en']){
   if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#language').click();
   for(const width of [320,390,768,1440]){
@@ -72,6 +72,14 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  await page.locator('[data-organ-choice="eye"]').click();
  assert.equal(await page.locator('#tutor-result [data-organ="eye"]').count(),1);
  assert((await page.locator('#tutor-result .nabd-visual-card figcaption').textContent()).includes('Wikimedia Commons'));assert.equal(await page.locator('#tutor-result .nabd-visual-path li').count(),4);await page.locator('#tutor-form button[value=ai]').click();assert((await page.locator('#tutor-result').textContent()).includes('اربط حسابك'));
+ await page.goto('http://127.0.0.1:8000/learning/#atlas');
+ await page.locator('#nabd-standalone-atlas .nabd-signature-lab[open]').waitFor();
+ await page.locator('#nabd-standalone-atlas .nabd-signature-stage[data-renderer="webgl"]').waitFor({timeout:12000});
+ assert.equal(await page.locator('#nabd-standalone-atlas [data-organ="heart"]').count(),1);
+ assert.equal(await page.locator('#nabd-standalone-atlas .nabd-organ-choice').count(),19);
+ await page.locator('#nabd-standalone-atlas .nabd-organ-browser summary').click();
+ await page.locator('#nabd-standalone-atlas [data-organ-choice="brain"]').click();
+ assert.equal(await page.locator('#nabd-standalone-atlas [data-organ="brain"]').count(),1);
  await page.goto('http://127.0.0.1:8000/learning/#rounds');await page.locator('[data-discussion]').click();await page.locator('[data-discussion]').click();assert((await page.locator('.discussion h2').textContent()).includes('المراجع'));
  await page.goto('http://127.0.0.1:8000/learning/#scholarships');assert.equal(await page.locator('.scholarship-card').count(),5);await page.locator('[data-checklist=cv]').check();
  await page.goto('http://127.0.0.1:8000/learning/#offline');

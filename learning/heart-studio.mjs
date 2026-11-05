@@ -218,7 +218,8 @@ export function createHeartStudio(language="ar"){
   window.removeEventListener("hashchange",onHash);
   window.removeEventListener("pagehide",unmount);
  }
- function onHash(){if(!location.hash.startsWith("#tutor"))unmount();}
+ const originRoute=location.hash.split("/")[0];
+ function onHash(){if(location.hash.split("/")[0]!==originRoute)unmount();}
  window.addEventListener("hashchange",onHash);
  window.addEventListener("pagehide",unmount,{once:true});
  outer.nabdDispose=unmount;
