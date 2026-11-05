@@ -1,0 +1,29 @@
+
+/* Educational media accompanying tutor answers, RTL/LTR responsive and accessible. */
+.nabd-tutor-answer{line-height:1.95;overflow-wrap:anywhere;font-size:clamp(13px,1.4vw,15px);color:#ddebf1}
+.nabd-tutor-answer h3,.nabd-tutor-answer h4{margin:21px 0 8px;color:#d0fff3;line-height:1.5;font-weight:800}
+.nabd-tutor-answer h3{font-size:19px}.nabd-tutor-answer h4{font-size:16px}
+.nabd-tutor-answer p{margin:6px 0 13px;white-space:pre-wrap}
+.nabd-tutor-answer ul,.nabd-tutor-answer ol{padding-inline-start:21px;margin:7px 0 17px}
+.nabd-tutor-answer li{padding-inline-start:5px;margin:7px 0}
+.nabd-tutor-answer strong{color:#baf8e6}
+.nabd-visual-companion{margin:23px 0 9px;padding:20px;border:1px solid #376a73;border-radius:20px;background:linear-gradient(150deg,rgba(26,73,82,.78),rgba(7,30,46,.94))}
+.nabd-visual-title{margin:0 0 5px;color:#c0fff0;font-size:19px}
+.nabd-visual-intro,.nabd-visual-foot{font-size:12px;color:#aecbd3;line-height:1.8}
+.nabd-visual-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:15px;margin-top:14px}
+.nabd-visual-card{min-width:0;background:#092839;border:1px solid #355f6e;border-radius:15px;overflow:hidden}
+.nabd-visual-figure{margin:0}
+.nabd-visual-figure>a{display:flex;align-items:center;justify-content:center;min-height:235px;background:#f4f8f9;overflow:hidden;color:#123b4e;text-decoration:none}
+.nabd-visual-figure img{display:block;width:100%;max-width:390px;max-height:300px;height:245px;object-fit:contain;padding:10px}
+.nabd-visual-unavailable{display:block;padding:24px;text-align:center;font-size:13px}
+.nabd-visual-caption{display:grid;gap:5px;padding:13px 15px;border-top:1px solid #355c68}
+.nabd-visual-caption strong{color:#d5fbf1;font-size:14px}
+.nabd-visual-caption span{color:#a5c4cd;font-size:11px;line-height:1.6}
+.nabd-visual-caption .nabd-visual-open{color:#7defd0;font-size:12px}
+.nabd-visual-map-title{font-size:13px;font-weight:800;color:#b6fbe8;margin:12px 15px 7px}
+.nabd-visual-path{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0 13px 14px!important;margin:0!important}
+.nabd-visual-path li{font-size:11px;background:#144c55;color:#e4f9f9;border:1px solid #427782;border-radius:10px;padding:8px 10px!important;line-height:1.55;position:relative}
+.nabd-visual-path li:not(:last-child)::after{content:"›";margin-inline-start:9px;color:#7bf6d4;font-weight:900}
+.nabd-visual-foot{margin:12px 0 0}
+@media(max-width:540px){.nabd-visual-companion{padding:12px;border-radius:13px}.nabd-visual-grid{grid-template-columns:minmax(0,1fr)}.nabd-visual-figure img{height:225px}.nabd-visual-title{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.nabd-visual-card *{scroll-behavior:auto}}
