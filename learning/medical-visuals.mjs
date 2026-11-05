@@ -4,6 +4,8 @@
  * No patient photographs, user-controlled URLs, provider-generated image links, or external code.
  * Media download requires Internet. Only the trusted filename is used for the image URL.
  */
+import {openAnatomyLightbox} from "./anatomy-lightbox.mjs";
+import {createHeartSimulation} from "./heart-simulator.mjs";
 const COMMONS="https://commons.wikimedia.org/wiki/";
 const ITEMS=[
  {
@@ -109,41 +111,74 @@ function node(tag,cls,text){
  if(text!==undefined)el.textContent=text;
  return el;
 }
+const SYMBOLS={
+ heart:"🫀",lung:"🫁",brain:"🧠",kidney:"💧",digestive:"◎",liver:"◈",pancreas:"◇",
+ stomach:"♧",intestine:"〰",gallbladder:"◉",skeleton:"🦴",muscles:"◆",
+ eye:"👁",ear:"◖",skin:"▤",thyroid:"✦",urinary:"♢",reproductive:"✿",body:"♧"
+};
 export function createVisualCompanion(question,language="ar"){
  const chosen=pickVisualTopics(question);
- if(!chosen.length)return null;
  const ar=language!=="en",key=ar?"ar":"en";
  const section=node("section","nabd-visual-companion");
- section.setAttribute("aria-label",ar?"صور ومخططات تعليمية":"Educational images and diagrams");
- const title=node("h3","nabd-visual-title",ar?"شاهد العضو وافهم الفكرة":"See the organ, understand the concept");
- const intro=node("p","nabd-visual-intro",ar?"رسوم تعليمية مرتبطة بموضوع سؤالك. الصور من Wikimedia Commons وقد تتطلب اتصالًا بالإنترنت.":"Educational illustrations matched to your question. Wikimedia Commons images require Internet.");
+ section.setAttribute("aria-label",ar?"أطلس الأعضاء والرسوم التفاعلية":"Interactive organ atlas");
+ const title=node("h3","nabd-visual-title",ar?"أطلس نبض التفاعلي • شاهد وجرّب":"NABD Visual Atlas • Explore and learn");
+ const intro=node("p","nabd-visual-intro",ar?"اضغط أي صورة لتكبيرها حتى 400%، واستكشف الأعضاء والمسارات الطبية. الصور موثقة من Wikimedia Commons.":"Tap an image to enlarge up to 400%; explore organs and their pathways. Illustrations are sourced from Wikimedia Commons.");
  section.append(title,intro);
  const layout=node("div","nabd-visual-grid");
- for(const item of chosen){
+ function makeCard(item){
   const card=node("article","nabd-visual-card");
+  card.dataset.organ=item.id;
   const figure=node("figure","nabd-visual-figure");
-  const anchor=document.createElement("a");
-  anchor.href=commonsSource(item.file);anchor.target="_blank";anchor.rel="noopener noreferrer";
+  const preview=node("button","nabd-visual-zoom");
+  preview.type="button";
+  preview.setAttribute("aria-label",(ar?"كبّر صورة ":"Enlarge image: ")+item[key]);
   const img=document.createElement("img");
   img.src=commonsImage(item.file);img.alt=item.alt[key];img.loading="lazy";img.decoding="async";img.referrerPolicy="no-referrer";
   img.width=500;img.height=410;
-  const fallback=node("span","nabd-visual-unavailable",ar?"تعذّر تحميل الصورة، افتحها في المصدر الأصلي.":"Image unavailable. Open the original source.");
+  const prompt=node("span","nabd-visual-zoom-hint",ar?"اضغط للتكبير ↗":"Tap to zoom ↗");
+  const fallback=node("span","nabd-visual-unavailable",ar?"الصورة غير متاحة، افتح المصدر الأصلي أدناه.":"Image not available; open the source below.");
   fallback.hidden=true;
   img.addEventListener("error",()=>{img.hidden=true;fallback.hidden=false;});
-  anchor.append(img,fallback);
+  preview.append(img,fallback,prompt);
+  preview.addEventListener("click",()=>openAnatomyLightbox(item,language,preview));
   const caption=node("figcaption","nabd-visual-caption");
   caption.append(node("strong","",item[key]));
   caption.append(node("span","",item.author+" · "+item.license+" · Wikimedia Commons"));
-  const open=node("span","nabd-visual-open",ar?"افتح الصورة والمصدر ↗":"View image and attribution ↗");
-  caption.append(open);figure.append(anchor,caption);card.append(figure);
-  const mapTitle=node("h4","nabd-visual-map-title",ar?"خريطة مبسطة للمسار":"Simplified pathway map");
-  const ol=node("ol","nabd-visual-path");
-  for(const label of item.path[key])ol.append(node("li","",label));
-  card.append(mapTitle,ol);
-  layout.append(card);
+  const source=node("a","nabd-visual-open",ar?"عرض المصدر والترخيص ↗":"View source and license ↗");
+  source.href=commonsSource(item.file);source.target="_blank";source.rel="noopener noreferrer";
+  caption.append(source);figure.append(preview,caption);card.append(figure);
+  const mapTitle=node("h4","nabd-visual-map-title",ar?"المسار الوظيفي المبسّط":"Simplified functional pathway");
+  const path=node("ol","nabd-visual-path");
+  for(const text of item.path[key])path.append(node("li","",text));
+  card.append(mapTitle,path);
+  if(item.id==="heart")card.append(createHeartSimulation(language));
+  return card;
  }
+ function render(items){
+  layout.replaceChildren(...items.map(makeCard));
+ }
+ render(chosen);
+ if(!chosen.length)section.append(node("p","nabd-visual-empty",ar?"لا توجد صورة تلقائية لهذا السؤال؛ يمكنك اختيار عضو من المكتبة أدناه.":"No automatic image for this question. Choose an organ from the atlas below."));
  section.append(layout);
- const foot=node("p","nabd-visual-foot",ar?"هذه المخططات مبسطة للتعلم وليست أداة تشخيص. يُرجى الرجوع للمراجع الطبية عند التحقق من التفاصيل.":"These simplified teaching diagrams are not diagnostic tools. Verify details against medical references.");
+ const browse=node("details","nabd-organ-browser");
+ const summary=node("summary","",ar?"📚 استكشف مكتبة "+ITEMS.length+" عضوًا وجهازًا":"📚 Browse "+ITEMS.length+" organs and systems");
+ browse.append(summary);
+ const chips=node("div","nabd-organ-picker");
+ const buttons=[];
+ for(const item of ITEMS){
+  const button=node("button","nabd-organ-choice",(SYMBOLS[item.id]||"◇")+" "+item[key]);
+  button.type="button";button.dataset.organChoice=item.id;button.setAttribute("aria-pressed",String(chosen.some(c=>c.id===item.id)));
+  button.addEventListener("click",()=>{
+   render([item]);
+   for(const b of buttons)b.setAttribute("aria-pressed",String(b===button));
+   browse.open=false;
+   layout.scrollIntoView?.({behavior:"smooth",block:"nearest"});
+  });
+  buttons.push(button);chips.append(button);
+ }
+ browse.append(chips);
+ section.append(browse);
+ const foot=node("p","nabd-visual-foot",ar?"رسم القلب المتحرك محاكاة مجسّمة المظهر (2.5D)، وليس تصويرًا حيًا أو نموذجًا ثلاثي الأبعاد دقيقًا. بقية الصور رسومات ثابتة قابلة للتكبير؛ لا تُستخدم للتشخيص.":"The moving heart is a 2.5D-style schematic, not live imaging or a precise 3D anatomy model. Other illustrations are zoomable static references, not diagnostic tools.");
  section.append(foot);
  return section;
 }
