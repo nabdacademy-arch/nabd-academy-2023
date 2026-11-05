@@ -31,10 +31,9 @@ jobs:
           node --check learning/tutor-format.mjs
           node --check learning/sw.js
           node learning/tests/medical-visuals.mjs
-      - name: Install Chromium and browser test dependencies
+      - name: Install browser test package (use runner preinstalled Chrome)
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y chromium
+          test -x /usr/bin/google-chrome || test -x /usr/bin/chromium
           npm install --no-save --no-audit --no-fund playwright@1.56.1
       - name: Browser interactions and offline regression
         run: |

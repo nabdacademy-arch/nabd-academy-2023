@@ -1,7 +1,9 @@
 // Run with a local HTTP server on port 8000 and Playwright installed.
 const {chromium}=require('playwright');const assert=require('node:assert/strict');
+const {existsSync}=require('node:fs');
+const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSync('/usr/bin/google-chrome')?'/usr/bin/google-chrome':'/usr/bin/chromium';
 (async()=>{
- const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ const browser=await chromium.launch({executablePath:chromiumPath,args:['--no-sandbox']});
  try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true});const page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));await page.route('https://**/*',r=>r.abort());
