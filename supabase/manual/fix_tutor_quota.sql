@@ -85,6 +85,10 @@ revoke all on function public.nabd_learning_take_tutor_slot()
 grant execute on function public.nabd_learning_take_tutor_slot()
   to authenticated;
 
+-- New or repaired RPC signatures can remain invisible until PostgREST reloads its cache.
+-- PostgreSQL sends this notification only when the transaction commits successfully.
+notify pgrst, 'reload schema';
+
 commit;
 
 -- Non-consuming diagnostic (run separately after the transaction):
