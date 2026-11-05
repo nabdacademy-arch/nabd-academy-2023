@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050b18">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="معاينة التصميم المستقبلي لأكاديمية نبض للعلوم الطبية. مؤسسة تعليم طبي فلسطينية أسسها محمد خالد العرجا، تضم مسارات تعليمية ومنصات تفاعلية.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="أكاديمية نبض للعلوم الطبية — معاينة تصميم">
+<meta property="og:image" content="assets/images/hero-medical.jpg">
+<title>أكاديمية نبض للعلوم الطبية | معاينة تصميم</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#050a16;--bg2:#0a1227;--ink:#f6f8ff;--quiet:#a4b5cb;--electric:#30cbff;
+  --violet:#9a7bff;--mint:#59e8d4;--gold:#eec985;--line:rgba(201,217,250,.17);
+  --panel:rgba(15,25,51,.82);--light:#f6f8ff;--dark-ink:#162136;
+  --w:1250px;--edge:clamp(18px,4vw,64px);
+  font-family: "IBM Plex Sans Arabic", Inter, "Segoe UI", Tahoma, Arial, sans-serif
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:105px}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.72;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body,button,input{font-family:"IBM Plex Sans Arabic", Inter, "Segoe UI", Tahoma, Arial, sans-serif}
+a{color:inherit;text-decoration:none}button{cursor:pointer}img,svg{display:block;max-width:100%}
+:focus-visible{outline:3px solid var(--gold);outline-offset:5px}
+::selection{background:#386ff2;color:white}
+.shell{width:min(var(--w),calc(100% - var(--edge)*2));margin-inline:auto}
+.skip{position:fixed;top:-100px;inset-inline-start:15px;z-index:300;background:#fff;color:#13233d;padding:12px 18px;border-radius:12px}.skip:focus{top:12px}
+.preview-line{position:relative;z-index:52;background:#eac985;color:#182138;font-size:11px;font-weight:800}
+.preview-line .shell{display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:34px;padding-block:6px}
+.preview-line a{text-decoration:underline;text-underline-offset:3px}
+.head{position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(204,221,255,.1);background:rgba(4,11,24,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.head-inner{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+.brand{display:flex;gap:13px;align-items:center;min-width:0;flex-shrink:0}
+.brand-symbol{height:51px;width:51px;display:grid;place-items:center;flex:none;background:linear-gradient(130deg,#123968,#10234b 55%,#052f36);border:1px solid rgba(99,230,236,.32);border-radius:15px;box-shadow:inset 0 0 14px rgba(70,194,224,.12),0 10px 34px rgba(0,7,22,.4)}
+.brand-symbol svg{width:28px;height:28px}
+.brand strong{font-size:15px;line-height:1.25;display:block;letter-spacing:0;color:#fff}
+.brand small{font-size:9px;line-height:1.5;font-weight:700;display:block;color:#aabed3;margin-top:4px;letter-spacing:.105em;direction:ltr;text-align:start}
+.desktop-nav{display:flex;align-items:center;gap:clamp(15px,2vw,32px)}
+.desktop-nav a{font-size:12px;font-weight:850;color:#b4c8dc;transition:color .2s;white-space:nowrap}
+.desktop-nav a:hover{color:#fff}
+.nav-tools{display:flex;align-items:center;gap:10px}
+.locale,.nav-mobile{min-width:46px;height:44px;background:transparent;border:1px solid rgba(198,222,252,.25);border-radius:12px;color:#ebf9ff;font-weight:900;font-size:12px}
+.nav-mobile{display:none;font-size:22px;line-height:1}
+.sign-in{min-height:44px;border:1px solid rgba(98,235,234,.42);background:rgba(34,157,179,.1);color:#a9fff1;border-radius:12px;padding:10px 18px;font-size:12px;font-weight:850;white-space:nowrap;display:inline-flex;align-items:center}
+.sign-in:hover{background:rgba(41,201,215,.18)}
+.section-no{font-family:Inter,"Segoe UI",sans-serif;font-size:12px;font-weight:850;letter-spacing:.2em;color:var(--gold)}
+.eyebrow{font-family:Inter,"Segoe UI",Tahoma,sans-serif;color:#82dbf2;letter-spacing:.2em;font-size:10px;font-weight:850;text-transform:uppercase}
+.eyebrow:before{content:"";width:24px;height:1px;display:inline-block;vertical-align:middle;background:#5edfd5;margin-inline-end:10px}
+.ghost-ruled{border-inline-start:1px solid rgba(161,202,239,.24);padding-inline-start:19px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:13px;padding:14px 23px;min-height:55px;border-radius:11px;font-weight:900;font-size:13px;line-height:1.4;border:1px solid transparent;transition:transform .22s,box-shadow .22s,background .22s}
+.btn:hover{transform:translateY(-3px)}
+.btn.gold{background:linear-gradient(110deg,#dfbb77,#ffe5a8 52%,#d6ab67);color:#162136;box-shadow:0 17px 50px rgba(220,169,79,.13)}
+.btn.glass{background:rgba(235,249,255,.04);border-color:rgba(213,228,255,.32);color:white}
+.btn.dark{background:#13284c;color:white}
+.btn.outline{background:transparent;border:1px solid #b7c7dd;color:#112847}
+.arrow::after{content:"↗";font-size:18px;line-height:1}
+.hero{position:relative;min-height:720px;isolation:isolate;overflow:hidden;border-bottom:1px solid rgba(184,217,248,.16);background:radial-gradient(ellipse 55% 60% at 18% 48%,rgba(69,42,171,.3),transparent 68%),radial-gradient(ellipse 60% 60% at 93% 5%,rgba(0,151,181,.21),transparent 70%),linear-gradient(125deg,#040916,#09132c 52%,#050c19)}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.2;background-image:linear-gradient(rgba(193,211,249,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(193,211,249,.08) 1px,transparent 1px);background-size:76px 76px;mask-image:linear-gradient(to bottom,#000,transparent)}
+.hero:after{content:"NABD";position:absolute;inset-inline-end:-.12em;bottom:-.2em;font:900 clamp(120px,25vw,390px)/1 Inter,Arial,sans-serif;letter-spacing:-.1em;color:rgba(184,202,247,.025);pointer-events:none;z-index:0}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(16px,3vw,54px);align-items:center;min-height:730px;padding-block:82px 108px;position:relative;z-index:2}
+.hero-copy{position:relative;z-index:3}
+.hero-ref{display:flex;gap:15px;align-items:center;margin-bottom:26px}
+.hero-ref .dash{height:1px;background:rgba(170,213,251,.3);flex:0 1 53px}
+.hero-ref strong{font-size:11px;color:#e7c780;letter-spacing:.025em}
+.hero h1{font-size:clamp(45px,5.6vw,84px);line-height:1.22;letter-spacing:-.07em;font-weight:950;margin:0 0 26px;max-width:775px}
+.hero h1 .hero-gold{background:linear-gradient(110deg,#fbebc0,#e5b96d 60%,#ffe7b0);color:transparent;background-clip:text;-webkit-background-clip:text}
+.hero h1 .hero-blue{color:#8cddfa}
+.hero-lead{color:#bdcfe5;max-width:565px;font-size:clamp(15px,1.4vw,18px);line-height:2;margin:0 0 33px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-trust{display:flex;gap:23px;flex-wrap:wrap;margin-top:34px}
+.hero-trust span{font-size:11px;color:#adc5de;display:flex;align-items:center;gap:9px}
+.hero-trust span:before{content:"";width:6px;height:6px;transform:rotate(45deg);background:#6cdacf}
+.hero-visual{position:relative;min-height:535px;perspective:1000px;isolation:isolate}
+.hero-aura{position:absolute;inset:8%;z-index:-1;border-radius:50%;background:conic-gradient(from 20deg,transparent,#0acbd9,transparent,#684de7,transparent);opacity:.22;filter:blur(80px);transform:rotate(-25deg)}
+.hero-photo{position:absolute;inset:5% 8% 5% 7%;overflow:hidden;border-radius:45% 45% 31% 32% / 35% 40% 25% 30%;border:1px solid rgba(110,207,234,.36);background:linear-gradient(120deg,#133e60,#0b183a);box-shadow:0 55px 115px rgba(0,1,15,.5),inset 0 0 35px rgba(44,223,233,.1);transform:rotate(5deg)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.85) contrast(1.09)}
+.hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,10,26,.85) 0,transparent 57%),linear-gradient(110deg,rgba(15,31,68,.55),transparent 68%)}
+.orbit-art{position:absolute;inset:-8%;width:116%;height:116%;pointer-events:none;filter:drop-shadow(0 0 12px rgba(52,210,255,.19));overflow:visible}
+.orbit-art .orbit-a{transform-origin:50% 50%;animation:orbit 45s linear infinite}
+.orbit-art .orbit-b{transform-origin:50% 50%;animation:orbit 55s linear infinite reverse}
+.hero-visual-label{position:absolute;top:9%;inset-inline-start:-6%;z-index:4;display:flex;align-items:center;gap:10px;padding:13px 18px;border:1px solid rgba(148,213,245,.29);border-radius:14px;background:rgba(6,19,43,.7);backdrop-filter:blur(14px)}
+.hero-visual-label b{font-size:18px;color:#e9c986;font-family:Inter,Arial,sans-serif}
+.hero-visual-label small{color:#bfd5e8;font-size:10px;letter-spacing:.08em}
+.visual-index{position:absolute;inset-inline-end:4%;bottom:17%;padding:10px 18px;background:rgba(7,22,44,.73);border-inline-start:2px solid #e1be7b;color:#e9c985;font-family:Inter,Arial,sans-serif;font-size:11px;letter-spacing:.14em;z-index:3}
+.hero-founder{position:absolute;inset-inline-start:-6%;bottom:-3%;display:flex;gap:14px;align-items:center;max-width:325px;z-index:5;border:1px solid rgba(235,204,135,.48);border-radius:17px;background:linear-gradient(135deg,rgba(24,35,61,.96),rgba(7,24,41,.98));box-shadow:0 30px 70px rgba(0,5,21,.6);padding:9px 16px 9px 9px}
+.hero-founder img{height:79px;width:71px;object-fit:contain;background:radial-gradient(circle at 50% 25%,#d9e8ea,#6d96a7);border-radius:11px}
+.hero-founder strong{display:block;font-size:14px;color:#fff;line-height:1.4}
+.hero-founder small{display:block;font-size:10px;color:#efd39b;margin-bottom:5px;font-weight:750}
+.hero-founder em{display:block;font-size:10px;color:#a4c9d8;font-style:normal;margin-top:3px}
+.hero-founder:hover{border-color:var(--gold)}
+.hero-scroll{position:absolute;bottom:33px;inset-inline-start:var(--edge);font-size:10px;color:#8196b6;letter-spacing:.18em;display:flex;gap:11px;align-items:center;z-index:2}
+.hero-scroll:before{content:"";width:37px;height:1px;background:#a6b6cd}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.lightband{background:#f6f8ff;color:#152438}
+.band-inner{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #e5e9f0}
+.band-item{display:flex;align-items:center;gap:15px;padding:30px 22px;border-inline-end:1px solid #e1e7ee}
+.band-item:last-child{border:0}
+.band-num{font:850 37px/1 Inter,Arial,sans-serif;letter-spacing:-.06em;color:#006a84}
+.band-copy strong{font-size:14px;display:block;line-height:1.5}
+.band-copy small{font-size:11px;display:block;color:#687b95;margin-top:2px}
+.section{padding:105px 0}
+.sec-top{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:44px}
+.sec-top h2{font-size:clamp(34px,4.4vw,62px);letter-spacing:-.055em;line-height:1.22;font-weight:950;margin:13px 0 15px}
+.sec-top p{color:#a4b5ce;line-height:1.9;font-size:14px;max-width:655px;margin:0}
+.sec-top .section-no{flex-shrink:0;padding-bottom:18px}
+.worlds{position:relative;background:radial-gradient(ellipse at 80% 0%,rgba(61,77,155,.15),transparent 50%),#070e1d}
+.worlds-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px}
+.world{position:relative;border:1px solid rgba(185,218,255,.2);border-radius:22px;background:linear-gradient(145deg,rgba(24,36,72,.81),rgba(7,18,37,.92));overflow:hidden;transition:transform .23s,border-color .23s,box-shadow .23s;min-height:270px;display:flex;flex-direction:column}
+.world:hover{transform:translateY(-5px);border-color:rgba(100,219,239,.65);box-shadow:0 23px 60px rgba(0,0,0,.22)}
+.world.large{grid-column:span 7;min-height:390px;background:radial-gradient(circle at 80% 65%,rgba(84,71,202,.25),transparent 55%),linear-gradient(145deg,#132455,#080e21)}
+.world.tall{grid-column:span 5;min-height:390px;background:radial-gradient(circle at 75% 30%,rgba(10,163,184,.28),transparent 55%),linear-gradient(160deg,#0f3049,#081423)}
+.world.third{grid-column:span 4}
+.world-content{position:relative;z-index:2;padding:34px;max-width:410px;display:flex;flex-direction:column;flex:1;align-items:flex-start}
+.world-number{font-family:Inter,Arial,sans-serif;letter-spacing:.17em;font-size:11px;color:#e2c58d;display:flex;align-items:center;gap:12px}
+.world-number:after{content:"";display:block;width:32px;height:1px;background:rgba(222,203,148,.55)}
+.world h3{font-size:clamp(24px,2.4vw,36px);line-height:1.3;margin:21px 0 11px;letter-spacing:-.03em}
+.world.third h3{font-size:25px}
+.world p{font-size:13px;line-height:1.9;color:#aec4de;margin:0 0 24px}
+.world a{margin-top:auto;font-size:12px;font-weight:900;color:#d9fdf5;display:flex;align-items:center;gap:8px}
+.world a:after{content:"↗";font-size:18px}
+.world svg.art{position:absolute;inset-inline-end:-7%;bottom:-16%;width:56%;height:auto;max-height:380px;opacity:.84;filter:drop-shadow(0 15px 44px rgba(64,184,241,.2))}
+.world.tall svg.art{width:83%;inset-inline-end:-20%;bottom:-23%}
+.world.third .number-bg{position:absolute;inset-inline-end:12px;bottom:-55px;font:900 185px/1 Inter,Arial,sans-serif;color:rgba(123,186,222,.06);letter-spacing:-.09em;pointer-events:none}
+.world-cap{position:absolute;inset-inline-end:18px;top:20px;border:1px solid rgba(160,219,230,.27);border-radius:999px;color:#b7e3ed;padding:5px 10px;font-size:10px}
+.world.light{background:linear-gradient(130deg,rgba(26,49,92,.8),rgba(27,15,67,.75))}
+.programs{background:#f6f8ff;color:#14243e}
+.programs .sec-top p,.founder .sec-top p{color:#61758f}
+.programs .section-no{color:#1b67a0}
+.course-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.course{min-width:0;background:#fff;border-radius:19px;overflow:hidden;border:1px solid #dfe7f1;box-shadow:0 10px 35px rgba(15,52,83,.045);transition:transform .22s,box-shadow .22s}
+.course:hover{transform:translateY(-6px);box-shadow:0 28px 65px rgba(15,52,83,.14)}
+.course-photo{height:195px;position:relative;overflow:hidden;background:#dcecf1}
+.course-photo img{width:100%;height:100%;object-fit:cover;filter:saturate(.9);transition:transform .45s}
+.course:hover img{transform:scale(1.055)}
+.course-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,18,39,.45),transparent 70%)}
+.course-photo span{position:absolute;z-index:1;bottom:12px;inset-inline-start:14px;background:#e5f5fc;color:#064464;border-radius:7px;font-size:10px;font-weight:850;padding:5px 10px}
+.course-body{padding:24px 23px}
+.course-body .eyebrow{color:#127c99;font-size:10px}
+.course-body h3{font-size:20px;line-height:1.35;margin:13px 0 8px}
+.course-body p{font-size:12px;color:#71829b;line-height:1.85;min-height:68px;margin:0 0 19px}
+.course-body a{display:inline-flex;gap:8px;font-size:12px;color:#006c91;font-weight:900}
+.course-body a:after{content:"↗"}
+.atlas{position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 45%,rgba(78,42,184,.24),transparent 46%),radial-gradient(ellipse at 5% 75%,rgba(20,157,197,.19),transparent 58%),linear-gradient(145deg,#080d23,#10122b 52%,#07172d);padding:130px 0 125px}
+.atlas:before{content:"";position:absolute;inset:0;background-image:linear-gradient(90deg,transparent 50%,rgba(144,175,226,.035) 50%);background-size:8px 8px;opacity:.4}
+.atlas-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative}
+.atlas-copy{position:relative;z-index:2}
+.atlas-copy h2{font-size:clamp(42px,5.8vw,76px);line-height:1.16;letter-spacing:-.07em;margin:14px 0 25px;font-weight:950}
+.atlas-copy h2 span{background:linear-gradient(100deg,#9fcaff,#8ef6df,#f6d593);color:transparent;background-clip:text;-webkit-background-clip:text}
+.atlas-copy p{font-size:15px;line-height:2;color:#b8c7e1;max-width:530px;margin-bottom:28px}
+.atlas-marks{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.atlas-marks span{border:1px solid rgba(161,191,241,.22);background:rgba(172,203,244,.05);border-radius:9px;padding:9px 13px;font-size:10px;color:#bad1e9}
+.atlas-stage{min-height:520px;position:relative;display:grid;place-items:center}
+.atlas-glow{position:absolute;width:73%;height:73%;border-radius:50%;background:linear-gradient(150deg,#03cde9,#675eff);filter:blur(100px);opacity:.24}
+.atlas-sphere{width:94%;height:auto;position:relative;filter:drop-shadow(0 32px 56px rgba(30,67,180,.25))}
+.atlas-card{position:absolute;inset-inline-end:-2%;bottom:6%;width:260px;max-width:80%;padding:17px 20px;transform:rotate(4deg);border:1px solid rgba(185,225,255,.27);border-radius:16px;background:rgba(10,22,48,.77);backdrop-filter:blur(15px);box-shadow:0 22px 65px rgba(0,0,0,.26)}
+.atlas-card b{display:block;font-family:Inter,Arial,sans-serif;font-size:11px;letter-spacing:.2em;color:#81e5f1;margin-bottom:9px}
+.atlas-card span{font-size:12px;color:#d4e3fa}
+.global{background:#f9f6ee;color:#17233c;padding:100px 0}
+.global-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:55px;align-items:center}
+.global .section-no{color:#7f5c2d}
+.global h2{font-size:clamp(37px,4.8vw,63px);line-height:1.2;letter-spacing:-.06em;margin:13px 0 20px;font-weight:950}
+.global h2 span{color:#a37334}
+.global p{font-size:14px;line-height:2.1;color:#566982;max-width:590px}
+.global-note{font-size:11px;display:inline-block;border:1px solid #d6b783;background:#fffaee;color:#85632d;padding:8px 14px;border-radius:999px;font-weight:850;margin:0 0 17px}
+.global-link{margin-top:20px}
+.globe-wrap{position:relative;min-height:420px;display:grid;place-items:center}
+.globe-wrap:before{content:"";position:absolute;inset:20%;border-radius:50%;background:#85b7d5;filter:blur(80px);opacity:.23}
+.globe-wrap svg{width:100%;max-width:460px;position:relative}
+.founder{position:relative;overflow:hidden;background:#070f20;padding:118px 0 130px}
+.founder:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 9% 58%,rgba(189,131,77,.14),transparent 36%),radial-gradient(circle at 88% 22%,rgba(59,72,143,.2),transparent 47%)}
+.founder-grid{position:relative;display:grid;grid-template-columns:.88fr 1.12fr;gap:clamp(32px,5vw,90px);align-items:center}
+.founder-portrait{position:relative;min-height:610px;padding:16px;border-radius:170px 170px 27px 27px;border:1px solid rgba(233,194,118,.48);background:linear-gradient(145deg,rgba(234,203,143,.14),rgba(42,34,68,.12));box-shadow:0 32px 120px rgba(0,4,18,.5)}
+.founder-portrait:before{content:"";position:absolute;inset:28px;border-radius:150px 150px 18px 18px;border:1px solid rgba(255,220,167,.16);pointer-events:none;z-index:2}
+.founder-portrait img{width:100%;height:575px;object-fit:contain;object-position:center bottom;border-radius:155px 155px 18px 18px;background:radial-gradient(ellipse at 52% 25%,#7c96a6,#1a3353 58%,#081326 90%)}
+.founder-portrait:after{content:"";position:absolute;inset-inline:26px;bottom:26px;height:24%;background:linear-gradient(0deg,rgba(5,15,31,.6),transparent);border-radius:0 0 18px 18px;pointer-events:none}
+.founder-seal{position:absolute;z-index:4;bottom:14px;inset-inline-start:-25px;border:1px solid rgba(237,206,154,.5);background:#111c35;color:#f4d69f;padding:13px 17px;border-radius:13px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.founder-seal strong{display:block;font-size:12px}.founder-seal small{font-size:10px;color:#bed0dc}
+.founder-copy .eyebrow{color:#eac689}
+.founder-copy h2{font-size:clamp(45px,5.8vw,78px);line-height:1.25;letter-spacing:-.065em;margin:20px 0 12px}
+.founder-title{display:block;color:#e5bc72;font-size:15px;font-weight:900;letter-spacing:.01em;margin-bottom:24px}
+.founder-copy p{max-width:670px;font-size:15px;line-height:2.2;color:#bdccdf;margin:0 0 27px}
+.founder-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(237,204,137,.6),transparent);margin:29px 0}
+.founder-values{display:flex;gap:9px;flex-wrap:wrap}
+.founder-values span{font-size:11px;color:#d8dde9;border:1px solid rgba(214,218,244,.2);padding:9px 13px;border-radius:999px}
+.founder-quote{font-size:13px;font-weight:720;border-inline-start:2px solid #dcb577;padding-inline-start:19px;color:#e6d7bf;margin-top:30px;max-width:500px}
+.gateway{background:linear-gradient(165deg,#101c38,#080d1f);padding:95px 0 106px}
+.gateway-grid{display:grid;grid-template-columns:1.1fr .9fr;align-items:stretch;gap:24px}
+.gateway-cta{border:1px solid rgba(177,211,246,.2);border-radius:25px;padding:40px;position:relative;overflow:hidden;background:radial-gradient(circle at 100% 0%,rgba(55,191,226,.15),transparent 55%),#0a1c38}
+.gateway-cta h2{font-size:clamp(30px,3.3vw,49px);line-height:1.3;letter-spacing:-.04em;margin:16px 0}
+.gateway-cta p{color:#c0cede;font-size:13px;line-height:2;max-width:560px;margin:0 0 23px}
+.gateway-links{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gateway-link{border:1px solid rgba(196,215,242,.2);border-radius:15px;padding:18px 20px;background:rgba(237,247,255,.045);font-size:13px;color:#e4f2fd;font-weight:850;min-height:72px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gateway-link:after{content:"↗";color:#94e4d7;font-size:18px}
+.gateway-link:hover{background:rgba(237,247,255,.09);border-color:rgba(132,234,219,.5)}
+.footer{background:#040914;padding:70px 0 26px;border-top:1px solid rgba(200,218,250,.13)}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;padding-bottom:55px}
+.footer h3{font-size:13px;color:#e7c787;margin:5px 0 23px}
+.footer p{font-size:12px;line-height:2;color:#9eafc8;max-width:460px;margin:20px 0}
+.footer-links{display:grid;gap:14px}
+.footer-links a{font-size:12px;color:#afc1d6}
+.footer-links a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;border-top:1px solid rgba(193,211,249,.15);padding-top:23px;color:#8b9dbb;font-size:11px}
+.footer-bottom .gold-note{color:#efd39e}
+@media(max-width:1170px){.desktop-nav{gap:14px}.desktop-nav a{font-size:11px}.hero-visual{min-height:490px}.hero-visual-label{inset-inline-start:-1%}.hero-founder{inset-inline-start:0}.world.third h3{font-size:22px}}
+@media(max-width:970px){.desktop-nav{display:none;order:5;width:100%;border-top:1px solid var(--line);padding:16px 0 10px;margin:0;flex-direction:column;align-items:stretch;gap:0}.desktop-nav.open{display:flex}.desktop-nav a{font-size:13px;padding:10px}.nav-mobile{display:block}.head-inner{flex-wrap:wrap;gap:11px;padding-block:8px;min-height:74px}.hero-grid{grid-template-columns:1fr;min-height:auto;gap:30px;padding-top:65px}.hero-copy{max-width:760px}.hero-visual{min-height:560px;max-width:690px;width:100%;margin-inline:auto}.hero-photo{inset-inline:11%}.hero-founder{inset-inline-start:8%}.hero-visual-label{inset-inline-start:3%}.band-inner{grid-template-columns:repeat(2,1fr)}.band-item:nth-child(2){border-inline-end:0}.band-item:nth-child(-n+2){border-bottom:1px solid #e1e7ee}.world.large,.world.tall{grid-column:span 6}.world.third{grid-column:span 4}.course-grid{grid-template-columns:repeat(2,1fr)}.atlas-grid,.global-grid,.founder-grid,.gateway-grid{grid-template-columns:1fr}.atlas-stage{max-width:650px;width:100%;margin:auto}.global .globe-wrap{min-height:310px}.founder-portrait{width:min(100%,510px);margin:auto}.founder-copy{max-width:700px;margin:auto}.footer-grid{grid-template-columns:1.2fr 1fr}.footer-grid>div:last-child{grid-column:span 2}}
+@media(max-width:680px){:root{--edge:19px}.section{padding:75px 0}.preview-line{font-size:10px}.head-inner{gap:9px}.brand-symbol{height:43px;width:43px;border-radius:13px}.brand strong{font-size:12px}.brand small{font-size:8px}.nav-tools{gap:6px}.locale,.nav-mobile{min-width:37px;height:39px}.sign-in{min-height:39px;padding:8px 10px;font-size:10px}.hero-grid{padding-top:50px;padding-bottom:73px}.hero-ref{margin-bottom:20px}.hero h1{font-size:clamp(41px,10vw,57px);line-height:1.27}.hero-lead{font-size:14px}.hero-actions{gap:9px}.hero-actions .btn{flex-grow:1}.btn{font-size:12px;padding:13px 16px;min-height:50px}.hero-trust{gap:10px 17px}.hero-visual{min-height:377px;max-width:500px}.hero-photo{inset:4% 9% 4% 9%}.orbit-art{inset:-9%}.hero-visual-label{top:6%;padding:8px 10px}.hero-visual-label b{font-size:12px}.hero-visual-label small{font-size:8px}.hero-founder{bottom:-7%;inset-inline-start:0;padding:6px 10px 6px 7px;gap:9px;max-width:265px}.hero-founder img{height:58px;width:53px}.hero-founder strong{font-size:11px}.hero-founder small,.hero-founder em{font-size:9px}.visual-index{display:none}.hero-scroll{display:none}.band-inner{grid-template-columns:1fr}.band-item{padding:20px 9px;border-inline-end:0;border-bottom:1px solid #e1e7ee!important}.band-item:last-child{border-bottom:0!important}.band-num{font-size:30px}.sec-top{align-items:start;gap:15px}.sec-top h2{font-size:36px}.sec-top .section-no{font-size:10px}.worlds-grid{grid-template-columns:1fr}.world.large,.world.tall,.world.third{grid-column:1;min-height:315px}.world.tall{min-height:350px}.world-content{padding:28px;max-width:360px}.world h3{font-size:28px}.world.third h3{font-size:25px}.world svg.art{width:55%;opacity:.55}.world.tall svg.art{width:85%;opacity:.48}.course-grid{grid-template-columns:1fr}.course-photo{height:235px}.course-body p{min-height:0}.atlas{padding:85px 0}.atlas-copy h2{font-size:47px}.atlas-stage{min-height:335px}.atlas-card{width:210px;inset-inline-end:0;bottom:-2%}.global{padding:75px 0}.global h2{font-size:42px}.globe-wrap{min-height:270px!important}.founder{padding:78px 0}.founder-grid{gap:45px}.founder-portrait{min-height:390px;max-width:400px;padding:11px;border-radius:110px 110px 22px 22px}.founder-portrait img{height:400px;border-radius:100px 100px 13px 13px}.founder-portrait:before{inset:19px;border-radius:90px 90px 13px 13px}.founder-seal{inset-inline-start:-8px;bottom:8px}.founder-copy h2{font-size:47px}.gateway{padding:70px 0}.gateway-cta{padding:29px}.gateway-links{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr;gap:26px}.footer-grid>div:last-child{grid-column:auto}.footer{padding-top:49px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* NABD flagship v3: layered editorial, distinctive spatial campus and mobile-first controls */
+:root{--v3-night:#030713;--v3-royal:#5365ee;--v3-azure:#76d8fd;--v3-aurora:#59e5da;--v3-champagne:#f0ca83}
+body{background:#030817}
+.head{background:rgba(2,8,22,.9);box-shadow:0 12px 35px rgba(0,4,16,.1)}
+.brand-symbol{border-radius:6px 20px 6px 20px;background:linear-gradient(140deg,#172a66,#071b3c);border-color:rgba(135,227,255,.5)}
+.hero{background:radial-gradient(ellipse 55% 55% at 22% 75%,rgba(96,52,187,.28),transparent 68%),radial-gradient(ellipse 60% 80% at 90% 0%,rgba(13,128,191,.2),transparent 65%),#030918;min-height:850px}
+.hero-grid{min-height:820px;padding-block:110px 120px}
+.hero h1{font-size:clamp(52px,6vw,94px);letter-spacing:-.08em}
+.hero h1 .hero-blue{color:#a1e4ff}
+.hero-photo{border-radius:10% 40% 12% 35% / 12% 25% 19% 29%;transform:rotate(-6deg);border-color:rgba(126,223,252,.55)}
+.hero-photo:after{background:linear-gradient(0deg,rgba(4,8,29,.91),transparent 60%),linear-gradient(110deg,rgba(37,40,110,.45),transparent 65%)}
+.hero-visual{min-height:590px}
+.hero-founder{box-shadow:0 20px 85px rgba(0,0,0,.65),0 0 30px rgba(235,201,144,.08)}
+.hero-visual-label{background:rgba(12,20,61,.89);border-color:rgba(143,205,255,.44)}
+.v3-hero-hud{position:absolute;z-index:6;right:0;top:15%;padding:15px 18px;border:1px solid rgba(127,229,243,.32);background:rgba(6,24,59,.86);backdrop-filter:blur(14px);box-shadow:0 14px 50px rgba(0,4,18,.4);border-radius:4px 17px 4px 17px}
+.v3-hero-hud strong{display:block;font:800 10px Inter,Arial,sans-serif;color:#86e4f5;letter-spacing:.12em}
+.v3-hero-hud svg{width:136px;height:40px;margin:8px 0}
+.v3-hero-hud small{font-size:9px;color:#b9d1e7}
+.v3-hero-note{font-size:11px;color:#b6e9ef;border:1px solid rgba(130,216,230,.23);background:rgba(29,71,102,.16);display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border-radius:100px;margin-top:30px}
+.v3-hero-note:before{content:"";width:7px;height:7px;background:#80f5d9;border-radius:50%;box-shadow:0 0 0 5px rgba(128,245,217,.1)}
+.v3-ribbon{background:#070e21;border-bottom:1px solid rgba(174,210,248,.16);border-top:1px solid rgba(174,210,248,.12)}
+.v3-ribbon .shell{min-height:67px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;padding-block:11px}
+.v3-ribbon span{font:800 10px Inter,Arial,sans-serif;letter-spacing:.14em;color:#99b8da}
+.v3-ribbon strong{font-size:11px;color:#e4c990}
+.v3-ribbon a{font-size:11px;color:#9de7e3;font-weight:800}
+.v3-statement{position:relative;padding:145px 0;background:radial-gradient(ellipse at 60% 55%,rgba(39,84,166,.17),transparent 56%),#060d1d;overflow:hidden}
+.v3-statement:before{content:"N";position:absolute;inset-inline-end:-.1em;bottom:-.33em;font:950 min(52vw,730px)/1 Inter,Arial,sans-serif;color:rgba(185,224,255,.025);pointer-events:none}
+.v3-statement-grid{position:relative;display:grid;grid-template-columns:.29fr 1fr;gap:65px}
+.v3-kicker{font:800 11px Inter,Arial,sans-serif;letter-spacing:.16em;color:#e4c17d}
+.v3-statement h2{font-size:clamp(40px,6.2vw,84px);letter-spacing:-.065em;line-height:1.28;margin:0 0 30px;font-weight:950}
+.v3-statement h2 em{font-style:normal;background:linear-gradient(100deg,#f5d9ab,#7ccffc,#c1aeff);color:transparent;background-clip:text;-webkit-background-clip:text}
+.v3-statement p{font-size:16px;color:#a8bdd7;max-width:690px;line-height:2.2}
+.v3-statement-points{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.v3-statement-point{border-top:1px solid rgba(235,197,132,.38);padding:16px 0}
+.v3-statement-point b{font:850 10px Inter,Arial,sans-serif;letter-spacing:.12em;color:#e9c78c}
+.v3-statement-point h3{font-size:15px;color:#fff;margin:9px 0 4px}
+.v3-statement-point small{font-size:11px;color:#8398b9}
+.v3-campus{position:relative;padding:105px 0 120px;background:radial-gradient(circle at 88% 30%,rgba(91,91,203,.2),transparent 46%),#edf2fb;color:#1a2947}
+.v3-campus .v3-kicker{color:#4264a0}
+.v3-campus h2,.v3-research h2{font-size:clamp(37px,5vw,66px);line-height:1.22;letter-spacing:-.06em;margin:15px 0}
+.v3-campus-intro{max-width:720px;color:#5a6d88;font-size:14px;line-height:2;margin-bottom:39px}
+.v3-campus-shell{display:grid;grid-template-columns:1.06fr .94fr;gap:24px}
+.v3-map{position:relative;min-height:550px;border:1px solid #344b72;border-radius:29px;overflow:hidden;background:radial-gradient(circle at center,rgba(30,98,187,.26),transparent 50%),radial-gradient(circle at 25% 15%,rgba(105,73,234,.28),transparent 52%),#091633;box-shadow:0 22px 75px rgba(25,49,93,.18)}
+.v3-map:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(153,206,247,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(153,206,247,.045) 1px,transparent 1px);background-size:40px 40px}
+.v3-map-ring{position:absolute;inset:14%;border:1px solid rgba(130,220,250,.27);border-radius:50%;transform:rotate(20deg)}
+.v3-map-ring.r2{inset:22%;border-style:dashed;border-color:rgba(173,190,253,.25)}
+.v3-map-ring.r3{inset:31%;border-color:rgba(116,225,229,.45)}
+.v3-map-core{position:absolute;z-index:2;top:50%;left:50%;width:200px;height:200px;transform:translate(-50%,-50%);background:radial-gradient(circle at 32% 26%,#32639e,#0b1b42 73%);border:1px solid rgba(149,223,249,.55);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;box-shadow:inset -20px -20px 55px rgba(0,2,20,.55),0 0 75px rgba(49,116,205,.25)}
+.v3-map-core span{font:950 44px Inter,Arial,sans-serif;letter-spacing:-.1em;color:#fff}
+.v3-map-core small{font-size:11px;color:#a1e9f0;margin-top:3px}
+.v3-map-node{position:absolute;z-index:3;width:90px;height:90px;border:1px solid rgba(182,210,255,.38);border-radius:21px;background:rgba(28,45,94,.89);display:grid;place-items:center;font-size:27px;color:#a8ddfa;box-shadow:0 16px 40px rgba(0,5,33,.3);transition:transform .2s,background .2s}
+.v3-map-node.active{background:#235b93;border-color:#99f8ee;box-shadow:0 0 0 7px rgba(70,218,242,.08),0 22px 50px rgba(4,20,51,.45)}
+.v3-map-node.n1{left:10%;top:11%}.v3-map-node.n2{right:13%;top:15%}.v3-map-node.n3{left:8%;bottom:13%}.v3-map-node.n4{right:9%;bottom:12%}
+.v3-map-label{position:absolute;left:24px;bottom:18px;color:#90b3e6;font:800 10px Inter,Arial,sans-serif;letter-spacing:.12em}
+.v3-map-info{border:1px solid #dbe3ef;border-radius:29px;background:#fff;padding:41px;min-height:550px;box-shadow:0 14px 45px rgba(28,54,99,.07);display:flex;flex-direction:column;justify-content:center}
+.v3-map-info .serial{font:800 10px Inter,Arial,sans-serif;letter-spacing:.18em;color:#6d81a2}
+.v3-map-info h3{font-size:clamp(29px,3.4vw,44px);line-height:1.25;letter-spacing:-.04em;margin:19px 0 14px}
+.v3-map-info p{color:#586f8c;font-size:14px;line-height:2;min-height:90px}
+.v3-map-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:17px 0 24px}
+.v3-map-options button{text-align:start;padding:13px;border:1px solid #d6e2ef;background:#f5f8fd;color:#355174;border-radius:10px;font-size:12px;font-weight:850;min-height:55px}
+.v3-map-options button[aria-pressed="true"]{background:#e0f2ff;border-color:#3e86bd;color:#0c5d92;box-shadow:inset 0 0 0 1px #9ed1f4}
+.v3-map-info .btn{align-self:flex-start}
+.v3-systems{padding:112px 0;background:radial-gradient(ellipse at 78% 15%,rgba(95,66,187,.21),transparent 60%),#061028}
+.v3-systems h2{font-size:clamp(36px,4.7vw,60px);line-height:1.3;letter-spacing:-.05em;margin:16px 0 14px}
+.v3-systems-intro{max-width:760px;color:#aec3de;font-size:14px;line-height:2;margin-bottom:38px}
+.v3-organ-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.v3-organ{border:1px solid rgba(161,197,247,.19);border-radius:24px;background:linear-gradient(145deg,rgba(25,40,82,.88),rgba(8,20,42,.92));padding:27px;min-height:310px;transition:transform .2s,border-color .2s}
+.v3-organ:hover{transform:translateY(-5px);border-color:rgba(142,226,238,.53)}
+.v3-organ .serial{font:850 10px Inter,Arial,sans-serif;letter-spacing:.14em;color:#e6c287}
+.v3-organ svg{height:120px;width:auto;margin:17px auto}
+.v3-organ h3{font-size:22px;line-height:1.35;margin:12px 0}
+.v3-organ p{font-size:12px;line-height:1.9;color:#a5bada}
+.v3-organ a{font-size:12px;color:#a0f5e6;font-weight:850}
+.v3-research{padding:110px 0;background:#f8f9ff;color:#142642}
+.v3-research .v3-kicker{color:#446ab0}
+.v3-research-intro{color:#647891;line-height:2;font-size:14px;max-width:700px;margin-bottom:35px}
+.v3-research-grid{display:grid;grid-template-columns:1.14fr .86fr;gap:20px}
+.v3-research-hero{position:relative;min-height:424px;overflow:hidden;border-radius:28px;padding:44px;background:linear-gradient(135deg,#192e69,#384087 57%,#0b5068);color:white}
+.v3-research-hero:after{content:"";position:absolute;top:-180px;inset-inline-end:-130px;width:500px;height:500px;border:1px solid rgba(207,244,252,.26);border-radius:50%;box-shadow:0 0 0 55px rgba(180,239,245,.035),0 0 0 110px rgba(186,239,249,.028)}
+.v3-research-hero h3{font-size:clamp(35px,3.8vw,53px);max-width:440px;line-height:1.25;letter-spacing:-.06em;margin:40px 0 15px}
+.v3-research-hero p{color:#c2d9eb;font-size:14px;line-height:2;max-width:440px}
+.v3-research-hero a{font-size:12px;color:#a3f8e9;font-weight:850}
+.v3-research-cards{display:grid;gap:19px}
+.v3-research-mini{border-radius:24px;background:#fff;border:1px solid #dae3f0;padding:30px;display:flex;flex-direction:column;justify-content:center}
+.v3-research-mini h3{font-size:24px;margin:9px 0 8px}
+.v3-research-mini p{color:#637691;font-size:12px;line-height:1.9;margin:0}
+.v3-research-mini a{font-size:12px;color:#1f7295;font-weight:850;margin-top:14px}
+.v3-steps{padding:115px 0;background:radial-gradient(ellipse at 85% 45%,rgba(39,129,159,.13),transparent 62%),#060d1e}
+.v3-steps-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px}
+.v3-steps-intro{position:sticky;top:135px;align-self:start}
+.v3-steps h2{font-size:clamp(37px,4.2vw,60px);letter-spacing:-.055em;line-height:1.28;margin:20px 0}
+.v3-steps-intro p{color:#a9bfd8;font-size:14px;line-height:2}
+.v3-steps-list{display:grid;gap:12px}
+.v3-step{display:grid;grid-template-columns:60px 1fr;gap:21px;border:1px solid rgba(181,215,249,.17);border-radius:16px;padding:24px;background:rgba(198,232,255,.025)}
+.v3-step-mark{width:60px;height:60px;border:1px solid #3e587e;border-radius:14px;background:#132747;color:#e4c384;display:grid;place-items:center;font:800 20px Inter,Arial,sans-serif}
+.v3-step h3{font-size:21px;margin:1px 0 8px}
+.v3-step p{font-size:13px;line-height:1.9;color:#9eb3d1;margin:0}
+.v3-leadership{background:#0b1327;border-top:1px solid rgba(232,198,138,.17);border-bottom:1px solid rgba(232,198,138,.17);padding:95px 0}
+.v3-leadership-grid{display:grid;grid-template-columns:.65fr 1.35fr;gap:55px;align-items:center}
+.v3-leadership blockquote{font-size:clamp(29px,3.65vw,53px);line-height:1.62;letter-spacing:-.04em;font-weight:800;margin:0}
+.v3-leadership blockquote em{font-style:normal;color:#b7eafa}
+.v3-leadership cite{display:block;color:#a6bbd5;font-size:12px;font-style:normal;margin-top:22px}
+.v3-final{position:relative;background:radial-gradient(ellipse at 50% 90%,rgba(59,76,207,.42),transparent 60%),radial-gradient(ellipse at 25% 5%,rgba(10,169,208,.18),transparent 58%),#030814;min-height:565px;display:grid;place-items:center;text-align:center;padding:130px 0 150px;overflow:hidden}
+.v3-final:before{content:"NABD";position:absolute;bottom:-.18em;left:50%;transform:translateX(-50%);font:950 clamp(140px,26vw,370px)/1 Inter,Arial,sans-serif;letter-spacing:-.11em;color:rgba(168,202,255,.055);pointer-events:none}
+.v3-final .shell{position:relative}
+.v3-final h2{font-size:clamp(50px,7.5vw,107px);letter-spacing:-.075em;line-height:1.28;margin:20px auto 23px}
+.v3-final h2 em{font-style:normal;background:linear-gradient(115deg,#8ef7ed,#a1a9ff,#ebc68b);color:transparent;background-clip:text;-webkit-background-clip:text}
+.v3-final p{font-size:15px;color:#b4c9e2;max-width:680px;margin:0 auto 25px;line-height:2}
+.v3-final-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+@media(max-width:1080px){.v3-campus-shell,.v3-research-grid,.v3-steps-grid,.v3-leadership-grid,.v3-statement-grid{grid-template-columns:1fr}.v3-organ-grid{grid-template-columns:repeat(2,1fr)}.v3-steps-intro{position:static}.v3-map{min-height:490px}.v3-map-info{min-height:420px}}
+@media(max-width:680px){.hero{min-height:0}.hero-grid{min-height:0;padding-block:63px 95px}.hero h1{font-size:clamp(43px,10.5vw,60px)}.hero-visual{min-height:407px}.v3-hero-hud{right:1%;top:6%;padding:9px 11px}.v3-hero-hud svg{width:80px;height:25px}.v3-hero-hud strong{font-size:7px}.v3-hero-hud small{font-size:8px}.v3-ribbon .shell{justify-content:center;text-align:center}.v3-statement{padding:85px 0}.v3-statement h2{font-size:44px}.v3-statement p{font-size:14px}.v3-statement-points{grid-template-columns:1fr;gap:12px}.v3-campus{padding:75px 0}.v3-campus h2,.v3-research h2{font-size:39px}.v3-map{min-height:380px}.v3-map-core{width:136px;height:136px}.v3-map-core span{font-size:32px}.v3-map-core small{font-size:9px}.v3-map-node{width:60px;height:60px;border-radius:15px;font-size:19px}.v3-map-info{padding:29px 24px;min-height:430px}.v3-map-info h3{font-size:33px}.v3-map-options{grid-template-columns:1fr 1fr}.v3-systems{padding:80px 0}.v3-systems h2{font-size:38px}.v3-organ-grid{grid-template-columns:1fr}.v3-organ{min-height:240px}.v3-organ svg{height:100px}.v3-research{padding:75px 0}.v3-research-hero{padding:30px;min-height:375px}.v3-research-mini{padding:25px}.v3-steps{padding:80px 0}.v3-steps-grid{gap:28px}.v3-step{grid-template-columns:52px 1fr;gap:15px;padding:18px}.v3-step-mark{height:52px;width:52px;font-size:16px}.v3-leadership{padding:80px 0}.v3-leadership-grid{gap:23px}.v3-final{min-height:460px;padding:100px 0}.v3-final h2{font-size:clamp(44px,11.5vw,74px)}.v3-final p{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.v3-map-node,.v3-organ{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content" data-ar="تجاوز إلى المحتوى" data-en="Skip to content">تجاوز إلى المحتوى</a>
+<div class="preview-line"><div class="shell"><span data-ar="معاينة تصميم تجريبي — الموقع الرسمي لم يتغير" data-en="DESIGN PREVIEW — The official homepage is unchanged">معاينة تصميم تجريبي — الموقع الرسمي لم يتغير</span><a href="index.html" data-ar="العودة إلى الموقع الرسمي" data-en="Return to official website">العودة إلى الموقع الرسمي</a></div></div>
+<header class="head">
+<div class="shell head-inner">
+<a class="brand" href="#top" aria-label="NABD Academy for Medical Sciences">
+  <span class="brand-symbol"><svg viewBox="0 0 36 36" fill="none" stroke="#7debdc" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" aria-hidden="true"><path d="M2 19h7l4-9 7 18 5-12h9"/><circle cx="18" cy="18" r="16" stroke="#eac782" stroke-width=".7" stroke-opacity=".45"/></svg></span>
+  <span><strong data-ar="أكاديمية نبض للعلوم الطبية" data-en="NABD Academy for Medical Sciences">أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY FOR MEDICAL SCIENCES</small></span>
+</a>
+<nav id="nav" class="desktop-nav" aria-label="Primary navigation">
+<a href="#worlds" data-ar="عالم نبض" data-en="NABD Ecosystem">عالم نبض</a>
+<a href="#programs" data-ar="البرامج" data-en="Programs">البرامج</a>
+<a href="#atlas" data-ar="التعلم التفاعلي" data-en="Interactive Learning">التعلم التفاعلي</a>
+<a href="#global" data-ar="البرنامج الدولي" data-en="Global Lectures">البرنامج الدولي</a>
+<a href="#founder" data-ar="المؤسس" data-en="Founder">المؤسس</a>
+<a href="#gateway" data-ar="البوابات" data-en="Portals">البوابات</a>
+</nav>
+<div class="nav-tools">
+<button type="button" class="locale" id="locale" aria-label="Switch language">EN</button>
+<a href="portal.html" class="sign-in" data-ar="دخول الطالب" data-en="Student Login">دخول الطالب</a>
+<button type="button" class="nav-mobile" id="menu" aria-label="Open navigation" aria-expanded="false" aria-controls="nav">☰</button>
+</div>
+</div>
+</header>
+<main id="content">
+<section class="hero" id="top">
+<div class="shell hero-grid">
+<div class="hero-copy">
+<div class="hero-ref"><span class="section-no">EST. 2023</span><span class="dash"></span><strong data-ar="من غزة إلى مستقبل التعليم الطبي" data-en="FROM GAZA TO THE FUTURE OF MEDICAL EDUCATION">من غزة إلى مستقبل التعليم الطبي</strong></div>
+<div class="eyebrow">NABD ACADEMY FOR MEDICAL SCIENCES</div>
+<h1><span data-ar="حين تصبح" data-en="A NEW ERA OF">حين تصبح</span><span class="hero-gold" data-ar="المعرفة الطبية" data-en="MEDICAL">المعرفة الطبية</span><span class="hero-blue" data-ar="بلا حدود." data-en="KNOWLEDGE.">بلا حدود.</span></h1>
+<p class="hero-lead" data-ar="أكاديمية نبض للعلوم الطبية، منصة تعليمية فلسطينية تنطلق من غزة بروح عالمية؛ تجمع المعرفة الطبية، المحاكاة التعليمية، البحث العلمي، والبوابات المتخصصة في تجربة رقمية واحدة." data-en="NABD Academy for Medical Sciences is a Palestinian learning initiative with a global outlook: uniting medical knowledge, educational simulations, research resources and specialized portals in one digital experience.">أكاديمية نبض للعلوم الطبية، منصة تعليمية فلسطينية تنطلق من غزة بروح عالمية؛ تجمع المعرفة الطبية، المحاكاة التعليمية، البحث العلمي، والبوابات المتخصصة في تجربة رقمية واحدة.</p>
+<div class="hero-actions">
+<a class="btn gold arrow" href="academy.html" data-ar="ابدأ رحلتك مع نبض" data-en="Begin Your NABD Journey">ابدأ رحلتك مع نبض</a>
+<a class="btn glass arrow" href="#worlds" data-ar="اكتشف المنظومة" data-en="Discover the Ecosystem">اكتشف المنظومة</a>
+</div>
+<div class="hero-trust">
+<span data-ar="تعليم طبي مجاني" data-en="Free medical learning">تعليم طبي مجاني</span>
+<span data-ar="بوابات تفاعلية" data-en="Interactive learning portals">بوابات تفاعلية</span>
+<span data-ar="عربي وإنجليزي" data-en="Arabic &amp; English">عربي وإنجليزي</span>
+</div>
+</div>
+<div class="hero-visual"><div class="v3-hero-hud" aria-hidden="true"><strong>NABD / MEDICAL SIGNAL</strong><svg viewBox="0 0 140 44" fill="none" stroke="#8ae8f2" stroke-width="2"><path d="M0 21h22l10-17 16 35 11-20h20l8-12 17 28 10-14h24"/></svg><small>KNOWLEDGE · IN MOTION</small></div>
+<div class="hero-aura"></div>
+<div class="hero-photo"><img src="assets/images/hero-medical.jpg" alt="Medical education photograph" width="1000" height="1200" decoding="async" fetchpriority="high"></div>
+<svg class="orbit-art" viewBox="0 0 620 620" fill="none" aria-hidden="true">
+<defs><linearGradient id="strokeArc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#55E3E9" stop-opacity=".06"/><stop offset=".48" stop-color="#89B0FF" stop-opacity=".8"/><stop offset="1" stop-color="#E2C07F" stop-opacity=".25"/></linearGradient></defs>
+<g class="orbit-a"><ellipse cx="310" cy="310" rx="295" ry="185" transform="rotate(-32 310 310)" stroke="url(#strokeArc)" stroke-width="2"/><circle cx="64" cy="192" r="6" fill="#8df3f4"/></g>
+<g class="orbit-b"><ellipse cx="310" cy="310" rx="265" ry="215" transform="rotate(28 310 310)" stroke="#62d5eb" stroke-opacity=".32"/><circle cx="95" cy="190" r="4" fill="#e5c384"/></g>
+<circle cx="310" cy="310" r="263" stroke="#69a8df" stroke-opacity=".2" stroke-dasharray="3 11"/>
+<circle cx="310" cy="310" r="210" stroke="#bcbafc" stroke-opacity=".13" stroke-dasharray="2 8"/>
+<path d="M310 20v60M310 540v60M20 310h60M540 310h60" stroke="#91d7ed" stroke-opacity=".21"/>
+</svg>
+<div class="hero-visual-label"><b>01 / 07</b><small data-ar="مستقبل المعرفة الطبية" data-en="THE FUTURE OF MEDICAL LEARNING">مستقبل المعرفة الطبية</small></div>
+<div class="visual-index">LEARN · DISCOVER · GROW</div>
+<a href="#founder" class="hero-founder">
+<img src="assets/images/founder.jpg" width="160" height="180" alt="محمد خالد العرجا — صورة المؤسس" decoding="async">
+<span><small data-ar="المؤسس والمدير العام" data-en="FOUNDER &amp; GENERAL DIRECTOR">المؤسس والمدير العام</small><strong data-ar="محمد خالد العرجا" data-en="Mohammed Khaled Al-Arja">محمد خالد العرجا</strong><em data-ar="تعرف على المؤسس ورؤيته" data-en="Meet the founder and his vision">تعرف على المؤسس ورؤيته</em></span>
+</a>
+</div>
+</div>
+<div class="hero-scroll" aria-hidden="true">SCROLL TO EXPLORE</div>
+</section>
+<div class="v3-ribbon"><div class="shell"><span>NABD / MEDICAL SCIENCES / PALESTINE</span><strong data-ar="معاينة التصميم العالمي الثالث — الموقع الرسمي لم يتغير" data-en="FLAGSHIP V3 DESIGN PREVIEW — ORIGINAL SITE UNCHANGED">معاينة التصميم العالمي الثالث — الموقع الرسمي لم يتغير</strong><a href="index.html" data-ar="افتح النسخة الرسمية ↗" data-en="Open Current Homepage ↗">افتح النسخة الرسمية ↗</a></div></div><div class="lightband">
+<div class="shell band-inner">
+<div class="band-item"><span class="band-num">01</span><span class="band-copy"><strong data-ar="تعلم منظم" data-en="Structured Learning">تعلم منظم</strong><small data-ar="المسارات والمقررات الطبية" data-en="Courses &amp; study pathways">المسارات والمقررات الطبية</small></span></div>
+<div class="band-item"><span class="band-num">02</span><span class="band-copy"><strong data-ar="محاكاة تفاعلية" data-en="Interactive Simulation">محاكاة تفاعلية</strong><small data-ar="أدوات وحالات تعليمية" data-en="Educational clinical tools">أدوات وحالات تعليمية</small></span></div>
+<div class="band-item"><span class="band-num">03</span><span class="band-copy"><strong data-ar="مبادرات علمية" data-en="Scientific Initiatives">مبادرات علمية</strong><small data-ar="البحث والمعرفة الطبية" data-en="Research &amp; knowledge">البحث والمعرفة الطبية</small></span></div>
+<div class="band-item"><span class="band-num">04</span><span class="band-copy"><strong data-ar="توثيق قابل للتحقق" data-en="Verifiable Records">توثيق قابل للتحقق</strong><small data-ar="شهادات إتمام الأنشطة" data-en="Completion certificates">شهادات إتمام الأنشطة</small></span></div>
+</div>
+</div>
+
+<section class="v3-statement" id="manifesto">
+<div class="shell v3-statement-grid">
+<div class="v3-kicker">THE NABD MANIFESTO<br>MEDICAL FUTURES / 2026</div>
+<div><h2><span data-ar="لسنا نبني مجرد موقع." data-en="NOT JUST ANOTHER WEBSITE.">لسنا نبني مجرد موقع.</span><br><em data-ar="نبني بيئة جديدة للعلم." data-en="A NEW WORLD FOR MEDICAL LEARNING.">نبني بيئة جديدة للعلم.</em></h2>
+<p data-ar="أكاديمية نبض للعلوم الطبية هي رحلة رقمية انطلقت من فلسطين بهدف إتاحة مسارات طبية أوضح وأكثر تفاعلًا. تجمع المحتوى العلمي والمحاكاة التعليمية ومجتمع التعلم والبحث في منظومة تحترم الوقت والمصداقية وإمكانية الوصول." data-en="NABD Academy for Medical Sciences is a Palestinian digital learning initiative bringing together medical science, educational simulation, research and accessible learning paths in one credible ecosystem.">أكاديمية نبض للعلوم الطبية هي رحلة رقمية انطلقت من فلسطين بهدف إتاحة مسارات طبية أوضح وأكثر تفاعلًا. تجمع المحتوى العلمي والمحاكاة التعليمية ومجتمع التعلم والبحث في منظومة تحترم الوقت والمصداقية وإمكانية الوصول.</p>
+<div class="v3-statement-points">
+<div class="v3-statement-point"><b>01 / ACCESS</b><h3 data-ar="المعرفة أولًا" data-en="Knowledge First">المعرفة أولًا</h3><small data-ar="تعلم يصل إلى الطالب" data-en="Accessible learning">تعلم يصل إلى الطالب</small></div>
+<div class="v3-statement-point"><b>02 / EXPERIENCE</b><h3 data-ar="تعلم تفاعلي" data-en="Interactive Exploration">تعلم تفاعلي</h3><small data-ar="بوابات وتجارب تعليمية" data-en="Digital learning experiences">بوابات وتجارب تعليمية</small></div>
+<div class="v3-statement-point"><b>03 / INTEGRITY</b><h3 data-ar="ثقة بلا مبالغة" data-en="Integrity Over Hype">ثقة بلا مبالغة</h3><small data-ar="إنجازات موثقة ووضوح مؤسسي" data-en="Verified achievements and clarity">إنجازات موثقة ووضوح مؤسسي</small></div>
+</div></div></div>
+</section><section id="worlds" class="worlds section">
+<div class="shell">
+<div class="sec-top"><div><span class="eyebrow">EXPLORE THE NABD ECOSYSTEM</span><h2 data-ar="ليس موقعًا واحدًا. بل عالم من المعرفة." data-en="More Than a Website. An Entire Learning Ecosystem.">ليس موقعًا واحدًا.<br> بل عالم من المعرفة.</h2><p data-ar="كل بوابة تقود إلى تجربة تعليمية متخصصة، مصممة لتجعل طريق الطالب نحو العلم أكثر عمقًا ووضوحًا." data-en="Each gateway leads to a specialized educational experience, designed to make the journey into medical knowledge clearer and richer.">كل بوابة تقود إلى تجربة تعليمية متخصصة، مصممة لتجعل طريق الطالب نحو العلم أكثر عمقًا ووضوحًا.</p></div><span class="section-no">02 / 07</span></div>
+<div class="worlds-grid">
+<article class="world large"><div class="world-content"><span class="world-number">01 — NABD ATLAS</span><h3 data-ar="عالم الطب السريري التفاعلي" data-en="The Interactive Clinical Universe">عالم الطب السريري التفاعلي</h3><p data-ar="حالات ومحاكاة تعليمية مصممة لفهم التفكير السريري، مع توضيح أنها لا تحل محل التدريب والإشراف الطبي." data-en="Educational cases and simulated encounters designed to develop clinical reasoning, without replacing supervised medical training.">حالات ومحاكاة تعليمية مصممة لفهم التفكير السريري، مع توضيح أنها لا تحل محل التدريب والإشراف الطبي.</p><a href="atlas/clinical-hub.html" data-ar="ادخل عالم ATLAS" data-en="Enter NABD ATLAS">ادخل عالم ATLAS</a></div><svg class="art" viewBox="0 0 400 390" fill="none" aria-hidden="true"><circle cx="240" cy="190" r="140" stroke="#69b1ff" stroke-opacity=".5"/><circle cx="240" cy="190" r="111" stroke="#7ef4e3" stroke-opacity=".4"/><circle cx="240" cy="190" r="77" stroke="#9b7bff" stroke-opacity=".58"/><circle cx="240" cy="190" r="35" stroke="#fff" stroke-opacity=".6"/><path d="M120 190h230M240 53v272" stroke="#76d4fa" stroke-opacity=".28"/><path d="M180 82c90 50 80 180 13 220m90-223c-75 95-20 162 29 205" stroke="#80eadc" stroke-opacity=".42"/><circle cx="80" cy="150" r="6" fill="#f1cc84"/><circle cx="339" cy="88" r="6" fill="#67e8e4"/></svg><span class="world-cap">CLINICAL EXPLORATION</span></article>
+<article class="world tall"><div class="world-content"><span class="world-number">02 — STUDENT UNIVERSE</span><h3 data-ar="مساحتك الخاصة للتعلم" data-en="A Universe Built for Learners">مساحتك الخاصة للتعلم</h3><p data-ar="المسارات التعليمية والمكتبة والأدوات المعرفية في مكان واحد." data-en="Learning pathways, library resources and knowledge tools in one place.">المسارات التعليمية والمكتبة والأدوات المعرفية في مكان واحد.</p><a href="learning/" data-ar="اكتشف عالم التعلم" data-en="Explore Learning Universe">اكتشف عالم التعلم</a></div><svg class="art" viewBox="0 0 400 390" fill="none" aria-hidden="true"><defs><radialGradient id="gPlanet"><stop stop-color="#3bbbc1" stop-opacity=".72"/><stop offset="1" stop-color="#112951" stop-opacity=".13"/></radialGradient></defs><circle cx="250" cy="206" r="127" fill="url(#gPlanet)" stroke="#72e2e9" stroke-opacity=".5"/><ellipse cx="250" cy="205" rx="186" ry="64" stroke="#a9cdff" stroke-opacity=".9" transform="rotate(-27 250 205)"/><ellipse cx="250" cy="205" rx="50" ry="127" stroke="#c6d5ff" stroke-opacity=".2"/><circle cx="108" cy="107" r="7" fill="#f0ca88"/><circle cx="345" cy="303" r="7" fill="#8f7dff"/></svg><span class="world-cap">LEARNING PORTAL</span></article>
+<article class="world third"><div class="world-content"><span class="world-number">03 — VIRTUAL HOSPITAL</span><h3 data-ar="المستشفى الافتراضي" data-en="Virtual Hospital">المستشفى الافتراضي</h3><p data-ar="استكشف مساحات ومحاكاة طبية تعليمية." data-en="Explore educational medical environments and simulation experiences.">استكشف مساحات ومحاكاة طبية تعليمية.</p><a href="atlas/hospital-3d.html" data-ar="استكشف التجربة" data-en="Explore the Experience">استكشف التجربة</a></div><span class="number-bg">03</span></article>
+<article class="world third light"><div class="world-content"><span class="world-number">04 — MEDICAL KNOWLEDGE</span><h3 data-ar="مركز المعرفة الطبية" data-en="Medical Knowledge Hub">مركز المعرفة الطبية</h3><p data-ar="موارد علمية وأبواب لاكتشاف موضوعات طبية متنوعة." data-en="Scientific resources and routes to explore varied medical subjects.">موارد علمية وأبواب لاكتشاف موضوعات طبية متنوعة.</p><a href="nabd-medical-knowledge.html" data-ar="ادخل المركز" data-en="Enter the Knowledge Hub">ادخل المركز</a></div><span class="number-bg">04</span></article>
+<article class="world third"><div class="world-content"><span class="world-number">05 — ACADEMY PORTALS</span><h3 data-ar="بوابات الأكاديمية" data-en="Academy Portals">بوابات الأكاديمية</h3><p data-ar="للطلبة والمحاضرين والإدارة — كل دور له مساره." data-en="For students, educators and administration — a route for each role.">للطلبة والمحاضرين والإدارة — كل دور له مساره.</p><a href="#gateway" data-ar="استكشف البوابات" data-en="Explore Portals">استكشف البوابات</a></div><span class="number-bg">05</span></article>
+</div>
+</div>
+</section>
+
+<section class="v3-campus" id="campus">
+<div class="shell">
+<div class="v3-kicker">NABD / DIGITAL CAMPUS / IMMERSIVE DIRECTORY</div>
+<h2 data-ar="أربعة عوالم. وجهة واحدة: العلم." data-en="FOUR WORLDS. ONE MISSION: LEARNING.">أربعة عوالم. وجهة واحدة: العلم.</h2>
+<p class="v3-campus-intro" data-ar="ليست خريطة عادية: اختر مجالًا لترى معلوماته، ثم ادخل مباشرة إلى بوابته الفعلية في أكاديمية نبض. هذه خريطة تصورية للمنظومة، وليست دليلًا مكانيًا." data-en="An interactive gateway to NABD's actual learning tools. Choose a destination, read about it, then open the existing portal. This is a conceptual map, not a physical campus.">ليست خريطة عادية: اختر مجالًا لترى معلوماته، ثم ادخل مباشرة إلى بوابته الفعلية في أكاديمية نبض. هذه خريطة تصورية للمنظومة، وليست دليلًا مكانيًا.</p>
+<div class="v3-campus-shell">
+<div class="v3-map" role="img" aria-label="Visual concept showing four parts of the NABD digital learning ecosystem">
+<div class="v3-map-ring"></div><div class="v3-map-ring r2"></div><div class="v3-map-ring r3"></div>
+<div class="v3-map-core"><span>N</span><small id="v3-core-label">NABD DIGITAL CAMPUS</small></div>
+<div class="v3-map-node n1 active" aria-hidden="true">◈</div><div class="v3-map-node n2" aria-hidden="true">✦</div><div class="v3-map-node n3" aria-hidden="true">◎</div><div class="v3-map-node n4" aria-hidden="true">◇</div>
+<span class="v3-map-label">NABD / DIGITAL ECOSYSTEM / 04</span>
+</div>
+<div class="v3-map-info">
+<div class="serial">SELECT A WORLD · <span id="v3-world-index">01 / 04</span></div>
+<h3 id="v3-world-title">NABD ATLAS</h3>
+<p id="v3-world-description" aria-live="polite">حالات ومحاكاة سريرية تعليمية لتطوير فهم المفاهيم الطبية.</p>
+<div class="v3-map-options">
+<button type="button" data-v3-campus="atlas" aria-pressed="true" data-ar="التعلم السريري" data-en="Clinical Learning">التعلم السريري</button>
+<button type="button" data-v3-campus="learning" aria-pressed="false" data-ar="عالم الطالب" data-en="Student Universe">عالم الطالب</button>
+<button type="button" data-v3-campus="knowledge" aria-pressed="false" data-ar="المعرفة الطبية" data-en="Medical Knowledge">المعرفة الطبية</button>
+<button type="button" data-v3-campus="lecturers" aria-pressed="false" data-ar="بوابة المحاضرين" data-en="Lecturer Portal">بوابة المحاضرين</button>
+</div>
+<a id="v3-world-link" class="btn dark arrow" href="atlas/clinical-hub.html" data-ar="ادخل هذا العالم" data-en="Open This World">ادخل هذا العالم</a>
+</div></div></div>
+</section><section class="programs section" id="programs">
+<div class="shell">
+<div class="sec-top"><div><span class="eyebrow" style="color:#075b83">MEDICAL SCIENCES · LEARNING PATHS</span><h2 data-ar="المعرفة التي تصنع الفرق" data-en="Explore the Sciences That Matter">المعرفة التي تصنع الفرق</h2><p data-ar="مجالات طبية أساسية تستكشفها الأكاديمية. تظهر المقررات الفعلية وحالة التسجيل داخل بوابة الأكاديمية، لا نعرض هنا مواعيد غير مؤكدة." data-en="Core medical subjects in NABD's learning scope. Actual courses and enrollment status are shown in the academy portal; no unconfirmed sessions are advertised here.">مجالات طبية أساسية تستكشفها الأكاديمية. تظهر المقررات الفعلية وحالة التسجيل داخل بوابة الأكاديمية، لا نعرض هنا مواعيد غير مؤكدة.</p></div><span class="section-no">03 / 07</span></div>
+<div class="course-grid">
+<article class="course"><div class="course-photo"><img src="assets/images/anatomy.jpg" alt="Human anatomy educational illustration" width="480" height="330" loading="lazy"><span data-ar="العلوم الأساسية" data-en="FOUNDATIONS">العلوم الأساسية</span></div><div class="course-body"><span class="eyebrow">ANATOMY</span><h3 data-ar="علم التشريح" data-en="Human Anatomy">علم التشريح</h3><p data-ar="اكتشف تشريح جسم الإنسان وعلاقة البنية بالوظيفة." data-en="Discover human structure and its relationship with function.">اكتشف تشريح جسم الإنسان وعلاقة البنية بالوظيفة.</p><a href="academy.html" data-ar="استكشف المسارات" data-en="Explore Learning Paths">استكشف المسارات</a></div></article>
+<article class="course"><div class="course-photo"><img src="assets/images/physiology.jpg" alt="Medical physiology educational illustration" width="480" height="330" loading="lazy"><span data-ar="العلوم الأساسية" data-en="FOUNDATIONS">العلوم الأساسية</span></div><div class="course-body"><span class="eyebrow">PHYSIOLOGY</span><h3 data-ar="علم وظائف الأعضاء" data-en="Human Physiology">علم وظائف الأعضاء</h3><p data-ar="تعلّم كيف تعمل أجهزة الجسم وتتفاعل مع بعضها." data-en="Explore how body systems function and interact.">تعلّم كيف تعمل أجهزة الجسم وتتفاعل مع بعضها.</p><a href="academy.html" data-ar="استكشف المسارات" data-en="Explore Learning Paths">استكشف المسارات</a></div></article>
+<article class="course"><div class="course-photo"><img src="assets/images/pathology.jpg" alt="Pathology educational image" width="480" height="330" loading="lazy"><span data-ar="العلوم الطبية" data-en="MEDICAL SCIENCES">العلوم الطبية</span></div><div class="course-body"><span class="eyebrow">PATHOLOGY</span><h3 data-ar="علم الأمراض" data-en="Pathology">علم الأمراض</h3><p data-ar="مدخل إلى فهم الآليات المرضية والتغيرات الخلوية." data-en="Understand the principles of disease processes and cellular change.">مدخل إلى فهم الآليات المرضية والتغيرات الخلوية.</p><a href="academy.html" data-ar="استكشف المسارات" data-en="Explore Learning Paths">استكشف المسارات</a></div></article>
+<article class="course"><div class="course-photo"><img src="assets/images/biochemistry.jpg" alt="Biochemistry educational image" width="480" height="330" loading="lazy"><span data-ar="العلوم الأساسية" data-en="FOUNDATIONS">العلوم الأساسية</span></div><div class="course-body"><span class="eyebrow">BIOCHEMISTRY</span><h3 data-ar="الكيمياء الحيوية" data-en="Medical Biochemistry">الكيمياء الحيوية</h3><p data-ar="العمليات الجزيئية الأساسية ذات الصلة بالعلوم الطبية." data-en="The fundamental molecular processes behind medical science.">العمليات الجزيئية الأساسية ذات الصلة بالعلوم الطبية.</p><a href="academy.html" data-ar="استكشف المسارات" data-en="Explore Learning Paths">استكشف المسارات</a></div></article>
+</div>
+</div>
+</section>
+
+<section class="v3-systems" id="systems">
+<div class="shell">
+<div class="v3-kicker">NABD MEDICAL DISCOVERY / HUMAN SYSTEMS</div>
+<h2 data-ar="داخل كل جهاز... عالم للمعرفة." data-en="EVERY SYSTEM. A NEW WORLD TO EXPLORE.">داخل كل جهاز... عالم للمعرفة.</h2>
+<p class="v3-systems-intro" data-ar="هذه رموز فنية للمجالات الطبية وليست نماذج تشريحية دقيقة أو أداة تشخيص. انطلق منها إلى مسارات العلوم الطبية والحالات التعليمية." data-en="These are artistic symbols for medical subjects, not anatomical models or diagnostic tools. Use them as entry points to medical science and educational cases.">هذه رموز فنية للمجالات الطبية وليست نماذج تشريحية دقيقة أو أداة تشخيص. انطلق منها إلى مسارات العلوم الطبية والحالات التعليمية.</p>
+<div class="v3-organ-grid">
+<article class="v3-organ"><span class="serial">01 / CARDIOVASCULAR</span><svg viewBox="0 0 160 155" fill="none" aria-hidden="true"><path d="M80 137C48 109 19 84 20 56c1-26 30-40 49-19l11 12 11-12c19-21 49-7 49 19s-26 50-60 81Z" stroke="#ffabd7" stroke-width="3" fill="#b57cdd" fill-opacity=".17"/><path d="M11 76h37l12-23 20 49 12-26h57" stroke="#e4b9ff" stroke-width="2.5"/><circle cx="80" cy="76" r="70" stroke="#ad8fff" stroke-opacity=".23"/></svg><h3 data-ar="القلب والدورة الدموية" data-en="Heart & Circulation">القلب والدورة الدموية</h3><p data-ar="مفاهيم النبض والتروية ووظائف الجهاز القلبي." data-en="Foundations of pulse, perfusion and cardiovascular physiology.">مفاهيم النبض والتروية ووظائف الجهاز القلبي.</p><a href="academy.html" data-ar="استكشف العلوم الطبية ↗" data-en="Explore Medical Sciences ↗">استكشف العلوم الطبية ↗</a></article>
+<article class="v3-organ"><span class="serial">02 / NEUROSCIENCES</span><svg viewBox="0 0 160 155" fill="none" aria-hidden="true"><path d="M82 22C70 1 39 13 39 32 18 35 14 58 29 71c-14 22 0 42 17 42 7 26 33 29 38 11 17 14 42 2 39-17 23-6 30-29 14-43 10-20-5-34-23-33-4-15-19-22-32-9Z" stroke="#96dbff" stroke-width="3" fill="#7099ff" fill-opacity=".13"/><path d="M82 21v102M44 57l26 16-13 23M121 55 95 73l11 24M41 99l25-10M120 101l-28-14" stroke="#b6a4ff" stroke-width="2"/></svg><h3 data-ar="الدماغ والجهاز العصبي" data-en="Brain & Neuroscience">الدماغ والجهاز العصبي</h3><p data-ar="الإشارات العصبية وفهم وظائف الدماغ." data-en="Neural signaling and foundational brain function.">الإشارات العصبية وفهم وظائف الدماغ.</p><a href="atlas/clinical-hub.html" data-ar="استكشف ATLAS ↗" data-en="Explore ATLAS ↗">استكشف ATLAS ↗</a></article>
+<article class="v3-organ"><span class="serial">03 / RESPIRATORY</span><svg viewBox="0 0 160 155" fill="none" aria-hidden="true"><path d="M80 15v54M80 53 57 70M80 53l23 17" stroke="#8df3e2" stroke-width="6" stroke-linecap="round"/><path d="M61 46C44 30 21 53 19 90c-3 32 11 43 32 35l29-16V72L61 46Zm38 0c17-16 40 7 42 44 3 32-11 43-32 35l-29-16V72l19-26Z" stroke="#8be6ef" stroke-width="3" fill="#59d5e0" fill-opacity=".14"/></svg><h3 data-ar="الجهاز التنفسي" data-en="Respiratory System">الجهاز التنفسي</h3><p data-ar="أساسيات التهوية وتبادل الغازات." data-en="Ventilation and the fundamentals of gas exchange.">أساسيات التهوية وتبادل الغازات.</p><a href="academy.html" data-ar="استكشف العلوم الطبية ↗" data-en="Explore Medical Sciences ↗">استكشف العلوم الطبية ↗</a></article>
+<article class="v3-organ"><span class="serial">04 / RENAL SYSTEM</span><svg viewBox="0 0 160 155" fill="none" aria-hidden="true"><path d="M61 34C34 18 12 43 19 76c4 25 25 39 46 42 11-16 4-32-5-41 7-11 8-28 1-43Zm38 0c27-16 49 9 42 42-4 25-25 39-46 42-11-16-4-32 5-41-7-11-8-28-1-43Z" stroke="#b2a7ff" stroke-width="3" fill="#7371f3" fill-opacity=".16"/><path d="M65 76c10 5 12 20 12 42M95 76c-10 5-12 20-12 42" stroke="#9cd9ff" stroke-width="3"/></svg><h3 data-ar="الكليتان وتوازن الجسم" data-en="Kidneys & Homeostasis">الكليتان وتوازن الجسم</h3><p data-ar="الترشيح وتوازن السوائل والكهارل." data-en="Filtration and fluid or electrolyte balance.">الترشيح وتوازن السوائل والكهارل.</p><a href="academy.html" data-ar="استكشف العلوم الطبية ↗" data-en="Explore Medical Sciences ↗">استكشف العلوم الطبية ↗</a></article>
+</div></div>
+</section><section class="atlas" id="atlas">
+<div class="shell atlas-grid">
+<div class="atlas-copy">
+<span class="section-no">04 / 07</span><div class="eyebrow" style="margin-top:22px">AN INTERACTIVE MEDICAL LEARNING EXPERIENCE</div>
+<h2><span data-ar="التعلم ليس" data-en="BEYOND">التعلم ليس</span><span data-ar=" مجرد قراءة." data-en="THE PAGE."> مجرد قراءة.</span></h2>
+<p data-ar="استكشف منظومة NABD ATLAS: حالات سريرية تعليمية، أدوات استكشاف ومحاكاة، ومسارات تساعد الطالب على الربط بين الفكرة الطبية والتطبيق التعليمي. لا تُقدَّم هذه البيئة بوصفها بديلًا عن التدريب الطبي السريري المباشر." data-en="Explore NABD ATLAS: educational clinical cases, interactive simulations and learning pathways connecting medical concepts to practice-oriented study. It is not a substitute for in-person supervised clinical training.">استكشف منظومة NABD ATLAS: حالات سريرية تعليمية، أدوات استكشاف ومحاكاة، ومسارات تساعد الطالب على الربط بين الفكرة الطبية والتطبيق التعليمي. لا تُقدَّم هذه البيئة بوصفها بديلًا عن التدريب الطبي السريري المباشر.</p>
+<a href="atlas/clinical-hub.html" class="btn gold arrow" data-ar="اكتشف NABD ATLAS" data-en="Explore NABD ATLAS">اكتشف NABD ATLAS</a>
+<div class="atlas-marks"><span>CLINICAL CASES</span><span>INTERACTIVE LEARNING</span><span>MEDICAL SIMULATION</span></div>
+</div>
+<div class="atlas-stage">
+<div class="atlas-glow"></div>
+<svg class="atlas-sphere" viewBox="0 0 570 570" fill="none" aria-hidden="true"><defs><radialGradient id="atlasBall" cx=".36" cy=".3"><stop stop-color="#395ad2" stop-opacity=".72"/><stop offset=".6" stop-color="#0e2146" stop-opacity=".6"/><stop offset="1" stop-color="#040c21" stop-opacity=".9"/></radialGradient><linearGradient id="atlasLine" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ff4e6"/><stop offset=".5" stop-color="#6789ff"/><stop offset="1" stop-color="#a686ed"/></linearGradient></defs><circle cx="285" cy="285" r="205" fill="url(#atlasBall)" stroke="#70b6ef" stroke-opacity=".4"/><circle cx="285" cy="285" r="236" stroke="#92dbf7" stroke-opacity=".18"/><circle cx="285" cy="285" r="265" stroke="#79cdff" stroke-opacity=".1" stroke-dasharray="4 12"/><ellipse cx="285" cy="285" rx="91" ry="205" stroke="#6ce5e1" stroke-opacity=".35"/><ellipse cx="285" cy="285" rx="168" ry="205" stroke="#b6b9ff" stroke-opacity=".14"/><path d="M80 285h410M112 205h346M112 365h346" stroke="#a8dcf7" stroke-opacity=".17"/><ellipse cx="285" cy="285" rx="268" ry="102" transform="rotate(-27 285 285)" stroke="url(#atlasLine)" stroke-width="2.4"/><ellipse cx="285" cy="285" rx="238" ry="158" transform="rotate(35 285 285)" stroke="#71dddb" stroke-opacity=".3"/><path d="M250 176c-29 5-49 29-46 59-23 9-36 41-18 60-10 41 17 68 55 64 13 31 50 42 74 22 31 14 62-8 62-37 31-21 31-60 6-78 11-39-26-76-63-67-16-24-41-32-70-23Z" stroke="#91e6ef" stroke-width="3" fill="#39c5cf" fill-opacity=".08"/><path d="M260 190c-25 37 5 55-14 87s9 69 38 72M312 200c-25 30 16 55-9 83s8 61 24 72M222 253c30-12 35 18 64 12s39-13 73 13M210 319c32-27 48 7 85 3s43-1 68 11" stroke="#a69aff" stroke-opacity=".56" stroke-width="2"/><circle cx="84" cy="196" r="9" fill="#8fe9e0"/><circle cx="479" cy="375" r="8" fill="#eac781"/><circle cx="404" cy="99" r="7" fill="#8f82fb"/></svg>
+<div class="atlas-card"><b>NABD / ATLAS / 01</b><span data-ar="تجربة سريرية افتراضية تعليمية. رسم توضيحي للواجهة وليس بيانات مرضى." data-en="Illustrative educational clinical experience, not patient data.">تجربة سريرية افتراضية تعليمية. رسم توضيحي للواجهة وليس بيانات مرضى.</span></div>
+</div>
+</div>
+</section>
+
+<section class="v3-research" id="research-future"><div class="shell">
+<div class="v3-kicker">ACADEMIC THINKING / RESEARCH / FUTURE</div>
+<h2 data-ar="نفتح أبواب التفكير العلمي." data-en="OPENING PATHWAYS TO SCIENTIFIC THINKING.">نفتح أبواب التفكير العلمي.</h2>
+<p class="v3-research-intro" data-ar="التعليم الطبي ليس حفظ المعلومات فقط؛ إنه تعلّم البحث عن الدليل، وطرح الأسئلة، وفهم النتائج وتوثيق الإنجاز." data-en="Medical learning goes beyond memorization: discover evidence, ask better questions and document meaningful learning.">التعليم الطبي ليس حفظ المعلومات فقط؛ إنه تعلّم البحث عن الدليل، وطرح الأسئلة، وفهم النتائج وتوثيق الإنجاز.</p>
+<div class="v3-research-grid">
+<div class="v3-research-hero"><span class="v3-kicker">NABD / RESEARCH HORIZONS</span><h3 data-ar="المعرفة تبدأ بسؤال." data-en="KNOWLEDGE STARTS WITH A QUESTION.">المعرفة تبدأ بسؤال.</h3><p data-ar="نربط بين المصادر العلمية والمبادرات البحثية ومسارات التعلم، مع إبراز ما هو موثق فعليًا دون ادعاء إنجازات لم تتحقق." data-en="Connecting scientific resources, research initiatives and learning paths while presenting only evidence-based outcomes.">نربط بين المصادر العلمية والمبادرات البحثية ومسارات التعلم، مع إبراز ما هو موثق فعليًا دون ادعاء إنجازات لم تتحقق.</p><a href="index.html#research" data-ar="استكشف مساحات البحث ↗" data-en="Explore Research ↗">استكشف مساحات البحث ↗</a></div>
+<div class="v3-research-cards">
+<div class="v3-research-mini"><span class="v3-kicker" style="color:#376a9e">01 / RESEARCH SKILLS</span><h3 data-ar="البحث العلمي" data-en="Research Skills">البحث العلمي</h3><p data-ar="تعلّم كيف تصل إلى الأدلة وتقرأ المصادر الطبية بصورة نقدية." data-en="Explore evidence retrieval and critical reading of scientific sources.">تعلّم كيف تصل إلى الأدلة وتقرأ المصادر الطبية بصورة نقدية.</p><a href="index.html#research" data-ar="اذهب إلى البحث ↗" data-en="Explore Research ↗">اذهب إلى البحث ↗</a></div>
+<div class="v3-research-mini"><span class="v3-kicker" style="color:#376a9e">02 / VERIFIABLE LEARNING</span><h3 data-ar="التحقق من الشهادات" data-en="Certificate Verification">التحقق من الشهادات</h3><p data-ar="تعرف إلى آلية التحقق العام من شهادات إتمام الأنشطة التعليمية." data-en="Explore public verification of course-completion certificates.">تعرف إلى آلية التحقق العام من شهادات إتمام الأنشطة التعليمية.</p><a href="index.html#verify" data-ar="التحقق من شهادة ↗" data-en="Verify a Certificate ↗">التحقق من شهادة ↗</a></div>
+</div></div></div></section><section class="global" id="global">
+<div class="shell global-grid">
+<div>
+<span class="section-no">05 / 07</span><div class="eyebrow" style="color:#8f6728;margin:21px 0 17px">NABD GLOBAL MEDICAL LECTURES</div>
+<div class="global-note" data-ar="مبادرة دولية قيد الإعداد — لم تُعلن شراكات مؤكدة" data-en="International initiative in preparation — no confirmed partners announced">مبادرة دولية قيد الإعداد — لم تُعلن شراكات مؤكدة</div>
+<h2><span data-ar="من غزة..." data-en="FROM GAZA,">من غزة...</span><br><span data-ar="إلى عقول العالم." data-en="TO MINDS WORLDWIDE.">إلى عقول العالم.</span></h2>
+<p data-ar="نطمح في أكاديمية نبض للعلوم الطبية إلى بناء جسر معرفي يجمع طلبة غزة بمحاضرين وأطباء وأكاديميين متطوعين من العالم. هذه المبادرة في مرحلة الإعداد والتواصل، وستُعلن أي أنشطة أو تعاون فقط بعد تأكيده." data-en="NABD Academy for Medical Sciences seeks to build a bridge between learners in Gaza and volunteer clinicians and educators worldwide. The initiative is in preparation and outreach; sessions and collaborations will be announced only after confirmation.">نطمح في أكاديمية نبض للعلوم الطبية إلى بناء جسر معرفي يجمع طلبة غزة بمحاضرين وأطباء وأكاديميين متطوعين من العالم. هذه المبادرة في مرحلة الإعداد والتواصل، وستُعلن أي أنشطة أو تعاون فقط بعد تأكيده.</p>
+<div class="global-link"><a class="btn dark arrow" href="global-lectures.html" data-ar="تعرف على البرنامج الدولي" data-en="Explore the Global Initiative">تعرف على البرنامج الدولي</a></div>
+</div>
+<div class="globe-wrap" aria-hidden="true">
+<svg viewBox="0 0 480 480" fill="none"><defs><radialGradient id="globeFill"><stop stop-color="#7ec4d6"/><stop offset=".8" stop-color="#23608a"/><stop offset="1" stop-color="#133451"/></radialGradient></defs><circle cx="240" cy="240" r="155" fill="url(#globeFill)" stroke="#5b879a"/><circle cx="240" cy="240" r="183" stroke="#1c799c" stroke-opacity=".23"/><circle cx="240" cy="240" r="208" stroke="#1c799c" stroke-opacity=".1"/><ellipse cx="240" cy="240" rx="61" ry="155" stroke="#efffff" stroke-opacity=".34"/><ellipse cx="240" cy="240" rx="119" ry="155" stroke="#efffff" stroke-opacity=".16"/><path d="M85 240h310M114 169h252M114 311h252" stroke="#e4f9ff" stroke-opacity=".22"/><path d="m159 147 48-22 52 26 7 32-35 15-22 32-28-22-19-28Zm109 88 55-4 27 22-10 51-38 22-18-26-19-24Zm-69 77 30 3 21 49-29-10-17-23Z" fill="#add5c3" fill-opacity=".68" stroke="#e3f0df" stroke-opacity=".2"/><ellipse cx="240" cy="240" rx="220" ry="85" transform="rotate(-29 240 240)" stroke="#c49a57" stroke-width="2.2"/><circle cx="59" cy="163" r="7" fill="#a4763f"/><circle cx="420" cy="320" r="6" fill="#146e97"/><circle cx="240" cy="240" r="226" stroke="#668fab" stroke-dasharray="3 10" stroke-opacity=".3"/></svg>
+</div>
+</div>
+</section>
+
+<section class="v3-steps" id="student-journey"><div class="shell v3-steps-grid">
+<div class="v3-steps-intro"><span class="v3-kicker">A LEARNER'S JOURNEY / NABD</span><h2 data-ar="من الفضول إلى المعرفة." data-en="FROM CURIOSITY TO KNOWLEDGE.">من الفضول إلى المعرفة.</h2><p data-ar="رحلة تعليمية متدرجة تربط بين الاكتشاف، والتعلم، والتطبيق التعليمي، ثم إظهار الإتمام حين يكون متاحًا." data-en="An educational journey connects discovery, learning, practical exploration and documented completion where available.">رحلة تعليمية متدرجة تربط بين الاكتشاف، والتعلم، والتطبيق التعليمي، ثم إظهار الإتمام حين يكون متاحًا.</p><a class="btn glass arrow" href="learning/" data-ar="ادخل عالم التعلم" data-en="Enter the Learning Universe">ادخل عالم التعلم</a></div>
+<div class="v3-steps-list">
+<div class="v3-step"><span class="v3-step-mark">01</span><div><h3 data-ar="اكتشف المسار" data-en="Discover a Path">اكتشف المسار</h3><p data-ar="تصفح الموضوعات الطبية والبرامج العامة قبل اختيار نشاطك." data-en="Browse medical subjects and public programs before selecting an activity.">تصفح الموضوعات الطبية والبرامج العامة قبل اختيار نشاطك.</p></div></div>
+<div class="v3-step"><span class="v3-step-mark">02</span><div><h3 data-ar="تعلّم بوضوح" data-en="Learn with Clarity">تعلّم بوضوح</h3><p data-ar="استخدم مسارات الطالب والأدوات الموجودة داخل الأكاديمية." data-en="Use the available student pathways and learning tools.">استخدم مسارات الطالب والأدوات الموجودة داخل الأكاديمية.</p></div></div>
+<div class="v3-step"><span class="v3-step-mark">03</span><div><h3 data-ar="جرّب المفاهيم" data-en="Explore Concepts">جرّب المفاهيم</h3><p data-ar="استكشف الحالات والمحاكاة التعليمية حيث تتوفر، دون اعتبارها بديلًا عن الإشراف السريري." data-en="Explore available simulations; these never replace supervised clinical training.">استكشف الحالات والمحاكاة التعليمية حيث تتوفر، دون اعتبارها بديلًا عن الإشراف السريري.</p></div></div>
+<div class="v3-step"><span class="v3-step-mark">04</span><div><h3 data-ar="وثّق ما تعلمته" data-en="Verify Your Learning">وثّق ما تعلمته</h3><p data-ar="استكشف شهادات إتمام الأنشطة والتحقق منها وفق شروط البرنامج." data-en="Explore completion credentials and their verification where eligible.">استكشف شهادات إتمام الأنشطة والتحقق منها وفق شروط البرنامج.</p></div></div>
+</div></div></section><section class="founder" id="founder">
+<div class="shell founder-grid">
+<div class="founder-portrait">
+<img src="assets/images/founder.jpg" alt="محمد خالد العرجا — مؤسس أكاديمية نبض للعلوم الطبية ومديرها العام" width="750" height="900" decoding="async" loading="lazy">
+<div class="founder-seal"><strong data-ar="محمد خالد العرجا" data-en="Mohammed Khaled Al-Arja">محمد خالد العرجا</strong><small data-ar="المؤسس والمدير العام" data-en="FOUNDER &amp; GENERAL DIRECTOR">المؤسس والمدير العام</small></div>
+</div>
+<div class="founder-copy">
+<div class="section-no">06 / 07</div>
+<div class="eyebrow" style="margin-top:22px">THE FOUNDER · LEADERSHIP & VISION</div>
+<h2 data-ar="محمد خالد العرجا" data-en="Mohammed Khaled Al-Arja">محمد خالد العرجا</h2>
+<span class="founder-title" data-ar="المؤسس والمدير العام لأكاديمية نبض للعلوم الطبية" data-en="Founder & General Director — NABD Academy for Medical Sciences">المؤسس والمدير العام لأكاديمية نبض للعلوم الطبية</span>
+<p data-ar="يقود محمد خالد العرجا تطوير أكاديمية نبض للعلوم الطبية بوصفها مبادرة فلسطينية تهدف إلى توسيع فرص التعليم الطبي الرقمي. تشمل رؤيته تطوير بيئة تعليمية متعددة المسارات، أدوات للتعلّم السريري التفاعلي، مبادرات البحث العلمي، وأنظمة واضحة للتحقق من شهادات الإتمام." data-en="Mohammed Khaled Al-Arja leads NABD Academy for Medical Sciences as a Palestinian initiative dedicated to widening access to digital medical learning. His vision includes multi-track education, interactive clinical learning tools, research initiatives and transparent verification of course-completion certificates.">يقود محمد خالد العرجا تطوير أكاديمية نبض للعلوم الطبية بوصفها مبادرة فلسطينية تهدف إلى توسيع فرص التعليم الطبي الرقمي. تشمل رؤيته تطوير بيئة تعليمية متعددة المسارات، أدوات للتعلّم السريري التفاعلي، مبادرات البحث العلمي، وأنظمة واضحة للتحقق من شهادات الإتمام.</p>
+<p data-ar="تنطلق هذه الرؤية من غزة بطموح إلى بناء منصة تعليمية عالية الجودة، تضع احتياجات الطلبة وإمكانية الوصول إلى العلم في مقدمة أولوياتها، وتحافظ على هويتها الفلسطينية ومصداقيتها المؤسسية." data-en="Rooted in Gaza, this vision seeks to build a high-quality educational platform that prioritizes learners' needs, accessible knowledge, Palestinian identity and institutional credibility.">تنطلق هذه الرؤية من غزة بطموح إلى بناء منصة تعليمية عالية الجودة، تضع احتياجات الطلبة وإمكانية الوصول إلى العلم في مقدمة أولوياتها، وتحافظ على هويتها الفلسطينية ومصداقيتها المؤسسية.</p>
+<div class="founder-divider"></div>
+<div class="founder-values"><span data-ar="التعليم الطبي" data-en="MEDICAL EDUCATION">التعليم الطبي</span><span data-ar="البحث العلمي" data-en="SCIENTIFIC RESEARCH">البحث العلمي</span><span data-ar="الابتكار الرقمي" data-en="DIGITAL INNOVATION">الابتكار الرقمي</span><span data-ar="الشفافية" data-en="TRANSPARENCY">الشفافية</span></div>
+<div class="founder-quote" data-ar="من غزة ننطلق؛ والمعرفة الطبية وسيلتنا لصناعة فرص تعليمية أوسع." data-en="From Gaza, we build opportunities for more accessible medical education through knowledge.">من غزة ننطلق؛ والمعرفة الطبية وسيلتنا لصناعة فرص تعليمية أوسع.</div>
+</div>
+</div>
+</section>
+
+<section class="v3-leadership" id="leadership-vision"><div class="shell v3-leadership-grid"><div class="v3-kicker">FOUNDER / VISION / NABD ACADEMY</div><div><blockquote><span data-ar="من فلسطين نبني تجربة تجعل " data-en="FROM PALESTINE, WE BUILD ">من فلسطين نبني تجربة تجعل </span><em data-ar="المعرفة الطبية أوسع وصولًا وأكثر تفاعلًا،" data-en="MORE ACCESSIBLE, INTERACTIVE MEDICAL LEARNING,">المعرفة الطبية أوسع وصولًا وأكثر تفاعلًا،</em><span data-ar=" وتمنح الطالب مساحة للنمو." data-en=" GIVING LEARNERS ROOM TO GROW."> وتمنح الطالب مساحة للنمو.</span></blockquote><cite data-ar="رؤية أكاديمية نبض للعلوم الطبية — المؤسس محمد خالد العرجا" data-en="NABD Academy vision — founder Mohammed Khaled Al-Arja">رؤية أكاديمية نبض للعلوم الطبية — المؤسس محمد خالد العرجا</cite></div></div></section><section class="gateway" id="gateway">
+<div class="shell gateway-grid">
+<div class="gateway-cta">
+<span class="section-no">07 / 07</span><div class="eyebrow" style="margin-top:16px">THE ACADEMY IS OPEN TO EXPLORE</div>
+<h2 data-ar="بوابتك إلى عالم نبض." data-en="Your Gateway to NABD.">بوابتك إلى عالم نبض.</h2>
+<p data-ar="اختر المسار المناسب لك: طالب، محاضر، إدارة، أو زائر يبحث عن الدورات والمبادرات. روابط المنظومات الحالية محفوظة." data-en="Choose your route: student, lecturer, administrator, or visitor exploring courses and initiatives. Existing portal links remain available.">اختر المسار المناسب لك: طالب، محاضر، إدارة، أو زائر يبحث عن الدورات والمبادرات. روابط المنظومات الحالية محفوظة.</p>
+<a class="btn gold arrow" href="academy.html" data-ar="استكشف الأكاديمية" data-en="Explore the Academy">استكشف الأكاديمية</a>
+</div>
+<div class="gateway-links">
+<a class="gateway-link" href="portal.html" data-ar="بوابة الطالب" data-en="Student Portal">بوابة الطالب</a>
+<a class="gateway-link" href="lecturers.html" data-ar="بوابة المحاضر" data-en="Lecturer Portal">بوابة المحاضر</a>
+<a class="gateway-link" href="admin.html" data-ar="بوابة الإدارة" data-en="Administration Portal">بوابة الإدارة</a>
+<a class="gateway-link" href="index.html#verify" data-ar="التحقق من الشهادات" data-en="Verify Certificates">التحقق من الشهادات</a>
+<a class="gateway-link" href="index.html#research" data-ar="البحث العلمي" data-en="Research">البحث العلمي</a>
+<a class="gateway-link" href="index.html" data-ar="الموقع الرسمي الكامل" data-en="Full Official Website">الموقع الرسمي الكامل</a>
+</div>
+</div>
+</section>
+
+<section class="v3-final" id="next"><div class="shell"><span class="v3-kicker">NABD ACADEMY FOR MEDICAL SCIENCES</span><h2><span data-ar="من غزة..." data-en="FROM GAZA...">من غزة...</span><br><em data-ar="إلى آفاق أبعد." data-en="BEYOND BORDERS.">إلى آفاق أبعد.</em></h2><p data-ar="أكاديمية نبض للعلوم الطبية: تعليم رقمي طموح، جذوره فلسطينية، ورسالته إتاحة المعرفة الطبية بصورة محترفة ومسؤولة." data-en="NABD Academy for Medical Sciences: an ambitious Palestinian digital-learning initiative bringing medical knowledge closer through responsible, accessible education.">أكاديمية نبض للعلوم الطبية: تعليم رقمي طموح، جذوره فلسطينية، ورسالته إتاحة المعرفة الطبية بصورة محترفة ومسؤولة.</p><div class="v3-final-actions"><a class="btn gold arrow" href="academy.html" data-ar="ابدأ الاستكشاف" data-en="Start Exploring">ابدأ الاستكشاف</a><a class="btn glass arrow" href="index.html" data-ar="الموقع الكامل الحالي" data-en="Full Current Website">الموقع الكامل الحالي</a></div></div></section></main>
+<footer class="footer">
+<div class="shell">
+<div class="footer-grid">
+<div>
+<a class="brand" href="#top"><span class="brand-symbol"><svg viewBox="0 0 36 36" fill="none" stroke="#7debdc" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" aria-hidden="true"><path d="M2 19h7l4-9 7 18 5-12h9"/><circle cx="18" cy="18" r="16" stroke="#eac782" stroke-width=".7" stroke-opacity=".45"/></svg></span><span><strong data-ar="أكاديمية نبض للعلوم الطبية" data-en="NABD Academy for Medical Sciences">أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY FOR MEDICAL SCIENCES</small></span></a>
+<p data-ar="أكاديمية نبض للعلوم الطبية مبادرة تعليمية فلسطينية رقمية. المؤسس والمدير العام: محمد خالد العرجا." data-en="NABD Academy for Medical Sciences is a Palestinian digital educational initiative. Founder and General Director: Mohammed Khaled Al-Arja.">أكاديمية نبض للعلوم الطبية مبادرة تعليمية فلسطينية رقمية. المؤسس والمدير العام: محمد خالد العرجا.</p>
+</div>
+<div><h3 data-ar="استكشف الأكاديمية" data-en="Explore the Academy">استكشف الأكاديمية</h3><div class="footer-links"><a href="academy.html" data-ar="المسارات التعليمية" data-en="Learning Paths">المسارات التعليمية</a><a href="learning/" data-ar="عالم الطلاب" data-en="Student Learning Universe">عالم الطلاب</a><a href="global-lectures.html" data-ar="البرنامج الدولي" data-en="Global Lectures">البرنامج الدولي</a><a href="atlas/clinical-hub.html" data-ar="NABD ATLAS" data-en="NABD ATLAS">NABD ATLAS</a></div></div>
+<div><h3 data-ar="البوابات والقيادة" data-en="Portals & Leadership">البوابات والقيادة</h3><div class="footer-links"><a href="#founder" data-ar="محمد خالد العرجا — المؤسس" data-en="Mohammed Khaled Al-Arja — Founder">محمد خالد العرجا — المؤسس</a><a href="portal.html" data-ar="بوابة الطالب" data-en="Student Portal">بوابة الطالب</a><a href="lecturers.html" data-ar="بوابة المحاضرين" data-en="Lecturer Portal">بوابة المحاضرين</a><a href="index.html" data-ar="النسخة الرسمية الحالية" data-en="Current Official Website">النسخة الرسمية الحالية</a></div></div>
+</div>
+<div class="footer-bottom"><span>© <span id="year">2026</span> NABD Academy for Medical Sciences</span><span class="gold-note" data-ar="المؤسس والمدير العام: محمد خالد العرجا" data-en="Founder & General Director: Mohammed Khaled Al-Arja">المؤسس والمدير العام: محمد خالد العرجا</span><span data-ar="معاينة تجريبية — لا تعني وجود شراكات أو اعتمادات جامعية مؤكدة" data-en="Design preview — no unconfirmed institutional partners or university accreditation are claimed">معاينة تجريبية — لا تعني وجود شراكات أو اعتمادات جامعية مؤكدة</span></div>
+</div>
+</footer>
+<script>
+(function(){
+"use strict";
+const langBtn=document.getElementById("locale");
+const nav=document.getElementById("nav");
+const menu=document.getElementById("menu");
+function applyLanguage(language){
+const code=language==="en"?"en":"ar";
+document.documentElement.lang=code;
+document.documentElement.dir=code==="ar"?"rtl":"ltr";
+document.querySelectorAll("[data-ar][data-en]").forEach(function(node){
+ node.textContent=node.getAttribute("data-"+code);
+});
+langBtn.textContent=code==="ar"?"EN":"عربي";
+langBtn.setAttribute("aria-label",code==="ar"?"Switch to English":"التبديل إلى العربية");
+document.title=code==="ar"?"أكاديمية نبض للعلوم الطبية | معاينة تصميم":"NABD Academy for Medical Sciences | Design Preview";
+try{localStorage.setItem("nabd-imperial-preview-lang",code);}catch(err){}
+}
+let code="ar";
+try{code=localStorage.getItem("nabd-imperial-preview-lang")||"ar";}catch(err){}
+applyLanguage(code);
+langBtn.addEventListener("click",function(){applyLanguage(document.documentElement.lang==="ar"?"en":"ar");});
+menu.addEventListener("click",function(){
+const expanded=menu.getAttribute("aria-expanded")==="true";
+menu.setAttribute("aria-expanded",String(!expanded));
+nav.classList.toggle("open",!expanded);
+menu.textContent=expanded?"☰":"✕";
+menu.setAttribute("aria-label",expanded?"Open navigation":"Close navigation");
+});
+nav.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){nav.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.textContent="☰";});});
+document.getElementById("year").textContent=String(new Date().getFullYear());
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+var choices={
+atlas:{ar:["NABD ATLAS — عالم التعلم السريري","حالات ومحاكاة سريرية تعليمية تساعد على استكشاف مفاهيم الطب، وليست بديلًا عن التدريب السريري المباشر."],en:["NABD ATLAS — Clinical Learning","Educational clinical scenarios to explore medical concepts, not a replacement for supervised clinical training."],href:"atlas/clinical-hub.html",label:"CLINICAL HUB"},
+learning:{ar:["عالم الطالب التعليمي","مسارات للمواد الطبية وأدوات للمراجعة والاستكشاف، ضمن تجربة تعلم رقمية."],en:["Student Learning Universe","Study pathways, review tools and medical resources in a digital learning experience."],href:"learning/",label:"LEARNING HUB"},
+knowledge:{ar:["مركز المعرفة الطبية","معلومات ومواد علمية تفتح أبوابًا لاستكشاف موضوعات الطب."],en:["Medical Knowledge Hub","Curated routes to exploring medical topics and scientific resources."],href:"nabd-medical-knowledge.html",label:"KNOWLEDGE HUB"},
+lecturers:{ar:["بوابة المحاضرين","مسار المحاضر لاستكشاف المساهمة في تجارب أكاديمية نبض التعليمية."],en:["Lecturer Portal","A dedicated entry point for educators contributing to NABD's learning ecosystem."],href:"lecturers.html",label:"LECTURER HUB"}
+};
+var active="atlas";
+var nodes=[].slice.call(document.querySelectorAll(".v3-map-node"));
+var buttons=[].slice.call(document.querySelectorAll("[data-v3-campus]"));
+if(!buttons.length){return;}
+function render(){
+ var lang=document.documentElement.lang==="en"?"en":"ar";
+ var chosen=choices[active],items=chosen[lang];
+ document.getElementById("v3-world-title").textContent=items[0];
+ document.getElementById("v3-world-description").textContent=items[1];
+ document.getElementById("v3-world-index").textContent=String(["atlas","learning","knowledge","lecturers"].indexOf(active)+1).padStart(2,"0")+" / 04";
+ document.getElementById("v3-world-link").href=chosen.href;
+ document.getElementById("v3-core-label").textContent=chosen.label;
+ buttons.forEach(function(button){button.setAttribute("aria-pressed",String(button.getAttribute("data-v3-campus")===active));});
+ nodes.forEach(function(node,i){node.classList.toggle("active",["atlas","learning","knowledge","lecturers"][i]===active);});
+}
+buttons.forEach(function(button){button.addEventListener("click",function(){active=button.getAttribute("data-v3-campus");render();});});
+var locale=document.getElementById("locale");
+if(locale){locale.addEventListener("click",function(){setTimeout(render,0);});}
+render();
+})();
+</script></body>
+</html>
