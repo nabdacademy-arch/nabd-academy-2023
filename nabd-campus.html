@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06101e">
+  <meta name="description" content="NABD Campus — بوابة موحدة للتعليم الطبي المجاني والمحاضرات الدولية والمسارات التفاعلية في أكاديمية نبض.">
+  <title>NABD Campus | الحرم الطبي الرقمي — أكاديمية نبض</title>
+  <link rel="canonical" href="https://nabdacademy-arch.github.io/nabd-academy-2023/nabd-campus.html">
+  <link rel="stylesheet" href="assets/css/nabd-campus.css?v=1">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="assets/js/config.js?v=12"></script>
+  <script defer src="assets/js/supabase-client.js?v=12"></script>
+  <script defer src="assets/js/nabd-campus.js?v=1"></script>
+</head>
+<body>
+<a class="skip" href="#main" data-ar="تجاوز إلى المحتوى" data-en="Skip to content">تجاوز إلى المحتوى</a>
+<header class="top">
+  <div class="shell top-inner">
+    <a class="brand" href="index.html" aria-label="NABD Academy"><span class="brand-mark" aria-hidden="true">N</span><span><strong data-ar="أكاديمية نبض للعلوم الطبية" data-en="NABD Academy for Medical Sciences">أكاديمية نبض للعلوم الطبية</strong><small>NABD / CAMPUS OS</small></span></a>
+    <nav class="nav" aria-label="Campus">
+      <a href="#workspace" data-ar="حسابي" data-en="My campus">حسابي</a>
+      <a href="#sessions" data-ar="المحاضرات الدولية" data-en="Global lectures">المحاضرات الدولية</a>
+      <a href="#paths" data-ar="المسارات" data-en="Pathways">المسارات</a>
+      <a href="nabd-partners.html" data-ar="الشراكات" data-en="Partnerships">الشراكات</a>
+      <a href="index.html" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+    </nav>
+    <button id="languageButton" class="lang" type="button" aria-label="Switch language">English</button>
+  </div>
+</header>
+<main id="main">
+<section class="hero">
+  <div class="shell hero-grid">
+    <div>
+      <div class="eyebrow">NABD CAMPUS / ONE CONNECTED EXPERIENCE</div>
+      <h1 data-ar="عالمك الطبي، <em>في مكان واحد.</em>" data-en="Your medical world, <em>all in one place.</em>">عالمك الطبي، <em>في مكان واحد.</em></h1>
+      <p class="lead" data-ar="بوابة موحدة تجمع تعلّمك ومحاضراتك الدولية وجواز مهاراتك، وتفتح طريقًا واضحًا نحو التجربة الطبية التفاعلية — من غزة إلى العالم." data-en="One connected home for your courses, international lectures, skills passport and interactive medical learning — from Gaza to the world.">بوابة موحدة تجمع تعلّمك ومحاضراتك الدولية وجواز مهاراتك، وتفتح طريقًا واضحًا نحو التجربة الطبية التفاعلية — من غزة إلى العالم.</p>
+      <div class="row">
+        <a class="button primary" href="#workspace" data-ar="ادخل عالم الطالب ←" data-en="Enter my campus →">ادخل عالم الطالب ←</a>
+        <a class="button ghost" href="#sessions" data-ar="استكشف اللقاءات" data-en="Explore lectures">استكشف اللقاءات</a>
+      </div>
+      <div class="pills">
+        <span class="pill" data-ar="مجاني للمتعلمين" data-en="Free learning access">مجاني للمتعلمين</span>
+        <span class="pill" data-ar="عربي • English" data-en="Arabic • English">عربي • English</span>
+        <span class="pill" data-ar="موارد خفيفة الإنترنت" data-en="Low-bandwidth first">موارد خفيفة الإنترنت</span>
+      </div>
+    </div>
+    <div class="orb" aria-hidden="true">
+      <div class="orbit-label ol-a">LEARN / EXPLORE</div>
+      <div class="core"><div style="text-align:center"><span>✦</span><small>NABD CAMPUS</small></div></div>
+      <div class="orbit-label ol-b">MEDICAL · DIGITAL · GAZA</div>
+    </div>
+  </div>
+</section>
+<section class="section section-border" id="workspace">
+  <div class="shell">
+    <div class="section-head"><div><span class="eyebrow">01 / STUDENT COMMAND CENTER</span><h2 data-ar="بوابتك التعليمية الشخصية" data-en="Your personal learning home">بوابتك التعليمية الشخصية</h2><p data-ar="بياناتك الفعلية من حساب أكاديمية نبض، لا أرقام تجريبية أو شهادات غير صادرة." data-en="Your real academy account data — no invented progress or unissued certificates.">بياناتك الفعلية من حساب أكاديمية نبض، لا أرقام تجريبية أو شهادات غير صادرة.</p></div><a class="button ghost small" href="portal.html" data-ar="فتح بوابة الطالب" data-en="Open student portal">فتح بوابة الطالب</a></div>
+    <div class="dashboard">
+      <div class="dashboard-head">
+        <div><h3 id="studentName" data-ar="أهلًا بك في نبض" data-en="Welcome to NABD">أهلًا بك في نبض</h3><p id="accountStatus" aria-live="polite" data-ar="جارٍ التحقق من حسابك…" data-en="Checking your account…">جارٍ التحقق من حسابك…</p></div>
+        <a class="button ghost small" id="studentAction" href="portal.html" data-ar="تسجيل الدخول" data-en="Sign in">تسجيل الدخول</a>
+      </div>
+      <div class="metric-grid" aria-label="Student learning statistics">
+        <div class="metric"><strong id="courseCount">—</strong><span data-ar="مقررات مرتبطة" data-en="Linked courses">مقررات مرتبطة</span></div>
+        <div class="metric"><strong id="progressAverage">—</strong><span data-ar="متوسط التقدم" data-en="Average progress">متوسط التقدم</span></div>
+        <div class="metric"><strong id="certificateCount">—</strong><span data-ar="شهادات مسجلة" data-en="Recorded certificates">شهادات مسجلة</span></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-list"><h4 data-ar="مقرراتي" data-en="My courses">مقرراتي</h4><div id="courseList" class="muted small" aria-live="polite" data-ar="سجّل الدخول لعرض مقرراتك." data-en="Sign in to see your courses.">سجّل الدخول لعرض مقرراتك.</div></div>
+        <div class="dash-list"><h4 data-ar="شهاداتي" data-en="My certificates">شهاداتي</h4><div id="certificateList" class="muted small" aria-live="polite" data-ar="تظهر شهادات الإتمام المسجلة بحسابك هنا." data-en="Completion records connected to your account will appear here.">تظهر شهادات الإتمام المسجلة بحسابك هنا.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="sessions">
+  <div class="shell">
+    <div class="section-head"><div><span class="eyebrow">02 / GLOBAL MEDICAL LECTURES</span><h2 data-ar="المحاضرات الدولية" data-en="International medical lectures">المحاضرات الدولية</h2><p data-ar="ستظهر فقط الجلسات التي تؤكدها الإدارة وتنشر موعدها. التسجيل مجاني، والحضور لا يمنح اعتمادًا جامعيًا تلقائيًا." data-en="Only confirmed sessions published by the academy appear here. Registration is free and attendance does not automatically award academic credit.">ستظهر فقط الجلسات التي تؤكدها الإدارة وتنشر موعدها. التسجيل مجاني، والحضور لا يمنح اعتمادًا جامعيًا تلقائيًا.</p></div><a class="button ghost small" href="global-lectures.html" data-ar="عن المبادرة الدولية" data-en="About the initiative">عن المبادرة الدولية</a></div>
+    <div id="sessionList" class="sessions" aria-live="polite"><div class="empty" data-ar="جارٍ التحقق من الجلسات المؤكدة…" data-en="Checking confirmed sessions…">جارٍ التحقق من الجلسات المؤكدة…</div></div>
+    <p id="lectureNote" class="muted small" aria-live="polite"></p>
+    <section id="adminPanel" class="admin-panel" hidden aria-label="Authorized lecturer scheduler">
+      <div class="row" style="justify-content:space-between"><h3 data-ar="إدارة جدول المحاضرات (للمخوّلين فقط)" data-en="Session scheduling (authorized admins only)">إدارة جدول المحاضرات (للمخوّلين فقط)</h3><span class="badge gold">ADMIN</span></div>
+      <p class="muted small" data-ar="لا تنشر جلسة قبل موافقة المحاضر وتأكيد التوقيت؛ ولا تضع رابط الاجتماع الخاص في هذا الجدول العام." data-en="Publish only after speaker consent and time confirmation. Never store a private meeting URL in the public schedule.">لا تنشر جلسة قبل موافقة المحاضر وتأكيد التوقيت؛ ولا تضع رابط الاجتماع الخاص في هذا الجدول العام.</p>
+      <form id="sessionForm">
+        <div class="form-grid">
+          <label><span data-ar="عنوان الجلسة بالعربية" data-en="Arabic session title">عنوان الجلسة بالعربية</span><input name="title_ar" maxlength="180" minlength="4" required></label>
+          <label><span data-ar="عنوان الجلسة بالإنجليزية" data-en="English session title">عنوان الجلسة بالإنجليزية</span><input name="title_en" maxlength="180" minlength="4" required></label>
+          <label><span data-ar="اسم المحاضر (بعد الموافقة)" data-en="Speaker name (with consent)">اسم المحاضر (بعد الموافقة)</span><input name="speaker_name" maxlength="130"></label>
+          <label><span data-ar="الجهة / الاختصاص" data-en="Affiliation / specialty">الجهة / الاختصاص</span><input name="speaker_affiliation" maxlength="150"></label>
+          <label><span data-ar="التاريخ والوقت المحلي" data-en="Local date and time">التاريخ والوقت المحلي</span><input name="scheduled_at" type="datetime-local" required></label>
+          <label><span data-ar="مدة الجلسة بالدقائق" data-en="Duration in minutes">مدة الجلسة بالدقائق</span><select name="duration_minutes"><option value="45">45</option><option value="60" selected>60</option><option value="90">90</option></select></label>
+          <label class="full"><span data-ar="حالة النشر" data-en="Publication status">حالة النشر</span><select name="status"><option value="draft" data-ar="مسودة لا يراها الجمهور" data-en="Draft — private">مسودة لا يراها الجمهور</option><option value="published" data-ar="منشورة — بعد التأكيد فقط" data-en="Publish — only after confirmation">منشورة — بعد التأكيد فقط</option></select></label>
+        </div>
+        <button type="submit" class="button primary" id="saveSession" data-ar="حفظ الجلسة" data-en="Save session">حفظ الجلسة</button>
+        <p id="adminFeedback" class="status" role="status"></p>
+      </form>
+    </section>
+  </div>
+</section>
+<section class="section section-border" id="paths">
+  <div class="shell">
+    <div class="section-head"><div><span class="eyebrow">03 / CONNECTED PATHWAYS</span><h2 data-ar="كل أدوات نبض، مترابطة" data-en="Your connected NABD pathways">كل أدوات نبض، مترابطة</h2><p data-ar="المسارات التعليمية الحالية وروابطها المباشرة، مع توضيح ما هو تجريبي." data-en="Direct access to existing learning tools, with preview features clearly identified.">المسارات التعليمية الحالية وروابطها المباشرة، مع توضيح ما هو تجريبي.</p></div></div>
+    <div class="gate">
+      <article class="tile"><span class="tile-icon" aria-hidden="true">◈</span><h3 data-ar="منصة التعلّم" data-en="Learning platform">منصة التعلّم</h3><p data-ar="الدروس والأدوات التفاعلية ومراجعة المفاهيم الطبية." data-en="Study resources, interactive lessons and medical concepts.">الدروس والأدوات التفاعلية ومراجعة المفاهيم الطبية.</p><a href="learning/" data-ar="افتح التعلّم ←" data-en="Open learning →">افتح التعلّم ←</a></article>
+      <article class="tile"><span class="tile-icon" aria-hidden="true">✚</span><span class="badge gold" data-ar="تجريبي" data-en="Preview">تجريبي</span><h3>NABD ATLAS</h3><p data-ar="مستشفى افتراضي وحالات تعليمية لم تُراجع سريريًا بعد، وليست نظام تشخيص أو اختبار ترخيص." data-en="A virtual hospital and unreviewed educational cases, not a diagnosis system or licensing assessment.">مستشفى افتراضي وحالات تعليمية لم تُراجع سريريًا بعد، وليست نظام تشخيص أو اختبار ترخيص.</p><a href="atlas/" data-ar="استكشف النموذج ←" data-en="Explore preview →">استكشف النموذج ←</a></article>
+      <article class="tile"><span class="tile-icon" aria-hidden="true">◎</span><h3 data-ar="جواز المهارات" data-en="Skills passport">جواز المهارات</h3><p data-ar="توثيق التعلم والتأملات التعليمية؛ ليس شهادة كفاءة سريرية." data-en="Track learning reflections — not a clinical competence credential.">توثيق التعلم والتأملات التعليمية؛ ليس شهادة كفاءة سريرية.</p><a href="skill-passport.html" data-ar="افتح الجواز ←" data-en="Open passport →">افتح الجواز ←</a></article>
+      <article class="tile"><span class="tile-icon" aria-hidden="true">▣</span><h3 data-ar="المعرفة الطبية" data-en="Medical knowledge">المعرفة الطبية</h3><p data-ar="موضوعات عامة ومراجع للتثقيف والمراجعة؛ ليست نصيحة علاجية فردية." data-en="General health education and reference material, not individualized medical advice.">موضوعات عامة ومراجع للتثقيف والمراجعة؛ ليست نصيحة علاجية فردية.</p><a href="nabd-medical-knowledge.html" data-ar="استكشف المكتبة ←" data-en="Explore knowledge →">استكشف المكتبة ←</a></article>
+      <article class="tile"><span class="tile-icon" aria-hidden="true">⌁</span><h3 data-ar="استوديو المحاضر" data-en="Teaching studio">استوديو المحاضر</h3><p data-ar="إعداد دروسك ومواردك عند تكليفك رسميًا من إدارة الأكاديمية." data-en="Prepare courses and resources when formally assigned by the academy.">إعداد دروسك ومواردك عند تكليفك رسميًا من إدارة الأكاديمية.</p><a href="lecturers.html" data-ar="بوابة المحاضر ←" data-en="Lecturer portal →">بوابة المحاضر ←</a></article>
+      <article class="tile"><span class="tile-icon" aria-hidden="true">◇</span><h3 data-ar="الشهادات والتحقق" data-en="Certificates & verification">الشهادات والتحقق</h3><p data-ar="اعرض شهادات إتمام الدورات الصادرة وتحقق من أرقام الشهادات المنشورة." data-en="View actual issued completion records and verify public certificate IDs.">اعرض شهادات إتمام الدورات الصادرة وتحقق من أرقام الشهادات المنشورة.</p><a href="index.html#verify" data-ar="تحقق من شهادة ←" data-en="Verify a certificate →">تحقق من شهادة ←</a></article>
+    </div>
+    <div class="notice" style="margin-top:22px"><strong data-ar="ضمان المصداقية:" data-en="Transparency note:">ضمان المصداقية:</strong> <span data-ar="المحاكاة الطبية للتمرين النظري فقط. لا تستخدم حالات حقيقية أو معلومات مرضى، ولا تعتمد عليها لاتخاذ قرارات رعاية صحية." data-en="Medical simulations are for educational practice only. Never enter real patient information or use them to make care decisions.">المحاكاة الطبية للتمرين النظري فقط. لا تستخدم حالات حقيقية أو معلومات مرضى، ولا تعتمد عليها لاتخاذ قرارات رعاية صحية.</span></div>
+  </div>
+</section>
+<section class="section section-border">
+  <div class="shell fund-banner">
+    <div><span class="eyebrow">04 / NABD GLOBAL IMPACT</span><h2 data-ar="التعليم المجاني يستحق أن يستمر." data-en="Free education deserves to continue.">التعليم المجاني يستحق أن يستمر.</h2><p data-ar="مركز للشركاء والممولين والمحاضرين المتطوعين، يعرض مشروعًا تجريبيًا بميزانية وأهداف تقديرية واضحة، ولا يدّعي تمويلًا أو شراكات غير مؤكدة." data-en="A transparent home for funders, education partners and volunteer lecturers, with a proposed pilot budget and goals — not claims of confirmed grants or partnerships.">مركز للشركاء والممولين والمحاضرين المتطوعين، يعرض مشروعًا تجريبيًا بميزانية وأهداف تقديرية واضحة، ولا يدّعي تمويلًا أو شراكات غير مؤكدة.</p></div>
+    <a class="button primary" href="nabd-partners.html" data-ar="افتح مركز الشراكات ←" data-en="Explore partnerships →">افتح مركز الشراكات ←</a>
+  </div>
+</section>
+</main>
+<footer class="footer"><div class="shell footer-inner"><span>© <span id="copyrightYear">2026</span> NABD Academy for Medical Sciences · NABD Campus</span><span><a href="policies.html" data-ar="السياسات والخصوصية" data-en="Policies & privacy">السياسات والخصوصية</a> · <a href="index.html" data-ar="الموقع الرئيسي" data-en="Academy home">الموقع الرئيسي</a></span></div></footer>
+<div id="flash" class="flash" role="status" hidden></div>
+</body>
+</html>
