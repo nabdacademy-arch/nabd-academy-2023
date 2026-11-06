@@ -267,3 +267,43 @@ html[data-theme=light] .lab-link:after{color:#0a6f78}
  .journey-step h3{font-size:18px}
  .journey-step p{font-size:12px}
 }
+
+
+/* Open the original founder photograph at full clarity, accessible native dialog. */
+.portrait{isolation:isolate}
+.photo-expand{
+  position:absolute;z-index:4;top:23px;inset-inline-end:24px;
+  border:1px solid rgba(223,249,255,.48);
+  border-radius:11px;padding:10px 15px;
+  background:rgba(7,28,44,.9);color:#f2fdff;
+  font-size:11px;font-weight:900;backdrop-filter:blur(12px);
+  box-shadow:0 14px 44px rgba(0,0,0,.2);
+}
+.photo-expand:hover{background:#0a6f78;border-color:#28d7e5}
+.founder-lightbox{
+  border:1px solid rgba(40,215,229,.5);padding:0;border-radius:18px;
+  background:#07111f;color:white;width:min(700px,94vw);max-width:94vw;
+  max-height:94dvh;overflow:hidden;
+  box-shadow:0 35px 110px rgba(0,0,0,.65)
+}
+.founder-lightbox::backdrop{background:rgba(0,6,16,.88);backdrop-filter:blur(12px)}
+.founder-lightbox-inner{padding:12px;display:flex;flex-direction:column;max-height:94dvh}
+.founder-lightbox-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 6px 12px}
+.founder-lightbox-header strong{font-size:13px;color:#d9f7f7}
+.founder-lightbox-header button{
+ background:#173a47;color:white;border:1px solid #538d96;
+ border-radius:9px;font-size:12px;font-weight:850;padding:8px 13px
+}
+.founder-lightbox img{
+ object-fit:contain;object-position:center top;width:100%;
+ max-height:calc(94dvh - 87px);border-radius:11px;background:#142e3a
+}
+.course-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1220px){.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:660px){
+ .course-grid{grid-template-columns:1fr}
+ .photo-expand{top:20px;inset-inline-end:16px;font-size:10px;padding:9px 12px}
+ .founder-lightbox{width:96vw;max-width:96vw;border-radius:13px}
+ .founder-lightbox-inner{padding:7px}
+ .founder-lightbox img{max-height:calc(94dvh - 76px)}
+}
