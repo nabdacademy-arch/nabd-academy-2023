@@ -1,6 +1,6 @@
 
 /*
-  NABD Academy for Medical Sciences — Executive Portal
+  NABD Academy of Medical Sciences — Executive Portal
   Public Supabase connection settings.
   Never put secret or service_role keys in this file.
 */
