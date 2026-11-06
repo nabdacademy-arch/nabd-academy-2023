@@ -1,0 +1,35 @@
+"use strict";
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const base = path.resolve(__dirname,"..");
+const read = (p) => fs.readFileSync(path.join(base,p),"utf8");
+const home = read("index.html");
+const advanced = read("nabd-campus.html");
+const lite = read("campus.html");
+const script = read("assets/js/nabd-mode.js");
+const css = read("assets/css/nabd-unified-entry.css");
+new vm.Script(script,{filename:"assets/js/nabd-mode.js"});
+assert.match(home,/id="nabd-unified-campus"/);
+assert.match(home,/assets\/css\/nabd-unified-entry\.css/);
+assert.match(home,/assets\/js\/nabd-mode\.js/);
+assert.match(home,/data-campus-primary/);
+assert.equal((home.match(/data-campus-switch="advanced"/g)||[]).length,1);
+assert.equal((home.match(/data-campus-switch="lite"/g)||[]).length,1);
+assert.match(home,/href="nabd-campus\.html"/);
+assert.match(home,/href="campus\.html"/);
+assert.match(home,/data-ar="حرم رقمي واحد/);
+assert.match(home,/data-en="One digital campus/);
+assert.match(advanced,/href="campus\.html" data-campus-switch="lite"/);
+assert.match(lite,/href="nabd-campus\.html" data-campus-switch="advanced"/);
+assert.match(advanced,/assets\/js\/nabd-mode\.js/);
+assert.match(lite,/assets\/js\/nabd-mode\.js/);
+assert.match(script,/nabd_campus_mode/);
+assert.match(script,/localStorage\.setItem/);
+assert.match(css,/prefers-reduced-motion/);
+assert.match(css,/max-width:500px/);
+for (const p of ["portal.html","global-lectures.html","nabd-partners.html","atlas/index.html","assets/css/campus.css","assets/js/campus.js","assets/js/nabd-campus.js"]) {
+  assert.ok(fs.existsSync(path.join(base,p)),"Broken local campus link: "+p);
+}
+console.log("NABD unified campus: structural, bilingual, accessibility and local-link smoke checks passed.");

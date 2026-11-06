@@ -1,0 +1,36 @@
+name: NABD campus integration checks
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'campus.html'
+      - 'nabd-campus.html'
+      - 'assets/css/nabd-unified-entry.css'
+      - 'assets/js/nabd-mode.js'
+      - 'tests/campus-entry.cjs'
+      - '.github/workflows/campus-entry.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'campus.html'
+      - 'nabd-campus.html'
+      - 'assets/css/nabd-unified-entry.css'
+      - 'assets/js/nabd-mode.js'
+      - 'tests/campus-entry.cjs'
+      - '.github/workflows/campus-entry.yml'
+permissions:
+  contents: read
+jobs:
+  campus-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate unified campus
+        run: |
+          node --check assets/js/nabd-mode.js
+          node tests/campus-entry.cjs
