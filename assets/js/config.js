@@ -4,7 +4,7 @@ window.NABD_CONFIG = {
   // Use the URL slug from Supabase, which can differ from the display name.
   tutorFunction: "smart-processor",
 
-  academyName: "NABD Academy for Medical Sciences",
+  academyName: "NABD Academy of Medical Sciences",
 
   siteBaseUrl: "https://nabdacademy-arch.github.io/nabd-academy-2023/",
 
