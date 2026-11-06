@@ -1,0 +1,40 @@
+name: NABD Campus integrated checks
+on:
+  pull_request:
+    paths:
+      - 'nabd-campus.html'
+      - 'nabd-partners.html'
+      - 'assets/css/nabd-campus.css'
+      - 'assets/js/nabd-campus.js'
+      - 'supabase/migrations/20261106_nabd_campus_global_sessions.sql'
+      - 'tests/nabd-campus.static.cjs'
+      - 'index.html'
+      - 'academy.html'
+      - 'global-lectures.html'
+      - 'donate.html'
+      - '.github/workflows/nabd-campus-check.yml'
+  push:
+    branches:
+      - 'feat/nabd-campus-global-impact-20261106'
+    paths:
+      - 'nabd-campus.html'
+      - 'nabd-partners.html'
+      - 'assets/css/nabd-campus.css'
+      - 'assets/js/nabd-campus.js'
+      - 'supabase/migrations/20261106_nabd_campus_global_sessions.sql'
+      - 'tests/nabd-campus.static.cjs'
+      - '.github/workflows/nabd-campus-check.yml'
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check assets/js/nabd-campus.js
+      - name: Campus static integration
+        run: node tests/nabd-campus.static.cjs
