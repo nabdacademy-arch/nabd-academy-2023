@@ -65,6 +65,24 @@ menuBtn.addEventListener("click",()=>{
  menuBtn.setAttribute("aria-label",open?"Close navigation":"Open navigation");
 });
 $$(".nav a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");menuBtn.textContent="☰";menuBtn.setAttribute("aria-expanded","false")}));
+// Full-resolution founder portrait viewer: native modal with keyboard Escape and focus support.
+const founderPhotoButton=$("#openFounderPhoto"),founderDialog=$("#founderDialog"),founderClose=$("#closeFounderDialog");
+if(founderPhotoButton&&founderDialog&&founderClose){
+ founderPhotoButton.addEventListener("click",()=>{
+  if(typeof founderDialog.showModal==="function")founderDialog.showModal();
+  else founderDialog.setAttribute("open","");
+ });
+ founderClose.addEventListener("click",()=>{
+  if(typeof founderDialog.close==="function")founderDialog.close();
+  else founderDialog.removeAttribute("open");
+ });
+ founderDialog.addEventListener("click",event=>{
+  if(event.target===founderDialog){
+   if(typeof founderDialog.close==="function")founderDialog.close();
+   else founderDialog.removeAttribute("open");
+  }
+ });
+}
 $("#copyrightYear").textContent=String(new Date().getFullYear());
 applyLanguage(getStore("nabd-v6-lang","ar"));applyTheme(getStore("nabd-v6-theme","dark"));
 // WebGL is optional, loaded only near the Atlas section with a small device-independent procedural DNA model.
