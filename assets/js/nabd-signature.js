@@ -25,12 +25,12 @@
   var inner=document.createElement("div");inner.className="nfs-mini-bar-inner";
   var brand=document.createElement("a");brand.className="nfs-mini-identity";brand.href="index.html";
   var pic=document.createElement("img");pic.src="assets/images/founder.jpg";pic.alt="";pic.loading="lazy";pic.width=34;pic.height=34;
-  var text=document.createElement("span");var small=document.createElement("small");small.textContent="Mohammed Khaled Al-Arja · Founder";text.textContent=NAME_AR;text.appendChild(small);
+  var text=document.createElement("span");var small=document.createElement("small");small.textContent="Mohammed Khaled Al-Arja · Founder";text.textContent=ar()?NAME_AR:NAME_EN;text.appendChild(small);
   brand.appendChild(pic);brand.appendChild(text);
   var nav=document.createElement("nav");nav.className="nfs-mini-links";nav.setAttribute("aria-label","NABD quick navigation");
   pages.slice(0,6).forEach(function(p){var link=document.createElement("a");link.href=p[0];link.dataset.ar=p[1];link.dataset.en=p[2];link.textContent=ar()?p[1]:p[2];if(route()===p[0])link.setAttribute("aria-current","page");nav.appendChild(link);});
   inner.appendChild(brand);inner.appendChild(nav);bar.appendChild(inner);
-  document.body.insertBefore(bar,document.body.firstChild);
+  var skip=document.querySelector("a.skip");if(skip&&skip.parentElement===document.body){document.body.insertBefore(bar,skip.nextSibling)}else{document.body.insertBefore(bar,document.body.firstChild)}
   return {brand:brand,text:text,small:small,nav:nav};
  }
  function commandPalette(){
