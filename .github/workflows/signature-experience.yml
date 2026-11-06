@@ -1,0 +1,34 @@
+name: NABD Signature design and identity checks
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-signature.css'
+      - 'assets/js/nabd-signature.js'
+      - 'tests/signature-experience.cjs'
+      - 'policies.html'
+      - '.github/workflows/signature-experience.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-signature.css'
+      - 'assets/js/nabd-signature.js'
+      - 'tests/signature-experience.cjs'
+      - 'policies.html'
+      - '.github/workflows/signature-experience.yml'
+permissions:
+  contents: read
+jobs:
+  signature-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: node --check assets/js/nabd-signature.js
+      - name: Validate brand, portrait and navigation
+        run: node tests/signature-experience.cjs
