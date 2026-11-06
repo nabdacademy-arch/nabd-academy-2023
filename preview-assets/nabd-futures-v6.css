@@ -307,3 +307,47 @@ html[data-theme=light] .lab-link:after{color:#0a6f78}
  .founder-lightbox-inner{padding:7px}
  .founder-lightbox img{max-height:calc(94dvh - 76px)}
 }
+
+
+/* V6.2 · finish light theme consistently across navigation and supporting surfaces */
+html[data-theme="light"] .header{
+ color:#102c3b;background:rgba(247,252,253,.95);
+ border-bottom:1px solid rgba(41,104,130,.17)
+}
+html[data-theme="light"] .header .brand small{color:#567788}
+html[data-theme="light"] .header .brand-icon{background:rgba(7,111,120,.09);border-color:#a9ced6}
+html[data-theme="light"] .header .nav a{color:#264858}
+html[data-theme="light"] .header .nav a:hover{color:#0a6f78}
+html[data-theme="light"] .header .icon-button{
+ color:#163d4b;background:#e7f3f6;border-color:#b9d4dd
+}
+html[data-theme="light"] .header .icon-button:hover{background:#d3f1f5}
+html[data-theme="light"] .header .login{background:#0a6f78;color:#fff}
+html[data-theme="light"] .signal{
+ background:#f0f8f9;border-color:#cfe2e9;color:#215568
+}
+html[data-theme="light"] .signal b{color:#0c4154}
+html[data-theme="light"] .signal span{color:#527787}
+html[data-theme="light"] .hero-grid-visual{opacity:.1}
+html[data-theme="light"] .hero-hud small{color:#3a6f7c}
+html[data-theme="light"] .hero-founder small{color:#0a6f78}
+html[data-theme="light"] .hero-founder .eyebrow{color:#457384}
+html[data-theme="light"] .hero-cta .btn.glass:hover{background:#fff}
+html[data-theme="light"] .atlas .atlas-halo{opacity:.12}
+html[data-theme="light"] .atlas-stage:not(.webgl-ready) .atlas-geometry{filter:drop-shadow(0 25px 55px rgba(11,124,146,.18))}
+html[data-theme="light"] .atlas-geometry{opacity:.88}
+html[data-theme="light"] .atlas-stage.webgl-ready .atlas-geometry{opacity:0}
+html[data-theme="light"] .founder-copy .eyebrow{color:#0a6f78}
+html[data-theme="light"] .founder h2{color:#082b3a}
+html[data-theme="light"] .founder-attributes span{background:rgba(255,255,255,.22)}
+@media(max-width:1000px){
+ html[data-theme="light"] .header .nav{border-color:#d1e5e9}
+ html[data-theme="light"] .hero-art:after{
+ background:linear-gradient(180deg,#e5f4f6 0%,rgba(229,244,246,.82) 30%,transparent 100%)
+ }
+}
+@media(max-width:660px){
+ html[data-theme="light"] .hero-art:after{
+ background:linear-gradient(180deg,#e5f4f6 0%,rgba(229,244,246,.77) 19%,rgba(229,244,246,.21) 62%,#e5f4f6 100%)
+ }
+}
