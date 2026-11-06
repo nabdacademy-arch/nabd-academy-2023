@@ -79,7 +79,7 @@ async function createDNA(){
  if(!mount.isConnected)return;
  let renderer;
  try{renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:"low-power"})}catch(_){return}
- renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.25));renderer.outputColorSpace=THREE.SRGBColorSpace;
  const scene=new THREE.Scene();
  const camera=new THREE.PerspectiveCamera(34,1,0.1,100);
  camera.position.set(0,0,12.5);
@@ -109,7 +109,7 @@ async function createDNA(){
  const canvas=renderer.domElement;canvas.setAttribute("aria-hidden","true");mount.appendChild(canvas);
  let running=false,raf=0,last=0;let visible=true;
  function resize(){const w=mount.clientWidth,h=mount.clientHeight;if(w===0||h===0)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
- const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(mount);resize();
+ if(typeof ResizeObserver==="function"){const observer=new ResizeObserver(resize);observer.observe(mount)}else{window.addEventListener("resize",resize,{passive:true})}resize();renderer.render(scene,camera);mount.classList.add("webgl-ready");
  function frame(t){if(!running)return;const dt=Math.min(.05,(t-last)/1000||.016);last=t;helix.rotation.y+=dt*.18;helix.rotation.z=.13;renderer.render(scene,camera);raf=requestAnimationFrame(frame)}
  function start(){if(!running&&visible&&!document.hidden){running=true;last=performance.now();raf=requestAnimationFrame(frame)}}
  function stop(){running=false;cancelAnimationFrame(raf)}
