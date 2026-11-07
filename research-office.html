@@ -1,0 +1,39 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#06111f">
+<title>Research Operations Office | NABD Academy</title>
+<link href="assets/css/research-gateway.css?v=1" rel="stylesheet">
+<style>
+.office{padding:70px 0 100px;min-height:80vh}.office-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:35px}.office h1{font-size:clamp(32px,5vw,55px);margin:13px 0}.office p{color:#b4cfda}.office-card{border:1px solid #3d6972;border-radius:23px;background:linear-gradient(145deg,#112c3b,#0b1d2c);padding:30px;box-shadow:0 24px 50px #0002}.auth{max-width:550px;margin:auto}.office label{display:grid;gap:6px;font-weight:800;color:#d9eaf1;font-size:13px}.office input,.office select,.office textarea{width:100%;background:#071f2d;color:#eef8f9;border:1px solid #476776;border-radius:12px;min-height:43px;padding:10px 13px;outline-color:#a7edeb}.office textarea{min-height:95px;resize:vertical}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.full{grid-column:1/-1}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:21px}.info{padding:15px;border:1px solid #4c8087;border-radius:13px;background:#12323e;color:#cce3e8;line-height:1.8;font-size:13px}.notice-error{border-color:#b97f7f;background:#452631}.records{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}.record{border:1px solid #395d6b;background:#0d2533;border-radius:18px;padding:20px;overflow-wrap:anywhere}.record h3{font-size:20px;margin:7px 0}.record .meta{color:#9fbfc9;font-size:12px}.record p{font-size:13px;margin-bottom:9px}.record small{color:#a0c0cc}.record button{padding:8px 13px;min-height:38px;margin-top:7px}.record .status{font-size:11px;font-weight:900;background:#284753;padding:5px 10px;border-radius:999px;display:inline-block}.toolbar{justify-content:space-between;align-items:center}.toolbar input{max-width:320px}#workspace[hidden],#loginArea[hidden],#editor[hidden],#empty[hidden]{display:none!important}#message:empty{display:none}.office small{color:#adcad4}.formtitle{margin:0 0 18px;font-size:22px}@media(max-width:740px){.fields,.records{grid-template-columns:1fr}.office{padding:42px 0}.office-card{padding:20px}.office-head{display:block}.toolbar input{max-width:100%}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body>
+<header class="top"><div class="shell top-inner"><a class="brand" href="nabd-global-research.html"><span class="brand-badge">N</span><span>أكاديمية نبض العلوم الطبية<small>SECURE RESEARCH OFFICE</small></span></a><div class="nav-actions"><a href="nabd-global-research.html">العودة للبوابة العامة</a><a href="index.html">الرئيسية</a></div></div></header>
+<main id="main" class="office shell">
+<div class="office-head"><div><span class="kicker">RESEARCH ADMINISTRATION / PRIVATE WORKSPACE</span><h1>مكتب التعاون البحثي</h1><p>نظام داخلي لتوثيق التواصل مع المؤسسات البحثية ومتابعة الطلبات. البيانات لا تُنشر في بوابة الزوار.</p></div><span class="chip">AUTHORIZED ACCESS ONLY</span></div>
+<p id="message" role="status" aria-live="polite"></p>
+<section id="loginArea" class="office-card auth"><h2>دخول الإدارة المخوّلة</h2><p>يتطلب حسابًا موثقًا بصلاحية مدير الأكاديمية. لا يوجد تسجيل عام من هذه الصفحة.</p>
+<form id="authForm" class="fields"><label class="full">البريد الإلكتروني<input id="email" type="email" autocomplete="username" required></label><label class="full">كلمة المرور<input id="password" type="password" autocomplete="current-password" required></label><button class="btn btn-main full" type="submit">تسجيل الدخول الآمن</button></form>
+<p class="info" style="margin-top:20px">الحماية الحقيقية تعتمد على صلاحيات Supabase Auth وسياسات قاعدة البيانات (RLS)، وليس على إخفاء رابط الصفحة أو كلمة مرور داخل JavaScript.</p></section>
+<section id="workspace" hidden><div class="toolbar"><div><h2>متابعة الجهات والمؤسسات</h2><p id="identity" style="margin:0"></p></div><div class="actions"><button id="newRecord" class="btn btn-main" type="button">+ سجل متابعة جديد</button><button id="refresh" class="btn" type="button">تحديث القائمة</button><button id="logout" class="btn" type="button">تسجيل الخروج</button></div></div>
+<section class="office-card" id="editor" hidden><h2 id="formTitle" class="formtitle">سجل جديد</h2><form id="recordForm" class="fields">
+<label>الجهة / الجامعة<input id="institution" maxlength="180" required></label>
+<label>الدولة<input id="country" maxlength="100"></label>
+<label class="full">موضوع التواصل<input id="purpose" maxlength="400" placeholder="الإرشاد البحثي، ورشة علمية، مشروع مشترك..."></label>
+<label>الحالة<select id="status"><option value="draft">مسودة</option><option value="sent">تم الإرسال</option><option value="acknowledged">تأكيد استلام آلي</option><option value="in_review">قيد المراجعة</option><option value="replied">رد بشري</option><option value="exploring">مباحثات تعاون</option><option value="closed">مغلق</option></select></label>
+<label>رقم مرجعي داخلي<input id="reference" maxlength="100" autocomplete="off"></label>
+<label>البريد المراسَل<input id="contactEmail" type="email" maxlength="180"></label>
+<label>آخر تاريخ تواصل<input id="lastContact" type="date"></label>
+<label>موعد المتابعة<input id="followUp" type="date"></label>
+<label class="full">رابط دليل أو رسالة (خاص)<input id="evidence" type="url" maxlength="1200" placeholder="https://..."></label>
+<label class="full">ملاحظات داخلية<textarea id="notes" maxlength="3000" placeholder="محتوى إداري مختصر؛ لا تُدرج بيانات مرضى أو معلومات شخصية حساسة."></textarea></label>
+<div class="actions full"><button class="btn btn-main" type="submit" id="save">حفظ السجل</button><button type="button" id="cancel" class="btn">إلغاء</button></div>
+</form></section>
+<div class="info" style="margin-top:17px">تأكيد استلام بريد لا يعني موافقة على التعاون. لا تنقل أي جامعة لقائمة شركاء الأكاديمية دون موافقة مكتوبة موثّقة.</div>
+<div class="toolbar" style="margin-top:25px"><h2>سجلات المتابعة الداخلية</h2><label>بحث سريع<input id="search" type="search" placeholder="اسم المؤسسة أو الدولة أو الحالة"></label></div>
+<div id="records" class="records" aria-live="polite"></div><p class="info" id="empty" hidden>لا توجد سجلات داخلية حاليًا. يمكنك إضافة أول جهة من خلال النموذج.</p>
+</section>
+</main>
+<footer class="footer"><div class="shell footer-inner"><span>© 2026 NABD Academy — Internal Research Office</span><a href="nabd-global-research.html">NABD Global Research Network ↗</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script><script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/research-office.js" defer></script>
+</body></html>

@@ -1,0 +1,26 @@
+/* NABD Global Research: primary-homepage gateway entrance; no backend or confidential data. */
+.nrg-entry{position:relative;isolation:isolate;overflow:hidden;padding:72px 0;background:#061421;color:#e7f8ff;scroll-margin-top:90px;border-block:1px solid #326b793f}
+.nrg-entry *{box-sizing:border-box}
+.nrg-entry:before{content:"";z-index:-1;position:absolute;inset:0;background:radial-gradient(ellipse at 85% 0%,#1bc4c836,transparent 53%),radial-gradient(ellipse at 5% 100%,#4aafb41b,transparent 58%),repeating-linear-gradient(90deg,transparent 0,transparent 87px,#59b5b50c 88px)}
+.nrg-wrap{width:min(1150px,92%);margin:auto}
+.nrg-card{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(270px,.7fr);align-items:center;gap:40px;border:1px solid #56b9c267;background:linear-gradient(135deg,#143647dd,#0a2435d9);border-radius:30px;padding:clamp(28px,4vw,52px);box-shadow:0 25px 85px #0005}
+.nrg-kicker{display:inline-flex;gap:9px;align-items:center;color:#8bf3e3;font-size:11px;font-weight:900;letter-spacing:2px}
+.nrg-kicker:before{content:"";height:8px;width:8px;border-radius:50%;background:#8ff4e2;box-shadow:0 0 0 6px #8ff4e219}
+.nrg-entry h2{font-size:clamp(29px,4vw,51px);line-height:1.26;letter-spacing:-.045em;margin:16px 0;color:#f0faff}
+.nrg-entry h2 em{font-style:normal;color:#84ece5}
+.nrg-entry p{color:#bdd6dc;line-height:2;max-width:640px;font-size:14px;margin-bottom:24px}
+.nrg-highlights{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:24px}
+.nrg-highlights span{font-size:11px;color:#c9ebee;padding:6px 11px;border:1px solid #477682;border-radius:100px;background:#0b2a3a}
+.nrg-cta{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:11px 23px;background:linear-gradient(135deg,#65e6e2,#a7ffe4);color:#073244!important;border-radius:12px;font-weight:900;text-decoration:none!important;box-shadow:0 10px 24px #5ae5d625}
+.nrg-cta:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.nrg-cta:focus-visible{outline:3px solid #f6cf96;outline-offset:4px}
+.nrg-art{position:relative;display:grid;place-items:center;min-height:286px}
+.nrg-ring{position:absolute;width:min(275px,90%);aspect-ratio:1;border:1px solid #80d6da4d;border-radius:50%;box-shadow:0 0 0 30px #73caca0c,0 0 0 63px #73caca08}
+.nrg-ring:before,.nrg-ring:after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;background:#6aebed;box-shadow:0 0 22px #5ae8ef;top:18%;left:14%}
+.nrg-ring:after{top:auto;left:auto;right:12%;bottom:14%;background:#bfefd7}
+.nrg-core{position:relative;width:170px;height:170px;border:1px solid #6ceef080;border-radius:28px;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 30% 0%,#227b89,#123046 65%);box-shadow:0 25px 50px #020b1cbf}
+.nrg-core strong{font-size:40px;font-weight:900;letter-spacing:4px;color:#e0fcff}
+.nrg-core small{font-size:9px;letter-spacing:2px;color:#a4f4e3}
+.nrg-entry-nav{background:#0c3d47!important;border:1px solid #74ddd181!important;color:#c7fff6!important;font-weight:900!important}
+@media(max-width:750px){.nrg-entry{padding:40px 0}.nrg-card{grid-template-columns:1fr;gap:5px;padding:27px 23px}.nrg-entry h2{font-size:32px}.nrg-art{min-height:210px}.nrg-ring{width:170px;box-shadow:0 0 0 20px #73caca0b,0 0 0 42px #73caca08}.nrg-core{width:120px;height:120px;border-radius:21px}.nrg-core strong{font-size:28px}.nrg-core small{font-size:7px}}
+@media(prefers-reduced-motion:reduce){.nrg-cta:hover{transform:none}}
