@@ -14,6 +14,7 @@
   <script defer src="assets/js/nabd-campus.js?v=1"></script>
   <script defer src="assets/js/nabd-mode.js?v=1"></script>
 <link rel="stylesheet" href="assets/css/nabd-signature.css?v=1">
+<link rel="stylesheet" href="assets/css/academic-core.css?v=1">
 </head>
 <body>
 <a class="skip" href="#main" data-ar="تجاوز إلى المحتوى" data-en="Skip to content">تجاوز إلى المحتوى</a>
@@ -120,9 +121,22 @@
     <a class="button primary" href="nabd-partners.html" data-ar="افتح مركز الشراكات ←" data-en="Explore partnerships →">افتح مركز الشراكات ←</a>
   </div>
 </section>
+
+<section id="campus-service-finder" class="ncore" aria-labelledby="nc-route-title">
+ <div class="ncore-top"><div><div class="ncore-kicker">NABD / ACADEMIC SERVICE FINDER</div><h2 id="nc-route-title" data-ar="اختر مسارك في نبض." data-en="Find your place in NABD.">اختر مسارك في نبض.</h2><p data-ar="ابحث بين خدمات الأكاديمية الحقيقية، وصفِّ النتائج حسب دورك، أو كوّن مسار بداية من ثلاث خطوات. دون تسجيل أو تغيير في بياناتك." data-en="Search actual academy services, filter by your role, or create a three-step starting journey. No sign-in or account changes.">ابحث بين خدمات الأكاديمية الحقيقية، وصفِّ النتائج حسب دورك، أو كوّن مسار بداية من ثلاث خطوات. دون تسجيل أو تغيير في بياناتك.</p></div><span class="ncore-brand" aria-hidden="true">◈</span></div>
+ <div class="ncore-controls"><label class="sr-only" for="nc-route-query" data-ar="البحث في الخدمات" data-en="Search services">البحث في الخدمات</label><input class="ncore-search" type="search" id="nc-route-query" autocomplete="off" data-ar-placeholder="ابحث عن دورة أو بوابة أو بحث..." data-en-placeholder="Find a portal, study path or research tool..." placeholder="ابحث عن دورة أو بوابة أو بحث..." aria-label="Search academy services">
+ <label class="sr-only" for="nc-route-role" data-ar="حدد دورك" data-en="Choose your role">حدد دورك</label><select class="ncore-choice" id="nc-route-role" aria-label="Choose an academic role"><option value="all" data-ar="كل المسارات" data-en="All pathways">كل المسارات</option><option value="student" data-ar="طالب" data-en="Student">طالب</option><option value="lecturer" data-ar="محاضر" data-en="Lecturer">محاضر</option><option value="research" data-ar="باحث" data-en="Researcher">باحث</option><option value="leadership" data-ar="تطوع وعمل مؤسسي" data-en="Volunteering & operations">تطوع وعمل مؤسسي</option></select>
+ <button type="button" class="ncore-button primary" id="nc-build-route" data-ar="أنشئ مساري ←" data-en="Build my route →">أنشئ مساري ←</button></div>
+ <div class="ncore-stat" id="nc-route-count" role="status" aria-live="polite"></div>
+ <div class="ncore-grid" id="nc-route-grid" aria-label="Academic service pathways"></div>
+ <div class="ncore-empty" id="nc-route-empty" hidden data-ar="لا توجد نتائج. جرّب كلمة أخرى أو اختر كل المسارات." data-en="No results. Try another term or show all roles.">لا توجد نتائج. جرّب كلمة أخرى أو اختر كل المسارات.</div>
+ <div class="ncore-panel" id="nc-route-plan" hidden aria-live="polite"></div>
+ <p class="ncore-note" data-ar="جميع الروابط تقود إلى أقسام قائمة؛ ظهور خدمة لا يعني فتح تسجيل جديد أو وجود محاضرة مجدولة." data-en="Links lead to existing services; a pathway does not imply new enrolment or scheduled lectures.">جميع الروابط تقود إلى أقسام قائمة؛ ظهور خدمة لا يعني فتح تسجيل جديد أو وجود محاضرة مجدولة.</p>
+</section>
 </main>
 <footer class="footer"><div class="shell footer-inner"><span>© <span id="copyrightYear">2026</span> NABD Academy of Medical Sciences · NABD Campus</span><span><a href="policies.html" data-ar="السياسات والخصوصية" data-en="Policies & privacy">السياسات والخصوصية</a> · <a href="index.html" data-ar="الموقع الرئيسي" data-en="Academy home">الموقع الرئيسي</a></span></div></footer>
 <div id="flash" class="flash" role="status" hidden></div>
 <script defer src="assets/js/nabd-signature.js?v=1"></script>
+<script defer src="assets/js/academic-core.js?v=1"></script>
 </body>
 </html>

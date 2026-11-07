@@ -1,0 +1,54 @@
+name: NABD Academic Core integration
+on:
+  pull_request:
+    paths:
+      - 'academy.html'
+      - 'nabd-campus.html'
+      - 'global-lectures.html'
+      - 'nabd-medical-knowledge.html'
+      - 'index.html'
+      - 'assets/css/academic-core.css'
+      - 'assets/js/academic-core.js'
+      - 'tests/academic-core-*.mjs'
+      - 'tests/academic-core-*.cjs'
+      - '.github/workflows/academic-core.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'academy.html'
+      - 'nabd-campus.html'
+      - 'global-lectures.html'
+      - 'nabd-medical-knowledge.html'
+      - 'index.html'
+      - 'assets/css/academic-core.css'
+      - 'assets/js/academic-core.js'
+      - 'tests/academic-core-*.mjs'
+      - 'tests/academic-core-*.cjs'
+      - '.github/workflows/academic-core.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check assets/js/academic-core.js
+          node tests/academic-core-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify academic workflows at mobile and desktop sizes
+        run: node tests/academic-core-browser.cjs

@@ -15,6 +15,7 @@
 @keyframes rotate{to{transform:rotate(360deg)}}@media(max-width:1000px){.links{display:none}.hero-inner{grid-template-columns:1fr 1fr;min-height:530px}.tracks{grid-template-columns:repeat(2,1fr)}.roadmap{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.shell{width:min(100% - 32px,1180px)}.top-inner{min-height:68px}.brand strong{font-size:13px}.brand small{font-size:9px;letter-spacing:.08em}.mark{width:39px;height:39px}.back{display:none}.hero-inner{grid-template-columns:1fr;gap:0;min-height:0;padding-top:48px;padding-bottom:58px}.hero h1{font-size:clamp(2.55rem,11vw,4.1rem)}.hero p{font-size:15px}.visual{max-width:390px;width:100%;margin:18px auto -20px}.central-label{bottom:8%;padding:10px 16px;min-width:200px}.metrics{margin-top:0;padding-top:18px;gap:9px}.metric{padding:16px}.metric span{font-size:11px}.section{padding-block:65px}.tracks{grid-template-columns:1fr;gap:12px}.track{min-height:0;padding:22px}.track-icon{margin-bottom:15px}.pilot{grid-template-columns:1fr;gap:20px}.pilot-card{position:static;padding:24px}.how-grid,.roadmap{grid-template-columns:1fr}.phase:before{display:none}.partner{padding:30px 23px}.week{grid-template-columns:52px 1fr;gap:13px;padding:17px}.week-number{min-height:51px}.hero-trust{gap:9px}.hero-trust span{padding-inline-end:9px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.orbit-ring{animation:none}.btn,.track{transition:none}}
 </style>
 <link rel="stylesheet" href="assets/css/nabd-signature.css?v=1">
+<link rel="stylesheet" href="assets/css/academic-core.css?v=1">
 </head>
 <body>
 <a class="skip" href="#main" data-ar="تخطي إلى المحتوى" data-en="Skip to content">تخطي إلى المحتوى</a>
@@ -86,6 +87,22 @@
 <details><summary data-ar="هل ستكون المشاركة مجانية؟" data-en="Will participation be free?">هل ستكون المشاركة مجانية؟</summary><p data-ar="نعم، يهدف التصميم المقترح إلى تقديم اللقاءات مجانًا للطلبة، وفق الإمكانات والسعة المتاحة عند التنفيذ." data-en="Yes. The proposed model is free for students, subject to operational resources and capacity.">نعم، يهدف التصميم المقترح إلى تقديم اللقاءات مجانًا للطلبة، وفق الإمكانات والسعة المتاحة عند التنفيذ.</p></details>
 <details><summary data-ar="هل ستتوفر تسجيلات أو شهادات؟" data-en="Will recordings or certificates be available?">هل ستتوفر تسجيلات أو شهادات؟</summary><p data-ar="قد تُتاح الموارد أو التسجيلات بموافقة المحاضرين وبحسب القدرة التقنية. ولا تُعد أي شهادات أو اعتمادات أكاديمية مضمونة في هذه المرحلة." data-en="Resources or recordings may be offered with speaker consent and technical capacity. No certificates or academic accreditation are promised at this stage.">قد تُتاح الموارد أو التسجيلات بموافقة المحاضرين وبحسب القدرة التقنية. ولا تُعد أي شهادات أو اعتمادات أكاديمية مضمونة في هذه المرحلة.</p></details>
 </div></section>
+
+<section id="lecture-workbench" class="ncore" aria-labelledby="nc-lecture-title">
+ <div class="ncore-top"><div><div class="ncore-kicker">NABD / GLOBAL LECTURES · PREPARATION STUDIO</div><h2 id="nc-lecture-title" data-ar="حضّر لمحاضرتك القادمة." data-en="Prepare for your next lecture.">حضّر لمحاضرتك القادمة.</h2><p data-ar="جهّز خطة تعلّم شخصية حول أحد مسارات البرنامج الأربعة: قبل الجلسة، خلالها، وبعدها. لا ننشئ حجزًا ولا ندّعي وجود موعد مؤكد." data-en="Build a private preparation plan for one of the four proposed programme tracks: before, during and after a session. No bookings or confirmed dates are implied.">جهّز خطة تعلّم شخصية حول أحد مسارات البرنامج الأربعة: قبل الجلسة، خلالها، وبعدها. لا ننشئ حجزًا ولا ندّعي وجود موعد مؤكد.</p></div><span class="ncore-brand" aria-hidden="true">◉</span></div>
+ <div class="ncore-workbench">
+  <form class="ncore-panel" id="nc-lecture-form">
+   <h3 data-ar="إعداد خطة تحضير" data-en="Make a preparation plan">إعداد خطة تحضير</h3>
+   <label for="nc-lecture-track"><span data-ar="المسار التعليمي" data-en="Learning track">المسار التعليمي</span><select id="nc-lecture-track"><option value="foundations" data-ar="أساسيات العلوم الطبية" data-en="Medical foundations">أساسيات العلوم الطبية</option><option value="clinical" data-ar="التفكير السريري" data-en="Clinical reasoning">التفكير السريري</option><option value="public" data-ar="الصحة العامة والطوارئ" data-en="Public health and emergencies">الصحة العامة والطوارئ</option><option value="research" data-ar="البحث العلمي والمهارات" data-en="Research methods">البحث العلمي والمهارات</option></select></label>
+   <label for="nc-lecture-goal"><span data-ar="هدفي التعليمي (اختياري)" data-en="Learning goal (optional)">هدفي التعليمي (اختياري)</span><input id="nc-lecture-goal" maxlength="180" autocomplete="off" placeholder="مثلًا: أفهم الدورة الدموية" data-ar-placeholder="مثلًا: أفهم الدورة الدموية" data-en-placeholder="For example: understand circulation"></label>
+   <button class="ncore-button primary" type="submit" data-ar="أنشئ التحضير ←" data-en="Prepare learning plan →">أنشئ التحضير ←</button>
+   <p class="ncore-note" data-ar="لا تكتب بيانات شخصية أو تفاصيل مرضى. هذا دفتر ذاتي ولا تُرسل الإجابات." data-en="Do not enter personal or patient information. Notes stay in the browser.">لا تكتب بيانات شخصية أو تفاصيل مرضى. هذا دفتر ذاتي ولا تُرسل الإجابات.</p>
+  </form>
+  <div class="ncore-panel"><div class="ncore-kicker" data-ar="قبل • أثناء • بعد" data-en="BEFORE · DURING · AFTER">قبل • أثناء • بعد</div><div id="nc-lecture-preview" aria-live="polite"></div><div class="ncore-actions"><button type="button" id="nc-copy-lecture" class="ncore-button" data-ar="نسخ الخطة" data-en="Copy plan">نسخ الخطة</button><button type="button" id="nc-download-lecture" class="ncore-button" data-ar="تنزيل TXT" data-en="Download TXT">تنزيل TXT</button></div><p class="ncore-live" id="nc-lecture-status" aria-live="polite"></p></div>
+ </div>
+ <div class="ncore-footlinks"><a href="nabd-campus.html#sessions" data-ar="تفاصيل المحاضرات في الحرم ←" data-en="Lectures at Campus →">تفاصيل المحاضرات في الحرم ←</a><a href="learning/" data-ar="المكتبة التعليمية ←" data-en="Learning library →">المكتبة التعليمية ←</a><a href="atlas/" data-ar="مختبرات أطلس ←" data-en="ATLAS labs →">مختبرات أطلس ←</a></div>
+ <p class="ncore-note" data-ar="البرنامج مبادرة قيد الإعداد. أي تواريخ أو روابط جلسات فعلية يجب إعلانها والتحقق منها عبر صفحة الحرم الرسمية." data-en="The lecture initiative is being developed. Actual session dates and links should be verified in the official campus.">البرنامج مبادرة قيد الإعداد. أي تواريخ أو روابط جلسات فعلية يجب إعلانها والتحقق منها عبر صفحة الحرم الرسمية.</p>
+</section>
 </main>
 <footer class="footer"><div class="shell footer-inner"><div><strong data-ar="أكاديمية نبض العلوم الطبية" data-en="NABD Academy of Medical Sciences">أكاديمية نبض العلوم الطبية</strong><p data-ar="مبادرة تعليمية قيد التطوير · المؤسس والمدير العام: محمد خالد العرجا" data-en="Education initiative in development · Founder & General Director: Mohammed Khaled Al-Arja">مبادرة تعليمية قيد التطوير · المؤسس والمدير العام: محمد خالد العرجا</p></div><a href="index.html" data-ar="العودة إلى الأكاديمية ↗" data-en="Return to NABD Academy ↗">العودة إلى الأكاديمية ↗</a></div></footer>
 <script>
@@ -108,5 +125,6 @@
 })();
 </script>
 <script defer src="assets/js/nabd-signature.js?v=1"></script>
+<script defer src="assets/js/academic-core.js?v=1"></script>
 </body>
 </html>
