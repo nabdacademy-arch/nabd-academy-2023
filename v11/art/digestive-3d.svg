@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 720" width="720" height="720" role="img" aria-label="Digestive organs liver stomach and intestines"><title>Digestive organs liver stomach and intestines — 3D-style educational illustration, not a precise anatomical model</title>
+<defs>
+<radialGradient id="halo"><stop stop-color="#3fd5df" stop-opacity=".24"/><stop offset=".55" stop-color="#2b92b8" stop-opacity=".065"/><stop offset="1" stop-color="#1d659e" stop-opacity="0"/></radialGradient>
+<linearGradient id="red" x1=".14" y1=".12" x2=".92" y2=".83"><stop stop-color="#ffadb8"/><stop offset=".19" stop-color="#d9546e"/><stop offset=".45" stop-color="#a82b4c"/><stop offset=".76" stop-color="#6e1936"/><stop offset="1" stop-color="#390e2a"/></linearGradient>
+<linearGradient id="blue" x1=".1" y1=".07" x2=".93" y2=".9"><stop stop-color="#a5efff"/><stop offset=".26" stop-color="#3f9eca"/><stop offset=".59" stop-color="#17648e"/><stop offset=".91" stop-color="#102742"/></linearGradient>
+<linearGradient id="pink" x1=".12" y1=".07" x2=".91" y2=".84"><stop stop-color="#ffe4eb"/><stop offset=".3" stop-color="#e895b1"/><stop offset=".67" stop-color="#b84f84"/><stop offset="1" stop-color="#58234a"/></linearGradient>
+<linearGradient id="bone" x1=".11" y1=".08" x2=".9" y2=".88"><stop stop-color="#fffaf4"/><stop offset=".35" stop-color="#d4ebea"/><stop offset=".68" stop-color="#92b3c1"/><stop offset="1" stop-color="#41677d"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0b7"/><stop offset=".42" stop-color="#e6af68"/><stop offset="1" stop-color="#8e532f"/></linearGradient>
+<radialGradient id="glass" cx=".28" cy=".2" r=".8"><stop stop-color="#d0fff3" stop-opacity=".93"/><stop offset=".19" stop-color="#6bd7d2" stop-opacity=".65"/><stop offset=".7" stop-color="#186d81" stop-opacity=".35"/><stop offset="1" stop-color="#08364c" stop-opacity=".18"/></radialGradient>
+<filter id="shadow" x="-35%" y="-35%" width="170%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="17" result="blur"/><feOffset dx="5" dy="24" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".48"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="blur"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<circle cx="355" cy="340" r="318" fill="url(#halo)"/><g fill="none" stroke="#7af3e8" stroke-opacity=".14"><circle cx="359" cy="351" r="276" stroke-dasharray="9 12"/><circle cx="359" cy="351" r="230"/><circle cx="359" cy="351" r="182" stroke-dasharray="4 9"/><path d="M95 350H623M358 87V630" stroke-dasharray="4 10"/></g><ellipse cx="366" cy="603" rx="205" ry="35" fill="#13bdd1" opacity=".13" filter="url(#blur)"/>
+
+<g filter="url(#shadow)">
+<path d="M182 232 Q278 178 383 212 Q397 238 383 276 Q293 321 195 297 Q158 280 182 232Z" fill="url(#red)" stroke="#efa9ab" stroke-width="5"/>
+<path d="M387 184 Q425 177 429 220 Q423 254 450 284 Q492 317 477 357 Q457 404 408 369 Q372 334 395 290 Q418 253 387 184Z" fill="url(#pink)" stroke="#ffccdd" stroke-width="5"/>
+<path d="M436 212 Q433 253 461 289" fill="none" stroke="#ffe9e4" stroke-width="12" opacity=".45"/>
+<path d="M191 316 Q210 300 235 312 L449 315 Q480 319 480 345 L465 498 Q458 529 427 530 L250 525 Q219 517 214 482Z" fill="#704054" stroke="#ffb1c1" stroke-opacity=".5" stroke-width="6"/>
+<path d="M242 348 Q278 327 322 355 Q359 376 390 350 Q430 329 448 364 Q459 396 427 414 Q381 439 349 410 Q303 375 262 404 Q228 426 268 447 Q313 471 351 451 Q396 435 434 458 Q453 479 430 491 L258 490" fill="none" stroke="#e79dad" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M242 348 Q278 327 322 355 Q359 376 390 350 Q430 329 448 364 Q459 396 427 414 Q381 439 349 410 Q303 375 262 404 Q228 426 268 447 Q313 471 351 451 Q396 435 434 458 Q453 479 430 491 L258 490" fill="none" stroke="#ffe0d7" stroke-width="9" opacity=".53" stroke-linecap="round"/>
+<path d="M219 334 Q194 353 205 392 L211 489 Q215 530 255 540 L443 540 Q474 533 487 499 L490 354 Q490 326 469 315" fill="none" stroke="#edb29e" stroke-width="27" stroke-linecap="round"/>
+<path d="M219 334 Q194 353 205 392 L211 489 Q215 530 255 540 L443 540 Q474 533 487 499 L490 354 Q490 326 469 315" fill="none" stroke="#ffe2c8" stroke-width="6" opacity=".65" stroke-linecap="round"/>
+</g>
+</svg>
