@@ -23,6 +23,9 @@ const path=require("node:path");
       await page.goto("http://127.0.0.1:"+port+"/v11/",{waitUntil:"domcontentloaded"});
       await page.locator(".system-option").first().waitFor();
       assert.equal(await page.locator(".system-option").count(),8,"8 human systems");
+      assert.equal(await page.locator(".deck-system").count(),8,"Eight reference dashboard systems");
+      assert.equal(await page.locator(".deck-tile").count(),5,"Five integrated bottom shortcuts");
+      assert.ok(await page.locator("#deckOrganImage").evaluate(async i=>{try{await i.decode();return i.naturalWidth>=700}catch(e){return false}}),"Main organ asset is sharp vector artwork");
 
       // High-definition anatomy gallery: eight images, bilingual labels, zoom and contextual learning.
       await page.locator(".a3d-item").first().waitFor();
@@ -51,7 +54,14 @@ const path=require("node:path");
       assert.match(await page.locator("#systemHeading").innerText(),/العصبي/);
 
       assert.equal(await page.locator("html").getAttribute("dir"),"rtl");
-      await page.locator('.body-hotspot[data-target="respiratory"]').click();
+      await page.locator('.deck-system[data-deck-system="respiratory"]').click();
+      assert.match(await page.locator("#deckTitle").innerText(),/التنفسي/,"Dashboard system change");
+      await page.locator("#deckZoomIn").click();
+      assert.equal(await page.locator("#deckZoomValue").innerText(),"115%","Reference dashboard zoom works");
+      await page.locator('[data-layer="vessels"]').check();
+      assert.equal(await page.locator("#deckVesselLayer").isVisible(),true,"Vessel overlay toggles visibly");
+      await page.locator("#deckReset").click();
+      assert.equal(await page.locator("#deckZoomValue").innerText(),"100%","Reset restores zoom");
       assert.match(await page.locator("#systemHeading").innerText(),/التنفسي/);
       await page.locator("#tab-function").click();
       assert.match(await page.locator("#lensTitle").innerText(),/يعمل/);
@@ -71,7 +81,9 @@ const path=require("node:path");
       assert.equal(await page.locator("#missionStat").innerText(),"1");
       await page.locator("#langBtn").click();
       assert.equal(await page.locator("html").getAttribute("dir"),"ltr","English LTR");
-      assert.match(await page.locator("#heroTitle").innerText(),/universe/);
+      assert.match(await page.locator("#heroTitle").textContent(),/[Uu]niverse/);
+      await page.locator('.deck-system[data-deck-system="respiratory"]').click();
+      assert.match(await page.locator("#deckTitle").innerText(),/Respiratory/,"Dashboard translates current system");
       assert.match(await page.locator("#a3dName").innerText(),/Heart/,"Anatomy captions respond to language change");
       await page.locator("#clearProgress").click();
       assert.equal(await page.locator("#quizStat").innerText(),"0","Clear deletes mastery");

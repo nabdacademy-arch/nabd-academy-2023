@@ -12,60 +12,106 @@
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./style.css?v=1">
 <link rel="stylesheet" href="./anatomy-3d.css?v=1">
+<link rel="stylesheet" href="./deck.css?v=1">
 <link rel="preload" as="image" href="./art/heart-3d.svg">
 <script src="./app.js?v=1" defer></script>
 <script src="./anatomy-3d.js?v=1" defer></script>
+<script src="./deck.js?v=1" defer></script>
 <title>NABD V11 | عالم جسم الإنسان</title>
 </head>
 <body>
 <a class="skip" href="#main" data-ar="تجاوز إلى المحتوى" data-en="Skip to content">تجاوز إلى المحتوى</a>
 <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
-<header class="topbar">
+<header class="topbar deck-topbar">
 <div class="shell top-inner">
-<a class="brand" href="../index.html"><span class="brand-icon" aria-hidden="true">N<small>✦</small></span><span><strong>NABD <em>V11</em></strong><small>HUMAN UNIVERSE / MEDICAL LEARNING</small></span></a>
-<nav class="topnav" aria-label="Main navigation"><a href="#visual-atlas" data-ar="الصور المجسّمة" data-en="3D Anatomy">الصور المجسّمة</a><a href="#systems" data-ar="الأجهزة" data-en="Systems">الأجهزة</a><a href="#connections" data-ar="الترابط" data-en="Connections">الترابط</a><a href="#clinical" data-ar="التحديات" data-en="Challenges">التحديات</a><a href="#progress" data-ar="تقدمي" data-en="My progress">تقدمي</a></nav>
-<div class="top-actions"><span class="offline-pill" id="connectionStatus" role="status" aria-live="polite" data-ar="تجربة خفيفة" data-en="Lightweight mode">تجربة خفيفة</span><button class="chip-button" id="liteBtn" type="button" aria-pressed="false" data-ar="حركة أقل" data-en="Less motion">حركة أقل</button><button class="lang-toggle" id="langBtn" type="button" aria-label="Switch language to English">EN</button><a class="login-link" href="../portal.html" data-ar="بوابة الطالب ↗" data-en="Student portal ↗">بوابة الطالب ↗</a></div>
+<a class="brand" href="../index.html"><span class="brand-icon" aria-hidden="true">N<small>✦</small></span><span><strong>NABD <em>V11</em></strong><small data-ar="أكاديمية نبض للعلوم الطبية" data-en="NABD Medical Academy">أكاديمية نبض للعلوم الطبية</small></span></a>
+<a class="deck-brand-name" href="#commandDeck"><strong>NABD HUMAN</strong><span>UNIVERSE</span><span class="deck-brand-orbit" aria-hidden="true">✧</span></a>
+<nav class="topnav" aria-label="Main navigation"><a class="deck-active" href="../index.html"><span aria-hidden="true">⌂</span><span data-ar="الرئيسية" data-en="Home">الرئيسية</span></a><a href="#systems"><span aria-hidden="true">♧</span><span data-ar="جسم الإنسان" data-en="Human body">جسم الإنسان</span></a><a href="../learning/"><span aria-hidden="true">▱</span><span data-ar="المسار التعليمي" data-en="Learning path">المسار التعليمي</span></a><a href="../research.html"><span aria-hidden="true">⚗</span><span data-ar="البحث العلمي" data-en="Research">البحث العلمي</span></a><a href="../learning/#library"><span aria-hidden="true">▤</span><span data-ar="المكتبة الطبية" data-en="Library">المكتبة الطبية</span></a></nav>
+<div class="top-actions"><span class="offline-pill" id="connectionStatus" role="status" aria-live="polite" data-ar="تجربة خفيفة" data-en="Lightweight mode">تجربة خفيفة</span><button class="chip-button" id="liteBtn" type="button" aria-pressed="false" data-ar="حركة أقل" data-en="Less motion">حركة أقل</button><a class="deck-user" href="../portal.html" title="Student portal" aria-label="Student portal">♙</a><button class="lang-toggle" id="langBtn" type="button" aria-label="Switch language to English">EN</button></div>
 </div></header>
 <main id="main">
-<section class="hero" aria-labelledby="heroTitle">
-<div class="shell hero-grid">
-<div class="hero-content">
-<div class="overline"><span class="ping"></span>NABD / INFINITY LAB <span class="slash">/</span> V11.0</div>
-<h1 id="heroTitle"><span data-ar="داخل كل جسد،" data-en="Inside every body,">داخل كل جسد،</span><br><span class="gradient" data-ar="عالم ينتظر اكتشافه." data-en="a universe to discover.">عالم ينتظر اكتشافه.</span></h1>
-<p class="hero-text" data-ar="استكشف أجهزة جسم الإنسان كمجموعة أنظمة مترابطة. حدّد عضوًا على المخطط، تعلّم وظائفه، راجع العلاقة بين الأجهزة، ثم جرّب تحديات تفكير علمي قصيرة. كل ذلك بواجهة سريعة وباللغتين." data-en="Explore human body systems as an interconnected network. Select a region, learn its functions, trace cross-system connections and practice short scientific-reasoning challenges — in a fast bilingual interface.">استكشف أجهزة جسم الإنسان كمجموعة أنظمة مترابطة. حدّد عضوًا على المخطط، تعلّم وظائفه، راجع العلاقة بين الأجهزة، ثم جرّب تحديات تفكير علمي قصيرة. كل ذلك بواجهة سريعة وباللغتين.</p>
-<div class="hero-buttons"><a class="btn primary" href="#visual-atlas" data-ar="✦ استكشف الصور المجسّمة" data-en="✦ Explore 3D-style anatomy">✦ استكشف الصور المجسّمة</a><a class="btn secondary" href="#systems"><span data-ar="ابدأ رحلة الاستكشاف" data-en="Begin exploring">ابدأ رحلة الاستكشاف</span><span aria-hidden="true">↗</span></a><a class="btn secondary" href="#clinical" data-ar="ادخل التحديات العلمية" data-en="Enter the learning challenges">ادخل التحديات العلمية</a></div>
-<div class="metric-row"><div><strong>08</strong><span data-ar="أجهزة متصلة" data-en="Connected systems">أجهزة متصلة</span></div><i></i><div><strong>03</strong><span data-ar="تحديات قصيرة" data-en="Micro-challenges">تحديات قصيرة</span></div><i></i><div><strong>02</strong><span data-ar="لغات" data-en="Languages">لغات</span></div></div>
-<p class="disclaimer" data-ar="المخطط التوضيحي غير تشريحي دقيق. المحتوى تعليمي غير مخصص للتشخيص أو العلاج؛ ولا يحل محل الدراسة الأكاديمية أو الإشراف الطبي." data-en="Schematic illustration, not an anatomically precise diagram. Educational content only; not for diagnosis, treatment or a substitute for academic or clinical supervision.">المخطط التوضيحي غير تشريحي دقيق. المحتوى تعليمي غير مخصص للتشخيص أو العلاج؛ ولا يحل محل الدراسة الأكاديمية أو الإشراف الطبي.</p>
-</div>
-<div class="body-card">
-<div class="body-card-top"><span class="mono">NABD / ANATOMY GRID</span><span class="pulse-label"><i></i> <span data-ar="تفاعلي" data-en="Interactive">تفاعلي</span></span></div>
-<div class="body-figure" role="group" aria-label="Schematic human systems map">
-<div class="circle-ring r1" aria-hidden="true"></div><div class="circle-ring r2" aria-hidden="true"></div><div class="scanline" aria-hidden="true"></div>
-<svg class="body-silhouette" viewBox="0 0 320 475" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<defs><linearGradient id="bodyLine" x1="0" y1="0" x2="300" y2="450"><stop stop-color="#8cf3e5"/><stop offset="1" stop-color="#377e99"/></linearGradient><linearGradient id="bodyFill" x1="0" y1="0" x2="320" y2="475"><stop stop-color="#2b9aab" stop-opacity=".24"/><stop offset="1" stop-color="#0a293c" stop-opacity=".06"/></linearGradient></defs>
-<path d="M160 19 C128 19 114 42 119 79 C123 107 143 117 148 122 L145 139 C119 143 92 142 68 156 C45 170 33 210 22 269 L6 354 C4 366 15 369 23 357 L62 287 82 228 87 287 81 380 70 463 121 466 142 353 160 314 178 353 199 466 250 463 239 380 233 287 238 228 258 287 297 357 C305 369 316 366 314 354 L298 269 C287 210 275 170 252 156 C228 142 201 143 175 139 L172 122 C177 117 197 107 201 79 C206 42 192 19 160 19Z" fill="url(#bodyFill)" stroke="url(#bodyLine)" stroke-width="2.1"/>
-<path d="M160 127 V312 M93 218 H227 M106 154 Q160 180 214 154 M111 311 Q160 333 209 311" stroke="#81d8de" stroke-opacity=".16" stroke-dasharray="4 8"/>
-<path d="M160 33C133 33 130 76 143 91C150 103 170 103 177 91C190 76 187 33 160 33Z" fill="#71c7d4" fill-opacity=".15" stroke="#9fedf0" stroke-opacity=".65"/>
-<path d="M150 150 C114 146 102 173 100 217 C113 233 137 240 151 229Z M170 150 C206 146 218 173 220 217 C207 233 183 240 169 229Z" fill="#3fbec9" fill-opacity=".2" stroke="#77dfe3" stroke-opacity=".58"/>
-<path d="M162 181 C151 163 135 176 144 190 C149 199 164 208 166 218 C173 205 188 197 187 186 C186 170 171 165 162 181Z" fill="#f390a5" fill-opacity=".6" stroke="#ffb9c5"/>
-<path d="M115 252 Q160 235 206 254 Q204 283 160 290 Q122 282 115 252Z" fill="#d3ad80" fill-opacity=".25" stroke="#e8c8a1" stroke-opacity=".5"/>
-<path d="M128 284 Q117 273 109 293 L113 313 133 319 141 298Z M192 284 Q203 273 211 293 L207 313 187 319 179 298Z" fill="#89cdce" fill-opacity=".3" stroke="#9de6e4" stroke-opacity=".7"/>
-</svg>
-<button class="body-hotspot h-brain" type="button" data-target="nervous" aria-label="Nervous system"><span aria-hidden="true">◈</span><small data-ar="الدماغ" data-en="Brain">الدماغ</small></button>
-<button class="body-hotspot h-lungs" type="button" data-target="respiratory" aria-label="Respiratory system"><span aria-hidden="true">⌁</span><small data-ar="التنفس" data-en="Lungs">التنفس</small></button>
-<button class="body-hotspot h-heart" type="button" data-target="cardiovascular" aria-label="Cardiovascular system"><span aria-hidden="true">♥</span><small data-ar="القلب" data-en="Heart">القلب</small></button>
-<button class="body-hotspot h-digest" type="button" data-target="digestive" aria-label="Digestive system"><span aria-hidden="true">◌</span><small data-ar="الهضم" data-en="Digestion">الهضم</small></button>
-<button class="body-hotspot h-renal" type="button" data-target="renal" aria-label="Renal system"><span aria-hidden="true">◉</span><small data-ar="الكلى" data-en="Kidneys">الكلى</small></button>
-<button class="body-hotspot h-immune" type="button" data-target="immune" aria-label="Immune system"><span aria-hidden="true">⬡</span><small data-ar="المناعة" data-en="Immunity">المناعة</small></button>
-<button class="body-hotspot h-endocrine" type="button" data-target="endocrine" aria-label="Endocrine system"><span aria-hidden="true">✧</span><small data-ar="الهرمونات" data-en="Hormones">الهرمونات</small></button>
-<button class="body-hotspot h-muscle" type="button" data-target="musculoskeletal" aria-label="Musculoskeletal system"><span aria-hidden="true">⟡</span><small data-ar="الحركة" data-en="Movement">الحركة</small></button>
-</div>
-<div class="body-card-bottom"><span>HUMAN SYSTEMS / 08</span><span data-ar="اضغط على أي مؤشر" data-en="Select any marker">اضغط على أي مؤشر</span></div>
-</div>
-</div>
-<div class="hero-strip"><div class="shell strip-flex"><span><i>01</i> <span data-ar="اكتشف" data-en="EXPLORE">اكتشف</span></span><b></b><span><i>02</i> <span data-ar="اربط المفاهيم" data-en="CONNECT">اربط المفاهيم</span></span><b></b><span><i>03</i> <span data-ar="تدرّب" data-en="PRACTICE">تدرّب</span></span><b></b><span><i>04</i> <span data-ar="تابع تقدمك" data-en="PROGRESS">تابع تقدمك</span></span></div></div>
+<section class="command-deck" id="commandDeck" aria-labelledby="heroTitle">
+  <h1 class="deck-sr-title" id="heroTitle" data-ar="عالم نبض الطبي — أطلس جسم الإنسان التفاعلي" data-en="NABD Human Universe — Interactive anatomy dashboard">عالم نبض الطبي — أطلس جسم الإنسان التفاعلي</h1>
+  <div class="deck-board">
+    <div class="deck-body-panel" aria-label="Human body overview">
+      <span class="deck-coordinate">NABD / FULL BODY</span>
+      <img src="./art/human-neon.svg" alt="رسم تعليمي مضيء للجسم مع الأعضاء والأوعية والأعصاب" loading="eager" fetchpriority="high" width="470" height="920"/>
+      <span class="deck-body-ground" aria-hidden="true"></span>
+    </div>
+    <aside class="deck-systems-panel" aria-label="Body systems">
+      <div class="deck-panel-heading"><span aria-hidden="true">♙</span><strong data-ar="أجهزة جسم الإنسان" data-en="Human Body Systems">أجهزة جسم الإنسان</strong><small>HUMAN BODY SYSTEMS</small></div>
+      <div class="deck-system-list" id="deckSystemList" role="group" aria-label="Choose body system"></div>
+    </aside>
+    <aside class="deck-parts-panel" aria-label="Anatomy details">
+      <div class="deck-parts-header" data-ar="الأجزاء المرتبطة" data-en="Related structures">الأجزاء المرتبطة</div>
+      <div class="deck-part-list" id="deckPartList"></div>
+    </aside>
+    <div class="deck-main-stage">
+      <div class="deck-main-header">
+        <div class="deck-stage-title"><span class="deck-heart-icon" aria-hidden="true">♡</span><strong id="deckTitle" data-ar="الجهاز القلبي الوعائي" data-en="Cardiovascular System">الجهاز القلبي الوعائي</strong><small id="deckSubtitle">CARDIOVASCULAR SYSTEM</small></div>
+      </div>
+      <div class="deck-tabs" id="deckTabs" role="tablist" aria-label="Anatomy modes">
+        <button type="button" role="tab" aria-selected="true" class="active" data-mode="model" data-ar="العرض المجسّم" data-en="3D-style model">العرض المجسّم</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="structure" data-ar="التشريح التفصيلي" data-en="Anatomy">التشريح التفصيلي</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="function" data-ar="الوظائف" data-en="Functions">الوظائف</button>
+        <button type="button" role="tab" aria-selected="false" data-mode="links" data-ar="الترابط" data-en="Connections">الترابط</button>
+      </div>
+      <div class="deck-visual" id="deckVisual">
+        <span class="deck-celestial celestial-1" aria-hidden="true"></span><span class="deck-celestial celestial-2" aria-hidden="true"></span>
+        <div class="deck-image-holder" id="deckImageHolder">
+          <img id="deckOrganImage" src="./art/heart-3d.svg" width="720" height="720" alt="رسم طبي مجسّم توضيحي للقلب" loading="eager" decoding="async" />
+          <div class="deck-vessel-layer" id="deckVesselLayer" hidden aria-hidden="true">
+            <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" fill="none"><path d="M225 92C205 151 231 208 202 274S157 386 110 432M272 87C312 160 276 235 317 287S372 379 393 433" stroke="#f96774" stroke-width="3"/><path d="M163 129C191 175 173 237 157 297S127 391 106 424M325 114C304 179 330 259 369 300S405 380 427 421" stroke="#4ebafa" stroke-width="3"/></svg>
+          </div>
+          <div class="deck-nerve-layer" id="deckNerveLayer" hidden aria-hidden="true"><span class="nerve-line a"></span><span class="nerve-line b"></span><span class="nerve-line c"></span></div>
+          <div class="deck-cross-line" id="deckCrossLine" hidden aria-hidden="true"></div>
+        </div>
+        <span class="deck-view-marker" id="deckViewMarker" data-ar="رسم مجسّم توضيحي — ليس نموذجًا تشريحيًا دقيقًا" data-en="Dimensional illustration — not a precise anatomical model">رسم مجسّم توضيحي — ليس نموذجًا تشريحيًا دقيقًا</span>
+        <div class="deck-angle"><span aria-hidden="true">⟲</span><strong id="deckAngle">0°</strong><span class="deck-angle-orbit" aria-hidden="true"></span></div>
+      </div>
+      <div class="deck-inline-actions">
+        <button type="button" id="deckZoomOut" aria-label="Zoom out">−</button>
+        <span id="deckZoomValue" aria-live="polite">100%</span>
+        <button type="button" id="deckZoomIn" aria-label="Zoom in">+</button>
+        <a href="#visual-atlas" data-ar="استكشاف إضافي ↗" data-en="More anatomical detail ↗">استكشاف إضافي ↗</a>
+      </div>
+    </div>
+    <aside class="deck-info-panel" aria-label="Anatomy explanation">
+      <div class="deck-info-card"><div class="deck-info-heading"><strong id="deckInfoTitle" data-ar="القلب (Heart)" data-en="Heart">القلب (Heart)</strong><span aria-hidden="true">♡</span></div><p id="deckInfoText"></p></div>
+      <div class="deck-video-preview"><img id="deckDetailImage" src="./art/heart-3d.svg" alt="تفصيل توضيحي للنظام المختار" loading="eager"/><span class="deck-play" aria-hidden="true">▶</span><a href="#visual-atlas" class="deck-image-action" data-ar="افتح العرض التفصيلي ↗" data-en="Open detailed view ↗">افتح العرض التفصيلي ↗</a></div>
+      <div class="deck-ecg">
+        <div class="deck-ecg-top"><strong data-ar="إشارة تخطيط توضيحية" data-en="Illustrative ECG signal">إشارة تخطيط توضيحية</strong><span>DEMO</span></div>
+        <div class="deck-ecg-bottom"><svg viewBox="0 0 250 85" preserveAspectRatio="none" aria-label="Illustrative electrocardiogram" role="img"><path d="M0 45H25L30 37L35 51L43 45H55L60 20L65 75L73 44L82 45L87 38L91 50L97 45H112L117 18L123 75L130 43L140 44L145 38L149 50L155 44H171L176 18L183 76L191 45L201 45L205 37L210 51L217 45H250" fill="none" stroke="#54f6c5" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg><strong>72 <small data-ar="تمثيلي" data-en="sample">تمثيلي</small></strong></div>
+      </div>
+      <a class="deck-full-lesson" href="#systems" id="deckLessonLink" data-ar="افتح الدرس التفاعلي ←" data-en="Open interactive lesson →">افتح الدرس التفاعلي ←</a>
+    </aside>
+    <aside class="deck-tools-panel" aria-label="Display and interaction tools">
+      <div class="deck-tool-card"><div class="deck-tool-heading"><strong data-ar="طبقات العرض" data-en="Display layers">طبقات العرض</strong><span aria-hidden="true">◉</span></div>
+        <label><input type="checkbox" data-layer="organ" checked><span data-ar="الأعضاء" data-en="Organs">الأعضاء</span><span aria-hidden="true">🫀</span></label>
+        <label><input type="checkbox" data-layer="vessels"><span data-ar="الأوعية" data-en="Vessels">الأوعية</span><span aria-hidden="true">🔴</span></label>
+        <label><input type="checkbox" data-layer="nerves"><span data-ar="الأعصاب" data-en="Nerves">الأعصاب</span><span aria-hidden="true">✳</span></label>
+        <label><input type="checkbox" data-layer="cross"><span data-ar="المقاطع التوضيحية" data-en="Section guide">المقاطع التوضيحية</span><span aria-hidden="true">▱</span></label>
+      </div>
+      <div class="deck-tool-card"><div class="deck-tool-heading"><strong data-ar="أدوات تفاعلية" data-en="Interactive tools">أدوات تفاعلية</strong><span aria-hidden="true">⚒</span></div>
+        <button type="button" id="deckRotate"><span data-ar="تدوير المنظور" data-en="Rotate illustration">تدوير المنظور</span><strong>⟳</strong></button>
+        <button type="button" id="deckMagnify"><span data-ar="تكبير الصورة" data-en="Magnify image">تكبير الصورة</span><strong>⌕</strong></button>
+        <button type="button" id="deckCross"><span data-ar="إظهار مقطع" data-en="Section guide">إظهار مقطع</span><strong>▱</strong></button>
+        <a href="#visual-atlas"><span data-ar="المختبر التشريحي" data-en="Anatomy studio">المختبر التشريحي</span><strong>3D</strong></a>
+        <a href="../atlas/hospital-3d.html"><span data-ar="المستشفى الافتراضي" data-en="Virtual hospital">المستشفى الافتراضي</span><strong>VR</strong></a>
+        <button type="button" id="deckReset"><span data-ar="إعادة تعيين" data-en="Reset view">إعادة تعيين</span><strong>↻</strong></button>
+      </div>
+    </aside>
+  </div>
+  <nav class="deck-shortcuts" aria-label="NABD learning pathways">
+    <a class="deck-tile gold" href="#systems"><span class="deck-tile-icon" aria-hidden="true">🏆</span><strong data-ar="التقييم والاختبارات" data-en="Assessment & Exams">التقييم والاختبارات</strong><small data-ar="اختبر فهمك وتابع تطورك العلمي" data-en="Check your knowledge with concept questions">اختبر فهمك وتابع تطورك العلمي</small><span class="deck-tile-arrow" aria-hidden="true">➜</span></a>
+    <a class="deck-tile" href="#progress"><span class="deck-tile-icon" aria-hidden="true">▥</span><strong data-ar="مصفوفة التقدم" data-en="Progress Matrix">مصفوفة التقدم</strong><small data-ar="مهاراتك ومفاهيمك المنجزة" data-en="Your explored concepts and milestones">مهاراتك ومفاهيمك المنجزة</small><span class="deck-tile-arrow" aria-hidden="true">➜</span></a>
+    <a class="deck-tile" href="../learning/#tutor"><span class="deck-tile-icon" aria-hidden="true">🧠</span><strong data-ar="المساعد الذكي" data-en="AI Medical Tutor">المساعد الذكي</strong><small data-ar="تعلّم واطرح أسئلتك في عالم الطالب" data-en="Explore the academy's learning tutor">تعلّم واطرح أسئلتك في عالم الطالب</small><span class="deck-tile-arrow" aria-hidden="true">➜</span></a>
+    <a class="deck-tile" href="../research-starter-lab.html"><span class="deck-tile-icon" aria-hidden="true">⚗</span><strong data-ar="البحث العلمي" data-en="Scientific Research">البحث العلمي</strong><small data-ar="خطط أفكارك وأسئلتك البحثية" data-en="Develop a scientific question with the Research Lab">خطط أفكارك وأسئلتك البحثية</small><span class="deck-tile-arrow" aria-hidden="true">➜</span></a>
+    <a class="deck-tile" href="#clinical"><span class="deck-tile-icon" aria-hidden="true">✚</span><strong data-ar="الحالات السريرية" data-en="Clinical Cases">الحالات السريرية</strong><small data-ar="تحديات خيالية لتعلم التفكير الطبي" data-en="Fictional cases for educational reasoning">تحديات خيالية لتعلم التفكير الطبي</small><span class="deck-tile-arrow" aria-hidden="true">➜</span></a>
+  </nav>
+  <div class="deck-bottom-disclaimer"><span data-ar="صور مجسّمة تعليمية تقريبية؛ ليست مسحًا تشريحيًا أو معلومات من أجهزة قياس حقيقية." data-en="Stylized educational illustrations, not anatomical scans or live measurements.">صور مجسّمة تعليمية تقريبية؛ ليست مسحًا تشريحيًا أو معلومات من أجهزة قياس حقيقية.</span><a href="#visual-atlas" data-ar="استكشف بقية الأعضاء ↗" data-en="Browse other body systems ↗">استكشف بقية الأعضاء ↗</a></div>
 </section>
-<!-- NABD CRYSTAL ANATOMY / 3D-STYLE SCALABLE ILLUSTRATIONS — NOT VOLUMETRIC MEDICAL SCANS -->
+
 <section class="a3d-section" id="visual-atlas" aria-labelledby="a3dTitle">
  <div class="shell">
   <div class="a3d-head">

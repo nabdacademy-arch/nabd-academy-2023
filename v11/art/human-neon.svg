@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 920" role="img" aria-label="Stylized anatomical human body with major organs and vessels">
+<defs>
+<linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4ddfff" stop-opacity=".33"/><stop offset=".44" stop-color="#123d72" stop-opacity=".15"/><stop offset="1" stop-color="#32cde4" stop-opacity=".31"/></linearGradient>
+<radialGradient id="lung"><stop stop-color="#edbdde"/><stop offset=".72" stop-color="#d35eaa"/><stop offset="1" stop-color="#693970"/></radialGradient>
+<linearGradient id="bone" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#bff6ff"/><stop offset=".45" stop-color="#65c1dd"/><stop offset="1" stop-color="#246f9a"/></linearGradient>
+<linearGradient id="liver" x1=".05" y1=".06" x2=".95" y2="1"><stop stop-color="#d77768"/><stop offset="1" stop-color="#653044"/></linearGradient>
+<linearGradient id="muscle" x1=".2" x2=".8" y1=".2" y2="1"><stop stop-color="#f6a2a2"/><stop offset=".45" stop-color="#ad4c79"/><stop offset="1" stop-color="#5f2960"/></linearGradient>
+<filter id="outerGlow" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="thinGlow"><feGaussianBlur stdDeviation="1.6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="233" cy="886" rx="189" ry="20" fill="#00c5ff" opacity=".2"/>
+<ellipse cx="231" cy="886" rx="142" ry="8" fill="none" stroke="#3beeff" stroke-width="3" opacity=".85"/>
+<g stroke="#78efff" fill="url(#skin)" stroke-width="3.2" filter="url(#outerGlow)">
+<path d="M232 29c-29 0-54 23-55 57-1 33 12 63 32 78l-4 25c-44 3-77 4-106 29-20 18-28 52-42 120L22 454c-4 19 14 24 22 12l45-106 24-79-12 100-5 138-30 154-17 165c-2 20 23 24 28 6l43-160 42-165 24-88 46 93-8 137-13 175c-2 19 24 26 29 6l30-165 36-172 28-96-4-128 19 80 49 105c10 17 28 10 25-8l-39-148c-17-68-22-90-47-107-27-18-60-28-101-33l-3-24c25-18 36-50 34-79-4-31-24-55-55-55Z"/>
+<path d="M198 32c-18 6-29 24-28 45m135 2c-1-21-11-38-32-46M144 245c56-23 119-24 172 0" fill="none" stroke="#bcfcff" stroke-opacity=".65" stroke-width="2"/>
+</g>
+<g fill="none" stroke="#79cceb" opacity=".44"><path d="M235 182v318m-103-260 103 31 103-31M133 285c54 24 144 22 202 0m-170 48 70 18 70-18m-145 44 74 24 79-24m-169 56 91 25 88-25" stroke-width="2"/><ellipse cx="235" cy="85" rx="44" ry="54"/><ellipse cx="235" cy="115" rx="26" ry="35"/></g>
+<g fill="none" stroke="#ffc0a9" stroke-opacity=".44"><path d="M189 77c13-20 32-17 46-22m-35 46 32-13m-24 37 27-22m2-46 29 10m-30 21 32 4m-26 7 25 21"/></g>
+<g stroke="#e0c0ec" stroke-width="2.2" opacity=".8"><path fill="url(#lung)" d="M224 223c-35-14-68-13-83 15-18 33-12 92 6 137 17 22 46 31 74 7Z"/><path fill="url(#lung)" d="M246 223c34-14 67-13 82 15 18 32 12 92-6 137-16 22-44 31-74 7Z"/><path fill="none" stroke="#fff3fa" d="M190 238c-17 31-25 74-17 112m107-112c17 31 24 74 16 111M232 191v35m0 0-42 37m42-37 40 37"/></g>
+<g stroke="#e8a2aa" stroke-width="2" fill="url(#muscle)"><path d="M240 286c-15-20-39-11-38 10 1 22 23 39 39 57 17-19 36-35 37-57 0-21-24-30-38-10Z"/></g>
+<path d="M158 405q70-30 144 3-9 32-58 47-65-5-89-35Z" fill="url(#liver)" stroke="#efb49c" stroke-width="2"/><path d="M265 448c43-14 58 19 30 46-15 14-11 36 8 46" fill="none" stroke="#f9b5a2" stroke-width="15"/><g fill="none" stroke="#f5b2bb" stroke-width="8" stroke-linecap="round"><path d="M175 474c45-15 87-5 98 17-8 19-70 11-87 27-14 19 65 15 84 34-6 20-72 13-86 30 12 13 71 11 83 26"/><path d="M179 488q-17 74-5 137m106-137q18 70 8 135"/></g>
+<g fill="#8edce5" stroke="#c8fbfa" stroke-width="2"><path d="M181 475c-21-17-32 3-34 24l5 26 25 8 17-43Z"/><path d="M289 475c20-17 31 3 33 24l-5 26-25 8-17-43Z"/></g>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#thinGlow)">
+<g stroke="#ff5675" stroke-width="4"><path d="M237 352v154m0-125-28-60m28 63 26-64m-26 90-74 39m74-39 79 38m-79 10-28 60-21 68-23 107m72-233 32 62 33 57 11 104m-124-215-73 23-44 89-34 94m216-216 66 25 45 93 33 76"/><path d="M235 505 203 599l-29 126-24 117m93-337 28 92 28 123 23 116"/></g>
+<g stroke="#329bea" stroke-width="3.2"><path d="M224 351v160m0-127-38-60m38 58 34-62m-34 100-83 27m83-28 87 27m-88 21-41 61-21 65-23 94m91-221 37 64 42 58 23 101m-119-166-38 93-23 130-22 113m98-234 40 104 31 122 22 111"/></g>
+<g stroke="#f8bf60" stroke-width="1.9"><path d="M211 192c-28 46-74 74-99 124l-39 147m158-267c27 48 72 74 96 121l34 152m-126-215-45 68-36 83m79-152 48 68 38 82M207 557l-32 145m83-147 41 142"/></g>
+</g>
+<g fill="#92f7f9"><circle cx="235" cy="352" r="4"/><circle cx="224" cy="385" r="3"/><circle cx="271" cy="460" r="3"/></g>
+</svg>
