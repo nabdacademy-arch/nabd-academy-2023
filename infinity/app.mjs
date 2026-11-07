@@ -98,5 +98,8 @@ function init(){
  by("clearProgress").addEventListener("click",()=>{state.progress={models:[],missions:[],topics:[]};state.store=false;by("saveProgress").checked=false;try{localStorage.removeItem(STORE)}catch(e){}renderStats();status("progressStatus","حُذفت بيانات التعلم المحلية وتوقف الحفظ.","Local study progress erased and saving disabled.")});
  by("copyProgress").addEventListener("click",copyStats);
  setLanguage("ar");renderStats();welcome();
+ const localSecure=location.protocol==="http:"&&["localhost","127.0.0.1","[::1]"].includes(location.hostname);
+ if("serviceWorker" in navigator&&(location.protocol==="https:"||localSecure)){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}))}
+
 }
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",init);else init();
