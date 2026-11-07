@@ -97,7 +97,7 @@ function init(){
  by("saveProgress").addEventListener("change",event=>{state.store=event.target.checked;if(state.store){save();status("progressStatus","تم تفعيل الحفظ المحلي الاختياري.","Opt-in local saving enabled.")}else{try{localStorage.removeItem(STORE)}catch(e){}status("progressStatus","أُوقف الحفظ وحُذفت النسخة المحفوظة على الجهاز.","Saving disabled and existing local copy deleted.")}});
  by("clearProgress").addEventListener("click",()=>{state.progress={models:[],missions:[],topics:[]};state.store=false;by("saveProgress").checked=false;try{localStorage.removeItem(STORE)}catch(e){}renderStats();status("progressStatus","حُذفت بيانات التعلم المحلية وتوقف الحفظ.","Local study progress erased and saving disabled.")});
  by("copyProgress").addEventListener("click",copyStats);
- setLanguage("ar");renderStats();welcome();
+ setLanguage("ar");renderStats();
  const localSecure=location.protocol==="http:"&&["localhost","127.0.0.1","[::1]"].includes(location.hostname);
  if("serviceWorker" in navigator&&(location.protocol==="https:"||localSecure)){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}))}
 
