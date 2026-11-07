@@ -1,0 +1,20 @@
+{
+  "name": "NABD HUMAN UNIVERSE — V11",
+  "short_name": "NABD V11",
+  "description": "Bilingual offline-friendly medical systems explorer and conceptual learning missions",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#061320",
+  "theme_color": "#061320",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
