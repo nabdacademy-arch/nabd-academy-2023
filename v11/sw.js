@@ -1,7 +1,7 @@
 /* NABD Human Universe V11 offline shell, strictly scoped to /v11/.
 No cookies, student account URLs, personally identifiable data or API responses are cached. */
-const CACHE="nabd-v11-static-v1";
-const FILES=["./","./index.html","./style.css?v=1","./app.js?v=1","./manifest.webmanifest","./icon.svg"];
+const CACHE="nabd-v11-static-v2";
+const FILES=["./","./index.html","./style.css?v=1","./app.js?v=1","./anatomy-3d.css?v=1","./anatomy-3d.js?v=1","./manifest.webmanifest","./icon.svg","./art/heart-3d.svg","./art/brain-3d.svg","./art/lungs-3d.svg","./art/renal-3d.svg","./art/digestive-3d.svg","./art/endocrine-3d.svg","./art/musculoskeletal-3d.svg","./art/immune-3d.svg"];
 const ROOT=new URL("./",self.registration.scope);
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
