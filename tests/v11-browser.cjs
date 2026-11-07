@@ -28,7 +28,10 @@ const path=require("node:path");
       await page.locator(".a3d-item").first().waitFor();
       assert.equal(await page.locator(".a3d-item").count(),8,"Eight anatomy illustrations");
       assert.ok(await page.locator("#a3dImage").evaluate(async image=>{try{await image.decode();return image.naturalWidth>=700&&image.naturalHeight>=700}catch(e){return false}}),"Vector anatomy image must decode sharply");
+      assert.equal(await page.locator("#a3dTrue3D").isVisible(),true,"Real heart mesh is an explicit opt-in control");
+      assert.equal(await page.locator("#a3dAttribution").isVisible(),false,"3D model attribution is shown only with the 3D asset");
       await page.locator('.a3d-item[data-organ="brain"]').click();
+      assert.equal(await page.locator("#a3dTrue3D").isVisible(),false,"Real heart mesh is not advertised for other organs");
       assert.ok((await page.locator("#a3dImage").getAttribute("src")).endsWith("brain-3d.svg"),"Brain visual selected");
       assert.match(await page.locator("#a3dName").innerText(),/الدماغ/);
       await page.locator("#a3dZoom").evaluate(input=>{input.value="180";input.dispatchEvent(new Event("input",{bubbles:true}))});
@@ -36,6 +39,14 @@ const path=require("node:path");
       assert.match(await page.locator("#a3dImage").getAttribute("style"),/scale\(1\.8\)/);
       await page.locator("#a3dReset").click();
       assert.equal(await page.locator("#a3dZoomText").innerText(),"100%");
+      if(width===390){
+        await page.locator('.a3d-item[data-organ="heart"]').click();
+        await page.locator("#a3dTrue3D").click();
+        await page.waitForFunction(()=>{const text=document.querySelector("#a3dModelStatus")?.textContent||"";return text.includes("لم يتوفر")||text.includes("تعذّر تحميل")},{timeout:15000}).catch(()=>{});
+        assert.equal(await page.locator('#a3dViewport[data-mode="mesh"]').count(),0,"External CDN failure should preserve SVG fallback");
+        assert.ok(await page.locator("#a3dImage").isVisible(),"Fallback remains visible");
+        await page.locator('.a3d-item[data-organ="brain"]').click();
+      }
       await page.locator("#a3dLessonLink").click();
       assert.match(await page.locator("#systemHeading").innerText(),/العصبي/);
 
