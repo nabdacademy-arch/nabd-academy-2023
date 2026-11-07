@@ -82,6 +82,18 @@
      <div class="a3d-scan" aria-hidden="true"></div><img class="a3d-render" id="a3dImage" src="./art/heart-3d.svg" width="720" height="720" decoding="async" fetchpriority="high" draggable="false" alt="صورة تعليمية مجسّمة للقلب"><span class="a3d-zoom-mark" id="a3dZoomText">100%</span>
     </div>
     <p class="a3d-stage-caption" data-ar="مخططات فنية توضيحية مع تظليل مجسّم. للتعلّم فقط، وليست مرجعًا تشريحيًا تشخيصيًا." data-en="Illustrative medical diagrams with dimensional shading. For learning only, not diagnostic or reference-grade anatomy.">مخططات فنية توضيحية مع تظليل مجسّم. للتعلّم فقط، وليست مرجعًا تشريحيًا تشخيصيًا.</p>
+
+    <div class="a3d-real3d-strip">
+     <button id="a3dTrue3D" class="a3d-live-button" type="button" data-ar="✧ افتح نموذج قلب حقيقي قابل للدوران 360°" data-en="✧ Open real rotatable 360° heart model">✧ افتح نموذج قلب حقيقي قابل للدوران 360°</button>
+     <button id="a3dBack2D" class="a3d-live-button a3d-back-button" type="button" hidden data-ar="العودة إلى الرسم الخفيف ←" data-en="Back to lightweight illustration →">العودة إلى الرسم الخفيف ←</button>
+     <span class="a3d-load-label" data-ar="اختياري · يحتاج إنترنت وتنزيلًا خارجيًا يقارب 2.5 ميغابايت للقلب إضافةً إلى عارضه" data-en="Optional · requires internet and an external ~2.5 MB heart model plus viewer">اختياري · يحتاج إنترنت وتنزيلًا خارجيًا يقارب 2.5 ميغابايت للقلب إضافةً إلى عارضه</span>
+    </div>
+    <p id="a3dModelStatus" class="a3d-model-status" role="status" aria-live="polite"></p>
+    <div id="a3dAttribution" class="a3d-credits" hidden>
+     <span data-ar="النموذج التشريحي: BodyParts3D © DBCLS، ترخيص CC BY 4.0؛ إعداد OrganUI. النموذج للتعليم وغير معتمد للتشخيص." data-en="Anatomical model: BodyParts3D © DBCLS, CC BY 4.0, prepared by OrganUI. Educational and not validated for diagnosis.">النموذج التشريحي: BodyParts3D © DBCLS، ترخيص CC BY 4.0؛ إعداد OrganUI. النموذج للتعليم وغير معتمد للتشخيص.</span>
+     <a href="https://github.com/organui/heart-3d/blob/main/public/models/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer" data-ar="المصدر والإسناد ↗" data-en="Source & attribution ↗">المصدر والإسناد ↗</a>
+    </div>
+
     <div class="a3d-controls">
      <div class="a3d-ctl-group"><button type="button" id="a3dPrev" class="a3d-ctl" data-ar="السابق" data-en="Previous">السابق</button><button type="button" id="a3dNext" class="a3d-ctl" data-ar="التالي" data-en="Next">التالي</button></div>
      <label for="a3dZoom"><span data-ar="تكبير" data-en="Zoom">تكبير</span><input id="a3dZoom" type="range" min="100" max="240" value="100" step="10" aria-label="Zoom anatomy illustration"></label>
