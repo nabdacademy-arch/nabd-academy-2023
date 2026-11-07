@@ -18,3 +18,16 @@
 @media(prefers-reduced-motion:reduce){.a3d-section *{transition:none!important;animation:none!important}}
 body.no-motion .a3d-section *{transition:none!important;animation:none!important}
 .a3d-viewport:fullscreen{width:100vw;height:100vh;background:radial-gradient(circle at 50% 38%,#16475a,#061521 74%);padding:25px}.a3d-viewport:fullscreen .a3d-render{width:auto;max-width:90vw;max-height:85vh}
+
+/* Real volumetric model is loaded only after an explicit user action. */
+.a3d-real3d-strip{display:flex;align-items:center;gap:11px 16px;flex-wrap:wrap;padding:12px 17px 5px;border-top:1px solid rgba(119,225,220,.1);background:rgba(6,27,42,.4)}
+.a3d-live-button{padding:8px 13px;min-height:42px;border-radius:10px;border:1px solid rgba(115,241,224,.4);background:linear-gradient(120deg,#185b64,#104355);color:#defff9;font-weight:900;font-size:11px;text-align:start}
+.a3d-live-button:hover:not(:disabled){border-color:#b7ffee;background:#216775}.a3d-live-button:disabled{opacity:.64;cursor:wait}
+.a3d-back-button{background:#132f3d}.a3d-load-label{font-size:10px;color:#8bb9c3;line-height:1.7;flex:1 1 185px}
+.a3d-model-status{font-size:11px;color:#9ce6de;line-height:1.65;padding:0 17px;min-height:0;margin:0;background:rgba(6,27,42,.4)}.a3d-model-status:not(:empty){padding:5px 17px}
+.a3d-credits{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;border-top:1px solid rgba(126,216,212,.12);padding:9px 17px;background:#0a2838;color:#a7c9cc;font-size:10px;line-height:1.6}.a3d-credits a{color:#8ef9e3;text-decoration:underline;text-underline-offset:4px}
+.a3d-mesh{position:absolute;z-index:4;inset:0;width:100%;height:100%;background:radial-gradient(circle at 50% 40%,#1c5263,#071b2b 74%);--poster-color:transparent;outline:none}
+.a3d-viewport[data-mode="mesh"] .a3d-render,.a3d-viewport[data-mode="mesh"] .a3d-scan,.a3d-viewport[data-mode="mesh"] .a3d-zoom-mark{display:none}
+.a3d-viewport[data-mode="mesh"]{cursor:auto}
+.a3d-viewport:fullscreen .a3d-mesh{width:100%;height:100%}
+@media(max-width:650px){.a3d-real3d-strip{padding:11px}.a3d-live-button{flex:1 1 100%;text-align:center}.a3d-load-label{font-size:9px}.a3d-credits{padding:11px}}
