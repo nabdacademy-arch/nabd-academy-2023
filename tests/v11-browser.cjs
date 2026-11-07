@@ -49,7 +49,8 @@ const path=require("node:path");
       assert.equal(await page.locator("#quizStat").innerText(),"0","Clear deletes mastery");
       assert.equal(await page.locator("#missionStat").innerText(),"0","Clear deletes missions");
       assert.equal(await page.evaluate(()=>localStorage.getItem("nabd-v11-progress-v1")),null,"No saved data after clearing");
-      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+8),"No horizontal overflow at "+width);
+      const geometry=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,offenders:[...document.querySelectorAll("body *")].map(e=>{const r=e.getBoundingClientRect();return {tag:e.tagName,cls:typeof e.className==="string"?e.className.slice(0,70):"",left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)}}).filter(x=>x.left < -9 || x.right > innerWidth+9).slice(0,18)}));
+      assert.ok(geometry.scrollWidth<=geometry.viewport+8,"No horizontal overflow at "+width+" "+JSON.stringify(geometry));
       assert.deepEqual(errors,[],"No page errors at "+width);
       if(width===390){
         await page.evaluate(async()=>{if("serviceWorker" in navigator){await navigator.serviceWorker.ready}});
