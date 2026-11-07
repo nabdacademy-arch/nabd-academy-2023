@@ -82,6 +82,7 @@ const path=require("node:path");
       await page.locator("#langBtn").click();
       assert.equal(await page.locator("html").getAttribute("dir"),"ltr","English LTR");
       assert.match(await page.locator("#heroTitle").textContent(),/[Uu]niverse/);
+      await page.locator('.deck-system[data-deck-system="respiratory"]').click();
       assert.match(await page.locator("#deckTitle").innerText(),/Respiratory/,"Dashboard translates current system");
       assert.match(await page.locator("#a3dName").innerText(),/Heart/,"Anatomy captions respond to language change");
       await page.locator("#clearProgress").click();
