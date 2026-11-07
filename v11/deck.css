@@ -169,3 +169,15 @@ html{scroll-padding-top:90px}
  .deck-bottom-disclaimer{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.command-deck *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Match the reference's physical left-to-right dashboard order in Arabic RTL: body | systems | structures | organ | info | tools. */
+.deck-board{direction:ltr}
+.deck-board>*,.deck-shortcuts .deck-tile{direction:rtl}
+.deck-shortcuts{direction:ltr}
+.deck-topbar .top-inner{direction:ltr}
+.deck-topbar .brand{direction:ltr}
+.deck-topbar .brand>span:last-child{direction:rtl;text-align:right}
+.deck-topbar .topnav{direction:ltr}
+.deck-topbar .topnav a{direction:rtl}
+html[dir="ltr"] .deck-board>*,html[dir="ltr"] .deck-shortcuts .deck-tile,html[dir="ltr"] .deck-topbar .topnav a{direction:ltr}
+html[dir="ltr"] .deck-topbar .brand>span:last-child{direction:ltr;text-align:left}
