@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 720" width="720" height="720" role="img" aria-label="Lungs and trachea dimensional illustration"><title>Lungs and trachea dimensional illustration — 3D-style educational illustration, not a precise anatomical model</title>
+<defs>
+<radialGradient id="halo"><stop stop-color="#3fd5df" stop-opacity=".24"/><stop offset=".55" stop-color="#2b92b8" stop-opacity=".065"/><stop offset="1" stop-color="#1d659e" stop-opacity="0"/></radialGradient>
+<linearGradient id="red" x1=".14" y1=".12" x2=".92" y2=".83"><stop stop-color="#ffadb8"/><stop offset=".19" stop-color="#d9546e"/><stop offset=".45" stop-color="#a82b4c"/><stop offset=".76" stop-color="#6e1936"/><stop offset="1" stop-color="#390e2a"/></linearGradient>
+<linearGradient id="blue" x1=".1" y1=".07" x2=".93" y2=".9"><stop stop-color="#a5efff"/><stop offset=".26" stop-color="#3f9eca"/><stop offset=".59" stop-color="#17648e"/><stop offset=".91" stop-color="#102742"/></linearGradient>
+<linearGradient id="pink" x1=".12" y1=".07" x2=".91" y2=".84"><stop stop-color="#ffe4eb"/><stop offset=".3" stop-color="#e895b1"/><stop offset=".67" stop-color="#b84f84"/><stop offset="1" stop-color="#58234a"/></linearGradient>
+<linearGradient id="bone" x1=".11" y1=".08" x2=".9" y2=".88"><stop stop-color="#fffaf4"/><stop offset=".35" stop-color="#d4ebea"/><stop offset=".68" stop-color="#92b3c1"/><stop offset="1" stop-color="#41677d"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0b7"/><stop offset=".42" stop-color="#e6af68"/><stop offset="1" stop-color="#8e532f"/></linearGradient>
+<radialGradient id="glass" cx=".28" cy=".2" r=".8"><stop stop-color="#d0fff3" stop-opacity=".93"/><stop offset=".19" stop-color="#6bd7d2" stop-opacity=".65"/><stop offset=".7" stop-color="#186d81" stop-opacity=".35"/><stop offset="1" stop-color="#08364c" stop-opacity=".18"/></radialGradient>
+<filter id="shadow" x="-35%" y="-35%" width="170%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="17" result="blur"/><feOffset dx="5" dy="24" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".48"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="blur"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<circle cx="355" cy="340" r="318" fill="url(#halo)"/><g fill="none" stroke="#7af3e8" stroke-opacity=".14"><circle cx="359" cy="351" r="276" stroke-dasharray="9 12"/><circle cx="359" cy="351" r="230"/><circle cx="359" cy="351" r="182" stroke-dasharray="4 9"/><path d="M95 350H623M358 87V630" stroke-dasharray="4 10"/></g><ellipse cx="366" cy="603" rx="205" ry="35" fill="#13bdd1" opacity=".13" filter="url(#blur)"/>
+
+<g filter="url(#shadow)">
+<path d="M347 130 L353 265" stroke="#b9e1e5" stroke-width="37" stroke-linecap="round"/>
+<path d="M347 142 L349 247" stroke="#f0d1d9" stroke-width="22" stroke-linecap="round"/>
+<path d="M351 249 Q307 288 285 341 M355 250 Q412 290 431 349" fill="none" stroke="#e1adc1" stroke-width="19" stroke-linecap="round"/>
+<path d="M293 211 Q246 205 222 250 C183 305 146 413 170 491 C187 547 248 554 300 509 C319 488 319 447 322 411 C329 349 316 269 293 211Z" fill="url(#pink)" stroke="#ffccda" stroke-width="6"/>
+<path d="M415 211 Q465 204 493 251 C533 317 565 415 538 488 C518 543 459 554 414 509 C382 475 389 431 381 390 C368 316 384 258 415 211Z" fill="url(#pink)" stroke="#ffccda" stroke-width="6"/>
+<path d="M282 231 Q237 317 217 421 Q210 464 225 503 M434 233 Q477 307 494 416 Q507 475 485 509" fill="none" stroke="#ffe1ea" stroke-width="12" opacity=".37" stroke-linecap="round"/>
+<g fill="none" stroke="#aee8e5" stroke-width="10" opacity=".8" stroke-linecap="round">
+<path d="M323 279 Q287 324 274 389 M273 388 Q231 399 215 455 M279 378 Q293 438 288 491"/>
+<path d="M383 280 Q428 329 445 385 M444 385 Q485 396 497 450 M438 383 Q424 439 423 489"/>
+</g><g fill="none" stroke="#f2aabc" stroke-width="5" opacity=".67"><path d="M270 314L232 341 M277 355L249 379 M290 421L254 450 M438 336L480 344 M451 385L472 409 M420 434L451 467"/></g>
+</g>
+</svg>
