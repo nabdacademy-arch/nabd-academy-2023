@@ -181,3 +181,48 @@ html{scroll-padding-top:90px}
 .deck-topbar .topnav a{direction:rtl}
 html[dir="ltr"] .deck-board>*,html[dir="ltr"] .deck-shortcuts .deck-tile,html[dir="ltr"] .deck-topbar .topnav a{direction:ltr}
 html[dir="ltr"] .deck-topbar .brand>span:last-child{direction:ltr;text-align:left}
+
+/* V11 premium visual fidelity upgrade — brighter clinical imagery, fixed five destination cards. */
+.deck-topbar{box-shadow:0 2px 24px rgba(0,212,255,.3)!important}
+.deck-topbar .brand-icon{background:radial-gradient(circle at 30% 20%,#0d778f,#041528 75%)!important;box-shadow:0 0 19px rgba(25,220,255,.37)!important}
+.command-deck{background:radial-gradient(ellipse at 49% 39%,rgba(19,102,167,.36),transparent 48%),radial-gradient(ellipse at 21% 12%,rgba(22,116,178,.15),transparent 38%),linear-gradient(135deg,#010c19,#052139 54%,#010d1c)!important}
+.deck-body-panel img{filter:drop-shadow(0 0 12px rgba(2,201,255,.65)) saturate(1.24) contrast(1.1)!important}
+.deck-image-holder>img{filter:drop-shadow(0 23px 16px rgba(0,0,0,.4)) drop-shadow(0 0 30px rgba(23,170,241,.25)) saturate(1.4) contrast(1.1)!important}
+.deck-visual{background:radial-gradient(circle at 52% 42%,rgba(11,113,176,.36),rgba(2,22,43,.2) 57%,transparent 85%)!important}
+.deck-systems-panel,.deck-parts-panel,.deck-main-stage,.deck-info-card,.deck-tool-card{box-shadow:0 0 0 1px rgba(74,214,255,.09) inset,0 0 16px rgba(8,171,251,.18)!important}
+.deck-stage-title strong{text-shadow:0 0 17px rgba(8,186,255,.29)}
+.deck-tile{background:radial-gradient(circle at 50% 95%,rgba(7,99,169,.7),transparent 55%),linear-gradient(180deg,#05263e,#03101f)!important;border-color:#19d4ff!important;box-shadow:0 0 0 1px rgba(95,220,255,.14) inset,0 0 16px rgba(0,183,255,.24)!important}
+.deck-tile.gold{border-color:#f8c94f!important;background:radial-gradient(circle at 50% 88%,rgba(103,67,8,.7),transparent 53%),linear-gradient(180deg,#2b291c,#07131f)!important;box-shadow:0 0 14px rgba(250,188,68,.25)!important}
+.deck-tile-icon{filter:drop-shadow(0 0 12px rgba(62,211,255,.35))}
+.deck-tile.gold .deck-tile-icon{filter:drop-shadow(0 0 10px rgba(250,195,70,.5))}
+.deck-real-3d-button{border-color:#4cf5ff!important;box-shadow:0 0 15px rgba(17,207,247,.13);background:linear-gradient(180deg,#075276,#05293d)!important}
+.deck-real-3d-button:hover{box-shadow:0 0 20px rgba(19,218,255,.3)}
+/* Give the approved five-card ribbon a legible, stable arrangement on mobile. */
+@media(max-width:760px){
+ .deck-topbar .top-inner{flex-wrap:wrap;row-gap:3px;padding:8px 0 5px;min-height:unset}
+ .deck-topbar .topnav{order:5;display:flex!important;width:100%;flex:0 0 100%;justify-content:flex-start;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:4px 0;scroll-snap-type:x proximity}
+ .deck-topbar .topnav a,.deck-topbar .topnav a:nth-child(n+4){display:flex!important;flex:0 0 auto;scroll-snap-align:start;min-height:34px;font-size:10px;gap:4px;padding:4px 10px}
+ .deck-topbar .topnav a>span:first-child{font-size:15px}
+ .deck-topbar .top-actions{margin-inline-start:auto}
+ .deck-board{grid-template-areas:"stage" "systems" "parts" "info" "tools" "body"!important}
+ .deck-systems-panel{order:0}
+ .deck-main-stage{min-height:495px}
+ .deck-visual{min-height:365px}
+ .deck-image-holder{min-height:318px}
+ .deck-image-holder>img{max-height:345px}
+ .deck-body-panel{max-height:290px;min-height:245px}
+ .deck-body-panel img{height:260px}
+ .deck-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))!important;overflow-x:visible!important;gap:8px}
+ .deck-shortcuts .deck-tile{min-height:148px;padding:13px 8px 24px}
+ .deck-shortcuts .deck-tile:last-child{grid-column:1/-1}
+}
+@media(max-width:480px){
+ .deck-main-stage{min-height:455px}
+ .deck-visual{min-height:318px}
+ .deck-image-holder{min-height:277px}
+ .deck-image-holder>img{max-height:290px}
+ .deck-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .deck-tile strong{font-size:13px}
+ .deck-tile small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.command-deck *, .deck-topbar *{animation:none!important;transition:none!important}}
