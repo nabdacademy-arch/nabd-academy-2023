@@ -22,7 +22,7 @@ const current=()=>nameData.find(x=>x.key===selected)||nameData[0];
 function listSystems(){const list=$("deckSystemList");if(!list)return;list.replaceChildren();nameData.forEach(x=>{const btn=make("button","deck-system"+(x.key===selected?" active":""));btn.type="button";btn.dataset.deckSystem=x.key;btn.setAttribute("aria-pressed",String(x.key===selected));const sym=make("span","deck-system-icon",x.symbol);sym.setAttribute("aria-hidden","true");const label=make("span","deck-system-label",t(x.ar,x.en));label.append(make("small","",x.short));btn.append(sym,label);btn.addEventListener("click",()=>select(x.key));list.append(btn)})}
 function parts(){const list=$("deckPartList"),x=current();list.replaceChildren();x.parts.forEach((entry,i)=>{const btn=make("button","deck-part"+(i===part?" active":""));btn.type="button";btn.setAttribute("aria-pressed",String(i===part));const img=make("img");img.src="./art/"+x.src;img.alt="";img.loading="lazy";img.setAttribute("aria-hidden","true");btn.append(img,make("strong","",entry[language()==="ar"?0:1]));btn.addEventListener("click",()=>{part=i;parts();info()});list.append(btn)})}
 function info(){const x=current(),entry=x.parts[part];$("deckInfoTitle").textContent=entry?t(entry[0],entry[1]):t(x.ar,x.en);const description=mode==="function"?t(x.funcAr,x.funcEn):mode==="links"?t(x.linkAr,x.linkEn):t(x.descAr,x.descEn);$("deckInfoText").textContent=description;$("deckDetailImage").src="./art/"+x.src;$("deckDetailImage").alt=t("رسم توضيحي للنظام: "+x.ar,"Illustration: "+x.en)}
-function render(){const x=current();listSystems();parts();$("deckTitle").textContent=t(x.ar,x.en);$("deckSubtitle").textContent=x.short;$("deckOrganImage").src="./art/"+x.src;$("deckOrganImage").alt=t("رسم مجسّم تعليمي للنظام: "+x.ar,"Stylized 3D-look illustration of "+x.en);$("deckAngle").textContent=angle+"°";$("deckZoomValue").textContent=zoom+"%";$("deckImageHolder").style.transform="perspective(900px) rotateY("+angle+"deg) scale("+(zoom/100)+")";info();d.querySelectorAll("#deckTabs [data-mode]").forEach(b=>{const active=b.dataset.mode===mode;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active))})}
+function render(){const x=current();listSystems();parts();$("deckTitle").textContent=t(x.ar,x.en);$("deckSubtitle").textContent=x.short;$("deckOrganImage").src="./art/"+x.src;$("deckOrganImage").alt=t("رسم مجسّم تعليمي للنظام: "+x.ar,"Stylized 3D-look illustration of "+x.en);$("deckAngle").textContent=angle+"°";$("deckZoomValue").textContent=zoom+"%";const meshButton=$("deckTrue3D");if(meshButton)meshButton.hidden=selected!=="cardiovascular";$("deckImageHolder").style.transform="perspective(900px) rotateY("+angle+"deg) scale("+(zoom/100)+")";info();d.querySelectorAll("#deckTabs [data-mode]").forEach(b=>{const active=b.dataset.mode===mode;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active))})}
 function select(key){if(!nameData.some(x=>x.key===key))return;selected=key;part=0;mode="model";angle=0;zoom=100;render();const lesson=d.querySelector('#systemList .system-option[data-system="'+key+'"]');if(lesson)lesson.click()}
 function setMode(next){if(!["model","structure","function","links"].includes(next))return;mode=next;render();const map={structure:"structure",function:"function",links:"links"};const tab=d.querySelector('#tab-'+(map[mode]||"structure"));if(tab&&mode!=="model")tab.click()}
 function clamp(value,min,max){return Math.max(min,Math.min(max,value))}
@@ -35,6 +35,13 @@ function init(){if(!$("commandDeck"))return;
 d.querySelectorAll('#deckTabs [data-mode]').forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 d.querySelectorAll("[data-layer]").forEach(b=>b.addEventListener("change",layers));
 $("deckRotate").addEventListener("click",rotate);
+$("deckTrue3D").addEventListener("click",()=>{
+ if(selected!=="cardiovascular")return;
+ const target=d.querySelector('.a3d-item[data-organ="heart"]');
+ if(target)target.click();
+ d.getElementById("visual-atlas")?.scrollIntoView({behavior:d.body.classList.contains("no-motion")?"auto":"smooth",block:"start"});
+ window.setTimeout(()=>{const b=$("a3dTrue3D");if(b&&!b.hidden&&!b.disabled)b.click()},300);
+});
 $("deckMagnify").addEventListener("click",()=>updateZoom(25));
 $("deckCross").addEventListener("click",()=>{const cb=d.querySelector('[data-layer="cross"]');if(cb){cb.checked=!cb.checked;layers()}});
 $("deckReset").addEventListener("click",reset);
