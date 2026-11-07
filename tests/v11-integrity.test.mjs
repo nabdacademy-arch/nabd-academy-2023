@@ -1,0 +1,30 @@
+import assert from "node:assert/strict";
+import {readFileSync, existsSync} from "node:fs";
+import {resolve,dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import {Script} from "node:vm";
+const root=resolve(dirname(fileURLToPath(import.meta.url)),"..");
+const read=p=>readFileSync(resolve(root,p),"utf8");
+const html=read("v11/index.html"),home=read("index.html"),v10=read("nabd-v10.html"),js=read("v11/app.js"),css=read("v11/style.css"),sw=read("v11/sw.js"),manifest=JSON.parse(read("v11/manifest.webmanifest"));
+let count=0;function check(ok,message){assert.ok(ok,message);count++}
+new Script(js,{filename:"v11/app.js"});new Script(sw,{filename:"v11/sw.js"});count+=2;
+check(html.includes('lang="ar" dir="rtl"'),"Default Arabic/RTL");
+check(html.includes('id="systemList"')&&html.includes('id="learningContent"'),"Interactive anatomy section");
+check(html.includes('id="scenarioBody"')&&html.includes('id="progressStatus"'),"Reasoning & optional progress");
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+check(new Set(ids).size===ids.length,"No duplicate V11 IDs");
+for(const m of js.matchAll(/\$\("([^"]+)"\)/g))check(ids.includes(m[1]),"Missing app element "+m[1]);
+for(const tag of html.match(/<[^>]+>/g)||[])if(tag.includes("data-ar="))check(tag.includes("data-en="),"Missing translation: "+tag.slice(0,70));
+check(js.includes('id:"immune"')&&js.includes('id:"musculoskeletal"')&&js.includes('id:"cardiovascular"'),"Eight core modules present");
+check(js.includes('id:"oxygen"')&&js.includes('id:"hydration"')&&js.includes('id:"movement"'),"Three fictional learning challenges");
+check(js.includes('localStorage.setItem(STORE_KEY')&&js.includes('if(!privacySave)return'),"Local storage requires permission");
+check(!/fetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|eval\s*\(/.test(js),"Static, no data upload or dynamic execution");
+check(css.includes("@media(max-width:590px)")&&css.includes("prefers-reduced-motion"),"Mobile and reduced-motion designs");
+check(home.includes('id="human-universe-v11"')&&home.includes('href="v11/"'),"Prominent homepage launch");
+check(home.includes('id="v10-universe"')&&home.includes('id="nabd-unified-campus"'),"Earlier academy modules preserved");
+check(v10.includes('href="v11/"'),"V10 links to V11");
+check(manifest.scope==="./"&&manifest.start_url==="./index.html","PWA scope is local to V11");
+check(sw.includes('url.pathname.startsWith(ROOT.pathname)')&&sw.includes('request.method!=="GET"'),"Only own GET requests intercepted");
+check(!/portal\.html|admin\.html|supabase/.test(sw),"Worker cannot explicitly cache account/admin/backend");
+for(const m of html.matchAll(/\b(?:href|src)="([^"]+)"/g)){const href=m[1];if(href.startsWith("#")||/^(https?:|data:)/.test(href))continue;const p=href.split(/[?#]/)[0];if(!p)continue;let file=resolve(root,"v11",p);if(p.endsWith("/"))file=resolve(file,"index.html");check(existsSync(file),"Broken relative link "+href)}
+console.log("NABD V11 source integrity passed: "+count+" assertions.");
