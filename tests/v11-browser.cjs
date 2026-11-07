@@ -23,6 +23,22 @@ const path=require("node:path");
       await page.goto("http://127.0.0.1:"+port+"/v11/",{waitUntil:"domcontentloaded"});
       await page.locator(".system-option").first().waitFor();
       assert.equal(await page.locator(".system-option").count(),8,"8 human systems");
+
+      // High-definition anatomy gallery: eight images, bilingual labels, zoom and contextual learning.
+      await page.locator(".a3d-item").first().waitFor();
+      assert.equal(await page.locator(".a3d-item").count(),8,"Eight anatomy illustrations");
+      assert.ok(await page.locator("#a3dImage").evaluate(async image=>{try{await image.decode();return image.naturalWidth>=700&&image.naturalHeight>=700}catch(e){return false}}),"Vector anatomy image must decode sharply");
+      await page.locator('.a3d-item[data-organ="brain"]').click();
+      assert.ok((await page.locator("#a3dImage").getAttribute("src")).endsWith("brain-3d.svg"),"Brain visual selected");
+      assert.match(await page.locator("#a3dName").innerText(),/الدماغ/);
+      await page.locator("#a3dZoom").evaluate(input=>{input.value="180";input.dispatchEvent(new Event("input",{bubbles:true}))});
+      assert.equal(await page.locator("#a3dZoomText").innerText(),"180%");
+      assert.match(await page.locator("#a3dImage").getAttribute("style"),/scale\(1\.8\)/);
+      await page.locator("#a3dReset").click();
+      assert.equal(await page.locator("#a3dZoomText").innerText(),"100%");
+      await page.locator("#a3dLessonLink").click();
+      assert.match(await page.locator("#systemHeading").innerText(),/العصبي/);
+
       assert.equal(await page.locator("html").getAttribute("dir"),"rtl");
       await page.locator('.body-hotspot[data-target="respiratory"]').click();
       assert.match(await page.locator("#systemHeading").innerText(),/التنفسي/);
@@ -45,6 +61,7 @@ const path=require("node:path");
       await page.locator("#langBtn").click();
       assert.equal(await page.locator("html").getAttribute("dir"),"ltr","English LTR");
       assert.match(await page.locator("#heroTitle").innerText(),/universe/);
+      assert.match(await page.locator("#a3dName").innerText(),/Heart/,"Anatomy captions respond to language change");
       await page.locator("#clearProgress").click();
       assert.equal(await page.locator("#quizStat").innerText(),"0","Clear deletes mastery");
       assert.equal(await page.locator("#missionStat").innerText(),"0","Clear deletes missions");
@@ -66,6 +83,7 @@ const path=require("node:path");
         await context.setOffline(true);
         await page.reload({waitUntil:"domcontentloaded"});
         assert.equal(await page.locator(".system-option").count(),8,"V11 shell available offline after installation");
+        assert.ok(await page.locator("#a3dImage").evaluate(async image=>{try{await image.decode();return image.naturalWidth>=700}catch(e){return false}}),"Anatomy illustration is available offline");
         await context.setOffline(false);
       }
       await context.close();
