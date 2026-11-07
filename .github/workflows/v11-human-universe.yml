@@ -1,0 +1,51 @@
+name: NABD V11 Human Universe checks
+on:
+  pull_request:
+    paths:
+      - 'v11/**'
+      - 'index.html'
+      - 'nabd-v10.html'
+      - 'assets/css/nabd-v11-home.css'
+      - 'tests/v11-integrity.test.mjs'
+      - 'tests/v11-browser.cjs'
+      - '.github/workflows/v11-human-universe.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'v11/**'
+      - 'index.html'
+      - 'nabd-v10.html'
+      - 'assets/css/nabd-v11-home.css'
+      - 'tests/v11-integrity.test.mjs'
+      - 'tests/v11-browser.cjs'
+      - '.github/workflows/v11-human-universe.yml'
+permissions:
+  contents: read
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and integrity
+        run: |
+          node --check v11/app.js
+          node --check v11/sw.js
+          node tests/v11-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify mobile, desktop, progress and offline
+        run: node tests/v11-browser.cjs
