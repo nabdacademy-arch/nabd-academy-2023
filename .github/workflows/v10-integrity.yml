@@ -1,0 +1,29 @@
+name: NABD V10 integrity
+on:
+  pull_request:
+    paths:
+      - 'nabd-v10.html'
+      - 'assets/css/nabd-v10*.css'
+      - 'assets/js/nabd-v10.js'
+      - 'index.html'
+      - 'tests/v10-integrity.test.mjs'
+      - '.github/workflows/v10-integrity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-v10.html'
+      - 'assets/css/nabd-v10*.css'
+      - 'assets/js/nabd-v10.js'
+      - 'index.html'
+      - 'tests/v10-integrity.test.mjs'
+      - '.github/workflows/v10-integrity.yml'
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify bilingual V10 routes and script
+        run: node tests/v10-integrity.test.mjs
