@@ -1,5 +1,5 @@
 /* NABD INFINITY V15 - all modules run locally except explicit on-demand CC0 GLB viewing.
-   No student APIs, no patient records, no generated medical claims or question uploads. */
+   No question uploads. No student APIs, patient records, or generated medical claims. */
 import {MODELS,MISSIONS,LIBRARY,BUILDINGS} from "./data.mjs";
 const d=document;const by=id=>d.getElementById(id);
 const state={lang:"ar",selectedModel:0,modelLive:false,section:false,selectedMission:0,step:0,picks:[],finished:false,reduced:matchMedia("(prefers-reduced-motion: reduce)").matches,store:false,progress:{models:[],missions:[],topics:[]},viewerRequest:0};
