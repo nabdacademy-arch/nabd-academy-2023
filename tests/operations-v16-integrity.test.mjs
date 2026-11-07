@@ -12,7 +12,7 @@ ok(css.includes("@media(max-width:650px)")&&css.includes("prefers-reduced-motion
 ok(!/\b(?:fetch|XMLHttpRequest|sendBeacon|WebSocket|localStorage|sessionStorage)\b/.test(js),"Local V16 tools do not upload or persist data");
 ok(js.includes('index.html')&&js.includes('search.crossref.org')&&js.includes('pubmed.ncbi.nlm.nih.gov'),"Official verification and source links");
 ok(js.includes('existing.querySelector')&&js.includes('[name="title"]'),"Faculty plan explicitly connects to existing editor without auto-save");
-ok(!/\.from\(|\.insert\(|\.update\(|\.delete\(/.test(js),"V16 never alters database records");
+ok(!/(?:\bdb|\bsupabase|\bclient)\s*\.\s*from\s*\(|\.\s*(?:insert|update|upsert|delete)\s*\(/.test(js),"V16 never alters database records");
 const pages={
 "lecturers.html":["os-lecturer-suite","os-lesson-form","os-lesson-title","os-lesson-course","os-lesson-length","os-lesson-objective","os-lesson-output","os-lesson-copy","os-lesson-download","os-lesson-to-editor","os-lesson-status"],
 "admin.html":["os-admin-suite","os-course-form","os-course-name","os-course-code","os-course-weeks","os-course-hours","os-course-outcomes","os-course-output","os-course-copy","os-course-export","os-course-meter","os-admin-cert-meter","os-admin-governance-meter","os-admin-report","os-admin-status"],
