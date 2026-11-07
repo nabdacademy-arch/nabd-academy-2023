@@ -1,0 +1,76 @@
+"use strict";
+const assert=require("node:assert/strict");
+const {spawn}=require("node:child_process");
+const {resolve}=require("node:path");
+const {chromium}=require("playwright");
+(async()=>{
+ const root=resolve(__dirname,".."),port=8791,base="http://127.0.0.1:"+port;
+ const server=spawn("python3",["-m","http.server",String(port),"--bind","127.0.0.1"],{cwd:root,stdio:"ignore"});
+ let browser;
+ try{
+  let up=false;for(let i=0;i<45;i++){try{if((await fetch(base+"/index.html")).ok){up=true;break}}catch(e){}await new Promise(r=>setTimeout(r,250))}
+  assert.ok(up,"local server started");
+  browser=await chromium.launch({headless:true});
+  for(const width of [390,1440]){
+   const context=await browser.newContext({viewport:{width,height:850},acceptDownloads:true,reducedMotion:"reduce"});
+   await context.route(/^https:\/\//,route=>route.abort());
+   const page=await context.newPage();
+   await page.goto(base+"/index.html",{waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("#academy-operations-v16 .os-home-item").count(),5,"Five homepage operations entries");
+   await page.goto(base+"/lecturers.html",{waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("#studio-workspace").getAttribute("hidden"),"","Faculty operations must start behind login gate");
+   await page.evaluate(()=>{document.getElementById("studio-workspace").hidden=false});
+   await page.locator("#os-lesson-title").fill("Cardiac Physiology Introduction");
+   await page.locator("#os-lesson-objective").fill("Students can explain pulmonary and systemic circulation");
+   await page.locator("#os-lesson-length").selectOption("45");
+   await page.locator('#os-lesson-form button[type="submit"]').click();
+   assert.match(await page.locator("#os-lesson-output").innerText(),/45 دقيقة/);
+   const [facultyDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#os-lesson-download").click()]);
+   assert.equal(facultyDownload.suggestedFilename(),"NABD-lesson-blueprint.txt");
+   await page.locator("#os-lesson-to-editor").click();
+   assert.match(await page.locator("#os-lesson-status").innerText(),/تكليف صلاحية/,"No silent publishing without authorised faculty editor");
+   await page.goto(base+"/admin.html",{waitUntil:"domcontentloaded"});
+   assert.match(await page.locator("#app").getAttribute("class"),/\bhidden\b/,"Admin operations behind login");
+   await page.evaluate(()=>{document.getElementById("app").classList.remove("hidden");document.getElementById("os-admin-suite").classList.remove("hidden")});
+   await page.locator("#os-course-name").fill("Applied Human Anatomy");
+   await page.locator("#os-course-code").fill("ANAT-110");
+   await page.locator("#os-course-weeks").fill("4");
+   await page.locator("#os-course-hours").fill("3");
+   await page.locator("#os-course-outcomes").fill("Identify human organs\nConnect form and function");
+   await page.locator('#os-course-form button[type="submit"]').click();
+   assert.match(await page.locator("#os-course-output").innerText(),/ANAT-110/);
+   assert.match(await page.locator("#os-course-status").innerText(),/لم يتم تعديل جدول/);
+   const [json]=await Promise.all([page.waitForEvent("download"),page.locator("#os-course-export").click()]);
+   assert.equal(json.suggestedFilename(),"NABD-course-proposal.json");
+   await page.locator('[data-os-check="admin-cert"]').first().check();
+   assert.match(await page.locator("#os-admin-cert-meter").innerText(),/1 \/ 5/);
+   const [adminDownload]=await Promise.all([page.waitForEvent("download"),page.locator("#os-admin-report").click()]);
+   assert.equal(adminDownload.suggestedFilename(),"NABD-administrative-review.txt");
+   await page.goto(base+"/portal.html",{waitUntil:"domcontentloaded"});
+   assert.equal(await page.locator("#dashboardSection").evaluate(el=>el.classList.contains("active")),false,"Student credential helper behind dashboard gate");
+   await page.evaluate(()=>document.getElementById("dashboardSection").classList.add("active"));
+   await page.locator("#os-cert-id").fill("NABD-MT-2026-0001");
+   await page.locator('#os-cert-form button[type="submit"]').click();
+   assert.equal(await page.locator("#os-cert-link").isHidden(),false,"Official verification link available");
+   const href=await page.locator("#os-cert-link").getAttribute("href");
+   assert.ok(href.includes("index.html?cert=NABD-MT-2026-0001#verify"),"Build official verification URL without claiming authenticity");
+   await page.locator("#os-cert-id").fill("x");
+   await page.locator('#os-cert-form button[type="submit"]').click();
+   assert.equal(await page.locator("#os-cert-link").isHidden(),true,"Invalid certificate ID rejected");
+   await page.goto(base+"/nabd-global-research.html",{waitUntil:"domcontentloaded"});
+   await page.locator("#os-pico-p").fill("medical students");
+   await page.locator("#os-pico-i").fill("interactive learning");
+   await page.locator("#os-pico-o").fill("concept test score");
+   await page.locator('#os-research-form button[type="submit"]').click();
+   assert.match(await page.locator("#os-research-output").innerText(),/medical students/);
+   assert.match(await page.locator("#os-pubmed-link").getAttribute("href"),/^https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/\?term=/);
+   assert.equal(await page.locator("#os-pubmed-link").isHidden(),false,"External search exposed only on request");
+   await page.locator("#os-pico-p").fill("new population");
+   assert.equal(await page.locator("#os-pubmed-link").isHidden(),true,"Stale query link hidden after change");
+   const rect=await page.locator("#os-evidence-navigator").evaluate(el=>({l:el.getBoundingClientRect().left,r:el.getBoundingClientRect().right,width:innerWidth}));
+   assert.ok(rect.l>=-4&&rect.r<=rect.width+4,"Research panel fits "+width+"px");
+   await context.close();
+  }
+  console.log("NABD V16 browser acceptance passed: five home entries, gated faculty, curriculum export, admin QA, official certificate link and evidence navigator at mobile/desktop widths.");
+ }finally{if(browser)await browser.close();server.kill()}
+})().catch(e=>{console.error(e);process.exitCode=1});
