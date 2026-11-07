@@ -53,7 +53,16 @@ const path=require("node:path");
       assert.ok(geometry.scrollWidth<=geometry.viewport+8,"No horizontal overflow at "+width+" "+JSON.stringify(geometry));
       assert.deepEqual(errors,[],"No page errors at "+width);
       if(width===390){
-        await page.evaluate(async()=>{if("serviceWorker" in navigator){await navigator.serviceWorker.ready}});
+        const swState=await page.evaluate(async()=>{
+          if(!("serviceWorker" in navigator))return {ready:false,reason:"unsupported"};
+          const ready=await Promise.race([
+            navigator.serviceWorker.ready.then(r=>({ready:true,scope:r.scope})).catch(e=>({ready:false,reason:String(e)})),
+            new Promise(resolve=>setTimeout(()=>resolve({ready:false,reason:"SW readiness timed out after 8 seconds"}),8000))
+          ]);
+          if(!ready.ready){const registrations=await navigator.serviceWorker.getRegistrations();ready.registrations=registrations.map(r=>({scope:r.scope,installing:r.installing?.state,waiting:r.waiting?.state,active:r.active?.state}));}
+          return ready;
+        });
+        assert.ok(swState.ready,"V11 service worker must activate: "+JSON.stringify(swState));
         await context.setOffline(true);
         await page.reload({waitUntil:"domcontentloaded"});
         assert.equal(await page.locator(".system-option").count(),8,"V11 shell available offline after installation");
