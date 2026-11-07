@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 720" width="720" height="720" role="img" aria-label="Cardiovascular heart organ"><title>Cardiovascular heart organ — 3D-style educational illustration, not a precise anatomical model</title>
+<defs>
+<radialGradient id="halo"><stop stop-color="#3fd5df" stop-opacity=".24"/><stop offset=".55" stop-color="#2b92b8" stop-opacity=".065"/><stop offset="1" stop-color="#1d659e" stop-opacity="0"/></radialGradient>
+<linearGradient id="red" x1=".14" y1=".12" x2=".92" y2=".83"><stop stop-color="#ffadb8"/><stop offset=".19" stop-color="#d9546e"/><stop offset=".45" stop-color="#a82b4c"/><stop offset=".76" stop-color="#6e1936"/><stop offset="1" stop-color="#390e2a"/></linearGradient>
+<linearGradient id="blue" x1=".1" y1=".07" x2=".93" y2=".9"><stop stop-color="#a5efff"/><stop offset=".26" stop-color="#3f9eca"/><stop offset=".59" stop-color="#17648e"/><stop offset=".91" stop-color="#102742"/></linearGradient>
+<linearGradient id="pink" x1=".12" y1=".07" x2=".91" y2=".84"><stop stop-color="#ffe4eb"/><stop offset=".3" stop-color="#e895b1"/><stop offset=".67" stop-color="#b84f84"/><stop offset="1" stop-color="#58234a"/></linearGradient>
+<linearGradient id="bone" x1=".11" y1=".08" x2=".9" y2=".88"><stop stop-color="#fffaf4"/><stop offset=".35" stop-color="#d4ebea"/><stop offset=".68" stop-color="#92b3c1"/><stop offset="1" stop-color="#41677d"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0b7"/><stop offset=".42" stop-color="#e6af68"/><stop offset="1" stop-color="#8e532f"/></linearGradient>
+<radialGradient id="glass" cx=".28" cy=".2" r=".8"><stop stop-color="#d0fff3" stop-opacity=".93"/><stop offset=".19" stop-color="#6bd7d2" stop-opacity=".65"/><stop offset=".7" stop-color="#186d81" stop-opacity=".35"/><stop offset="1" stop-color="#08364c" stop-opacity=".18"/></radialGradient>
+<filter id="shadow" x="-35%" y="-35%" width="170%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="17" result="blur"/><feOffset dx="5" dy="24" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".48"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="blur"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<circle cx="355" cy="340" r="318" fill="url(#halo)"/><g fill="none" stroke="#7af3e8" stroke-opacity=".14"><circle cx="359" cy="351" r="276" stroke-dasharray="9 12"/><circle cx="359" cy="351" r="230"/><circle cx="359" cy="351" r="182" stroke-dasharray="4 9"/><path d="M95 350H623M358 87V630" stroke-dasharray="4 10"/></g><ellipse cx="366" cy="603" rx="205" ry="35" fill="#13bdd1" opacity=".13" filter="url(#blur)"/>
+
+<g filter="url(#shadow)">
+<path d="M309 227 C284 182 277 119 305 94 C333 66 387 99 396 148 L406 229" fill="none" stroke="#71223b" stroke-width="72" stroke-linecap="round"/>
+<path d="M310 208 C276 167 279 124 306 104 C330 86 361 118 372 158 L385 229" fill="none" stroke="#e1687a" stroke-width="47" stroke-linecap="round"/>
+<path d="M404 187 C433 126 486 117 520 149 C541 169 528 202 501 226" fill="none" stroke="#254966" stroke-width="75" stroke-linecap="round"/>
+<path d="M404 188 C446 126 487 140 503 162 C517 184 485 211 468 238" fill="none" stroke="#4a9dc6" stroke-width="54" stroke-linecap="round"/>
+<path d="M266 246 C216 215 170 234 159 294 C145 365 202 460 280 523 L369 598 C381 608 393 600 406 587 C505 490 552 402 529 319 C516 266 480 244 426 256 C408 189 330 190 313 245 C303 258 286 250 266 246Z" fill="url(#red)" stroke="#ffb0aa" stroke-width="5"/>
+<path d="M174 317 C188 263 232 256 274 288 C312 320 298 372 288 390" fill="none" stroke="#ffc0be" stroke-width="15" opacity=".36" stroke-linecap="round"/>
+<path d="M321 271 C334 314 327 377 367 400 C405 425 391 502 372 548" fill="none" stroke="#5d1428" stroke-width="37" opacity=".58"/>
+<path d="M343 264 Q369 305 360 339 Q341 382 384 411 Q419 448 400 490" fill="none" stroke="#d46063" stroke-width="10" opacity=".75"/>
+<path d="M218 306 C244 326 248 349 272 367 S312 420 332 438 S364 483 355 530 M436 280 Q412 322 428 350 T436 420 Q422 467 400 514" stroke="#e8b76b" stroke-width="13" stroke-linecap="round" fill="none"/>
+<path d="M218 307 C241 328 252 357 269 367 S310 417 332 437 S365 487 354 528 M432 284 Q413 320 428 347 T436 417" stroke="#fff3b4" stroke-width="4" fill="none" opacity=".8"/>
+<path d="M244 358L195 373 M268 382L230 427 M301 417L266 452 M333 454L308 513 M427 342L477 328 M435 399L485 424" stroke="#f1ba6a" stroke-width="7" fill="none" stroke-linecap="round"/>
+<path d="M260 271 C293 256 331 272 340 305" fill="none" stroke="#ffead9" stroke-width="7" opacity=".38"/>
+</g><g fill="#d8fbfd" opacity=".8"><circle cx="214" cy="306" r="4"/><circle cx="445" cy="415" r="3"/></g>
+</svg>

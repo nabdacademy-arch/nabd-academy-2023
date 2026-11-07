@@ -27,4 +27,23 @@ check(manifest.scope==="./"&&manifest.start_url==="./index.html","PWA scope is l
 check(sw.includes('url.pathname.startsWith(ROOT.pathname)')&&sw.includes('request.method!=="GET"'),"Only own GET requests intercepted");
 check(!/portal\.html|admin\.html|supabase/.test(sw),"Worker cannot explicitly cache account/admin/backend");
 for(const m of html.matchAll(/\b(?:href|src)="([^"]+)"/g)){const href=m[1];if(href.startsWith("#")||/^(https?:|data:)/.test(href))continue;const p=href.split(/[?#]/)[0];if(!p)continue;let file=resolve(root,"v11",p);if(p.endsWith("/"))file=resolve(file,"index.html");check(existsSync(file),"Broken relative link "+href)}
+
+const anatomyJS=read("v11/anatomy-3d.js"),anatomyCSS=read("v11/anatomy-3d.css");
+new Script(anatomyJS,{filename:"v11/anatomy-3d.js"});count++;
+check(html.includes('id="visual-atlas"')&&html.includes('id="a3dViewport"'),"Dimensional anatomy gallery integrated");
+check(html.includes('id="a3dZoom"')&&html.includes('id="a3dFullImage"'),"Zoom and full-size links present");
+check(home.includes('href="v11/#visual-atlas"'),"Homepage enters anatomy studio directly");
+check(anatomyJS.includes("requestFullscreen")&&anatomyJS.includes("setZoom("),"Full-screen and zoom implementation");
+check(anatomyCSS.includes("@media(max-width:650px)")&&anatomyCSS.includes("prefers-reduced-motion"),"Anatomy viewer is mobile and motion-safe");
+check(!/localStorage|sessionStorage|sendBeacon|XMLHttpRequest|\bfetch\s*\(/.test(anatomyJS),"Gallery does not store or send data");
+for(const m of anatomyJS.matchAll(/\bid\("([^"]+)"\)/g))check(ids.includes(m[1]),"Missing anatomy viewer node "+m[1]);
+for(const organ of ["heart","brain","lungs","renal","digestive","endocrine","musculoskeletal","immune"]){
+ const path="v11/art/"+organ+"-3d.svg",image=read(path);
+ check(image.includes("<svg ")&&image.includes('viewBox="0 0 720 720"')&&image.includes("</svg>"),"Scalable vector art valid: "+organ);
+ check(image.includes("<title>")&&image.includes("educational"),"Illustration semantics and disclaimer: "+organ);
+ check(!/<script\b|<foreignObject\b|xlink:href="https?:/i.test(image),"Artwork contains no active or external resources: "+organ);
+ check(sw.includes("./art/"+organ+"-3d.svg"),"Art cached for offline use: "+organ);
+}
+check(sw.includes("nabd-v11-static-v2")&&sw.includes("./anatomy-3d.js?v=1"),"Offline shell upgraded for 3D gallery");
+
 console.log("NABD V11 source integrity passed: "+count+" assertions.");

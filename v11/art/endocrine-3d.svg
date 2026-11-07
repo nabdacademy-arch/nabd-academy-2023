@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 720" width="720" height="720" role="img" aria-label="Endocrine glands illustrated medical system"><title>Endocrine glands illustrated medical system — 3D-style educational illustration, not a precise anatomical model</title>
+<defs>
+<radialGradient id="halo"><stop stop-color="#3fd5df" stop-opacity=".24"/><stop offset=".55" stop-color="#2b92b8" stop-opacity=".065"/><stop offset="1" stop-color="#1d659e" stop-opacity="0"/></radialGradient>
+<linearGradient id="red" x1=".14" y1=".12" x2=".92" y2=".83"><stop stop-color="#ffadb8"/><stop offset=".19" stop-color="#d9546e"/><stop offset=".45" stop-color="#a82b4c"/><stop offset=".76" stop-color="#6e1936"/><stop offset="1" stop-color="#390e2a"/></linearGradient>
+<linearGradient id="blue" x1=".1" y1=".07" x2=".93" y2=".9"><stop stop-color="#a5efff"/><stop offset=".26" stop-color="#3f9eca"/><stop offset=".59" stop-color="#17648e"/><stop offset=".91" stop-color="#102742"/></linearGradient>
+<linearGradient id="pink" x1=".12" y1=".07" x2=".91" y2=".84"><stop stop-color="#ffe4eb"/><stop offset=".3" stop-color="#e895b1"/><stop offset=".67" stop-color="#b84f84"/><stop offset="1" stop-color="#58234a"/></linearGradient>
+<linearGradient id="bone" x1=".11" y1=".08" x2=".9" y2=".88"><stop stop-color="#fffaf4"/><stop offset=".35" stop-color="#d4ebea"/><stop offset=".68" stop-color="#92b3c1"/><stop offset="1" stop-color="#41677d"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff0b7"/><stop offset=".42" stop-color="#e6af68"/><stop offset="1" stop-color="#8e532f"/></linearGradient>
+<radialGradient id="glass" cx=".28" cy=".2" r=".8"><stop stop-color="#d0fff3" stop-opacity=".93"/><stop offset=".19" stop-color="#6bd7d2" stop-opacity=".65"/><stop offset=".7" stop-color="#186d81" stop-opacity=".35"/><stop offset="1" stop-color="#08364c" stop-opacity=".18"/></radialGradient>
+<filter id="shadow" x="-35%" y="-35%" width="170%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="17" result="blur"/><feOffset dx="5" dy="24" result="offset"/><feComponentTransfer><feFuncA type="linear" slope=".48"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="blur"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<circle cx="355" cy="340" r="318" fill="url(#halo)"/><g fill="none" stroke="#7af3e8" stroke-opacity=".14"><circle cx="359" cy="351" r="276" stroke-dasharray="9 12"/><circle cx="359" cy="351" r="230"/><circle cx="359" cy="351" r="182" stroke-dasharray="4 9"/><path d="M95 350H623M358 87V630" stroke-dasharray="4 10"/></g><ellipse cx="366" cy="603" rx="205" ry="35" fill="#13bdd1" opacity=".13" filter="url(#blur)"/>
+
+<g filter="url(#shadow)">
+<path d="M360 122 L360 558" stroke="#4096a8" stroke-opacity=".33" stroke-width="46" stroke-linecap="round"/>
+<path d="M340 215 Q299 173 288 201 Q280 221 309 261 Q326 280 349 258Z M380 215 Q420 173 433 201 Q443 222 410 262 Q394 281 370 258Z" fill="url(#pink)" stroke="#ffc7db" stroke-width="5"/>
+<rect x="343" y="216" width="32" height="50" rx="13" fill="url(#red)" stroke="#ffc2c2" stroke-width="3"/>
+<ellipse cx="360" cy="150" rx="28" ry="27" fill="url(#gold)" stroke="#fff0c5" stroke-width="4"/>
+<path d="M359 177 V200" stroke="#ffe8b0" stroke-width="8"/>
+<path d="M260 338 Q221 316 206 356 Q223 385 264 383 Q284 372 260 338Z M460 338 Q499 316 514 356 Q497 385 456 383 Q437 372 460 338Z" fill="url(#gold)" stroke="#ffebb4" stroke-width="5"/>
+<path d="M266 450 C308 427 397 428 457 454 Q466 472 444 483 Q361 514 262 484 Q246 467 266 450Z" fill="url(#pink)" stroke="#ffbfd7" stroke-width="5"/>
+<g fill="none" stroke="#9af6e9" stroke-opacity=".8" stroke-width="3" stroke-dasharray="6 10"><path d="M358 179V215 M352 267L253 340 M375 263L469 346 M350 267L298 443 M370 267L430 447"/></g>
+</g><circle cx="359" cy="149" r="38" fill="none" stroke="#ffe8ae" stroke-width="2" opacity=".8"/>
+</svg>

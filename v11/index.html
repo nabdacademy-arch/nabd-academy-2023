@@ -11,7 +11,10 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./style.css?v=1">
+<link rel="stylesheet" href="./anatomy-3d.css?v=1">
+<link rel="preload" as="image" href="./art/heart-3d.svg">
 <script src="./app.js?v=1" defer></script>
+<script src="./anatomy-3d.js?v=1" defer></script>
 <title>NABD V11 | عالم جسم الإنسان</title>
 </head>
 <body>
@@ -20,7 +23,7 @@
 <header class="topbar">
 <div class="shell top-inner">
 <a class="brand" href="../index.html"><span class="brand-icon" aria-hidden="true">N<small>✦</small></span><span><strong>NABD <em>V11</em></strong><small>HUMAN UNIVERSE / MEDICAL LEARNING</small></span></a>
-<nav class="topnav" aria-label="Main navigation"><a href="#systems" data-ar="الأجهزة" data-en="Systems">الأجهزة</a><a href="#connections" data-ar="الترابط" data-en="Connections">الترابط</a><a href="#clinical" data-ar="التحديات" data-en="Challenges">التحديات</a><a href="#progress" data-ar="تقدمي" data-en="My progress">تقدمي</a></nav>
+<nav class="topnav" aria-label="Main navigation"><a href="#visual-atlas" data-ar="الصور المجسّمة" data-en="3D Anatomy">الصور المجسّمة</a><a href="#systems" data-ar="الأجهزة" data-en="Systems">الأجهزة</a><a href="#connections" data-ar="الترابط" data-en="Connections">الترابط</a><a href="#clinical" data-ar="التحديات" data-en="Challenges">التحديات</a><a href="#progress" data-ar="تقدمي" data-en="My progress">تقدمي</a></nav>
 <div class="top-actions"><span class="offline-pill" id="connectionStatus" role="status" aria-live="polite" data-ar="تجربة خفيفة" data-en="Lightweight mode">تجربة خفيفة</span><button class="chip-button" id="liteBtn" type="button" aria-pressed="false" data-ar="حركة أقل" data-en="Less motion">حركة أقل</button><button class="lang-toggle" id="langBtn" type="button" aria-label="Switch language to English">EN</button><a class="login-link" href="../portal.html" data-ar="بوابة الطالب ↗" data-en="Student portal ↗">بوابة الطالب ↗</a></div>
 </div></header>
 <main id="main">
@@ -30,7 +33,7 @@
 <div class="overline"><span class="ping"></span>NABD / INFINITY LAB <span class="slash">/</span> V11.0</div>
 <h1 id="heroTitle"><span data-ar="داخل كل جسد،" data-en="Inside every body,">داخل كل جسد،</span><br><span class="gradient" data-ar="عالم ينتظر اكتشافه." data-en="a universe to discover.">عالم ينتظر اكتشافه.</span></h1>
 <p class="hero-text" data-ar="استكشف أجهزة جسم الإنسان كمجموعة أنظمة مترابطة. حدّد عضوًا على المخطط، تعلّم وظائفه، راجع العلاقة بين الأجهزة، ثم جرّب تحديات تفكير علمي قصيرة. كل ذلك بواجهة سريعة وباللغتين." data-en="Explore human body systems as an interconnected network. Select a region, learn its functions, trace cross-system connections and practice short scientific-reasoning challenges — in a fast bilingual interface.">استكشف أجهزة جسم الإنسان كمجموعة أنظمة مترابطة. حدّد عضوًا على المخطط، تعلّم وظائفه، راجع العلاقة بين الأجهزة، ثم جرّب تحديات تفكير علمي قصيرة. كل ذلك بواجهة سريعة وباللغتين.</p>
-<div class="hero-buttons"><a class="btn primary" href="#systems"><span data-ar="ابدأ رحلة الاستكشاف" data-en="Begin exploring">ابدأ رحلة الاستكشاف</span><span aria-hidden="true">↗</span></a><a class="btn secondary" href="#clinical" data-ar="ادخل التحديات العلمية" data-en="Enter the learning challenges">ادخل التحديات العلمية</a></div>
+<div class="hero-buttons"><a class="btn primary" href="#visual-atlas" data-ar="✦ استكشف الصور المجسّمة" data-en="✦ Explore 3D-style anatomy">✦ استكشف الصور المجسّمة</a><a class="btn secondary" href="#systems"><span data-ar="ابدأ رحلة الاستكشاف" data-en="Begin exploring">ابدأ رحلة الاستكشاف</span><span aria-hidden="true">↗</span></a><a class="btn secondary" href="#clinical" data-ar="ادخل التحديات العلمية" data-en="Enter the learning challenges">ادخل التحديات العلمية</a></div>
 <div class="metric-row"><div><strong>08</strong><span data-ar="أجهزة متصلة" data-en="Connected systems">أجهزة متصلة</span></div><i></i><div><strong>03</strong><span data-ar="تحديات قصيرة" data-en="Micro-challenges">تحديات قصيرة</span></div><i></i><div><strong>02</strong><span data-ar="لغات" data-en="Languages">لغات</span></div></div>
 <p class="disclaimer" data-ar="المخطط التوضيحي غير تشريحي دقيق. المحتوى تعليمي غير مخصص للتشخيص أو العلاج؛ ولا يحل محل الدراسة الأكاديمية أو الإشراف الطبي." data-en="Schematic illustration, not an anatomically precise diagram. Educational content only; not for diagnosis, treatment or a substitute for academic or clinical supervision.">المخطط التوضيحي غير تشريحي دقيق. المحتوى تعليمي غير مخصص للتشخيص أو العلاج؛ ولا يحل محل الدراسة الأكاديمية أو الإشراف الطبي.</p>
 </div>
@@ -62,6 +65,57 @@
 </div>
 <div class="hero-strip"><div class="shell strip-flex"><span><i>01</i> <span data-ar="اكتشف" data-en="EXPLORE">اكتشف</span></span><b></b><span><i>02</i> <span data-ar="اربط المفاهيم" data-en="CONNECT">اربط المفاهيم</span></span><b></b><span><i>03</i> <span data-ar="تدرّب" data-en="PRACTICE">تدرّب</span></span><b></b><span><i>04</i> <span data-ar="تابع تقدمك" data-en="PROGRESS">تابع تقدمك</span></span></div></div>
 </section>
+<!-- NABD CRYSTAL ANATOMY / 3D-STYLE SCALABLE ILLUSTRATIONS — NOT VOLUMETRIC MEDICAL SCANS -->
+<section class="a3d-section" id="visual-atlas" aria-labelledby="a3dTitle">
+ <div class="shell">
+  <div class="a3d-head">
+   <div><span class="a3d-eyebrow">NABD / CRYSTAL ANATOMY STUDIO · V11</span>
+    <h2 id="a3dTitle"><span data-ar="الأعضاء كما لم ترَها في نبض." data-en="See the organs in a new light.">الأعضاء كما لم ترَها في نبض.</span><br><em data-ar="صور مجسّمة. تفاصيل واضحة." data-en="Dimensional art. Crystal-clear detail.">صور مجسّمة. تفاصيل واضحة.</em></h2>
+    <p data-ar="ثماني رسومات طبية مجسّمة عالية الوضوح بصيغة متجهات قابلة للتكبير دون تشوّه. اختر العضو، استكشف أجزائه الأساسية، وافتح درسًا تفاعليًا أو مختبرًا مرتبطًا به. هذه رسوم تعليمية بأسلوب ثلاثي الأبعاد، وليست نماذج حجمية قابلة للدوران أو صور تشريح معتمدة." data-en="Eight high-resolution 3D-style vector illustrations that stay sharp when zoomed. Select an organ, review key structures and jump into its interactive lesson or related lab. These are educational dimensional illustrations, not fully rotatable 3D meshes or validated anatomical scans.">ثماني رسومات طبية مجسّمة عالية الوضوح بصيغة متجهات قابلة للتكبير دون تشوّه. اختر العضو، استكشف أجزائه الأساسية، وافتح درسًا تفاعليًا أو مختبرًا مرتبطًا به. هذه رسوم تعليمية بأسلوب ثلاثي الأبعاد، وليست نماذج حجمية قابلة للدوران أو صور تشريح معتمدة.</p>
+   </div><span class="a3d-index">3D-STYLE / VECTOR / 08</span>
+  </div>
+  <div class="a3d-workspace">
+   <aside class="a3d-rail" aria-label="3D anatomy catalogue"><div class="a3d-rail-top"><span data-ar="اختر الجهاز" data-en="SELECT SYSTEM">اختر الجهاز</span><span>08 / 08</span></div><div class="a3d-nav" id="a3dNav" role="group" aria-label="Illustrated organs"></div><p class="a3d-rail-tip" data-ar="كل صورة مستقلة وقابلة للتكبير. اختر العضو للانتقال مباشرةً إلى عرضه." data-en="Each image is independently scalable. Choose any organ to enter its detailed view.">كل صورة مستقلة وقابلة للتكبير. اختر العضو للانتقال مباشرةً إلى عرضه.</p></aside>
+   <div class="a3d-stage">
+    <div class="a3d-stage-header"><span><span class="a3d-light-dot" aria-hidden="true"></span> NABD / VISUAL ANATOMY</span><strong id="a3dCurrent">CARDIOVASCULAR / 01</strong></div>
+    <div class="a3d-viewport" id="a3dViewport" tabindex="0" role="group" aria-label="Zoomable dimensional illustration; use the slider to zoom, drag when zoomed">
+     <div class="a3d-scan" aria-hidden="true"></div><img class="a3d-render" id="a3dImage" src="./art/heart-3d.svg" width="720" height="720" decoding="async" fetchpriority="high" draggable="false" alt="صورة تعليمية مجسّمة للقلب"><span class="a3d-zoom-mark" id="a3dZoomText">100%</span>
+    </div>
+    <p class="a3d-stage-caption" data-ar="مخططات فنية توضيحية مع تظليل مجسّم. للتعلّم فقط، وليست مرجعًا تشريحيًا تشخيصيًا." data-en="Illustrative medical diagrams with dimensional shading. For learning only, not diagnostic or reference-grade anatomy.">مخططات فنية توضيحية مع تظليل مجسّم. للتعلّم فقط، وليست مرجعًا تشريحيًا تشخيصيًا.</p>
+
+    <div class="a3d-real3d-strip">
+     <button id="a3dTrue3D" class="a3d-live-button" type="button" data-ar="✧ افتح نموذج قلب حقيقي قابل للدوران 360°" data-en="✧ Open real rotatable 360° heart model">✧ افتح نموذج قلب حقيقي قابل للدوران 360°</button>
+     <button id="a3dBack2D" class="a3d-live-button a3d-back-button" type="button" hidden data-ar="العودة إلى الرسم الخفيف ←" data-en="Back to lightweight illustration →">العودة إلى الرسم الخفيف ←</button>
+     <span class="a3d-load-label" data-ar="اختياري · يحتاج إنترنت وتنزيلًا خارجيًا يقارب 2.5 ميغابايت للقلب إضافةً إلى عارضه" data-en="Optional · requires internet and an external ~2.5 MB heart model plus viewer">اختياري · يحتاج إنترنت وتنزيلًا خارجيًا يقارب 2.5 ميغابايت للقلب إضافةً إلى عارضه</span>
+    </div>
+    <p id="a3dModelStatus" class="a3d-model-status" role="status" aria-live="polite"></p>
+    <div id="a3dAttribution" class="a3d-credits" hidden>
+     <span data-ar="النموذج التشريحي: BodyParts3D © DBCLS، ترخيص CC BY 4.0؛ إعداد OrganUI. النموذج للتعليم وغير معتمد للتشخيص." data-en="Anatomical model: BodyParts3D © DBCLS, CC BY 4.0, prepared by OrganUI. Educational and not validated for diagnosis.">النموذج التشريحي: BodyParts3D © DBCLS، ترخيص CC BY 4.0؛ إعداد OrganUI. النموذج للتعليم وغير معتمد للتشخيص.</span>
+     <a href="https://github.com/organui/heart-3d/blob/main/public/models/ATTRIBUTION.md" target="_blank" rel="noopener noreferrer" data-ar="المصدر والإسناد ↗" data-en="Source & attribution ↗">المصدر والإسناد ↗</a>
+    </div>
+
+    <div class="a3d-controls">
+     <div class="a3d-ctl-group"><button type="button" id="a3dPrev" class="a3d-ctl" data-ar="السابق" data-en="Previous">السابق</button><button type="button" id="a3dNext" class="a3d-ctl" data-ar="التالي" data-en="Next">التالي</button></div>
+     <label for="a3dZoom"><span data-ar="تكبير" data-en="Zoom">تكبير</span><input id="a3dZoom" type="range" min="100" max="240" value="100" step="10" aria-label="Zoom anatomy illustration"></label>
+     <div class="a3d-ctl-group"><button type="button" id="a3dReset" class="a3d-ctl" data-ar="إعادة ضبط" data-en="Reset">إعادة ضبط</button><button type="button" id="a3dFullscreen" class="a3d-ctl" data-ar="ملء الشاشة" data-en="Fullscreen">ملء الشاشة</button></div>
+     <a id="a3dFullImage" class="a3d-full-link" href="./art/heart-3d.svg" target="_blank" rel="noopener noreferrer" data-ar="فتح الصورة الكاملة ↗" data-en="Open full-size image ↗">فتح الصورة الكاملة ↗</a>
+    </div>
+   </div>
+   <aside class="a3d-info" aria-live="polite">
+    <span class="a3d-info-tag" id="a3dPosition">01 / 08</span><h3 id="a3dName">القلب والأوعية الدموية</h3><p id="a3dDescription">صورة مجسمة تعليمية للقلب.</p>
+    <div class="a3d-detail-title"><span data-ar="ما الذي سنستكشفه؟" data-en="WHAT TO EXPLORE">ما الذي سنستكشفه؟</span><span aria-hidden="true">✳</span></div>
+    <ul class="a3d-details" id="a3dParts"></ul>
+    <div class="a3d-info-bottom">
+     <a id="a3dLessonLink" class="a3d-info-action" href="#systems" data-ar="اقرأ درس الجهاز ←" data-en="Open system lesson →">اقرأ درس الجهاز ←</a>
+     <a id="a3dConnectionLink" class="a3d-info-action a3d-secondary-action" href="#connections" data-ar="شاهد الترابط بين الأجهزة ↗" data-en="Explore system connections ↗">شاهد الترابط بين الأجهزة ↗</a>
+     <a id="a3dCaseLink" class="a3d-info-action a3d-secondary-action" href="../atlas/heart-lab.html">مختبر القلب ↗</a>
+    </div>
+   </aside>
+  </div>
+  <div class="a3d-footer"><span data-ar="أطلس رسوم تعليمية متجهية: 8 صور تعمل حتى مع الاتصال الضعيف بعد الحفظ المؤقت." data-en="Eight crisp educational vector illustrations, available on weak connections after caching.">أطلس رسوم تعليمية متجهية: 8 صور تعمل حتى مع الاتصال الضعيف بعد الحفظ المؤقت.</span><strong>SVG / HIGH-DPI / BILINGUAL</strong></div>
+ </div>
+</section>
+
 <section id="systems" class="section systems-section" aria-labelledby="systemTitle">
 <div class="shell">
 <div class="section-head"><div><span class="section-index">01 / INTERACTIVE SYSTEMS LAB</span><h2 id="systemTitle" data-ar="ليس مجرد عضو. بل شبكة حياة." data-en="Not just organs. A living network.">ليس مجرد عضو. بل شبكة حياة.</h2><p data-ar="اختر نظامًا وتدرّج عبر البنية والوظيفة والترابط. عند الانتهاء، اختبر فهمك بسؤال قصير." data-en="Select a system and explore its structure, function and connections. Then check your understanding.">اختر نظامًا وتدرّج عبر البنية والوظيفة والترابط. عند الانتهاء، اختبر فهمك بسؤال قصير.</p></div><span class="section-count">08 SYSTEMS / V11</span></div>
