@@ -1,0 +1,50 @@
+name: NABD INFINITY V12–V15 checks
+on:
+  pull_request:
+    paths:
+      - 'infinity/**'
+      - 'index.html'
+      - 'v11/index.html'
+      - 'tests/infinity-integrity.test.mjs'
+      - 'tests/infinity-browser.cjs'
+      - '.github/workflows/infinity-v15.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infinity/**'
+      - 'index.html'
+      - 'v11/index.html'
+      - 'tests/infinity-integrity.test.mjs'
+      - 'tests/infinity-browser.cjs'
+      - '.github/workflows/infinity-v15.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate content and source code
+        run: |
+          node --check infinity/app.mjs
+          node --check infinity/data.mjs
+          node --check infinity/sw.js
+          node tests/infinity-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test Arabic, English, missions, tutor, privacy and offline
+        run: node tests/infinity-browser.cjs
