@@ -977,6 +977,7 @@ body.portal-body{
 .btn,.password-toggle,.forgot-btn,.back-auth-btn,.portal-lang-btn{cursor:pointer!important;pointer-events:auto!important}
 </style>
 <link rel="stylesheet" href="assets/css/nabd-signature.css?v=1">
+<link rel="stylesheet" href="assets/css/operations-suite.css?v=1">
 </head>
 <body class="portal-body">
 <!-- =====================================================
@@ -1329,6 +1330,23 @@ body.portal-body{
 </div>
 <div class="student-claims" id="studentClaims" style="margin-top:16px;"></div>
 </section>
+<section class="dashboard-section os" id="os-certificates-student" aria-labelledby="os-cert-title" lang="ar" dir="rtl">
+ <div class="os-toolbar"><div><span class="os-kicker">NABD / STUDENT CREDENTIALS · V16</span><h2 id="os-cert-title">مساعد التحقق من الشهادات</h2><p>تحقق من معرّف شهادة نبض عبر صفحة التحقق الرسمية، وراجع خطوات ربطها بحساب الطالب. لا ننشئ شهادة أو ندعي صحتها قبل نتيجة سجل الأكاديمية.</p></div><span class="os-icon" aria-hidden="true">◇</span></div>
+ <div class="os-grid"><form class="os-pane" id="os-cert-form">
+  <h3>افتح التحقق الرسمي</h3><label class="os-field" for="os-cert-id">معرّف الشهادة كما هو مطبوع<input id="os-cert-id" type="text" maxlength="80" autocomplete="off" placeholder="NABD-MT-2026-0001" required></label>
+  <div class="os-actions"><button type="submit" class="os-btn primary">جهّز رابط التحقق ←</button><a href="index.html#verify" class="os-btn">صفحة التحقق العامة</a></div>
+  <p id="os-cert-status" class="os-status" role="status" aria-live="polite"></p>
+  <a class="os-btn primary" id="os-cert-link" target="_blank" rel="noopener noreferrer" hidden href="index.html#verify">افتح سجل التحقق الرسمي ↗</a>
+  <p class="os-muted">إنشاء الرابط وحده لا يثبت إصدار الشهادة. التأكيد يتم فقط من خلال نتيجة صفحة التحقق الرسمية.</p>
+ </form>
+ <div class="os-pane"><h3>قائمة مراجعة طلب الشهادة</h3>
+ <div class="os-checks">
+  <label class="os-check"><input type="checkbox" data-os-check="student-cert"><span>تأكدت من كتابة المعرّف كما هو في الشهادة.</span></label>
+  <label class="os-check"><input type="checkbox" data-os-check="student-cert"><span>راجعت حالة طلب الربط في بوابة الطالب.</span></label>
+  <label class="os-check"><input type="checkbox" data-os-check="student-cert"><span>طابقت الاسم والمقرر والتواريخ مع بياناتي.</span></label>
+  <label class="os-check"><input type="checkbox" data-os-check="student-cert"><span>تحققت من النتيجة داخل سجل الأكاديمية الرسمي.</span></label>
+ </div><div class="os-meter" id="os-cert-meter" role="status"></div><p class="os-muted">التأشير على البنود لا يغيّر حالة طلبك أو سجل الشهادات، ولا يُحفظ على الخادم.</p></div></div>
+ </section>
 <!-- =================================================
            MY CERTIFICATES
            ================================================= -->
@@ -1523,5 +1541,6 @@ body.portal-body{
 })();
 </script>
 <script defer src="assets/js/nabd-signature.js?v=1"></script>
+<script defer src="assets/js/operations-suite.js?v=1"></script>
 </body>
 </html>
