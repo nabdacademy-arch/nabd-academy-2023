@@ -12,10 +12,12 @@
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="./style.css?v=1">
 <link rel="stylesheet" href="./anatomy-3d.css?v=1">
+<link rel="stylesheet" href="./reference-dashboard.css?v=1">
 <link rel="stylesheet" href="./deck.css?v=1">
 <link rel="preload" as="image" href="./art/heart-3d.svg">
 <script src="./app.js?v=1" defer></script>
 <script src="./anatomy-3d.js?v=1" defer></script>
+<script src="./reference-dashboard.js?v=1" defer></script>
 <script src="./deck.js?v=1" defer></script>
 <title>NABD V11 | عالم جسم الإنسان</title>
 </head>
@@ -30,6 +32,91 @@
 <div class="top-actions"><span class="offline-pill" id="connectionStatus" role="status" aria-live="polite" data-ar="تجربة خفيفة" data-en="Lightweight mode">تجربة خفيفة</span><button class="chip-button" id="liteBtn" type="button" aria-pressed="false" data-ar="حركة أقل" data-en="Less motion">حركة أقل</button><a class="deck-user" href="../portal.html" title="Student portal" aria-label="Student portal">♙</a><button class="lang-toggle" id="langBtn" type="button" aria-label="Switch language to English">EN</button></div>
 </div></header>
 <main id="main">
+
+<section class="refdash" id="dashboard-hub" aria-labelledby="rdTitle">
+<div class="shell">
+<div class="rd-grid">
+<aside class="rd-panel rd-rail" aria-label="Human body systems directory">
+  <div class="rd-body" aria-hidden="true"><svg viewBox="0 0 180 300" xmlns="http://www.w3.org/2000/svg" fill="none"><defs><linearGradient id="rdOutline" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#9ef7ff"/><stop offset="1" stop-color="#157ec2"/></linearGradient><linearGradient id="rdRed" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ffb7bb"/><stop offset="1" stop-color="#b62246"/></linearGradient></defs>
+<path d="M90 10C71 10 67 25 70 44c2 14 10 21 13 23l-3 12c-14 4-30 6-40 15-13 10-18 27-23 50L7 194c-2 12 8 14 13 4l18-37 8-35 2 50-8 110h36l14-80 14-35 14 35 14 80h36l-8-110 2-50 8 35 18 37c5 10 15 8 13-4l-10-50c-5-23-10-40-23-50-10-9-26-11-40-15l-3-12c3-2 11-9 13-23 3-19-1-34-20-34Z" fill="#0a4760" fill-opacity=".35" stroke="url(#rdOutline)" stroke-width="2.6"/>
+<path d="M88 82v102 M38 121h104 M58 197h64" stroke="#71ddf9" stroke-opacity=".27" stroke-dasharray="4 7"/><path d="M78 29C85 17 99 19 105 29M72 38C85 47 96 48 109 38" stroke="#9bf2ff" stroke-width="2" opacity=".65"/>
+<path d="M80 121C64 100 51 116 53 133c2 16 20 23 27 37V121Z M100 121c16-21 29-5 27 12-2 16-20 23-27 37V121Z" fill="#66deec" fill-opacity=".45" stroke="#9bf1ff" stroke-width="1.4"/><path d="M87 136c-6-14-19-3-14 8 4 9 14 13 17 23 4-10 15-14 18-23 5-11-8-22-14-8-2 4-5 4-7 0Z" fill="url(#rdRed)" stroke="#ffe4e4"/>
+<path d="M58 170C72 159 110 159 123 170c-5 22-19 29-34 30-15-1-27-8-31-30Z" fill="#a66e58" fill-opacity=".56" stroke="#cfc1ad"/><path d="M72 211c-12 0-17 11-16 24l13 3 10-19ZM108 211c12 0 17 11 16 24l-13 3-10-19Z" fill="#45b4d1" fill-opacity=".5" stroke="#a7f5ff"/>
+<path d="M55 142q17 4 24 22 M124 140q-15 5-24 22 M90 162v83 M71 241v34 M109 241v34" stroke="#52b9f4" stroke-opacity=".43" stroke-width="2"/></svg></div>
+  <div class="rd-heading" data-ar="أجهزة جسم الإنسان" data-en="Human Body Systems">أجهزة جسم الإنسان</div>
+  <div class="rd-list" id="rdSystems" role="group" aria-label="Choose a body system"></div>
+</aside>
+<section class="rd-panel rd-main" aria-label="Interactive medical learning dashboard">
+ <div class="rd-head">
+  <div><small>NABD HUMAN UNIVERSE / V11</small><strong id="rdTitle">الجهاز القلبي الوعائي</strong></div><span class="rd-version">NABD · V11</span>
+ </div>
+ <div class="rd-tabs" role="group" aria-label="Explore learning modes">
+  <button class="rd-tab active" type="button" data-rd-tab="image" aria-pressed="true" data-ar="النموذج التشريحي" data-en="Anatomy illustration">النموذج التشريحي</button>
+  <button class="rd-tab" type="button" data-rd-tab="functions" data-target="systems" aria-pressed="false" data-ar="الوظائف" data-en="Functions">الوظائف</button>
+  <button class="rd-tab" type="button" data-rd-tab="details" data-target="visual-atlas" aria-pressed="false" data-ar="التشريح التفصيلي" data-en="Detailed anatomy">التشريح التفصيلي</button>
+  <button class="rd-tab" type="button" data-rd-tab="connections" data-target="connections" aria-pressed="false" data-ar="الترابط بين الأجهزة" data-en="Connections">الترابط بين الأجهزة</button>
+ </div>
+ <div class="rd-main-grid">
+  <div id="rdThumbs" class="rd-thumbs" role="group" aria-label="Parts and concepts"></div>
+  <div class="rd-stage">
+    <span class="rd-stage-guide" data-ar="رسم تعليمي مجسّم" data-en="Educational dimensional art">رسم تعليمي مجسّم</span>
+    <img id="rdStageImage" src="./art/heart-3d.svg" width="720" height="720" alt="رسم توضيحي مجسّم للقلب" decoding="async">
+    <span class="rd-rotate">360°</span>
+  </div>
+  <div class="rd-center-right">
+    <div class="rd-infocard">
+      <h3 id="rdName">القلب (Heart)</h3>
+      <p id="rdDescription">مضخة عضلية قوية تدفع الدم عبر الأوعية الدموية لتغذية أنسجة الجسم بالأكسجين.</p>
+      <a class="rd-link" id="rdImageLink" target="_blank" rel="noopener noreferrer" href="./art/heart-3d.svg" data-ar="افتح الصورة بالحجم الكامل ↗" data-en="Open full-resolution illustration ↗">افتح الصورة بالحجم الكامل ↗</a>
+    </div>
+    <div class="rd-infocard rd-preview">
+      <h3 data-ar="صورة التشريح" data-en="Anatomy preview">صورة التشريح</h3>
+      <img id="rdPreviewImage" loading="lazy" src="./art/heart-3d.svg" alt="معاينة توضيحية للقلب">
+      <a class="rd-link" href="#visual-atlas" data-ar="الأطلس التفصيلي ↗" data-en="Detailed atlas ↗">الأطلس التفصيلي ↗</a>
+    </div>
+    <div class="rd-infocard">
+      <small data-ar="موجة قلب توضيحية، وليست بيانات حية" data-en="Illustrative ECG, not live data">موجة قلب توضيحية، وليست بيانات حية</small>
+      <svg class="rd-rate" viewBox="0 0 230 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0 30H24L30 26L36 33L45 31L52 16L60 42L67 30H84L89 23L96 31H110L117 16L124 44L132 30H156L163 26L168 33H181L190 13L198 44L205 30H230" stroke="#58ffe1" stroke-width="2.4" stroke-linejoin="round"/><path d="M0 40H230" stroke="#0f6e85" stroke-width="1"/></svg>
+      <div class="rd-rate"><strong id="rdHeartRate">72</strong><span id="rdPulseLabel" class="rd-rate-caption">رسم توضيحي</span></div>
+    </div>
+  </div>
+ </div>
+ <p id="rdStatus" role="status" aria-live="polite" class="rd-footnote" data-ar="اختر جهازًا، كبّر الصورة، أو انتقل إلى النموذج الحقيقي للقلب من الاستوديو أدناه." data-en="Select a system, zoom the illustration, or open the real heart 3D model in the studio below.">اختر جهازًا، كبّر الصورة، أو انتقل إلى النموذج الحقيقي للقلب من الاستوديو أدناه.</p>
+</section>
+<aside class="rd-panel rd-side" aria-label="Layers and anatomy tools">
+  <div class="rd-box">
+    <h3 data-ar="طبقات العرض" data-en="Display layers">طبقات العرض</h3>
+    <label class="rd-layer"><span data-ar="الجلد (قريبًا)" data-en="Skin (upcoming)">الجلد (قريبًا)</span><input type="checkbox" disabled></label>
+    <label class="rd-layer"><span data-ar="العضلات (قريبًا)" data-en="Muscles (upcoming)">العضلات (قريبًا)</span><input type="checkbox" disabled></label>
+    <label class="rd-layer"><span data-ar="العظام (قريبًا)" data-en="Bones (upcoming)">العظام (قريبًا)</span><input type="checkbox" disabled></label>
+    <label class="rd-layer"><span data-ar="الأعضاء" data-en="Organ illustration">الأعضاء</span><input id="rdOrgans" type="checkbox" checked></label>
+    <label class="rd-layer"><span data-ar="الأوعية (قريبًا)" data-en="Vessels (upcoming)">الأوعية (قريبًا)</span><input type="checkbox" disabled></label>
+    <label class="rd-layer"><span data-ar="الأعصاب (قريبًا)" data-en="Nerves (upcoming)">الأعصاب (قريبًا)</span><input type="checkbox" disabled></label>
+  </div>
+  <div class="rd-box">
+    <h3 data-ar="أدوات تفاعلية" data-en="Interactive tools">أدوات تفاعلية</h3>
+    <button id="rdReal3D" class="rd-tool" type="button"><span data-ar="نموذج القلب 360°" data-en="Heart 360° model">نموذج القلب 360°</span><span>↻</span></button>
+    <button id="rdZoomIn" class="rd-tool" type="button"><span data-ar="تكبير الصورة" data-en="Zoom in">تكبير الصورة</span><span>＋</span></button>
+    <button id="rdZoomOut" class="rd-tool" type="button"><span data-ar="تصغير الصورة" data-en="Zoom out">تصغير الصورة</span><span>−</span></button>
+    <button id="rdDetails" class="rd-tool" type="button"><span data-ar="استوديو التفاصيل" data-en="Detail studio">استوديو التفاصيل</span><span>▤</span></button>
+    <button id="rdCross" class="rd-tool" type="button"><span data-ar="استكشف التشريح" data-en="Explore anatomy">استكشف التشريح</span><span>☷</span></button>
+    <button id="rdAR" class="rd-tool" type="button"><span data-ar="الواقع المعزز (قريبًا)" data-en="AR (upcoming)">الواقع المعزز (قريبًا)</span><span>AR</span></button>
+    <button id="rdVR" class="rd-tool" type="button"><span data-ar="المستشفى ثلاثي الأبعاد" data-en="3D hospital">المستشفى ثلاثي الأبعاد</span><span>VR</span></button>
+    <button id="rdReset" class="rd-tool" type="button"><span data-ar="إعادة تعيين" data-en="Reset view">إعادة تعيين</span><span>↺</span></button>
+  </div>
+</aside>
+</div>
+<nav class="rd-footer" aria-label="Quick learning pathways">
+ <a class="rd-feature" href="#systems"><span class="rd-emoji" aria-hidden="true">🏆</span><strong data-ar="التقييم والاختبارات" data-en="Tests & assessment">التقييم والاختبارات</strong><span data-ar="اختبر فهمك في الأجهزة الثمانية" data-en="Check knowledge of eight body systems">اختبر فهمك في الأجهزة الثمانية</span><span class="rd-arrow">↗</span></a>
+ <a class="rd-feature" href="#progress"><span class="rd-emoji" aria-hidden="true">📈</span><strong data-ar="مصفوفة التقدم" data-en="Progress matrix">مصفوفة التقدم</strong><span data-ar="إنجازاتك ومستوى تعلمك" data-en="Explore learning milestones">إنجازاتك ومستوى تعلمك</span><span class="rd-arrow">↗</span></a>
+ <a class="rd-feature" href="../learning/#tutor"><span class="rd-emoji" aria-hidden="true">🧠</span><strong data-ar="المساعد التعليمي" data-en="Learning tutor">المساعد التعليمي</strong><span data-ar="أدوات تعلم موجودة في عالم الطالب" data-en="Study tools in the learner universe">أدوات تعلم موجودة في عالم الطالب</span><span class="rd-arrow">↗</span></a>
+ <a class="rd-feature" href="../nabd-global-research.html"><span class="rd-emoji" aria-hidden="true">🔬</span><strong data-ar="البحث العلمي" data-en="Scientific research">البحث العلمي</strong><span data-ar="الشبكة البحثية ومختبر الباحث" data-en="Research network and starter lab">الشبكة البحثية ومختبر الباحث</span><span class="rd-arrow">↗</span></a>
+ <a class="rd-feature" href="../atlas/clinical-hub.html"><span class="rd-emoji" aria-hidden="true">🏥</span><strong data-ar="الحالات السريرية" data-en="Clinical cases">الحالات السريرية</strong><span data-ar="محاكاة تعليمية للمفاهيم الطبية" data-en="Concept-focused clinical simulation">محاكاة تعليمية للمفاهيم الطبية</span><span class="rd-arrow">↗</span></a>
+</nav>
+<p class="rd-footnote" data-ar="صور تعليمية مجسّمة وليست صورًا تشريحية معتمدة؛ الدوران الحجمي الحقيقي متاح للقلب فقط بعد فتح النموذج الخارجي، ولا توجد مراقبة فعلية للنبض أو دعم AR حاليًا." data-en="Educational dimensional illustrations, not validated anatomical imagery. True rotatable 3D is currently available only for the heart on request; heart-rate display is illustrative and AR is not available.">صور تعليمية مجسّمة وليست صورًا تشريحية معتمدة؛ الدوران الحجمي الحقيقي متاح للقلب فقط بعد فتح النموذج الخارجي، ولا توجد مراقبة فعلية للنبض أو دعم AR حاليًا.</p>
+</div>
+</section>
+
 <section class="command-deck" id="commandDeck" aria-labelledby="heroTitle">
   <h1 class="deck-sr-title" id="heroTitle" data-ar="عالم نبض الطبي — أطلس جسم الإنسان التفاعلي" data-en="NABD Human Universe — Interactive anatomy dashboard">عالم نبض الطبي — أطلس جسم الإنسان التفاعلي</h1>
   <div class="deck-board">
