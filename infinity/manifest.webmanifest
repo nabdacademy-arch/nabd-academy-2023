@@ -1,0 +1,20 @@
+{
+  "name": "NABD INFINITY V15 — Medical Learning Ecosystem",
+  "short_name": "NABD INFINITY",
+  "description": "Bilingual light medical learning, anatomy, research and simulation hub",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#04121f",
+  "theme_color": "#04121f",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "../v11/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}
