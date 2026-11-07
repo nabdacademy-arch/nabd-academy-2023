@@ -69,11 +69,12 @@
 @media(max-width:810px){#consultations .mc-metrics{grid-template-columns:repeat(2,1fr)}#consultations .mc-grid{grid-template-columns:1fr}}
 @media(max-width:520px){#consultations .mc-detail,.modal .mc-detail{grid-template-columns:1fr}#consultations .mc-toolbar .input{max-width:none;flex:1 1 100%}}
 
-</style></head>
+</style><link rel="stylesheet" href="assets/css/operations-suite.css?v=1"></head>
 <body><nav aria-label="Academy workspaces" style="display:flex;flex-wrap:wrap;gap:16px;padding:14px 4%;background:#071d2c;color:#64e3d3"><a href="academy.html" style="color:inherit">مسارات نبض ←</a><a href="lecturers.html" style="color:inherit">إدارة المحاضرين والتكليفات ←</a><a href="portal/" style="color:inherit">المجلس التنفيذي ←</a></nav><section id="login" class="wrap"><div class="card" style="max-width:450px;margin:60px auto"><h1>Director Login</h1><form id="loginForm"><p>Email</p><input id="email" class="input" type="email" required><p>Password</p><input id="password" class="input" type="password" required><button class="btn" style="margin-top:15px;width:100%">Sign in</button></form><div id="loginMsg" class="status hidden"></div></div></section>
 <main id="app" class="wrap hidden"><div class="hero"><h1>Control Center</h1><p>Signed in as <b id="adminName"></b> · ADMIN</p><button id="logout" class="btn secondary">Sign out</button></div><div id="msg" class="status hidden"></div>
 <div class="tabs"><button class="btn" data-tab="students">Students</button><button class="btn secondary" data-tab="enrollments">Enrollments</button><button class="btn secondary" data-tab="claims">Certificate Claims</button><button class="btn secondary" data-tab="certificates">Certificates</button><button class="btn secondary" data-tab="feedback">Feedback</button><button class="btn secondary" data-tab="applications">Executive Applications</button>
 <button type="button" class="btn secondary" data-tab="overview">الملخص التنفيذي</button>
+<button type="button" class="btn secondary" data-tab="os-admin-suite">✦ تشغيل المقررات والجودة V16</button>
 <button type="button" class="btn secondary" data-tab="executives">المناصب الـ11</button>
 <button type="button" class="btn secondary" data-tab="mediaReview">مراجعة الإعلام</button>
 <button type="button" class="btn secondary" data-tab="executiveTasks">المهام</button>
@@ -163,6 +164,49 @@
  <div id="mcMessage" class="status hidden" role="status" aria-live="polite"></div>
  <div id="mcRequests" class="mc-grid" aria-live="polite"></div>
 </section>
+<section id="os-admin-suite" class="panel card hidden os os-light" lang="ar" dir="rtl" aria-labelledby="os-admin-title">
+ <div class="os-toolbar"><div><span class="os-kicker">NABD DIRECTOR / ACADEMIC OPERATIONS · V16</span><h2 id="os-admin-title">مركز تشغيل المقررات والشهادات</h2><p>مساحة تخطيط وتدقيق مضافة داخل لوحة الإدارة الحالية. إنشاء مقرر فعلي وإصدار الشهادات يبقيان في الأنظمة الرسمية ذات الصلاحيات، ولا يُعتمدان من هذه النماذج.</p></div><span class="os-icon" aria-hidden="true">▣</span></div>
+ <div class="os-grid">
+ <section class="os-pane" aria-labelledby="os-course-head"><h3 id="os-course-head">مخطط المقررات الأكاديمية</h3>
+ <form class="os-form" id="os-course-form">
+ <label class="os-field wide" for="os-course-name">اسم المقرر<input id="os-course-name" required maxlength="140" placeholder="مثال: أساسيات علم التشريح"></label>
+ <label class="os-field" for="os-course-code">رمز المقرر<input id="os-course-code" required maxlength="30" placeholder="ANAT-101"></label>
+ <label class="os-field" for="os-course-weeks">مدة المقرر بالأسابيع<input id="os-course-weeks" type="number" min="1" max="24" value="8" required></label>
+ <label class="os-field" for="os-course-hours">الساعات أسبوعيًا<input id="os-course-hours" type="number" min="1" max="100" value="3" required></label>
+ <label class="os-field" for="os-course-assessment">نظام التقييم<select id="os-course-assessment"><option value="formative">تقييم تكويني مع اختبارات قصيرة</option><option value="project">مشروع تعليمي نهائي</option><option value="mixed">نظام مختلط</option></select></label>
+ <label class="os-field wide" for="os-course-outcomes">مخرجات التعلم (مخرج في كل سطر)<textarea id="os-course-outcomes" maxlength="1300" required placeholder="يشرح البنية الأساسية للقلب&#10;يصف الدورة الدموية الرئوية والجهازية"></textarea></label>
+ <div class="os-actions"><button type="submit" class="os-btn primary">إنشاء مسودة المقرر ←</button></div></form>
+ <div class="os-output" id="os-course-output" role="status" aria-live="polite">هنا تظهر خطة الوحدات وتوزيع الساعات المقترح.</div>
+ <div class="os-actions"><button type="button" class="os-btn" id="os-course-copy">نسخ JSON</button><button type="button" class="os-btn" id="os-course-export">تصدير JSON</button></div>
+ <p class="os-status" id="os-course-status" role="status" aria-live="polite"></p>
+ </section>
+ <section class="os-pane"><h3>مراجعة قبل نشر مقرر</h3><p>هذه قائمة تدقيق تنظيمية، وليست أمرًا مباشرًا لإضافة مقرر إلى قاعدة البيانات.</p>
+ <div class="os-checks">
+ <label class="os-check"><input type="checkbox" data-os-check="admin-course" data-description="Scientific review"><span>مراجعة علمية من مختص بالمادة</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-course" data-description="Learning objectives and assessments"><span>تطابق المخرجات مع الاختبارات والتقييم</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-course" data-description="Source and copyright permissions"><span>التأكد من المصادر وحقوق المواد</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-course" data-description="Mobile, accessibility and offline planning"><span>مراجعة الوصول للهاتف وضعف الإنترنت</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-course" data-description="Approved lecturer and admin permissions"><span>تحديد المحاضر والصلاحيات المناسبة</span></label>
+ </div><div class="os-meter" id="os-course-meter" role="status"></div>
+ <h3 style="margin-top:22px">الاعتماد وإدارة الشهادات</h3><p>تحقق من طلب الشهادة وسجل الطالب والمقرر قبل أي إصدار رسمي. لا يصدّر هذا القسم شهادة ولا رمز تحقق جديدًا.</p>
+ <div class="os-checks">
+ <label class="os-check"><input type="checkbox" data-os-check="admin-cert" data-description="Student identity verified"><span>التحقق من هوية صاحب الطلب</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-cert" data-description="Course enrollment verified"><span>التحقق من التسجيل في المقرر</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-cert" data-description="Completion evidence verified"><span>التحقق من متطلبات الإنجاز والتقييم</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-cert" data-description="No duplicate issuance"><span>التأكد من عدم إصدار شهادة مكررة</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-cert" data-description="Official admin sign off"><span>الموافقة الرسمية من الإدارة المخوّلة</span></label>
+ </div><div class="os-meter" id="os-admin-cert-meter" role="status"></div>
+ <div class="os-actions"><button class="os-btn" type="button" data-os-tab="claims">طلبات الشهادات</button><button type="button" class="os-btn" data-os-tab="certificates">سجل الشهادات</button></div>
+ </section>
+ </div>
+ <section class="os-pane" style="margin-top:15px"><h3>المراجعة التنفيذية قبل اتخاذ قرار</h3><div class="os-grid"><div class="os-checks">
+ <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Supporting evidence recorded"><span>أرفقت أسباب القرار وأدلته</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Data and permissions checked"><span>راجعت الصلاحيات وخصوصية البيانات</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Costs and sustainability reviewed"><span>راجعت التكلفة والقدرة على الاستمرار</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Accountability and owner defined"><span>حددّت المسؤول عن التنفيذ والمتابعة</span></label>
+ <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Decision approved and logged"><span>جرى الاعتماد والتوثيق في النظام الرسمي</span></label>
+ </div><div><div class="os-meter" id="os-admin-governance-meter" role="status"></div><p class="os-warning">هذه مؤشرات مراجعة محلية مؤقتة؛ لا تعدّل بيانات الإدارة ولا تسجل قرارًا رسميًا في قاعدة البيانات.</p><button type="button" class="os-btn primary" id="os-admin-report">تنزيل حزمة تدقيق داخلية TXT</button><p id="os-admin-status" class="os-status" role="status" aria-live="polite"></p><div class="os-links"><a href="research-office.html">مكتب الأبحاث المقيّد ↗</a><a href="lecturers.html">استوديو المحاضر ↗</a></div></div></div></section>
+ </section>
 </main>
 <div id="modalbg" class="modalbg hidden"><div class="modal"><button id="close" class="btn secondary">Close</button><div id="modal"></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
@@ -338,4 +382,4 @@ q('mcRequests').addEventListener('click',e=>{
 });
 })();
 </script>
-</body></html>
+<script defer src="assets/js/operations-suite.js?v=1"></script></body></html>

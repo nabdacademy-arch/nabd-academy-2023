@@ -1,0 +1,56 @@
+name: NABD V16 Academic Operations
+on:
+  pull_request:
+    paths:
+      - 'lecturers.html'
+      - 'admin.html'
+      - 'portal.html'
+      - 'nabd-global-research.html'
+      - 'index.html'
+      - 'assets/css/operations-suite.css'
+      - 'assets/js/operations-suite.js'
+      - 'tests/operations-v16-*.mjs'
+      - 'tests/operations-v16-*.cjs'
+      - '.github/workflows/v16-operations.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lecturers.html'
+      - 'admin.html'
+      - 'portal.html'
+      - 'nabd-global-research.html'
+      - 'index.html'
+      - 'assets/css/operations-suite.css'
+      - 'assets/js/operations-suite.js'
+      - 'tests/operations-v16-*.mjs'
+      - 'tests/operations-v16-*.cjs'
+      - '.github/workflows/v16-operations.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source and credential security verification
+        run: |
+          node --check assets/js/operations-suite.js
+          node tests/operations-v16-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium for UI acceptance
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run role-gate and academic workflow checks
+        run: node tests/operations-v16-browser.cjs
