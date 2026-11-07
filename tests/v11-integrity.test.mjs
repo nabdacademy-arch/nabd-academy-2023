@@ -44,16 +44,18 @@ for(const organ of ["heart","brain","lungs","renal","digestive","endocrine","mus
  check(!/<script\b|<foreignObject\b|xlink:href="https?:/i.test(image),"Artwork contains no active or external resources: "+organ);
  check(sw.includes("./art/"+organ+"-3d.svg"),"Art cached for offline use: "+organ);
 }
-check(sw.includes("nabd-v11-static-v3")&&sw.includes("./anatomy-3d.js?v=1"),"Offline shell upgraded for reference anatomy dashboard");
+check(sw.includes("nabd-v11-static-v4")&&sw.includes("./anatomy-3d.js?v=1"),"Offline shell upgraded for reference anatomy dashboard");
 const deckJS=read("v11/deck.js"),deckCSS=read("v11/deck.css"),humanSVG=read("v11/art/human-neon.svg");
 new Script(deckJS,{filename:"v11/deck.js"});count++;
 check(html.includes('id="commandDeck"')&&html.includes('id="deckSystemList"'),"New reference dashboard is primary interface");
 check(html.includes('id="deckOrganImage"')&&html.includes('id="deckInfoText"')&&html.includes('id="deckTabs"'),"Anatomy visual, detailed info and tabs");
 check(html.includes('id="deckZoomIn"')&&html.includes('id="deckReset"')&&html.includes('id="deckVesselLayer"'),"Functional display controls");
+check(html.includes('id="deckTrue3D"')&&deckJS.includes('$("deckTrue3D").addEventListener'),"Actual rotatable heart model linked from deck");
+check(sw.includes("./deck.css?v=2")&&html.includes("./deck.css?v=2"),"Fresh mobile styling included offline");
 check(deckCSS.includes("grid-template-areas:")&&deckCSS.includes("@media(max-width:480px)"),"Desktop and mobile dashboard layouts");
 check((html.match(/class="deck-tile(?: gold)?"/g)||[]).length===5,"Five user-requested action shortcuts");
 check(humanSVG.includes("<svg ")&&humanSVG.includes("</svg>"),"Neon body illustration exists");
-check(sw.includes("./deck.js?v=1")&&sw.includes("./art/human-neon.svg"),"All dashboard assets cached");
+check(sw.includes("./deck.js?v=2")&&sw.includes("./art/human-neon.svg"),"All dashboard assets cached");
 for(const m of deckJS.matchAll(/\$\("([^"]+)"\)/g))check(ids.includes(m[1]),"Missing dashboard UI node "+m[1]);
 
 console.log("NABD V11 source integrity passed: "+count+" assertions.");
