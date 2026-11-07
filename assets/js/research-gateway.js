@@ -29,8 +29,8 @@
     const status = document.getElementById("filterStatus");
     if (status) {
       status.textContent = language === "ar"
-        ? \`المسارات المعروضة: \${shown} — لا يوجد تسجيل مفتوح حاليًا.\`
-        : \`Showing \${shown} pathway(s) — applications are not currently open.\`;
+        ? `المسارات المعروضة: ${shown} — لا يوجد تسجيل مفتوح حاليًا.`
+        : `Showing ${shown} pathway(s) — applications are not currently open.`;
     }
   };
 
