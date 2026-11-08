@@ -2,7 +2,7 @@
 (()=>{const source=document.currentScript?.src;
 if(!source||window.__NABD_MESSENGER_REQUESTED)return;
 window.__NABD_MESSENGER_REQUESTED=true;
-const script=document.createElement("script");script.src=new URL("nabd-assistant.js?v=1",source).href;
+const script=document.createElement("script");script.src=new URL("nabd-assistant.js?v=2",source).href;
 script.defer=true;document.head.append(script);
 })();
 
@@ -16,6 +16,8 @@ script.defer=true;document.head.append(script);
   ["campus.html","الحرم الخفيف","Lite Campus"],
   ["portal.html","بوابة الطالب","Student Portal"],
   ["university-os.html","المقررات والاختبارات V22","Academic OS V22"],
+  ["nabd-one.html","NABD ONE · الحرم المتكامل","NABD ONE Campus"],
+  ["nabd-connect.html","مراسلاتي مع الإدارة","My support tickets"],
   ["nabd-2050.html","مختبر نبض 2050","NABD 2050 Future Lab"],
   ["academy.html","مسارات الأكاديمية","Pathways"],
   ["lecturers.html","استوديو المحاضر","Faculty Studio"],
