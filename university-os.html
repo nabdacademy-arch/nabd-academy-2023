@@ -10,7 +10,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="assets/js/config.js"></script>
 <script defer src="assets/js/supabase-client.js"></script>
-<script defer src="assets/js/university-os.js?v=1"></script>
+<script defer src="assets/js/university-os.js?v=2"></script>
 </head>
 <body>
 <a href="#osMain" class="os-skip" data-ar="انتقل للمحتوى" data-en="Skip to content">انتقل للمحتوى</a>
@@ -85,7 +85,7 @@
 <button class="os-button primary" type="submit" data-ar="حفظ الوحدة" data-en="Save unit">حفظ الوحدة</button></form>
 <form class="os-form" id="osAttendanceForm"><h4 data-ar="تسجيل حضور طالب" data-en="Record student attendance">تسجيل حضور طالب</h4>
 <label><span data-ar="الوحدة" data-en="Unit">الوحدة</span><select id="osAttendanceModule" required></select></label>
-<label><span data-ar="معرّف الطالب المسجّل UUID" data-en="Enrolled student UUID">معرّف الطالب المسجّل UUID</span><input id="osAttendanceStudent" required type="text" pattern="[0-9a-fA-F-]{36}"></label>
+<label><span data-ar="الطالب المسجّل في المقرر" data-en="Enrolled student">الطالب المسجّل في المقرر</span><select id="osAttendanceStudent" required disabled></select></label><p id="osRosterStatus" class="os-muted" role="status" aria-live="polite" data-ar="اختر وحدة لعرض أسماء الطلاب المصرّح لك برؤيتها." data-en="Choose a module to load only the roster you are authorised to view.">اختر وحدة لعرض أسماء الطلاب المصرّح لك برؤيتها.</p>
 <label><span data-ar="حالة الحضور" data-en="Attendance status">حالة الحضور</span><select id="osAttendanceStatus"><option value="present" data-ar="حاضر" data-en="Present">حاضر</option><option value="late" data-ar="متأخر" data-en="Late">متأخر</option><option value="excused" data-ar="بعذر" data-en="Excused">بعذر</option><option value="absent" data-ar="غائب" data-en="Absent">غائب</option></select></label><button class="os-button primary" type="submit" data-ar="تسجيل الحضور" data-en="Record attendance">تسجيل الحضور</button><p class="os-muted" data-ar="يتم التحقق من تسجيل الطالب في المقرر وصلاحية المحاضر على الخادم." data-en="Course enrolment and faculty permissions are enforced by the database.">يتم التحقق من تسجيل الطالب في المقرر وصلاحية المحاضر على الخادم.</p>
 </form></div>
 <div class="os-link-row"><a href="lecturers.html" data-ar="استوديو المحاضر القديم ↗" data-en="Existing Lecturer Studio ↗">استوديو المحاضر القديم ↗</a></div>
