@@ -39,6 +39,6 @@ check(sql.includes("user_id=(select auth.uid())")&&sql.includes("learner_id=(sel
 check(sql.includes("public.is_admin()")&&sql.includes("create policy nfx_evidence_admin_add"),"Only role-verified admin creates published-source records");
 check(!/sb_secret_|service_role|SUPABASE_SERVICE_ROLE|localStorage|sessionStorage/i.test(publicJs+adminJs),"No privileged secrets or persisting private records client-side");
 check(!/grant all .* to anon/i.test(sql),"No open anonymous permissions");
-check(read("docs/NABD_NEXT_FRONTIER_RELEASE.md").includes("not an Open Badges 3.0 signature implementation"),"Badge claims in release document are honest");
+check(read("docs/NABD_NEXT_FRONTIER_RELEASE.md").toLowerCase().includes("not an open badges 3.0 signature implementation"),"Badge claims in release document are honest");
 check(read("docs/NABD_NEXT_FRONTIER_RELEASE.md").includes("practice-only"),"Quizzes not represented as clinical competence");
 console.log("NABD NEXT FRONTIER integrity: "+n+" assertions passed");
