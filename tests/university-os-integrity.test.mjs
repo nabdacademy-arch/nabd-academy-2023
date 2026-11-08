@@ -9,7 +9,7 @@ const html=read("university-os.html"),js=read("assets/js/university-os.js"),css=
 new Script(js,{filename:"university-os.js"});checks++;
 check(css.includes("@media(max-width:540px)")&&css.includes("prefers-reduced-motion"),"Responsive academic UI");
 check(html.includes('name="robots" content="noindex,nofollow"'),"Personal academic workspace is not indexed");
-check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=1'),"Uses existing browser auth client");
+check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=2'),"Uses existing browser auth client");
 check(!/(?:service_role|sb_secret_|SUPABASE_SERVICE_ROLE_KEY)/i.test(js+html),"No secret/server role key in UI");
 check(!/\b(?:localStorage|sessionStorage)\b/.test(js),"No local persistence of user grades or private records");
 check(js.includes("nabd_os_submit_exam")&&js.includes("db.rpc("),"Exam submitted to server for scoring");
