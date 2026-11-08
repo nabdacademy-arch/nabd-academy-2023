@@ -17,7 +17,7 @@ check(js.includes("circulation:")&&js.includes("breathing:")&&js.includes("fluid
 check((js.match(/at:"T \+ 24"/g)||[]).length===3,"Four temporal phases per scenario with distinct later observations");
 check(js.includes("root.history[root.step]={option:index,points:s.options[index][1]}"),"User choices influence calculated feedback");
 check(js.includes("score:total()")&&js.includes("root.history.map"),"Practice report contains actual learner choices");
-check(js.includes("anonymous_educational_practice")&&js.includes("not linked"),"Export is anonymous and not a credential"); // exact "not linked" may exist in html only; revise if needed
+check(js.includes("anonymous_educational_practice")&&js.includes("Not a clinical evaluation, student record, or credential."),"Export is anonymous and not a credential"); // exact "not linked" may exist in html only; revise if needed
 check(!/localStorage|sessionStorage|service_role|sb_secret_|SUPABASE_SERVICE_ROLE_KEY|\.from\(/i.test(js+html),"No account persistence, privileged keys or backend access");
 check(js.includes('ar-modes","webxr scene-viewer quick-look')&&js.includes("canActivateAR")&&js.includes("activateAR()"),"AR only on supported devices");
 check(js.includes("navigator.onLine===false")&&js.includes("resetViewer()"),"Offline and failed 3D fallback exists");
