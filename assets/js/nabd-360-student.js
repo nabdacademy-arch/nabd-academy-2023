@@ -143,6 +143,25 @@ async function submitFaculty(e){
  }catch(err){note("n360-auth","تعذّر تأكيد الطلب؛ قد يكون لديك طلب سابق أو أن الاتصال غير متاح.","The application could not be confirmed. You may already have a request or the network is unavailable.",true)}
  finally{state.busy=false;$("n360-apply-submit").disabled=false}
 }
+async function generateStudyRevision(){
+ if(state.busy||!state.user||!state.db)return;
+ const answer=$("n360-ai-answer");if(!state.plans){answer.textContent=tr("احفظ هدفك الدراسي أولًا قبل طلب المراجعة.","Save your weekly study goal before requesting AI revision.");return}
+ const course=(state.courses||[]).find(c=>c.id===state.plans.course_id);
+ const title=course?local(course.title_ar,course.title_en):tr("مراجعة علوم طبية عامة","General medical-science learning");
+ const focus=state.plans.focus_note||tr("المفاهيم الأساسية","Core concepts");
+ if(privatePattern.test(title+" "+focus)){answer.textContent=tr("تجنب إدراج أي معلومات شخصية أو بيانات مرضى.","Please remove personal or patient information from your study goal.");return}
+ const prompt="Create a general educational weekly study plan (not clinical advice) in "+(state.lang==="ar"?"Arabic":"English")+". Course: "+title.slice(0,150)+". Study budget: "+state.plans.weekly_goal_minutes+" minutes per week. Focus: "+focus.slice(0,240)+". Provide 4 practical revision tasks, a suggested time allocation, and two self-check questions. Do not invent actual course content, credentials, grades, or medical facts without citations.";
+ state.busy=true;$("n360-ai-plan").disabled=true;answer.textContent=tr("يجري إرسال سؤالك التعليمي فقط إلى خدمة نبض بعد طلبك الصريح…","Sending only your educational revision prompt to the NABD AI service by your request…");
+ try{
+  const auth=await state.db.auth.getUser();
+  if(auth.error||auth.data?.user?.id!==state.user.id)throw Error("AUTH");
+  const slug=window.NABD_CONFIG?.tutorFunction||"smart-processor";
+  const {data,error}=await state.db.functions.invoke(slug,{body:{question:prompt,language:state.lang,image:null}});
+  if(error||typeof data?.answer!=="string"||!data.answer.trim())throw error||Error("NO_ANSWER");
+  answer.textContent=tr("خطة مراجعة مولّدة، تحتاج التحقق من المصادر:\n","Generated revision plan — verify the sources:\n")+data.answer.slice(0,4500);
+ }catch(err){answer.textContent=tr("تعذّر توليد الخطة الآن؛ قد يلزم تفعيل المزوّد أو مراجعة الحصة. استخدم توصيات المقررات الموجودة أعلاه.","AI revision could not be generated. Provider configuration or quota may need attention; use the verified course suggestions above.")}
+ finally{state.busy=false;$("n360-ai-plan").disabled=false}
+}
 function clearPrivate(){
  state.serial++;state.user=null;state.plans=null;state.enrollments=null;state.attempts=null;state.modules=null;state.skills=null;state.certificates=null;state.courses=null;state.app=null;
  if($("n360-student-app"))$("n360-student-app").hidden=true;
@@ -169,7 +188,7 @@ async function boot(){
  }catch(err){authError("تعذر التحقق من الحساب أو قاعدة البيانات.","Could not verify your account or database.")}
 }
 $("n360-lang").addEventListener("click",()=>{state.lang=state.lang==="ar"?"en":"ar";translate()});
-if(mode==="student")$("n360-plan-form").addEventListener("submit",e=>{void savePlan(e)});
+if(mode==="student"){$("n360-plan-form").addEventListener("submit",e=>{void savePlan(e)});$("n360-ai-plan").addEventListener("click",()=>{void generateStudyRevision()})}
 else $("n360-faculty-form").addEventListener("submit",e=>{void submitFaculty(e)});
 translate();void boot();
 })();
