@@ -62,6 +62,7 @@ async function run(){
   const page=await context.newPage();
   await page.goto(base+"/nabd-2050.html",{waitUntil:"domcontentloaded"});
   await page.locator("#nb-chat-launch").click();
+  if((await page.locator("#nb-chat-panel").getAttribute("dir"))==="ltr")await page.locator("#nb-chat-lang").click();
   await page.evaluate(()=>{
    window.NABD_CONFIG={supabaseUrl:"https://example.supabase.co",supabaseAnonKey:"pub_test",tutorFunction:"smart-processor"};
    window.__asked=[];
