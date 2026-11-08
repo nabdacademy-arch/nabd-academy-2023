@@ -21,11 +21,11 @@ for(const path of ["portal.html","university-os.html","nabd-campus.html","academ
 }
 for(const path of ["admin.html","university-os.html","nabd-global-research.html","research-starter-lab.html","research-office.html","nabd-v10.html","nabd-ai-executive.html"]){
  const html=read(path);
- check(html.includes('assets/js/nabd-campus-navigator.js?v=1')&&html.includes('assets/css/nabd-campus-navigator.css?v=1'),"Navigator missing from "+path);
+ check(/assets\/js\/nabd-campus-navigator\.js\?v=\d+/.test(html)&&html.includes('assets/css/nabd-campus-navigator.css?v=1'),"Navigator missing from "+path);
 }
 for(const path of ["atlas/index.html","learning/index.html","infinity/index.html"]){
  const html=read(path);
- check(html.includes('../assets/js/nabd-campus-navigator.js?v=1')&&html.includes('../assets/css/nabd-campus-navigator.css?v=1'),"Nested navigator missing from "+path);
+ check(/\.\.\/assets\/js\/nabd-campus-navigator\.js\?v=\d+/.test(html)&&html.includes('../assets/css/nabd-campus-navigator.css?v=1'),"Nested navigator missing from "+path);
 }
 for(const path of ["index.html","academy.html","portal.html","lecturers.html","nabd-campus.html","campus.html","global-lectures.html","skill-passport.html","nabd-partners.html"]){
  check(read(path).includes("assets/js/nabd-signature.js"),"Shared signature router missing from "+path);
