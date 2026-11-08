@@ -4,7 +4,7 @@
  */
 (()=>{"use strict";
 const d=document,$=id=>d.getElementById(id),db=window.nabdSupabase;
-const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false,roster:[],rosterRequest:0};
+const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false,roster:[],rosterRequest:0,sessionEpoch:0,refreshQueued:false};
 const tr=(ar,en)=>S.language==="ar"?ar:en;
 const loc=(ar,en)=>S.language==="ar"?(ar||en||""):(en||ar||"");
 const elt=(tag,cl,text)=>{const x=d.createElement(tag);if(cl)x.className=cl;if(text!==undefined&&text!==null)x.textContent=String(text);return x};
@@ -15,29 +15,52 @@ const safeDate=value=>{try{return value?new Intl.DateTimeFormat(S.language==="ar
 function report(message,bad=false){const x=$("osGlobalStatus");x.textContent=message;x.classList.toggle("error",bad)}
 function empty(target,ar,en){clear(target);target.append(elt("p","os-empty",tr(ar,en)))}
 function titleOfCourse(id){const c=S.courses.find(x=>x.id===id);return c?loc(c.title_ar,c.title_en):id?.slice(0,8)+"…"}
-function labelStatus(status){const map={draft:["مسودة","Draft"],published:["منشور","Published"],closed:["مغلق","Closed"],enrolled:["مسجل","Enrolled"],active:["نشط","Active"],completed:["مكتمل","Completed"],pending:["بانتظار المراجعة","Pending"],under_review:["قيد المراجعة","Under review"],eligible:["مؤهل للمراجعة النهائية","Eligibility reviewed"],declined:["مرفوض","Declined"],submitted:["مقدم","Submitted"],in_review:["قيد التقييم","In review"],accepted:["معتمد إداريًا","Admin reviewed"],present:["حاضر","Present"],absent:["غائب","Absent"],excused:["بعذر","Excused"],late:["متأخر","Late"]};return tr(...(map[status]||[status,status]))}
+function labelStatus(status){const map={draft:["مسودة","Draft"],published:["منشور","Published"],upcoming:["لم يبدأ","Upcoming"],closed:["مغلق","Closed"],enrolled:["مسجل","Enrolled"],active:["نشط","Active"],completed:["مكتمل","Completed"],pending:["بانتظار المراجعة","Pending"],under_review:["قيد المراجعة","Under review"],eligible:["مؤهل للمراجعة النهائية","Eligibility reviewed"],declined:["مرفوض","Declined"],submitted:["مقدم","Submitted"],in_review:["قيد التقييم","In review"],accepted:["معتمد إداريًا","Admin reviewed"],present:["حاضر","Present"],absent:["غائب","Absent"],excused:["بعذر","Excused"],late:["متأخر","Late"]};return tr(...(map[status]||[status,status]))}
 function formatPercent(a,b){return b>0?Math.round(a/b*100)+"%":"—"}
-function newChip(status){const c=elt("span","os-chip"+(["pending","in_review","draft"].includes(status)?" gold":""),labelStatus(status));return c}
+function newChip(status){const c=elt("span","os-chip"+(["pending","in_review","draft","upcoming"].includes(status)?" gold":""),labelStatus(status));return c}
 function newRow(heading,description,tag){const row=elt("article","os-list-row"),body=elt("div");if(tag)body.append(newChip(tag));body.append(elt("h5","",heading),elt("p","",description));row.append(body);return {row,body}}
 function runButton(text,fn,variant="secondary"){const b=elt("button","os-button "+variant,text);b.type="button";b.addEventListener("click",async()=>{if(b.disabled)return;b.disabled=true;try{await fn()}catch(e){report(errMessage(e),true)}finally{b.disabled=false}});return b}
 function updateSelect(id,rows,selected){const el=$(id);if(!el)return;const old=selected??el.value;clear(el);if(!rows.length){const opt=elt("option","",tr("لا توجد خيارات متاحة","No available options"));opt.value="";el.append(opt);el.disabled=true;return}el.disabled=false;rows.forEach(([value,label])=>{const op=elt("option","",label);op.value=value;el.append(op)});if(rows.some(x=>x[0]===old))el.value=old}
+function resetPrivateState(){
+ S.sessionEpoch++;
+ S.user=null;S.profile=null;S.isAdmin=false;S.isFaculty=false;S.view="study";
+ for(const k of ["courses","enrollments","modules","attendance","exams","attempts","faculty","requests","proposals","audit","questions","roster"])S[k]=[];
+ S.chosenExam=null;S.answers={};S.rosterRequest++;
+ $("osExamPlayer").hidden=true;$("osExamResult").textContent="";
+ for(const id of ["osMetrics","osCourses","osModules","osAttendance","osExamList","osGrades","osExamQuestions","osCredentialRequests","osResearchList","osFacultyAssignments","osAdminCourses","osAdminExams","osAdminCerts","osAdminResearch","osQualityList"])clear($(id));
+ for(const id of ["osAttendanceStudent","osAttendanceModule","osModuleCourse","osCredentialCourse","osAssignCourse","osExamCourse","osQuestionExam"])updateSelect(id,[]);
+ $("osIdentity").textContent="";$("osRosterStatus").textContent="";
+ $("osApp").hidden=true;$("osGate").hidden=false;roleTabs();
+}
+function examAvailability(exam,now=Date.now()){
+ const start=exam.opens_at?Date.parse(exam.opens_at):NaN,end=exam.closes_at?Date.parse(exam.closes_at):NaN;
+ if(Number.isFinite(start)&&now<start)return "upcoming";
+ if(Number.isFinite(end)&&now>end)return "closed";
+ return "open";
+}
+function safeDateTime(value){if(!value)return "";try{return new Intl.DateTimeFormat(S.language==="ar"?"ar":"en",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value))}catch(e){return ""}}
 function roleTabs(){d.querySelectorAll("[data-role='admin']").forEach(x=>x.hidden=!S.isAdmin);d.querySelectorAll("[data-role='faculty']").forEach(x=>x.hidden=!(S.isFaculty||S.isAdmin))}
 function navigate(view){const button=d.querySelector('[data-os-view="'+view+'"]');if(!button||button.hidden)return;S.view=view;d.querySelectorAll("[data-os-panel]").forEach(x=>x.hidden=x.dataset.osPanel!==view);d.querySelectorAll("[data-os-view]").forEach(x=>{x.classList.toggle("active",x.dataset.osView===view);x.setAttribute("aria-current",x.dataset.osView===view?"page":"false")});if(innerWidth<800)byViewFocus()}
 function byViewFocus(){d.querySelector('[data-os-panel="'+S.view+'"]')?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
 async function getSession(){
- if(!db){$("osGate").hidden=false;report(tr("خدمة تسجيل الدخول غير متاحة في المتصفح. افتح الصفحة باتصال إنترنت.","Account connection unavailable. Reload with internet access."),true);return false}
+ if(!db){resetPrivateState();report(tr("خدمة تسجيل الدخول غير متاحة في المتصفح. افتح الصفحة باتصال إنترنت.","Account connection unavailable. Reload with internet access."),true);return false}
+ let epoch=S.sessionEpoch;
  const {data,error}=await db.auth.getUser();
- if(error||!data.user){$("osApp").hidden=true;$("osGate").hidden=false;report(tr("سجّل الدخول لعرض مساحة الدراسة الخاصة بك.","Sign in to view your personal workspace."));return false}
+ if(epoch!==S.sessionEpoch)return false;
+ if(error||!data?.user){resetPrivateState();report(tr("سجّل الدخول لعرض مساحة الدراسة الخاصة بك.","Sign in to view your personal workspace."));return false}
+ if(S.user&&S.user.id!==data.user.id){resetPrivateState();epoch=S.sessionEpoch}
  S.user=data.user;
  const prof=await q(db.from("profiles").select("id,full_name,role").eq("id",S.user.id).maybeSingle());
- if(!prof||!prof.id){$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تعذّر التحقق من ملف الحساب؛ لا يمكن عرض بيانات خاصة.","Unable to verify your profile. Private data remains hidden."),true);return false}
+ if(epoch!==S.sessionEpoch)return false;
+ if(!prof?.id){resetPrivateState();report(tr("تعذّر التحقق من ملف الحساب؛ لا يمكن عرض بيانات خاصة.","Unable to verify your profile. Private data remains hidden."),true);return false}
  S.profile=prof;S.isAdmin=prof.role==="admin";
  $("osApp").hidden=false;$("osGate").hidden=true;
  $("osIdentity").textContent=(prof.full_name||S.user.email||"")+" · "+(S.isAdmin?"ADMIN":prof.role?.toUpperCase()||"STUDENT");
  return true
 }
 async function loadCollections(){
- const userId=S.user.id;
+ const userId=S.user.id,epoch=S.sessionEpoch;
+ if(!S.isAdmin)S.audit=[];
  // Every query below is subject to RLS; no blanket service token is used.
  const tasks=[
  ["courses",db.from("courses").select("id,code,title_ar,title_en,status,hours").order("created_at",{ascending:false}).limit(200)],
@@ -52,20 +75,22 @@ async function loadCollections(){
  ];
  if(S.isAdmin)tasks.push(["audit",db.from("nabd_os_audit_events").select("id,actor_id,event_type,object_type,object_id,detail,created_at").order("created_at",{ascending:false}).limit(50)]);
  const results=await Promise.allSettled(tasks.map(async([name,promise])=>[name,await q(promise)]));
+ if(epoch!==S.sessionEpoch||!S.user||S.user.id!==userId)return;
  const failed=[];
- results.forEach((result,i)=>{if(result.status==="fulfilled"){const [name,data]=result.value;S[name]=Array.isArray(data)?data:[]}else failed.push(tasks[i][0])});
+ results.forEach((result,i)=>{const name=tasks[i][0];if(result.status==="fulfilled"){const data=result.value[1];S[name]=Array.isArray(data)?data:[]}else{S[name]=[];failed.push(name)}});
  if(failed.length){report(tr("تعذّر تحميل بعض الأقسام: ","Some sections could not load: ")+failed.join("، "),true)}
  S.isFaculty=S.faculty.some(a=>a.lecturer_id===userId&&a.active);
  roleTabs();
  renderAll();
  // Keep the selected role view visible after every data refresh.
  const targetView=S.isAdmin&&S.view==="study"?"admin":S.isFaculty&&S.view==="study"&&S.enrollments.length===0?"faculty":S.view;
- navigate(targetView);
+ const allowed=["study","exams","credentials","research",...(S.isFaculty||S.isAdmin?["faculty"]:[]),...(S.isAdmin?["admin","bank","review","quality"]:[])];
+ navigate(allowed.includes(targetView)?targetView:"study");
  if(!failed.length)report(tr("تم تحديث بياناتك من قاعدة الأكاديمية بنجاح.","Workspace synchronised with the academy database."));
 }
-async function bootstrap(){if(S.busy)return;S.busy=true;try{if(await getSession())await loadCollections()}catch(e){report(errMessage(e),true);$("osApp").hidden=true;$("osGate").hidden=false}finally{S.busy=false}}
+async function bootstrap(){if(S.busy){S.refreshQueued=true;return}S.busy=true;try{if(await getSession())await loadCollections()}catch(e){resetPrivateState();report(errMessage(e),true)}finally{S.busy=false;if(S.refreshQueued){S.refreshQueued=false;void bootstrap()}}}
 function metric(number,label){const card=elt("div","os-metric");card.append(elt("b","",number),elt("span","",label));return card}
-function renderMetrics(){const host=$("osMetrics");clear(host);const stats=S.isAdmin?[[S.courses.length,tr("مقررات في النتيجة","Courses loaded")],[S.exams.length,tr("اختبارات","Exams")],[S.requests.filter(x=>x.status==="pending").length,tr("طلبات شهادات جديدة","New credential requests")],[S.proposals.filter(x=>x.status==="submitted").length,tr("مقترحات بحث جديدة","New proposals")]]:[[S.enrollments.length,tr("مقرراتي المسجّلة","My enrolments")],[S.exams.filter(x=>x.status==="published").length,tr("اختبارات متاحة","Available exams")],[S.attempts.filter(x=>x.student_id===S.user.id).length,tr("محاولاتي المسجلة","Submitted exams")],[S.requests.filter(x=>x.student_id===S.user.id).length,tr("طلبات الشهادات","Credential requests")]];stats.forEach(x=>host.append(metric(...x)))}
+function renderMetrics(){const host=$("osMetrics");clear(host);const stats=S.isAdmin?[[S.courses.length,tr("مقررات في النتيجة","Courses loaded")],[S.exams.length,tr("اختبارات","Exams")],[S.requests.filter(x=>x.status==="pending").length,tr("طلبات شهادات جديدة","New credential requests")],[S.proposals.filter(x=>x.status==="submitted").length,tr("مقترحات بحث جديدة","New proposals")]]:[[S.enrollments.length,tr("مقرراتي المسجّلة","My enrolments")],[S.exams.filter(x=>x.status==="published"&&examAvailability(x)==="open"&&S.enrollments.some(e=>e.course_id===x.course_id)&&!S.attempts.some(a=>a.student_id===S.user.id&&a.exam_id===x.id)).length,tr("اختبارات متاحة","Available exams")],[S.attempts.filter(x=>x.student_id===S.user.id).length,tr("محاولاتي المسجلة","Submitted exams")],[S.requests.filter(x=>x.student_id===S.user.id).length,tr("طلبات الشهادات","Credential requests")]];stats.forEach(x=>host.append(metric(...x)))}
 function renderCourses(){const out=$("osCourses");clear(out);if(!S.enrollments.length){empty(out,"لا توجد تسجيلات للمقررات على حسابك حاليًا. إدارة التسجيل تتم عبر بوابة الأكاديمية.","No enrolled courses found. Enrolment is managed through the academy.");return}
  S.enrollments.forEach(e=>{const card=elt("article","os-mini-card");card.append(newChip(e.status),elt("strong","",titleOfCourse(e.course_id)),elt("p","",tr("التقدم المسجّل: ","Recorded progress: ")+(Math.round(Number(e.progress||0))||0)+"%"));out.append(card)})}
 function renderModules(){const out=$("osModules");clear(out);const studentCourseIds=new Set(S.enrollments.map(e=>e.course_id));
@@ -74,13 +99,28 @@ function renderModules(){const out=$("osModules");clear(out);const studentCourse
  visible.forEach(m=>{const {row,body}=newRow(loc(m.title_ar,m.title_en),titleOfCourse(m.course_id)+(m.summary_ar?" · "+m.summary_ar:""),m.status);if(m.resource_url){try{const url=new URL(m.resource_url);if(url.protocol==="https:"){const a=elt("a","os-button secondary",tr("المصدر ↗","Source ↗"));a.href=url.href;a.target="_blank";a.rel="noopener noreferrer";row.append(a)}}catch(e){}}out.append(row)})}
 function renderAttendance(){const out=$("osAttendance");clear(out);const own=S.attendance.filter(a=>a.student_id===S.user.id);if(!own.length){empty(out,"لا توجد سجلات حضور مرتبطة بحسابك.","No recorded attendance for your account.");return}
  own.forEach(a=>{const m=S.modules.find(x=>x.id===a.module_id);out.append(newRow(m?loc(m.title_ar,m.title_en):titleOfCourse(a.course_id),labelStatus(a.status)+" · "+safeDate(a.recorded_at),a.status).row)})}
-function renderExamList(){const out=$("osExamList");clear(out);const enrolled=new Set(S.enrollments.map(x=>x.course_id)),published=S.exams.filter(x=>x.status==="published"&&enrolled.has(x.course_id));if(!published.length){empty(out,"لا توجد اختبارات منشورة لمقرراتك حاليًا. يمكن للإدارة إنشاء الاختبارات ومراجعتها قبل النشر.","No published exams for your courses yet. Admins can author and review exams before publication.");return}
- published.forEach(x=>{const ownAttempt=S.attempts.find(a=>a.exam_id===x.id&&a.student_id===S.user.id),{row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"%",ownAttempt?"completed":x.status);
- const actions=elt("div","os-actions");if(ownAttempt)actions.append(elt("span","os-chip",tr("النتيجة ","Score ")+ownAttempt.score+"/"+ownAttempt.max_score));else actions.append(runButton(tr("بدء الاختبار","Start exam"),()=>openExam(x.id),"primary"));row.append(actions);out.append(row)})}
+function renderExamList(){
+ const out=$("osExamList");clear(out);
+ const enrolled=new Set(S.enrollments.map(x=>x.course_id)),published=S.exams.filter(x=>x.status==="published"&&enrolled.has(x.course_id));
+ if(!published.length){empty(out,"لا توجد اختبارات منشورة لمقرراتك حاليًا. يمكن للإدارة إنشاء الاختبارات ومراجعتها قبل النشر.","No published exams for your courses yet. Admins can author and review exams before publication.");return}
+ published.forEach(x=>{
+  const ownAttempt=S.attempts.find(a=>a.exam_id===x.id&&a.student_id===S.user.id),windowState=examAvailability(x);
+  const when=windowState==="upcoming"?tr("يفتح: ","Opens: ")+safeDateTime(x.opens_at):windowState==="closed"?tr("انتهى: ","Closed: ")+safeDateTime(x.closes_at):tr("الاختبار متاح الآن","Exam is available now");
+  const {row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"% · "+when,ownAttempt?"completed":windowState==="open"?"published":windowState);
+  const actions=elt("div","os-actions");
+  if(ownAttempt)actions.append(elt("span","os-chip",tr("النتيجة ","Score ")+ownAttempt.score+"/"+ownAttempt.max_score));
+  else if(windowState==="open")actions.append(runButton(tr("بدء الاختبار","Start exam"),()=>openExam(x.id),"primary"));
+  else actions.append(elt("span","os-chip gold",windowState==="upcoming"?tr("لم يبدأ بعد","Not started"):tr("انتهى الموعد","Closed")));
+  row.append(actions);out.append(row);
+ });
+}
 function renderGrades(){const out=$("osGrades");clear(out);const own=S.attempts.filter(a=>a.student_id===S.user.id);if(!own.length){empty(out,"لا توجد درجات اختبار مسجلة بعد.","No exam grades are recorded yet.");return}
  own.forEach(a=>{const x=S.exams.find(e=>e.id===a.exam_id);out.append(newRow(x?loc(x.title_ar,x.title_en):a.exam_id?.slice(0,8),tr("الدرجة: ","Score: ")+a.score+"/"+a.max_score+" · "+formatPercent(a.score,a.max_score)+" · "+safeDate(a.submitted_at),a.passed?"completed":"closed").row)})}
 async function openExam(id){const exam=S.exams.find(e=>e.id===id);if(!exam)return;
+ if(examAvailability(exam)!=="open"||!S.enrollments.some(e=>e.course_id===exam.course_id)||S.attempts.some(a=>a.exam_id===id&&a.student_id===S.user.id)){report(tr("هذا الاختبار غير متاح لحسابك الآن.","This exam is not available to your account now."),true);return}
+ const epoch=S.sessionEpoch,userId=S.user?.id;
  const questions=await q(db.from("nabd_os_exam_questions").select("id,prompt_ar,prompt_en,options_ar,options_en,points,position").eq("exam_id",id).order("position"));
+ if(epoch!==S.sessionEpoch||S.user?.id!==userId)return;
  if(!questions.length){report(tr("هذا الاختبار غير جاهز؛ لا توجد أسئلة متاحة.","This exam has no available questions."),true);return}
  S.questions=questions;S.chosenExam=exam;S.answers={};$("osExamPlayer").hidden=false;$("osExamTitle").textContent=loc(exam.title_ar,exam.title_en);$("osExamResult").textContent="";renderExamQuestions();
  $("osExamPlayer").scrollIntoView({behavior:"smooth",block:"start"});
@@ -90,8 +130,8 @@ function renderExamQuestions(){const box=$("osExamQuestions");clear(box);if(!S.c
 async function submitExam(){if(!S.chosenExam||!S.user)return;
  if(S.questions.some(q=>!Number.isInteger(S.answers[q.id]))){$("osExamResult").textContent=tr("أجب عن كل الأسئلة قبل التسليم.","Answer every question before submitting.");return}
  if(!confirm(tr("هل تريد تسليم الاختبار نهائيًا؟ لا يمكنك إعادته.","Submit this attempt permanently? It cannot be repeated.")))return;
- const btn=$("osSubmitExam");btn.disabled=true;
- try{const result=await q(db.rpc("nabd_os_submit_exam",{p_exam_id:S.chosenExam.id,p_answers:S.answers}));$("osExamResult").textContent=tr("تم تسجيل الدرجة: ","Grade recorded: ")+result.score+"/"+result.max_score+" · "+(result.passed?tr("ناجح","Passed"):tr("لم يحقق الحد","Below passing threshold"));$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={};await loadCollections()}catch(e){$("osExamResult").textContent=errMessage(e);report(errMessage(e),true)}finally{btn.disabled=false}}
+ const btn=$("osSubmitExam"),epoch=S.sessionEpoch,examId=S.chosenExam.id,answers={...S.answers};btn.disabled=true;
+ try{const result=await q(db.rpc("nabd_os_submit_exam",{p_exam_id:examId,p_answers:answers}));if(epoch!==S.sessionEpoch||!S.user)return;$("osExamResult").textContent=tr("تم تسجيل الدرجة: ","Grade recorded: ")+result.score+"/"+result.max_score+" · "+(result.passed?tr("ناجح","Passed"):tr("لم يحقق الحد","Below passing threshold"));$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={};await loadCollections();report(tr("تم تسليم الاختبار وتصحيحه وحفظ درجتك.","Exam submitted, graded and saved."))}catch(e){$("osExamResult").textContent=errMessage(e);report(errMessage(e),true)}finally{btn.disabled=false}}
 function renderCredentials(){updateSelect("osCredentialCourse",S.enrollments.map(x=>[x.course_id,titleOfCourse(x.course_id)]));
  const out=$("osCredentialRequests");clear(out);const own=S.requests.filter(x=>x.student_id===S.user.id);if(!own.length){empty(out,"لم ترسل طلبات مراجعة شهادات بعد.","No credential eligibility requests yet.");return}
  own.forEach(x=>out.append(newRow(titleOfCourse(x.course_id),safeDate(x.created_at)+(x.reviewer_note?" · "+x.reviewer_note:""),x.status).row))}
@@ -145,7 +185,7 @@ function renderReview(){const certs=$("osAdminCerts"),research=$("osAdminResearc
  if(["submitted","in_review"].includes(x.status))reviewActions(row,[[tr("قيد التقييم","Review"),()=>reviewProposal(x,"in_review")],[tr("اعتماد إداري","Admin accept"),()=>reviewProposal(x,"accepted")],[tr("رفض","Decline"),()=>reviewProposal(x,"declined")]]);research.append(row)})}
 function renderQuality(){const out=$("osQualityList");clear(out);if(!S.audit.length){empty(out,"لا توجد أحداث تدقيق مسجلة بعد. سيسجل النظام محاولات الاختبار ونشره وإنشاء أسئلته.","No logged audit events yet. The system logs exam submissions, publishing and question creation.");return}
  S.audit.forEach(x=>out.append(newRow(x.event_type,x.object_type+" · "+(x.object_id||"")+" · "+safeDate(x.created_at),"active").row))}
-function renderAll(){renderMetrics();renderCourses();renderModules();renderAttendance();renderExamList();renderGrades();renderCredentials();renderResearch();renderFaculty();if(S.isAdmin){renderAdminCourses();renderAdminExams();renderReview();renderQuality()}if(S.chosenExam)renderExamQuestions()}
+function renderAll(){renderMetrics();renderCourses();renderModules();renderAttendance();renderExamList();renderGrades();renderCredentials();renderResearch();renderFaculty();if(S.isAdmin){renderAdminCourses();renderAdminExams();renderReview();renderQuality()}else{for(const id of ["osAdminCourses","osAdminExams","osAdminCerts","osAdminResearch","osQualityList"])clear($(id))}if(S.chosenExam)renderExamQuestions()}
 async function createCourse(e){e.preventDefault();if(!S.isAdmin)return;
  const input={slug:$("osCourseSlug").value.trim(),code:$("osCourseCode").value.trim().toUpperCase(),title_ar:$("osCourseAr").value.trim(),title_en:$("osCourseEn").value.trim(),hours:Number($("osCourseHours").value),status:"draft"};
  await q(db.from("courses").insert(input).select("id").single());e.target.reset();report(tr("أُنشئت مسودة المقرر في قاعدة البيانات، ولم تُفتح للتسجيل بعد.","Course draft saved to the database; enrolment is not open."));await loadCollections()}
@@ -178,7 +218,7 @@ async function reviewProposal(entry,status){if(!S.isAdmin)return;const detail=pr
 function bind(){
  $("osLang").addEventListener("click",()=>{S.language=S.language==="ar"?"en":"ar";d.documentElement.lang=S.language;d.documentElement.dir=S.language==="ar"?"rtl":"ltr";d.querySelectorAll("[data-ar][data-en]").forEach(e=>{e.textContent=e.getAttribute("data-"+S.language)});$("osLang").textContent=S.language==="ar"?"EN":"عربي";if(S.user)renderAll()});
  $("osLoginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db)return;const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$("osEmail").value.trim(),password:$("osPassword").value});$("osPassword").value="";if(error)throw error;await bootstrap()}catch(err){report(tr("فشل الدخول. تحقق من بيانات الحساب.","Sign-in failed; verify account credentials."),true)}finally{btn.disabled=false}});
- $("osLogout").addEventListener("click",async()=>{if(db)await db.auth.signOut();S.user=null;S.profile=null;S.courses=[];S.enrollments=[];S.roster=[];S.rosterRequest++;updateSelect("osAttendanceStudent",[]);$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تم تسجيل الخروج.","Signed out."))});
+ $("osLogout").addEventListener("click",async()=>{try{const {error}=await db.auth.signOut();if(error)throw error;resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}catch(e){resetPrivateState();report(tr("تعذّر التأكد من إنهاء الجلسة على الخادم. أعد المحاولة.","Could not confirm server sign-out. Please retry."),true)}});
  $("osRefresh").addEventListener("click",bootstrap);
  d.querySelectorAll("[data-os-view]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.osView)));
  $("osCloseExam").addEventListener("click",()=>{$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={}});
@@ -187,6 +227,10 @@ function bind(){
  forms.forEach(([id,handler])=>$(id).addEventListener("submit",async e=>{e.preventDefault();const b=e.target.querySelector('button[type="submit"]');if(!S.user||b?.disabled)return;if(b)b.disabled=true;try{await handler(e)}catch(err){report(errMessage(err),true)}finally{if(b)b.disabled=false}}));
  $("osModuleCourse").addEventListener("change",updateAttendanceModules);
  $("osAttendanceModule").addEventListener("change",()=>{void refreshRoster()});
+ if(db?.auth?.onAuthStateChange)db.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT"){resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}
+  else if(event==="SIGNED_IN"&&session?.user?.id&&S.user?.id!==session.user.id){resetPrivateState();setTimeout(()=>{void bootstrap()},0)}
+ });
  bootstrap();
 }
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",bind);else bind();
