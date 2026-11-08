@@ -31,7 +31,7 @@ const human=[
 let epoch=0;
 let last=null;
 const $=(id)=>document.getElementById(id);
-const lang=()=>document.documentElement.lang?.toLowerCase().startsWith("en")?"en":"ar";
+let uiLang="ar";const lang=()=>uiLang;
 const t=(ar,en)=>lang()==="en"?en:ar;
 const elem=(tag,cls,value)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(value!==undefined)e.textContent=String(value);return e};
 function addLink(parent,url,label){const a=elem("a","nlg-link",label);a.href=url;if(url.startsWith("https://")){a.rel="noopener noreferrer";a.target="_blank"}parent.append(a);return a}
@@ -41,14 +41,17 @@ function snapshot(stats){
  const blocked=gates.filter(x=>x.status==="blocked").length,unknown=gates.filter(x=>x.status==="unknown").length;
  return {version:1,kind:"NABD_FINAL_LAUNCH_GATE",verifiedAt:new Date().toISOString(),automatic:{total:gates.length,withRecords:gates.filter(x=>x.status==="seeded").length,blocked,unknown,gates},manualReviews:human.map(x=>({id:x[0],state:"pending_human_review"})),overall:"HOLD_FOR_VERIFICATION",explanation:"Counts indicate only presence of records, not academic, medical, security or teaching approval. No student data is exported."};
 }
-function draw(panel,stats,db,user){
+function draw(panel,stats,db,user,verifiedAt){
+ panel.setAttribute("dir",lang()==="en"?"ltr":"rtl");
  panel.replaceChildren();
- const info=snapshot(stats);last=info;
+ const info=snapshot(stats);if(verifiedAt)info.verifiedAt=verifiedAt;last=info;
  const heading=elem("div","nlg-head"),copy=elem("div"),title=elem("h2","",t("NABD FINAL LAUNCH · غرفة جاهزية الإطلاق","NABD FINAL LAUNCH · Operations readiness gate"));
  const intro=elem("p","",t("تقرير مباشر للمدير فقط: نميّز بين وجود سجلات وبين اعتماد المحتوى والأمان. لا توجد تغييرات على قاعدة البيانات.","Administrator-only live report. Database records are not proof of security, clinical review or full launch readiness. No database records are changed."));
  const refresh=elem("button","nlg-button",t("تحديث التحقق ↻","Refresh verification ↻"));refresh.type="button";refresh.addEventListener("click",()=>{void load(panel,db,user)});
  const exportBtn=elem("button","nlg-button nlg-secondary",t("تنزيل تقرير دون بيانات شخصية","Export non-personal readiness report"));exportBtn.type="button";exportBtn.addEventListener("click",exportReport);
- const actions=elem("div","nlg-actions");actions.append(refresh,exportBtn);copy.append(title,intro);heading.append(copy,actions);panel.append(heading);
+ const actions=elem("div","nlg-actions");
+ const toggle=elem("button","nlg-button nlg-secondary",lang()==="ar"?"EN / عربي":"عربي / EN");toggle.type="button";toggle.setAttribute("aria-label",t("تغيير لغة التقرير","Switch report language"));toggle.addEventListener("click",()=>{uiLang=uiLang==="ar"?"en":"ar";draw(panel,stats,db,user,info.verifiedAt)});
+ actions.append(toggle,refresh,exportBtn);copy.append(title,intro);heading.append(copy,actions);panel.append(heading);
  const headline=elem("div","nlg-status");
  headline.append(elem("div","nlg-hold",t("إيقاف الإطلاق العام حتى التحقق","HOLD — full launch not verified")));
  headline.append(elem("strong","",info.automatic.withRecords+" / "+info.automatic.total));
