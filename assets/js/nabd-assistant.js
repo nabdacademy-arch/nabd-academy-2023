@@ -231,6 +231,8 @@ function setMode(mode){
 }
 launcher.addEventListener("click",openChat);
 $("nb-chat-close").addEventListener("click",closeChat);shade.addEventListener("click",closeChat);
+$("nb-chat-support").addEventListener("click",closeChat);
+stream.addEventListener("click",e=>{if(e.target.closest("a[href]"))closeChat()});
 $("nb-chat-lang").addEventListener("click",()=>{state.lang=state.lang==="ar"?"en":"ar";updateLabels()});
 $("nb-chat-clear").addEventListener("click",()=>{state.request++;setBusy(false);state.history=[];welcome();renderSuggestions();input.value="";updateCount();input.focus()});
 $("nb-chat-guide").addEventListener("click",()=>setMode("guide"));
