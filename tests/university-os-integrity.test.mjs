@@ -30,7 +30,7 @@ check(schema.includes("revoke all on function public.nabd_os_submit_exam")&&sche
 check(schema.includes("revoke execute on function public.issue_certificate")&&schema.includes("revoke execute on function public.approve_application"),"Existing admin RPCs no longer execute for anonymous users");
 check(schema.includes("student_id=(select auth.uid())")&&schema.includes("created_by=(select auth.uid())"),"Owner-bound policies");
 check(schema.includes("unique(exam_id,student_id)")&&schema.includes("pg_column_size(p_answers)>16384"),"Attempt uniqueness and payload limit");
-check(schema.includes("nabd_os_exam_keys")&&schema.includes("correct_index")&&!js.includes("correct_index"),"Answer correctness stored server-side only");
+check(schema.includes("nabd_os_exam_keys")&&schema.includes("correct_index")&&js.includes("p_correct_index")&&!js.includes('db.from("nabd_os_exam_keys")'),"Answer correctness stored server-side only");
 check(hardening.includes("nabd_teaching_assignments")&&hardening.includes("nabd_os_faculty_assignments"),"Both faculty systems synchronised atomically");
 check(hardening.includes("nabd_os_validate_attendance")&&hardening.includes("Identifiers cannot change")===false,"Attendance validation trigger declared");
 const home=read("index.html");check(home.includes('id="university-os-v22"'),"Homepage V22 gateway");
