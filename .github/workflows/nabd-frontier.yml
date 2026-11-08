@@ -1,0 +1,57 @@
+name: NABD NEXT FRONTIER eight projects
+on:
+  pull_request:
+    paths:
+      - 'nabd-next-frontier.html'
+      - 'index.html'
+      - 'admin.html'
+      - 'assets/js/nabd-frontier*'
+      - 'assets/css/nabd-frontier*'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/nabd-signature.js'
+      - 'supabase/migrations/*nabd_next_frontier*'
+      - 'tests/nabd-frontier-*'
+      - '.github/workflows/nabd-frontier.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-next-frontier.html'
+      - 'index.html'
+      - 'admin.html'
+      - 'assets/js/nabd-frontier*'
+      - 'assets/css/nabd-frontier*'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/nabd-signature.js'
+      - 'supabase/migrations/*nabd_next_frontier*'
+      - 'tests/nabd-frontier-*'
+      - '.github/workflows/nabd-frontier.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check scripts, no-secret grants and eight-project routes
+        run: |
+          node --check assets/js/nabd-frontier.js
+          node --check assets/js/nabd-frontier-admin.js
+          node tests/nabd-frontier-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test guest, student, director, language, privacy and quests
+        run: node tests/nabd-frontier-browser.cjs

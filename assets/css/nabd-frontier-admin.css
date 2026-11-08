@@ -1,0 +1,47 @@
+/* NABD FRONTIER — scoped director module, interoperates with existing admin dashboard */
+#nabd-next-frontier{direction:rtl;text-align:start;font:400 14px/1.8 system-ui,"Segoe UI",Tahoma,sans-serif;color:#173f4a}
+#nabd-next-frontier *{box-sizing:border-box}
+#nabd-next-frontier h2,#nabd-next-frontier h3,#nabd-next-frontier h4{color:#064754}
+#nabd-next-frontier .nfx-adm-head{display:flex;justify-content:space-between;align-items:start;gap:17px;flex-wrap:wrap;border-bottom:1px solid #cee5e6;padding-bottom:20px}
+#nabd-next-frontier .nfx-adm-head h2{font-size:clamp(22px,2.5vw,31px);margin:6px 0 10px}
+#nabd-next-frontier .nfx-adm-head p{font-size:12px;color:#567b85;max-width:780px}
+#nabd-next-frontier .nfx-adm-kicker{font:900 10px system-ui;letter-spacing:.16em;color:#12828b}
+#nabd-next-frontier .nfx-adm-actions{display:flex;gap:8px;flex-wrap:wrap}
+#nabd-next-frontier .nfx-adm-link{display:inline-block;background:#ecf9f7;border:1px solid #bde1e1;border-radius:9px;padding:8px 11px;margin:2px;color:#08737b;font-weight:800;font-size:12px;text-decoration:none;align-self:start}
+#nabd-next-frontier .nfx-adm-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:19px 0 12px}
+#nabd-next-frontier .nfx-adm-tab,#nabd-next-frontier .nfx-adm-btn{border:1px solid #acd9d8;background:#e4f7f5;color:#0c6b77;border-radius:10px;padding:9px 13px;font-size:12px;font-weight:850;min-height:42px;cursor:pointer}
+#nabd-next-frontier .nfx-adm-btn{background:#0a8290;border-color:#0a8290;color:#fff}
+#nabd-next-frontier .nfx-adm-tab.active{background:#0d7986;border-color:#0d7986;color:#fff}
+#nabd-next-frontier button:disabled{opacity:.55;cursor:wait}
+#nabd-next-frontier button:focus-visible,#nabd-next-frontier a:focus-visible,#nabd-next-frontier input:focus-visible,#nabd-next-frontier textarea:focus-visible,#nabd-next-frontier select:focus-visible{outline:3px solid #e2a03d;outline-offset:2px}
+#nabd-next-frontier .nfx-adm-status{min-height:27px;font-size:12px;color:#3b777b}
+#nabd-next-frontier .nfx-adm-status.bad,#nabd-next-frontier .nfx-adm-error{font-size:12px;background:#fff1ef;border:1px solid #efbdb8;padding:12px;border-radius:10px;color:#9a382f}
+#nabd-next-frontier .nfx-adm-help{color:#64828b;font-size:12px;line-height:1.85}
+#nabd-next-frontier .nfx-adm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:17px 0}
+#nabd-next-frontier .nfx-adm-metric{display:flex;min-width:0;flex-direction:column;gap:6px;background:#f5fcfb;border:1px solid #c9e6e4;border-radius:14px;padding:16px}
+#nabd-next-frontier .nfx-adm-metric strong{font-size:31px;color:#0b7d85;line-height:1.1}
+#nabd-next-frontier .nfx-adm-metric small{font-size:12px;color:#315d66}
+#nabd-next-frontier .nfx-adm-metric span{font-size:11px;color:#69868c}
+#nabd-next-frontier .nfx-adm-warning{background:#fff9ed;border:1px solid #eed5a5;border-radius:13px;padding:17px;color:#785924;font-size:12px;margin:16px 0}
+#nabd-next-frontier .nfx-adm-warning strong{color:#745323;font-size:14px}
+#nabd-next-frontier .nfx-adm-warning p{margin:5px 0 0}
+#nabd-next-frontier .nfx-adm-reviews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:18px 0}
+#nabd-next-frontier .nfx-adm-entry{background:#f8fcfc;border:1px solid #d4e6e6;border-radius:13px;padding:17px;min-width:0;overflow-wrap:anywhere}
+#nabd-next-frontier .nfx-adm-entry-head{display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:11px}
+#nabd-next-frontier .nfx-adm-entry h4{font-size:15px;line-height:1.6;margin:0 0 8px}
+#nabd-next-frontier .nfx-adm-entry p{color:#5b7a85;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+#nabd-next-frontier .nfx-adm-chip{color:#0b7a81;background:#def6f3;border:1px solid #8cd0cc;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:850}
+#nabd-next-frontier .nfx-adm-controls{display:flex;align-items:center;gap:11px;flex-wrap:wrap;border-top:1px solid #d0e5e6;padding-top:12px}
+#nabd-next-frontier .nfx-adm-select,#nabd-next-frontier .nfx-adm-input{background:#fff;color:#184953;border:1px solid #a8cbd1;border-radius:9px;padding:10px 12px;min-width:0;font-size:12px;max-width:100%}
+#nabd-next-frontier .nfx-adm-select{flex:1}
+#nabd-next-frontier .nfx-adm-curators{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+#nabd-next-frontier .nfx-adm-form{background:#f8fcfb;border:1px solid #d5e9e6;border-radius:15px;padding:19px;display:grid;gap:11px;align-content:start}
+#nabd-next-frontier .nfx-adm-form h4{margin:0 0 7px}
+#nabd-next-frontier .nfx-adm-field{display:grid;gap:6px;color:#3c666f;font-size:12px;font-weight:800}
+#nabd-next-frontier .nfx-adm-field .nfx-adm-input{width:100%}
+#nabd-next-frontier textarea.nfx-adm-input{min-height:75px;resize:vertical}
+#nabd-next-frontier .nfx-adm-form button{justify-self:start}
+#nabd-next-frontier .nfx-adm-empty{font-size:12px;color:#66828a;padding:16px}
+@media(max-width:1000px){#nabd-next-frontier .nfx-adm-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){#nabd-next-frontier .nfx-adm-reviews,#nabd-next-frontier .nfx-adm-curators{grid-template-columns:1fr}#nabd-next-frontier .nfx-adm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){#nabd-next-frontier .nfx-adm-grid{grid-template-columns:1fr}}
