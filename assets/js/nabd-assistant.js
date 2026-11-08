@@ -6,7 +6,7 @@
 (()=>{"use strict";
 const D=document,source=D.currentScript?.src,base=source?new URL("../../",source):new URL("./",location.href);
 if(D.getElementById("nabd-chat-root"))return;
-const style=D.createElement("link");style.rel="stylesheet";style.href=new URL("assets/css/nabd-assistant.css?v=1",base).href;D.head.append(style);
+const style=D.createElement("link");style.rel="stylesheet";style.href=new URL("assets/css/nabd-assistant.css?v=2",base).href;D.head.append(style);
 const url=p=>new URL(p,base).href;
 const clean=s=>String(s||"").toLowerCase().normalize("NFKC").replace(/[\u064b-\u065f\u0670]/g,"").replace(/[أآإ]/g,"ا").replace(/ى/g,"ي").replace(/[ًٌٍَُِّْ]/g,"").trim();
 const el=(tag,cls,text)=>{const x=D.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=String(text);return x};
