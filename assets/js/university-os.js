@@ -31,6 +31,13 @@ function resetPrivateState(){
  $("osIdentity").textContent="";$("osRosterStatus").textContent="";
  $("osApp").hidden=true;$("osGate").hidden=false;roleTabs();
 }
+function examAvailability(exam,now=Date.now()){
+ const start=exam.opens_at?Date.parse(exam.opens_at):NaN,end=exam.closes_at?Date.parse(exam.closes_at):NaN;
+ if(Number.isFinite(start)&&now<start)return "upcoming";
+ if(Number.isFinite(end)&&now>end)return "closed";
+ return "open";
+}
+function safeDateTime(value){if(!value)return "";try{return new Intl.DateTimeFormat(S.language==="ar"?"ar":"en",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value))}catch(e){return ""}}
 function roleTabs(){d.querySelectorAll("[data-role='admin']").forEach(x=>x.hidden=!S.isAdmin);d.querySelectorAll("[data-role='faculty']").forEach(x=>x.hidden=!(S.isFaculty||S.isAdmin))}
 function navigate(view){const button=d.querySelector('[data-os-view="'+view+'"]');if(!button||button.hidden)return;S.view=view;d.querySelectorAll("[data-os-panel]").forEach(x=>x.hidden=x.dataset.osPanel!==view);d.querySelectorAll("[data-os-view]").forEach(x=>{x.classList.toggle("active",x.dataset.osView===view);x.setAttribute("aria-current",x.dataset.osView===view?"page":"false")});if(innerWidth<800)byViewFocus()}
 function byViewFocus(){d.querySelector('[data-os-panel="'+S.view+'"]')?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
@@ -78,7 +85,7 @@ async function loadCollections(){
 }
 async function bootstrap(){if(S.busy)return;S.busy=true;try{if(await getSession())await loadCollections()}catch(e){report(errMessage(e),true);$("osApp").hidden=true;$("osGate").hidden=false}finally{S.busy=false}}
 function metric(number,label){const card=elt("div","os-metric");card.append(elt("b","",number),elt("span","",label));return card}
-function renderMetrics(){const host=$("osMetrics");clear(host);const stats=S.isAdmin?[[S.courses.length,tr("مقررات في النتيجة","Courses loaded")],[S.exams.length,tr("اختبارات","Exams")],[S.requests.filter(x=>x.status==="pending").length,tr("طلبات شهادات جديدة","New credential requests")],[S.proposals.filter(x=>x.status==="submitted").length,tr("مقترحات بحث جديدة","New proposals")]]:[[S.enrollments.length,tr("مقرراتي المسجّلة","My enrolments")],[S.exams.filter(x=>x.status==="published").length,tr("اختبارات متاحة","Available exams")],[S.attempts.filter(x=>x.student_id===S.user.id).length,tr("محاولاتي المسجلة","Submitted exams")],[S.requests.filter(x=>x.student_id===S.user.id).length,tr("طلبات الشهادات","Credential requests")]];stats.forEach(x=>host.append(metric(...x)))}
+function renderMetrics(){const host=$("osMetrics");clear(host);const stats=S.isAdmin?[[S.courses.length,tr("مقررات في النتيجة","Courses loaded")],[S.exams.length,tr("اختبارات","Exams")],[S.requests.filter(x=>x.status==="pending").length,tr("طلبات شهادات جديدة","New credential requests")],[S.proposals.filter(x=>x.status==="submitted").length,tr("مقترحات بحث جديدة","New proposals")]]:[[S.enrollments.length,tr("مقرراتي المسجّلة","My enrolments")],[S.exams.filter(x=>x.status==="published"&&examAvailability(x)==="open"&&S.enrollments.some(e=>e.course_id===x.course_id)&&!S.attempts.some(a=>a.student_id===S.user.id&&a.exam_id===x.id)).length,tr("اختبارات متاحة","Available exams")],[S.attempts.filter(x=>x.student_id===S.user.id).length,tr("محاولاتي المسجلة","Submitted exams")],[S.requests.filter(x=>x.student_id===S.user.id).length,tr("طلبات الشهادات","Credential requests")]];stats.forEach(x=>host.append(metric(...x)))}
 function renderCourses(){const out=$("osCourses");clear(out);if(!S.enrollments.length){empty(out,"لا توجد تسجيلات للمقررات على حسابك حاليًا. إدارة التسجيل تتم عبر بوابة الأكاديمية.","No enrolled courses found. Enrolment is managed through the academy.");return}
  S.enrollments.forEach(e=>{const card=elt("article","os-mini-card");card.append(newChip(e.status),elt("strong","",titleOfCourse(e.course_id)),elt("p","",tr("التقدم المسجّل: ","Recorded progress: ")+(Math.round(Number(e.progress||0))||0)+"%"));out.append(card)})}
 function renderModules(){const out=$("osModules");clear(out);const studentCourseIds=new Set(S.enrollments.map(e=>e.course_id));
@@ -87,12 +94,25 @@ function renderModules(){const out=$("osModules");clear(out);const studentCourse
  visible.forEach(m=>{const {row,body}=newRow(loc(m.title_ar,m.title_en),titleOfCourse(m.course_id)+(m.summary_ar?" · "+m.summary_ar:""),m.status);if(m.resource_url){try{const url=new URL(m.resource_url);if(url.protocol==="https:"){const a=elt("a","os-button secondary",tr("المصدر ↗","Source ↗"));a.href=url.href;a.target="_blank";a.rel="noopener noreferrer";row.append(a)}}catch(e){}}out.append(row)})}
 function renderAttendance(){const out=$("osAttendance");clear(out);const own=S.attendance.filter(a=>a.student_id===S.user.id);if(!own.length){empty(out,"لا توجد سجلات حضور مرتبطة بحسابك.","No recorded attendance for your account.");return}
  own.forEach(a=>{const m=S.modules.find(x=>x.id===a.module_id);out.append(newRow(m?loc(m.title_ar,m.title_en):titleOfCourse(a.course_id),labelStatus(a.status)+" · "+safeDate(a.recorded_at),a.status).row)})}
-function renderExamList(){const out=$("osExamList");clear(out);const enrolled=new Set(S.enrollments.map(x=>x.course_id)),published=S.exams.filter(x=>x.status==="published"&&enrolled.has(x.course_id));if(!published.length){empty(out,"لا توجد اختبارات منشورة لمقرراتك حاليًا. يمكن للإدارة إنشاء الاختبارات ومراجعتها قبل النشر.","No published exams for your courses yet. Admins can author and review exams before publication.");return}
- published.forEach(x=>{const ownAttempt=S.attempts.find(a=>a.exam_id===x.id&&a.student_id===S.user.id),{row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"%",ownAttempt?"completed":x.status);
- const actions=elt("div","os-actions");if(ownAttempt)actions.append(elt("span","os-chip",tr("النتيجة ","Score ")+ownAttempt.score+"/"+ownAttempt.max_score));else actions.append(runButton(tr("بدء الاختبار","Start exam"),()=>openExam(x.id),"primary"));row.append(actions);out.append(row)})}
+function renderExamList(){
+ const out=$("osExamList");clear(out);
+ const enrolled=new Set(S.enrollments.map(x=>x.course_id)),published=S.exams.filter(x=>x.status==="published"&&enrolled.has(x.course_id));
+ if(!published.length){empty(out,"لا توجد اختبارات منشورة لمقرراتك حاليًا. يمكن للإدارة إنشاء الاختبارات ومراجعتها قبل النشر.","No published exams for your courses yet. Admins can author and review exams before publication.");return}
+ published.forEach(x=>{
+  const ownAttempt=S.attempts.find(a=>a.exam_id===x.id&&a.student_id===S.user.id),windowState=examAvailability(x);
+  const when=windowState==="upcoming"?tr("يفتح: ","Opens: ")+safeDateTime(x.opens_at):windowState==="closed"?tr("انتهى: ","Closed: ")+safeDateTime(x.closes_at):tr("الاختبار متاح الآن","Exam is available now");
+  const {row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"% · "+when,ownAttempt?"completed":windowState==="open"?"published":"closed");
+  const actions=elt("div","os-actions");
+  if(ownAttempt)actions.append(elt("span","os-chip",tr("النتيجة ","Score ")+ownAttempt.score+"/"+ownAttempt.max_score));
+  else if(windowState==="open")actions.append(runButton(tr("بدء الاختبار","Start exam"),()=>openExam(x.id),"primary"));
+  else actions.append(elt("span","os-chip gold",windowState==="upcoming"?tr("لم يبدأ بعد","Not started"):tr("انتهى الموعد","Closed")));
+  row.append(actions);out.append(row);
+ });
+}
 function renderGrades(){const out=$("osGrades");clear(out);const own=S.attempts.filter(a=>a.student_id===S.user.id);if(!own.length){empty(out,"لا توجد درجات اختبار مسجلة بعد.","No exam grades are recorded yet.");return}
  own.forEach(a=>{const x=S.exams.find(e=>e.id===a.exam_id);out.append(newRow(x?loc(x.title_ar,x.title_en):a.exam_id?.slice(0,8),tr("الدرجة: ","Score: ")+a.score+"/"+a.max_score+" · "+formatPercent(a.score,a.max_score)+" · "+safeDate(a.submitted_at),a.passed?"completed":"closed").row)})}
 async function openExam(id){const exam=S.exams.find(e=>e.id===id);if(!exam)return;
+ if(examAvailability(exam)!=="open"||!S.enrollments.some(e=>e.course_id===exam.course_id)||S.attempts.some(a=>a.exam_id===id&&a.student_id===S.user.id)){report(tr("هذا الاختبار غير متاح لحسابك الآن.","This exam is not available to your account now."),true);return}
  const questions=await q(db.from("nabd_os_exam_questions").select("id,prompt_ar,prompt_en,options_ar,options_en,points,position").eq("exam_id",id).order("position"));
  if(!questions.length){report(tr("هذا الاختبار غير جاهز؛ لا توجد أسئلة متاحة.","This exam has no available questions."),true);return}
  S.questions=questions;S.chosenExam=exam;S.answers={};$("osExamPlayer").hidden=false;$("osExamTitle").textContent=loc(exam.title_ar,exam.title_en);$("osExamResult").textContent="";renderExamQuestions();
@@ -104,7 +124,7 @@ async function submitExam(){if(!S.chosenExam||!S.user)return;
  if(S.questions.some(q=>!Number.isInteger(S.answers[q.id]))){$("osExamResult").textContent=tr("أجب عن كل الأسئلة قبل التسليم.","Answer every question before submitting.");return}
  if(!confirm(tr("هل تريد تسليم الاختبار نهائيًا؟ لا يمكنك إعادته.","Submit this attempt permanently? It cannot be repeated.")))return;
  const btn=$("osSubmitExam");btn.disabled=true;
- try{const result=await q(db.rpc("nabd_os_submit_exam",{p_exam_id:S.chosenExam.id,p_answers:S.answers}));$("osExamResult").textContent=tr("تم تسجيل الدرجة: ","Grade recorded: ")+result.score+"/"+result.max_score+" · "+(result.passed?tr("ناجح","Passed"):tr("لم يحقق الحد","Below passing threshold"));$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={};await loadCollections()}catch(e){$("osExamResult").textContent=errMessage(e);report(errMessage(e),true)}finally{btn.disabled=false}}
+ try{const result=await q(db.rpc("nabd_os_submit_exam",{p_exam_id:S.chosenExam.id,p_answers:S.answers}));$("osExamResult").textContent=tr("تم تسجيل الدرجة: ","Grade recorded: ")+result.score+"/"+result.max_score+" · "+(result.passed?tr("ناجح","Passed"):tr("لم يحقق الحد","Below passing threshold"));$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={};await loadCollections();report(tr("تم تسليم الاختبار وتصحيحه وحفظ درجتك.","Exam submitted, graded and saved."))}catch(e){$("osExamResult").textContent=errMessage(e);report(errMessage(e),true)}finally{btn.disabled=false}}
 function renderCredentials(){updateSelect("osCredentialCourse",S.enrollments.map(x=>[x.course_id,titleOfCourse(x.course_id)]));
  const out=$("osCredentialRequests");clear(out);const own=S.requests.filter(x=>x.student_id===S.user.id);if(!own.length){empty(out,"لم ترسل طلبات مراجعة شهادات بعد.","No credential eligibility requests yet.");return}
  own.forEach(x=>out.append(newRow(titleOfCourse(x.course_id),safeDate(x.created_at)+(x.reviewer_note?" · "+x.reviewer_note:""),x.status).row))}
