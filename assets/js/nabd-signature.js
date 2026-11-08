@@ -8,6 +8,7 @@
   ["campus.html","الحرم الخفيف","Lite Campus"],
   ["portal.html","بوابة الطالب","Student Portal"],
   ["university-os.html","المقررات والاختبارات V22","Academic OS V22"],
+  ["nabd-2050.html","مختبر نبض 2050","NABD 2050 Future Lab"],
   ["academy.html","مسارات الأكاديمية","Pathways"],
   ["lecturers.html","استوديو المحاضر","Faculty Studio"],
   ["skill-passport.html","جواز المهارات","Skill Passport"],
