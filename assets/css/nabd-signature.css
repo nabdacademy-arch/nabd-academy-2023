@@ -71,3 +71,9 @@
 .nfs-home .site-header{border-bottom:1px solid rgba(72,191,204,.18)}
 .nfs-home .nfs-hero{scroll-margin-top:80px}
 .nfs-home #nabd-unified-campus{scroll-margin-top:78px}
+
+/* Cross-campus search launch for sections that do not include a built-in search button. */
+.nfs-floating-search{position:fixed;z-index:2010;inset-inline-end:18px;bottom:calc(18px + env(safe-area-inset-bottom));padding:12px 18px;min-height:45px;border:1px solid rgba(91,218,229,.55);border-radius:99px;background:linear-gradient(120deg,#0d3b53,#0b6674);box-shadow:0 12px 32px rgba(0,0,0,.27);color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer}
+.nfs-floating-search:focus-visible{outline:3px solid #ffcd78;outline-offset:3px}
+@media(max-width:600px){.nfs-floating-search{inset-inline-end:12px;bottom:calc(12px + env(safe-area-inset-bottom));padding:10px 14px;font-size:12px}}
+@media print{.nfs-floating-search{display:none!important}}
