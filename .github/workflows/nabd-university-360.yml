@@ -1,0 +1,59 @@
+name: NABD UNIVERSITY 360 verified release
+on:
+  pull_request:
+    paths:
+      - 'nabd-university-360.html'
+      - 'nabd-360-lecturers.html'
+      - 'index.html'
+      - 'admin.html'
+      - 'assets/js/nabd-360-*'
+      - 'assets/css/nabd-360-*'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/nabd-signature.js'
+      - 'supabase/migrations/20261108_nabd_university_360_role_guard_and_learning.sql'
+      - 'tests/nabd-360-*'
+      - '.github/workflows/nabd-university-360.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-university-360.html'
+      - 'nabd-360-lecturers.html'
+      - 'index.html'
+      - 'admin.html'
+      - 'assets/js/nabd-360-*'
+      - 'assets/css/nabd-360-*'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/nabd-signature.js'
+      - 'supabase/migrations/20261108_nabd_university_360_role_guard_and_learning.sql'
+      - 'tests/nabd-360-*'
+      - '.github/workflows/nabd-university-360.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check scripts and RLS boundaries
+        run: |
+          node --check assets/js/nabd-360-student.js
+          node --check assets/js/nabd-360-admin.js
+          node tests/nabd-360-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run learner, lecturer, director and AI opt-in checks
+        run: node tests/nabd-360-browser.cjs
