@@ -60,7 +60,7 @@ function renderTickets(host){
  for(const ticket of S.tickets){
   const b=make("button","no-ticket");b.type="button";b.setAttribute("aria-current",String(S.current===ticket.id));
   b.append(make("strong","",ticket.subject),make("small","",ticket.status+" · "+today(ticket.updated_at)),make("small","",ticket.id.slice(0,8)));
-  b.addEventListener("click",()=>{S.current=ticket.id;S.request++;draw();void showTicket(ticket.id)});list.append(b)
+  b.addEventListener("click",()=>{S.current=ticket.id;S.request++;draw()});list.append(b)
  }
  if(S.current&&S.tickets.some(t=>t.id===S.current))void showTicket(S.current);
  else detail.append(make("p","no-empty","اختر تذكرة لقراءة الرسائل والرد عليها."))
@@ -143,6 +143,7 @@ async function createSession(form,submit){
  if(S.busy)return;
  const val=id=>$(id,form)?.value.trim()||"";
  const date=new Date(val("no-time"));const duration=Number(val("no-duration"));
+ if(!Number.isFinite(date.getTime())){note("أدخل موعدًا صالحًا للمحاضرة.",true);return}
  const fields={title_ar:val("no-title-ar"),title_en:val("no-title-en"),topic_ar:val("no-topic-ar"),topic_en:val("no-topic-en"),speaker_name:val("no-speaker"),speaker_affiliation:val("no-affiliation"),scheduled_at:date.toISOString(),duration_minutes:duration,status:"draft"};
  if(!$("no-speaker-ok",form).checked||Object.values(fields).some(v=>v===null||v==="")||!Number.isFinite(date.getTime())||date<=new Date()||duration<30||duration>180||fields.title_ar.length<4||fields.title_en.length<4){note("راجع البيانات والوقت وموافقة عرض معلومات المحاضر.",true);return}
  S.busy=true;submit.disabled=true;note("جارٍ حفظ المسودة في جدول المحاضرات…");
@@ -189,7 +190,7 @@ async function renderAcademic(host){
  tasks.forEach(([title,table,col,href],i)=>{const row=make("article","no-metric"),count=checks[i].status==="fulfilled"?checks[i].value:null;
  row.append(make("strong","",title),make("span",count===null?"تعذر التحقق":String(count)),link(href,"افتح البوابة ↗"));list.append(row)});
  const instructions=make("p","no-warning","المقررات والمحاضرون والاختبارات الرسمية تحتاج أشخاصًا حقيقيين ومراجعة علمية. لا نملأها ببيانات افتراضية. اختبار الأدوار والأمان يحتاج بيئة اختبار وموافقات.");
- host.append(instructions,link("admin.html#launch-readiness","لوحة الإطلاق النهائي ↗"),link("docs/NABD_FINAL_LAUNCH_2026-11-08.md","معايير التشغيل ↗"))
+ host.append(instructions,link("admin.html#launch-readiness","لوحة الإطلاق النهائي ↗"),link("https://github.com/nabdacademy-arch/nabd-academy-2023/blob/main/docs/NABD_FINAL_LAUNCH_2026-11-08.md","معايير التشغيل ↗"))
 }
 function renderAI(host){
  host.append(make("h3","","فحص الأستاذ الذكي — سؤال تجريبي عبر حساب المدير"));
