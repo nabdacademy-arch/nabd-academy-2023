@@ -1,0 +1,52 @@
+name: NABD Smart Messenger
+on:
+  pull_request:
+    paths:
+      - 'assets/js/nabd-assistant.js'
+      - 'assets/css/nabd-assistant.css'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'atlas/**'
+      - 'v11/index.html'
+      - 'tests/nabd-chat-*'
+      - '.github/workflows/nabd-chat.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/js/nabd-assistant.js'
+      - 'assets/css/nabd-assistant.css'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'atlas/**'
+      - 'v11/index.html'
+      - 'tests/nabd-chat-*'
+      - '.github/workflows/nabd-chat.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate messenger source and integration
+        run: |
+          node --check assets/js/nabd-assistant.js
+          node tests/nabd-chat-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify academy guide, authenticated AI, mobile and safety
+        run: node tests/nabd-chat-browser.cjs

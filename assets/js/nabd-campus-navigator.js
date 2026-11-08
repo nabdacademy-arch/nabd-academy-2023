@@ -1,3 +1,11 @@
+/* Load NABD Messenger once from either of the shared public navigation systems. */
+(()=>{const source=document.currentScript?.src;
+if(!source||window.__NABD_MESSENGER_REQUESTED)return;
+window.__NABD_MESSENGER_REQUESTED=true;
+const script=document.createElement("script");script.src=new URL("nabd-assistant.js?v=1",source).href;
+script.defer=true;document.head.append(script);
+})();
+
 /* NABD Cross-Campus Navigator — public routes only; no account data or browser storage. */
 (()=>{"use strict";
 if(document.getElementById("ncn-open"))return;
