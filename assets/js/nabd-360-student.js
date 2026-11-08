@@ -92,7 +92,7 @@ async function loadStudent(){
   const key=targets[i][0];state[key]=v.status==="fulfilled"&&!v.value.error?(key==="plans"?v.value.data:v.value.data||[]):null
  });
  $("n360-student-app").hidden=false;
- note("n360-auth",tr("تم التحقق من حسابك؛ معروضة سجلاتك المخولة فقط.","Authenticated. Only records authorised for your account are shown."),"",false);
+ note("n360-auth","تم التحقق من حسابك؛ معروضة سجلاتك المخولة فقط.","Authenticated. Only records authorised for your account are shown.");
  planControls();renderStats();renderRecommendations();renderAchievements()
 }
 async function savePlan(e){
