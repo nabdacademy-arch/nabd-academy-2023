@@ -15,9 +15,9 @@ const safeDate=value=>{try{return value?new Intl.DateTimeFormat(S.language==="ar
 function report(message,bad=false){const x=$("osGlobalStatus");x.textContent=message;x.classList.toggle("error",bad)}
 function empty(target,ar,en){clear(target);target.append(elt("p","os-empty",tr(ar,en)))}
 function titleOfCourse(id){const c=S.courses.find(x=>x.id===id);return c?loc(c.title_ar,c.title_en):id?.slice(0,8)+"…"}
-function labelStatus(status){const map={draft:["مسودة","Draft"],published:["منشور","Published"],closed:["مغلق","Closed"],enrolled:["مسجل","Enrolled"],active:["نشط","Active"],completed:["مكتمل","Completed"],pending:["بانتظار المراجعة","Pending"],under_review:["قيد المراجعة","Under review"],eligible:["مؤهل للمراجعة النهائية","Eligibility reviewed"],declined:["مرفوض","Declined"],submitted:["مقدم","Submitted"],in_review:["قيد التقييم","In review"],accepted:["معتمد إداريًا","Admin reviewed"],present:["حاضر","Present"],absent:["غائب","Absent"],excused:["بعذر","Excused"],late:["متأخر","Late"]};return tr(...(map[status]||[status,status]))}
+function labelStatus(status){const map={draft:["مسودة","Draft"],published:["منشور","Published"],upcoming:["لم يبدأ","Upcoming"],closed:["مغلق","Closed"],enrolled:["مسجل","Enrolled"],active:["نشط","Active"],completed:["مكتمل","Completed"],pending:["بانتظار المراجعة","Pending"],under_review:["قيد المراجعة","Under review"],eligible:["مؤهل للمراجعة النهائية","Eligibility reviewed"],declined:["مرفوض","Declined"],submitted:["مقدم","Submitted"],in_review:["قيد التقييم","In review"],accepted:["معتمد إداريًا","Admin reviewed"],present:["حاضر","Present"],absent:["غائب","Absent"],excused:["بعذر","Excused"],late:["متأخر","Late"]};return tr(...(map[status]||[status,status]))}
 function formatPercent(a,b){return b>0?Math.round(a/b*100)+"%":"—"}
-function newChip(status){const c=elt("span","os-chip"+(["pending","in_review","draft"].includes(status)?" gold":""),labelStatus(status));return c}
+function newChip(status){const c=elt("span","os-chip"+(["pending","in_review","draft","upcoming"].includes(status)?" gold":""),labelStatus(status));return c}
 function newRow(heading,description,tag){const row=elt("article","os-list-row"),body=elt("div");if(tag)body.append(newChip(tag));body.append(elt("h5","",heading),elt("p","",description));row.append(body);return {row,body}}
 function runButton(text,fn,variant="secondary"){const b=elt("button","os-button "+variant,text);b.type="button";b.addEventListener("click",async()=>{if(b.disabled)return;b.disabled=true;try{await fn()}catch(e){report(errMessage(e),true)}finally{b.disabled=false}});return b}
 function updateSelect(id,rows,selected){const el=$(id);if(!el)return;const old=selected??el.value;clear(el);if(!rows.length){const opt=elt("option","",tr("لا توجد خيارات متاحة","No available options"));opt.value="";el.append(opt);el.disabled=true;return}el.disabled=false;rows.forEach(([value,label])=>{const op=elt("option","",label);op.value=value;el.append(op)});if(rows.some(x=>x[0]===old))el.value=old}
@@ -101,7 +101,7 @@ function renderExamList(){
  published.forEach(x=>{
   const ownAttempt=S.attempts.find(a=>a.exam_id===x.id&&a.student_id===S.user.id),windowState=examAvailability(x);
   const when=windowState==="upcoming"?tr("يفتح: ","Opens: ")+safeDateTime(x.opens_at):windowState==="closed"?tr("انتهى: ","Closed: ")+safeDateTime(x.closes_at):tr("الاختبار متاح الآن","Exam is available now");
-  const {row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"% · "+when,ownAttempt?"completed":windowState==="open"?"published":"closed");
+  const {row}=newRow(loc(x.title_ar,x.title_en),titleOfCourse(x.course_id)+" · "+tr("النجاح: ","Passing score: ")+x.passing_percent+"% · "+when,ownAttempt?"completed":windowState==="open"?"published":windowState);
   const actions=elt("div","os-actions");
   if(ownAttempt)actions.append(elt("span","os-chip",tr("النتيجة ","Score ")+ownAttempt.score+"/"+ownAttempt.max_score));
   else if(windowState==="open")actions.append(runButton(tr("بدء الاختبار","Start exam"),()=>openExam(x.id),"primary"));
