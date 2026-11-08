@@ -14,6 +14,8 @@ const data=[
 ["portal","study","بوابة الطالب","Student portal","حسابي مقرراتي الشهادات login", "My courses, certificates and account","portal.html"],
 ["university","study","نظام الجامعة V22","University OS V22","مقررات اختبارات درجات حضور شهادات","Academic courses, exams, grades, attendance","university-os.html"],
 ["one","study","NABD ONE · الحرم المتكامل","NABD ONE Campus","مقررات محاضرات مباشرة استاد ذكي مراسلات جودة","Courses, live lectures, AI Professor, messaging, quality","nabd-one.html"],
+["360","study","NABD UNIVERSITY 360","NABD UNIVERSITY 360","خطة الدراسة الشخصية الأستاذ إنجازات المسار الجامعي الدفعة التجريبية","Personal learning journey, verified achievements and pilot readiness","nabd-university-360.html"],
+["volunteer-faculty","faculty","شبكة المحاضرين المتطوعين","Volunteer Faculty Network","تطوع دولي محاضر جامعة تدريس نموذج","Volunteer lecturer applications and review","nabd-360-lecturers.html"],
 ["connect","management","NABD CONNECT · مراسلاتي","NABD CONNECT · My Tickets","رسائل الإدارة تذاكر الدعم ردود الطلاب","Secure private support tickets and replies","nabd-connect.html"],
 ["future","study","مختبر نبض 2050","NABD 2050 Future Lab","آلة الزمن الطبي الواقع المعزز المجسمات رحلة التعلم","Medical time machine, augmented reality and connected learning journey","nabd-2050.html"],
 ["campus","study","الحرم الرقمي الشخصي","My digital campus","ملف الطالب محاضرات تسجيل","Personal learning and lecture workspace","nabd-campus.html"],

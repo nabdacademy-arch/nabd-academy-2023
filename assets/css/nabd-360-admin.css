@@ -1,0 +1,46 @@
+/* NABD UNIVERSITY 360 director module: scoped to existing admin workspace */
+#nabd-university-360{direction:rtl;text-align:start;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;color:#153c49;line-height:1.72}
+#nabd-university-360 *{box-sizing:border-box}
+#nabd-university-360 h2,#nabd-university-360 h3,#nabd-university-360 h4{color:#074754}
+#nabd-university-360 .n360adm-head{display:flex;justify-content:space-between;gap:19px;align-items:start;flex-wrap:wrap;padding:12px 0 23px;border-bottom:1px solid #d0e4e7}
+#nabd-university-360 .n360adm-eyebrow{font-size:10px;color:#07828f;letter-spacing:.15em;font-weight:900}
+#nabd-university-360 .n360adm-head h2{font-size:clamp(22px,2.5vw,31px);margin:7px 0}
+#nabd-university-360 .n360adm-head p{font-size:13px;color:#547985;max-width:780px;line-height:1.9}
+#nabd-university-360 .n360adm-actions{display:flex;flex-wrap:wrap;align-items:start;gap:7px}
+#nabd-university-360 .n360adm-link{display:inline-block;border-radius:9px;background:#eaf7f6;border:1px solid #b8d9df;padding:8px 11px;margin:2px;color:#066c77;text-decoration:none;font-size:12px;font-weight:800}
+#nabd-university-360 .n360adm-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 14px}
+#nabd-university-360 .n360adm-btn,#nabd-university-360 .n360adm-tab{border:1px solid #b6d7db;background:#e9f7f8;color:#0a6675;border-radius:10px;padding:9px 13px;min-height:42px;font-size:12px;font-weight:850;cursor:pointer}
+#nabd-university-360 .n360adm-btn{background:#076e7d;border-color:#076e7d;color:#fff}
+#nabd-university-360 .n360adm-tab.active{background:linear-gradient(125deg,#076e7d,#138b93);border-color:#088d97;color:#fff}
+#nabd-university-360 button:focus-visible,#nabd-university-360 a:focus-visible,#nabd-university-360 textarea:focus-visible,#nabd-university-360 select:focus-visible{outline:3px solid #e8a341;outline-offset:2px}
+#nabd-university-360 button:disabled{opacity:.6;cursor:wait}
+#nabd-university-360 .n360adm-status{min-height:27px;color:#487480;font-size:12px}
+#nabd-university-360 .n360adm-status.bad,#nabd-university-360 .n360adm-denied{background:#fff1f0;color:#9a3833;border:1px solid #efbfb9;border-radius:10px;padding:13px}
+#nabd-university-360 .n360adm-body>h3{font-size:21px}
+#nabd-university-360 .n360adm-hint{font-size:13px;color:#617c83;line-height:1.9}
+#nabd-university-360 .n360adm-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+#nabd-university-360 .n360adm-metric{display:flex;min-width:0;flex-direction:column;gap:8px;border:1px solid #c5e0e2;background:linear-gradient(142deg,#fff,#f3fbfa);border-radius:14px;padding:15px}
+#nabd-university-360 .n360adm-metric-title{font-size:12px;font-weight:800;color:#2a6570}
+#nabd-university-360 .n360adm-metric strong{font-size:30px;line-height:1.3;color:#056f7a}
+#nabd-university-360 .n360adm-metric small{font-size:11px;color:#64818b;line-height:1.5}
+#nabd-university-360 .n360adm-hold{margin:20px 0;border:1px solid #f0d39e;background:#fffaee;border-radius:13px;padding:16px;color:#80612f;font-size:12px}
+#nabd-university-360 .n360adm-hold strong{font-size:15px;color:#805820}
+#nabd-university-360 .n360adm-hold p{margin:7px 0 0;line-height:1.9}
+#nabd-university-360 .n360adm-links{display:flex;gap:9px;flex-wrap:wrap}
+#nabd-university-360 .n360adm-checks{padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:17px 0}
+#nabd-university-360 .n360adm-check{min-width:0;background:#fbfefd;border:1px solid #d4e5e5;border-radius:13px;padding:17px;display:flex;flex-direction:column;gap:8px}
+#nabd-university-360 .n360adm-check strong{color:#164956;font-size:14px}
+#nabd-university-360 .n360adm-check p{color:#637e86;font-size:12px;margin:0}
+#nabd-university-360 .n360adm-pending{align-self:start;border:1px solid #f2dcba;border-radius:40px;background:#fff6e8;color:#996321;padding:4px 9px;font-size:10px;font-weight:800}
+#nabd-university-360 .n360adm-applications{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+#nabd-university-360 .n360adm-application{min-width:0;border:1px solid #d5e8e7;border-radius:15px;background:#fbfefe;padding:18px;display:flex;flex-direction:column;gap:8px}
+#nabd-university-360 .n360adm-application h4{font-size:17px;margin:0}
+#nabd-university-360 .n360adm-application p{font-size:12px;color:#496e7a;line-height:1.7;margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+#nabd-university-360 .n360adm-application>small{font-size:11px;color:#64828a}
+#nabd-university-360 .n360adm-formline{display:grid;gap:11px;border-top:1px solid #d1e5e6;padding-top:14px}
+#nabd-university-360 .n360adm-formline label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:750;color:#245a67}
+#nabd-university-360 .n360adm-select,#nabd-university-360 .n360adm-textarea{width:100%;background:#fff;color:#174d5b;border:1px solid #a9c9d1;border-radius:9px;padding:10px;resize:vertical;font-size:12px}
+#nabd-university-360 .n360adm-empty{color:#617d87;font-size:13px;padding:20px}
+@media(max-width:1050px){#nabd-university-360 .n360adm-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:750px){#nabd-university-360 .n360adm-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#nabd-university-360 .n360adm-applications,#nabd-university-360 .n360adm-checks{grid-template-columns:1fr}}
+@media(max-width:430px){#nabd-university-360 .n360adm-metrics{grid-template-columns:1fr}#nabd-university-360 .n360adm-head{gap:10px}}
