@@ -25,9 +25,9 @@ async function run(){
    assert.ok(Math.abs(position.screen-position.rect)<=22,"Right-hand launcher: "+JSON.stringify(position));
    await page.locator("#nb-chat-launch").click();
    await assertVisible(page,"#nb-chat-panel");
+   assert.equal(await page.evaluate(()=>document.activeElement?.id==="nb-chat-input"),true,"Focus on composer upon opening");
    if((await page.locator("#nb-chat-panel").getAttribute("dir"))==="ltr")await page.locator("#nb-chat-lang").click();
    assert.equal(await page.locator("#nb-chat-panel").getAttribute("dir"),"rtl","Start Arabic guide checks in Arabic");
-   assert.equal(await page.evaluate(()=>document.activeElement?.id==="nb-chat-input"),true,"Focus on composer");
    await page.locator("#nb-chat-input").fill("شهادة");
    await page.locator("#nb-chat-send").click();
    await page.locator('.nb-chat-bot .nb-chat-link[href*="#verify"]').last().waitFor();
