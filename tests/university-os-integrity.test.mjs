@@ -9,7 +9,7 @@ const html=read("university-os.html"),js=read("assets/js/university-os.js"),css=
 new Script(js,{filename:"university-os.js"});checks++;
 check(css.includes("@media(max-width:540px)")&&css.includes("prefers-reduced-motion"),"Responsive academic UI");
 check(html.includes('name="robots" content="noindex,nofollow"'),"Personal academic workspace is not indexed");
-check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=2'),"Uses existing browser auth client");
+check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=3'),"Uses existing browser auth client");
 check(!/(?:service_role|sb_secret_|SUPABASE_SERVICE_ROLE_KEY)/i.test(js+html),"No secret/server role key in UI");
 check(!/\b(?:localStorage|sessionStorage)\b/.test(js),"No local persistence of user grades or private records");
 check(js.includes("nabd_os_submit_exam")&&js.includes("db.rpc("),"Exam submitted to server for scoring");
@@ -17,6 +17,11 @@ check(html.includes('id="osAttendanceStudent" required disabled')&&html.includes
 check(js.includes('db.rpc("nabd_os_course_roster"')&&js.includes('S.roster.some(r=>r.student_id===studentId)'),"Attendance restricted to the authorised roster with a second client-side guard");
 check(!/\.from\("nabd_os_exam_keys"\)/.test(js),"Student-facing JS never fetches answer keys");
 check(js.includes('window.nabdSupabase')&&js.includes('db.auth.getUser'),"Account identity verified with backend");
+check(js.includes("function resetPrivateState()")&&js.includes('if(error||!data?.user){resetPrivateState()'),"Session invalidation clears account data");
+check(js.includes('else{S[name]=[];failed.push(name)}'),"Failed collection requests do not retain stale records");
+check(js.includes('navigate(allowed.includes(targetView)?targetView:"study")'),"Revoked staff roles fall back to the student workspace");
+check(js.includes('if(event==="SIGNED_OUT"){resetPrivateState()'),"Cross-tab sign-out clears private workspace");
+check(js.includes('examAvailability(x)==="open"')&&js.includes('if(examAvailability(exam)!=="open"'),"Upcoming and closed exams cannot launch in the client");
 const tabs=["study","exams","credentials","research","faculty","admin","bank","review","quality"];
 for(const pane of tabs){check(html.includes('data-os-view="'+pane+'"'),"Tab "+pane+" missing");check(html.includes('data-os-panel="'+pane+'"'),"Pane "+pane+" missing")}
 for(const id of ["osLoginForm","osCourses","osModules","osAttendance","osExamList","osGrades","osExamQuestions","osCredentialForm","osResearchForm","osModuleForm","osAttendanceForm","osAssignForm","osCreateCourseForm","osCreateExamForm","osQuestionForm","osAdminCerts","osAdminResearch","osQualityList"])check(html.includes('id="'+id+'"'),"Missing "+id);
