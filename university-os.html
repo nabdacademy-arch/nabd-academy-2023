@@ -1,0 +1,136 @@
+<!doctype html><html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061726">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="NABD University OS, a permissioned academic learning management system for NABD Academy.">
+<title>NABD UNIVERSITY OS · V17–V22 | أكاديمية نبض</title>
+<link rel="icon" href="v11/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/university-os.css?v=1">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="assets/js/config.js"></script>
+<script defer src="assets/js/supabase-client.js"></script>
+<script defer src="assets/js/university-os.js?v=1"></script>
+</head>
+<body>
+<a href="#osMain" class="os-skip" data-ar="انتقل للمحتوى" data-en="Skip to content">انتقل للمحتوى</a>
+<header class="os-header"><div class="os-container os-header-row">
+<a class="os-brand" href="index.html"><span class="os-symbol">N<span>✦</span></span><span><strong>NABD <em>UNIVERSITY OS</em></strong><small>ACADEMIC OPERATIONS · V17—V22</small></span></a>
+<nav aria-label="Primary" class="os-topnav">
+<a href="academy.html" data-ar="المسارات" data-en="Pathways">المسارات</a>
+<a href="portal.html" data-ar="الطالب" data-en="Student">الطالب</a>
+<a href="lecturers.html" data-ar="المحاضر" data-en="Faculty">المحاضر</a>
+<a href="nabd-global-research.html" data-ar="البحث" data-en="Research">البحث</a>
+</nav>
+<button type="button" id="osLang" class="os-lang">EN</button>
+</div></header>
+<main id="osMain">
+<section class="os-hero"><div class="os-container os-hero-grid">
+<div><span class="os-eyebrow"><span class="os-dot"></span>NABD / THE LEARNING OPERATING SYSTEM</span>
+<h1 data-ar="أكاديمية مترابطة. تعليم يمكن تتبّعه." data-en="One academy. Trackable learning.">أكاديمية مترابطة. تعليم يمكن تتبّعه.</h1>
+<p data-ar="من تسجيل المقرر إلى وحداته ومحاضريه واختباراته ودرجاته، ثم مراجعة الشهادات والبحث العلمي. عمليات حقيقية محمية بصلاحيات قاعدة البيانات — وليس أزرارًا شكلية." data-en="From course enrolment to teaching modules, faculty assignments and server-graded exams, then credential reviews and research projects. Real workflows governed by database permissions.">من تسجيل المقرر إلى وحداته ومحاضريه واختباراته ودرجاته، ثم مراجعة الشهادات والبحث العلمي. عمليات حقيقية محمية بصلاحيات قاعدة البيانات — وليس أزرارًا شكلية.</p>
+<div class="os-release"><span>V17 · STUDY</span><span>V18 · EXAMS</span><span>V19 · CREDENTIALS</span><span>V20 · FACULTY</span><span>V21 · RESEARCH</span><span>V22 · TRUST</span></div>
+</div><div class="os-hero-visual" aria-hidden="true"><div class="os-orbit o1"></div><div class="os-orbit o2"></div><div class="os-hero-mark">N</div><span class="o-t t1">LEARNING</span><span class="o-t t2">ASSESSMENTS</span><span class="o-t t3">RESEARCH</span><span class="o-t t4">GOVERNANCE</span></div></div></section>
+<div class="os-container os-content">
+<div class="os-notice" id="osGlobalStatus" role="status" aria-live="polite" data-ar="الصفحة جاهزة. جارٍ التحقق من حسابك وصلاحياتك." data-en="Workspace ready. Checking your account and permissions.">الصفحة جاهزة. جارٍ التحقق من حسابك وصلاحياتك.</div>
+<section class="os-auth" id="osGate" hidden aria-labelledby="osGateTitle"><div class="os-card"><div class="os-kicker">AUTHENTICATED ACADEMIC ACCESS</div><h2 id="osGateTitle" data-ar="ادخل بحسابك الأكاديمي." data-en="Sign in with your academy account.">ادخل بحسابك الأكاديمي.</h2><p data-ar="يمكنك استخدام الحساب نفسه الخاص ببوابة الطالب. لا نعرض بيانات المقررات والدرجات والتدريس إلا بعد التحقق من الجلسة والصلاحيات." data-en="Use the same account as the Student Portal. Course details, grades and staff records are shown only after session and permission checks.">يمكنك استخدام الحساب نفسه الخاص ببوابة الطالب. لا نعرض بيانات المقررات والدرجات والتدريس إلا بعد التحقق من الجلسة والصلاحيات.</p>
+<form id="osLoginForm" class="os-form os-login"><label><span data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span><input id="osEmail" type="email" autocomplete="username" required></label><label><span data-ar="كلمة المرور" data-en="Password">كلمة المرور</span><input id="osPassword" type="password" autocomplete="current-password" required></label><button type="submit" class="os-button primary" data-ar="تسجيل الدخول ←" data-en="Sign in →">تسجيل الدخول ←</button></form>
+<p class="os-small" data-ar="لإنشاء حساب أو استعادة كلمة المرور، استخدم بوابة الطالب." data-en="To register or reset your password, use the existing Student Portal.">لإنشاء حساب أو استعادة كلمة المرور، استخدم بوابة الطالب.</p><a class="os-text-link" href="portal.html" data-ar="انتقل إلى بوابة الطالب ←" data-en="Open Student Portal →">انتقل إلى بوابة الطالب ←</a>
+</div></section>
+<section id="osApp" hidden aria-labelledby="osWorkTitle"><div class="os-work-heading"><div><div class="os-kicker">NABD / PERSONAL ACADEMIC WORKSPACE</div><h2 id="osWorkTitle" data-ar="مساحة العمل الأكاديمية" data-en="Academic workspace">مساحة العمل الأكاديمية</h2><p id="osIdentity" class="os-muted"></p></div><div class="os-actions"><button type="button" class="os-button secondary" id="osRefresh" data-ar="تحديث البيانات ↻" data-en="Refresh data ↻">تحديث البيانات ↻</button><button type="button" class="os-button ghost" id="osLogout" data-ar="تسجيل الخروج" data-en="Sign out">تسجيل الخروج</button></div></div>
+<div class="os-metrics" id="osMetrics" aria-live="polite"></div>
+<div class="os-work-grid"><aside class="os-side"><div class="os-kicker" data-ar="مساحات العمل" data-en="WORKSPACES">مساحات العمل</div><nav id="osViews" class="os-views" aria-label="Academic role-specific sections">
+<button class="os-view-button active" type="button" data-os-view="study"><span>◈</span><strong data-ar="مقرراتي V17" data-en="My Courses V17">مقرراتي V17</strong></button>
+<button class="os-view-button" type="button" data-os-view="exams"><span>✳</span><strong data-ar="الاختبارات V18" data-en="Exams V18">الاختبارات V18</strong></button>
+<button class="os-view-button" type="button" data-os-view="credentials"><span>◇</span><strong data-ar="الشهادات V19" data-en="Credentials V19">الشهادات V19</strong></button>
+<button class="os-view-button" type="button" data-os-view="research"><span>⌬</span><strong data-ar="مقترحات البحث V21" data-en="Research V21">مقترحات البحث V21</strong></button>
+<button class="os-view-button" type="button" data-os-view="faculty" data-role="faculty" hidden><span>⌘</span><strong data-ar="استوديو المحاضر V20" data-en="Faculty V20">استوديو المحاضر V20</strong></button>
+<button class="os-view-button" type="button" data-os-view="admin" data-role="admin" hidden><span>▣</span><strong data-ar="إدارة المقررات" data-en="Course Administration">إدارة المقررات</strong></button>
+<button class="os-view-button" type="button" data-os-view="bank" data-role="admin" hidden><span>▤</span><strong data-ar="بنك الأسئلة والاختبارات" data-en="Exam Authoring">بنك الأسئلة والاختبارات</strong></button>
+<button class="os-view-button" type="button" data-os-view="review" data-role="admin" hidden><span>✦</span><strong data-ar="المراجعات والاعتمادات" data-en="Approval Reviews">المراجعات والاعتمادات</strong></button>
+<button class="os-view-button" type="button" data-os-view="quality" data-role="admin" hidden><span>⬡</span><strong data-ar="الجودة والأمان V22" data-en="Quality & Security V22">الجودة والأمان V22</strong></button>
+</nav><div class="os-side-note" data-ar="الصلاحيات تُفرض في قاعدة البيانات حتى لو تغيّرت الواجهة." data-en="Permissions are enforced in the database even if the UI is changed.">الصلاحيات تُفرض في قاعدة البيانات حتى لو تغيّرت الواجهة.</div></aside>
+<div class="os-main">
+<section class="os-view" data-os-panel="study">
+<div class="os-section-head"><span class="os-kicker">V17 / COURSE OPERATIONS</span><h3 data-ar="مقرراتي ووحداتي التعليمية" data-en="My courses and learning units">مقرراتي ووحداتي التعليمية</h3><p data-ar="مقرراتك من قاعدة التسجيل الفعلية، مع الوحدات المنشورة وسجلات الحضور المسموح لك بقراءتها." data-en="Courses from your real enrolments, plus published learning units and attendance records available to your account.">مقرراتك من قاعدة التسجيل الفعلية، مع الوحدات المنشورة وسجلات الحضور المسموح لك بقراءتها.</p></div>
+<div id="osCourses" class="os-card-grid"></div><h4 data-ar="الوحدات والمحاضرات" data-en="Modules and lessons">الوحدات والمحاضرات</h4><div id="osModules" class="os-list"></div><h4 data-ar="سجل الحضور" data-en="Attendance history">سجل الحضور</h4><div id="osAttendance" class="os-list"></div><div class="os-link-row"><a href="portal.html" data-ar="بوابة الطالب الأصلية ↗" data-en="Existing Student Portal ↗">بوابة الطالب الأصلية ↗</a><a href="learning/" data-ar="المكتبة التعليمية ↗" data-en="Learning Universe ↗">المكتبة التعليمية ↗</a></div>
+</section>
+<section class="os-view" data-os-panel="exams" hidden>
+<div class="os-section-head"><span class="os-kicker">V18 / SERVER-GRADED EXAMS</span><h3 data-ar="الاختبارات والدرجات" data-en="Exams and grades">الاختبارات والدرجات</h3><p data-ar="تُحفظ المحاولة وتُحسب درجتها في قاعدة البيانات. لا يملك الطالب حق إنشاء أو تعديل الدرجات، ولا يمكن تكرار المحاولة نفسها." data-en="Exam attempts are scored and stored on the server. Students cannot create or edit grades and cannot repeat the same official attempt.">تُحفظ المحاولة وتُحسب درجتها في قاعدة البيانات. لا يملك الطالب حق إنشاء أو تعديل الدرجات، ولا يمكن تكرار المحاولة نفسها.</p></div>
+<div id="osExamList" class="os-list"></div><div id="osExamPlayer" class="os-exam-player" hidden><h4 id="osExamTitle"></h4><p id="osExamProgress" class="os-muted"></p><div id="osExamQuestions"></div><div class="os-actions"><button type="button" id="osSubmitExam" class="os-button primary" data-ar="تسليم الاختبار للتصحيح" data-en="Submit for grading">تسليم الاختبار للتصحيح</button><button type="button" id="osCloseExam" class="os-button ghost" data-ar="إغلاق" data-en="Close">إغلاق</button></div><div id="osExamResult" class="os-status" role="status" aria-live="polite"></div></div><h4 data-ar="درجاتي المسجلة" data-en="My recorded grades">درجاتي المسجلة</h4><div id="osGrades" class="os-list"></div>
+</section>
+<section class="os-view" data-os-panel="credentials" hidden>
+<div class="os-section-head"><span class="os-kicker">V19 / VERIFIED CREDENTIAL WORKFLOW</span><h3 data-ar="طلبات مراجعة استحقاق الشهادات" data-en="Credential eligibility requests">طلبات مراجعة استحقاق الشهادات</h3><p data-ar="يمكنك إرسال طلب مراجعة للمقرر المسجّل به. لا يصدر هذا الطلب شهادة ولا يتجاوز نظام التحقق الرسمي." data-en="Request an eligibility review for a course you are enrolled in. This never issues a credential or bypasses official verification.">يمكنك إرسال طلب مراجعة للمقرر المسجّل به. لا يصدر هذا الطلب شهادة ولا يتجاوز نظام التحقق الرسمي.</p></div>
+<form id="osCredentialForm" class="os-form os-inline-form"><label><span data-ar="المقرر" data-en="Course">المقرر</span><select id="osCredentialCourse" required></select></label><button type="submit" class="os-button primary" data-ar="إرسال طلب المراجعة ←" data-en="Request review →">إرسال طلب المراجعة ←</button></form><div id="osCredentialRequests" class="os-list"></div><div class="os-link-row"><a href="portal.html" data-ar="شهاداتي الرسمية ↗" data-en="Official certificates ↗">شهاداتي الرسمية ↗</a><a href="index.html#verify" data-ar="التحقق من شهادة ↗" data-en="Certificate verification ↗">التحقق من شهادة ↗</a></div>
+</section>
+<section class="os-view" data-os-panel="research" hidden>
+<div class="os-section-head"><span class="os-kicker">V21 / RESEARCH PROJECT PIPELINE</span><h3 data-ar="مقترحاتي البحثية" data-en="My research proposals">مقترحاتي البحثية</h3><p data-ar="قدّم فكرة تعليمية بحثية عامة للمراجعة، دون بيانات مرضى أو مشاركين. المراجعة الإدارية ليست موافقة أخلاقيات بحث علمي." data-en="Submit a general research concept for review without patient or participant data. Administrative review is not research ethics approval.">قدّم فكرة تعليمية بحثية عامة للمراجعة، دون بيانات مرضى أو مشاركين. المراجعة الإدارية ليست موافقة أخلاقيات بحث علمي.</p></div>
+<form id="osResearchForm" class="os-form">
+<label><span data-ar="العنوان" data-en="Title">العنوان</span><input id="osResearchTitle" required maxlength="200" minlength="8"></label>
+<label><span data-ar="سؤال البحث" data-en="Research question">سؤال البحث</span><textarea id="osResearchQuestion" required maxlength="1000" minlength="10" rows="3"></textarea></label>
+<label><span data-ar="المنهجية المقترحة" data-en="Proposed methods">المنهجية المقترحة</span><textarea id="osResearchMethod" maxlength="2000" rows="3"></textarea></label>
+<button class="os-button primary" type="submit" data-ar="قدّم المقترح للمراجعة" data-en="Submit proposal for review">قدّم المقترح للمراجعة</button></form><h4 data-ar="حالة مقترحاتي" data-en="Proposal status">حالة مقترحاتي</h4><div id="osResearchList" class="os-list"></div><div class="os-link-row"><a href="research-starter-lab.html" data-ar="مختبر الباحث الناشئ ↗" data-en="Research Starter Lab ↗">مختبر الباحث الناشئ ↗</a><a href="nabd-global-research.html" data-ar="شبكة البحث العلمي ↗" data-en="Global Research Network ↗">شبكة البحث العلمي ↗</a></div>
+</section>
+<section class="os-view" data-os-panel="faculty" hidden>
+<div class="os-section-head"><span class="os-kicker">V20 / ASSIGNED FACULTY</span><h3 data-ar="إدارة وحدات المقرر والحضور" data-en="Course modules and attendance">إدارة وحدات المقرر والحضور</h3><p data-ar="يستطيع المحاضر إدارة الوحدات في المقررات التي كلّفته بها الإدارة فقط؛ قاعدة البيانات تمنع التعديل خارج التكليف." data-en="Faculty can manage modules only for admin-assigned courses. Database policies block changes outside authorised assignments.">يستطيع المحاضر إدارة الوحدات في المقررات التي كلّفته بها الإدارة فقط؛ قاعدة البيانات تمنع التعديل خارج التكليف.</p></div>
+<div id="osFacultyAssignments" class="os-list"></div>
+<div class="os-two">
+<form class="os-form" id="osModuleForm"><h4 data-ar="إنشاء وحدة تعلم" data-en="Create a learning unit">إنشاء وحدة تعلم</h4>
+<label><span data-ar="المقرر المكلّف به" data-en="Assigned course">المقرر المكلّف به</span><select id="osModuleCourse" required></select></label>
+<label><span data-ar="عنوان الوحدة بالعربية" data-en="Arabic unit title">عنوان الوحدة بالعربية</span><input id="osModuleTitle" required minlength="3" maxlength="200"></label>
+<label><span data-ar="عنوان بالإنجليزية" data-en="English title">عنوان بالإنجليزية</span><input id="osModuleTitleEn" maxlength="200"></label>
+<label><span data-ar="ملخص الوحدة" data-en="Summary">ملخص الوحدة</span><textarea id="osModuleSummary" maxlength="2000" rows="3"></textarea></label>
+<label><span data-ar="رابط مصدر موثوق (اختياري، HTTPS)" data-en="Resource link (optional HTTPS)">رابط مصدر موثوق (اختياري، HTTPS)</span><input id="osModuleLink" type="url" maxlength="1200" placeholder="https://"></label>
+<label><span data-ar="الحالة" data-en="Status">الحالة</span><select id="osModuleStatus"><option value="draft" data-ar="مسودة" data-en="Draft">مسودة</option><option value="published" data-ar="منشور" data-en="Published">منشور</option></select></label>
+<button class="os-button primary" type="submit" data-ar="حفظ الوحدة" data-en="Save unit">حفظ الوحدة</button></form>
+<form class="os-form" id="osAttendanceForm"><h4 data-ar="تسجيل حضور طالب" data-en="Record student attendance">تسجيل حضور طالب</h4>
+<label><span data-ar="الوحدة" data-en="Unit">الوحدة</span><select id="osAttendanceModule" required></select></label>
+<label><span data-ar="معرّف الطالب المسجّل UUID" data-en="Enrolled student UUID">معرّف الطالب المسجّل UUID</span><input id="osAttendanceStudent" required type="text" pattern="[0-9a-fA-F-]{36}"></label>
+<label><span data-ar="حالة الحضور" data-en="Attendance status">حالة الحضور</span><select id="osAttendanceStatus"><option value="present" data-ar="حاضر" data-en="Present">حاضر</option><option value="late" data-ar="متأخر" data-en="Late">متأخر</option><option value="excused" data-ar="بعذر" data-en="Excused">بعذر</option><option value="absent" data-ar="غائب" data-en="Absent">غائب</option></select></label><button class="os-button primary" type="submit" data-ar="تسجيل الحضور" data-en="Record attendance">تسجيل الحضور</button><p class="os-muted" data-ar="يتم التحقق من تسجيل الطالب في المقرر وصلاحية المحاضر على الخادم." data-en="Course enrolment and faculty permissions are enforced by the database.">يتم التحقق من تسجيل الطالب في المقرر وصلاحية المحاضر على الخادم.</p>
+</form></div>
+<div class="os-link-row"><a href="lecturers.html" data-ar="استوديو المحاضر القديم ↗" data-en="Existing Lecturer Studio ↗">استوديو المحاضر القديم ↗</a></div>
+</section>
+<section class="os-view" data-os-panel="admin" hidden>
+<div class="os-section-head"><span class="os-kicker">V17 / ADMIN COURSE OPERATIONS</span><h3 data-ar="إدارة المقررات والتكليفات" data-en="Course and faculty administration">إدارة المقررات والتكليفات</h3><p data-ar="إنشاء مقررات فعلية بحالة مسودة أولًا، وتكليف المحاضرين المسجّلين، مع إبقاء التحكم النهائي في قاعدة البيانات." data-en="Create actual courses in draft state and assign registered faculty members, with database-level control.">إنشاء مقررات فعلية بحالة مسودة أولًا، وتكليف المحاضرين المسجّلين، مع إبقاء التحكم النهائي في قاعدة البيانات.</p></div>
+<div class="os-two">
+<form id="osCreateCourseForm" class="os-form"><h4 data-ar="إنشاء مقرر حقيقي (مسودة)" data-en="Create a real course (draft)">إنشاء مقرر حقيقي (مسودة)</h4>
+<label><span data-ar="رمز المقرر" data-en="Course code">رمز المقرر</span><input id="osCourseCode" required maxlength="20" pattern="[A-Za-z0-9_-]{3,20}" placeholder="ANAT-101"></label>
+<label><span data-ar="الرابط المختصر" data-en="URL slug">الرابط المختصر</span><input id="osCourseSlug" required maxlength="60" pattern="[a-z0-9-]{3,60}" placeholder="anatomy-foundations"></label>
+<label><span data-ar="عنوان المقرر بالعربية" data-en="Arabic title">عنوان المقرر بالعربية</span><input id="osCourseAr" required maxlength="200"></label>
+<label><span data-ar="عنوان المقرر بالإنجليزية" data-en="English title">عنوان المقرر بالإنجليزية</span><input id="osCourseEn" required maxlength="200"></label>
+<label><span data-ar="ساعات المقرر" data-en="Course hours">ساعات المقرر</span><input type="number" min="1" max="300" id="osCourseHours" value="20"></label><button class="os-button primary" type="submit" data-ar="حفظ المسودة في قاعدة البيانات" data-en="Save course draft to database">حفظ المسودة في قاعدة البيانات</button></form>
+<form id="osAssignForm" class="os-form"><h4 data-ar="تكليف محاضر بمقرر" data-en="Assign a lecturer to a course">تكليف محاضر بمقرر</h4>
+<label><span data-ar="المقرر" data-en="Course">المقرر</span><select id="osAssignCourse" required></select></label>
+<label><span data-ar="معرّف حساب المحاضر UUID" data-en="Lecturer account UUID">معرّف حساب المحاضر UUID</span><input id="osAssignLecturer" required pattern="[0-9a-fA-F-]{36}"></label>
+<p class="os-muted" data-ar="الحساب يجب أن يكون موجودًا. يُفعّل التكليف في نظام V20 واستوديو المحاضر معًا." data-en="The account must exist. This applies the assignment to both V20 and the existing teaching studio.">الحساب يجب أن يكون موجودًا. يُفعّل التكليف في نظام V20 واستوديو المحاضر معًا.</p><button class="os-button primary" type="submit" data-ar="حفظ التكليف" data-en="Assign faculty">حفظ التكليف</button></form></div>
+<h4 data-ar="كتالوج المقررات" data-en="Course catalog">كتالوج المقررات</h4><div id="osAdminCourses" class="os-card-grid"></div>
+<div class="os-link-row"><a href="admin.html" data-ar="لوحة الإدارة الأصلية ↗" data-en="Existing Admin Console ↗">لوحة الإدارة الأصلية ↗</a></div>
+</section>
+<section class="os-view" data-os-panel="bank" hidden>
+<div class="os-section-head"><span class="os-kicker">V18 / EXAM AUTHORING & SERVER GRADING</span><h3 data-ar="إنشاء الاختبار وبنك الأسئلة" data-en="Create exams and question banks">إنشاء الاختبار وبنك الأسئلة</h3><p data-ar="ينشئ المدير الاختبار مسودة ثم يضيف الأسئلة ومفتاح الإجابة في عملية ذرية، وينشره يدويًا بعد المراجعة. مفتاح الإجابات غير مكشوف للطلاب." data-en="Admins create draft exams, add atomic question-and-answer records and publish after manual review. Students cannot access answer keys.">ينشئ المدير الاختبار مسودة ثم يضيف الأسئلة ومفتاح الإجابة في عملية ذرية، وينشره يدويًا بعد المراجعة. مفتاح الإجابات غير مكشوف للطلاب.</p></div>
+<div class="os-two">
+<form id="osCreateExamForm" class="os-form"><h4 data-ar="إنشاء اختبار (مسودة)" data-en="Create exam (draft)">إنشاء اختبار (مسودة)</h4>
+<label><span data-ar="المقرر" data-en="Course">المقرر</span><select id="osExamCourse" required></select></label>
+<label><span data-ar="عنوان الاختبار بالعربية" data-en="Arabic exam title">عنوان الاختبار بالعربية</span><input id="osExamAr" required minlength="3" maxlength="180"></label>
+<label><span data-ar="عنوان بالإنجليزية" data-en="English title">عنوان بالإنجليزية</span><input id="osExamEn" maxlength="180"></label>
+<label><span data-ar="نسبة النجاح" data-en="Passing percentage">نسبة النجاح</span><input type="number" id="osExamPass" min="0" max="100" value="60"></label>
+<button type="submit" class="os-button primary" data-ar="إنشاء المسودة" data-en="Create draft">إنشاء المسودة</button></form>
+<form id="osQuestionForm" class="os-form"><h4 data-ar="سؤال اختيار من متعدد" data-en="Multiple-choice question">سؤال اختيار من متعدد</h4>
+<label><span data-ar="الاختبار المسودة" data-en="Draft exam">الاختبار المسودة</span><select id="osQuestionExam" required></select></label>
+<label><span data-ar="نص السؤال بالعربية" data-en="Arabic prompt">نص السؤال بالعربية</span><textarea id="osQuestionAr" required minlength="5" maxlength="2000" rows="2"></textarea></label>
+<label><span data-ar="نص السؤال بالإنجليزية (اختياري)" data-en="English prompt (optional)">نص السؤال بالإنجليزية (اختياري)</span><textarea id="osQuestionEn" maxlength="2000" rows="2"></textarea></label>
+<label><span data-ar="الخيارات العربية (خيار في كل سطر)" data-en="Arabic choices (one per line)">الخيارات العربية (خيار في كل سطر)</span><textarea id="osOptionsAr" rows="4" required placeholder="الخيار الأول&#10;الخيار الثاني&#10;الخيار الثالث"></textarea></label>
+<label><span data-ar="الخيارات الإنجليزية (نفس العدد)" data-en="English choices (same count)">الخيارات الإنجليزية (نفس العدد)</span><textarea id="osOptionsEn" rows="4" required placeholder="First choice&#10;Second choice&#10;Third choice"></textarea></label>
+<label><span data-ar="رقم الإجابة الصحيحة (الأولى = 1)" data-en="Correct choice (first = 1)">رقم الإجابة الصحيحة (الأولى = 1)</span><input id="osCorrectIndex" type="number" min="1" max="6" value="1" required></label>
+<label><span data-ar="النقاط" data-en="Points">النقاط</span><input type="number" min="1" max="10" value="1" id="osQuestionPoints"></label>
+<button type="submit" class="os-button primary" data-ar="حفظ السؤال ومفتاحه بأمان" data-en="Save question and private answer key">حفظ السؤال ومفتاحه بأمان</button></form></div>
+<h4 data-ar="الاختبارات الموجودة" data-en="Existing exams">الاختبارات الموجودة</h4><div id="osAdminExams" class="os-list"></div></section>
+<section class="os-view" data-os-panel="review" hidden>
+<div class="os-section-head"><span class="os-kicker">V19 + V21 / REVIEW QUEUES</span><h3 data-ar="مراجعة الشهادات والمقترحات" data-en="Credential and research reviews">مراجعة الشهادات والمقترحات</h3><p data-ar="يمكن للمدير مراجعة الاستحقاق والمقترحات؛ الموافقة على الاستحقاق لا تُصدر شهادة تلقائيًا ولا تعد تصريحًا لأبحاث المشاركين." data-en="Admins review eligibility and proposals. Marking a request eligible does not issue a certificate or grant research ethics approval.">يمكن للمدير مراجعة الاستحقاق والمقترحات؛ الموافقة على الاستحقاق لا تُصدر شهادة تلقائيًا ولا تعد تصريحًا لأبحاث المشاركين.</p></div>
+<h4 data-ar="طلبات الشهادات" data-en="Credential requests">طلبات الشهادات</h4><div id="osAdminCerts" class="os-list"></div><h4 data-ar="مقترحات البحث" data-en="Research proposals">مقترحات البحث</h4><div id="osAdminResearch" class="os-list"></div></section>
+<section class="os-view" data-os-panel="quality" hidden>
+<div class="os-section-head"><span class="os-kicker">V22 / QUALITY AND SECURITY BASELINE</span><h3 data-ar="سجل الجودة والتدقيق" data-en="Quality and audit trail">سجل الجودة والتدقيق</h3><p data-ar="متابعة أحداث إنشاء الأسئلة ونشر الاختبارات ومحاولات الطلاب. السجل إداري فقط، ولا يضمن وحده خلو النظام من جميع الثغرات." data-en="Review exam-question creation, publication and attempts. Admin-only audit events supplement, but do not replace, a full independent security review.">متابعة أحداث إنشاء الأسئلة ونشر الاختبارات ومحاولات الطلاب. السجل إداري فقط، ولا يضمن وحده خلو النظام من جميع الثغرات.</p></div><div id="osQualityList" class="os-list"></div>
+<div class="os-callout"><strong data-ar="ضوابط أساسية مفعّلة" data-en="Baseline controls implemented">ضوابط أساسية مفعّلة</strong><p data-ar="RLS للجداول الجديدة؛ مفاتيح إجابات منفصلة؛ تصحيح على الخادم؛ منع المحاولات المكررة؛ ومراجعات الشهادات دون إصدار تلقائي. يبقى فحص أمان إنتاجي شامل مطلوبًا." data-en="RLS on new tables; private answer-key rows; server grading; duplicate-attempt prevention; and reviews without automatic certificate issuance. A full production security assessment remains necessary.">RLS للجداول الجديدة؛ مفاتيح إجابات منفصلة؛ تصحيح على الخادم؛ منع المحاولات المكررة؛ ومراجعات الشهادات دون إصدار تلقائي. يبقى فحص أمان إنتاجي شامل مطلوبًا.</p></div></section>
+</div></div></section></div></main>
+<footer class="os-footer"><div class="os-container os-footer-row"><span>NABD ACADEMY / UNIVERSITY OS · V22</span><span data-ar="منصة تعلّم تكميلي؛ لا تمنح درجات جامعية." data-en="Supplementary learning software; not a degree-awarding university.">منصة تعلّم تكميلي؛ لا تمنح درجات جامعية.</span><a href="index.html" data-ar="الرئيسية ↗" data-en="Academy home ↗">الرئيسية ↗</a></div></footer>
+</body></html>
