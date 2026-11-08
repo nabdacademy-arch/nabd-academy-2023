@@ -58,6 +58,9 @@ async function loadCollections(){
  S.isFaculty=S.faculty.some(a=>a.lecturer_id===userId&&a.active);
  roleTabs();
  renderAll();
+ // Keep the selected role view visible after every data refresh.
+ const targetView=S.isAdmin&&S.view==="study"?"admin":S.isFaculty&&S.view==="study"&&S.enrollments.length===0?"faculty":S.view;
+ navigate(targetView);
  if(!failed.length)report(tr("تم تحديث بياناتك من قاعدة الأكاديمية بنجاح.","Workspace synchronised with the academy database."));
 }
 async function bootstrap(){if(S.busy)return;S.busy=true;try{if(await getSession())await loadCollections()}catch(e){report(errMessage(e),true);$("osApp").hidden=true;$("osGate").hidden=false}finally{S.busy=false}}
@@ -107,7 +110,7 @@ function renderAdminExams(){const draft=S.exams.filter(x=>x.status==="draft"),ou
  updateSelect("osQuestionExam",draft.map(x=>[x.id,loc(x.title_ar,x.title_en)+" · "+titleOfCourse(x.course_id)]));
  if(!S.exams.length){empty(out,"لا توجد اختبارات بعد؛ ابدأ بإنشاء مسودة.","No exams yet. Create a draft first.");return}
  S.exams.forEach(exam=>{const {row}=newRow(loc(exam.title_ar,exam.title_en),titleOfCourse(exam.course_id)+" · "+tr("نسبة النجاح ","Passing ")+exam.passing_percent+"%",exam.status);if(exam.status==="draft"){const acts=elt("div","os-actions");acts.append(runButton(tr("نشر بعد المراجعة","Publish after review"),async()=>{if(!confirm(tr("هل راجعت كل الأسئلة والإجابات علميًا وتريد نشر الاختبار؟","Have you reviewed all questions and answers and want to publish?")))return;await q(db.rpc("nabd_os_publish_exam",{p_exam_id:exam.id}));await loadCollections()}, "primary"));row.append(acts)}out.append(row)})}
-function reviewActions(row,items){const holder=elt("div","os-review-actions");items.forEach(item=>{const b=elt("button","",item[0]);b.type="button";b.addEventListener("click",()=>item[1]());holder.append(b)});row.append(holder)}
+function reviewActions(row,items){const holder=elt("div","os-review-actions");items.forEach(item=>{const b=elt("button","",item[0]);b.type="button";b.addEventListener("click",async()=>{if(b.disabled)return;b.disabled=true;try{await item[1]()}catch(e){report(errMessage(e),true)}finally{b.disabled=false}});holder.append(b)});row.append(holder)}
 function renderReview(){const certs=$("osAdminCerts"),research=$("osAdminResearch");clear(certs);clear(research);
  if(!S.requests.length)empty(certs,"لا توجد طلبات شهادات بعد.","No credential requests yet.");
  else S.requests.forEach(x=>{const {row}=newRow(titleOfCourse(x.course_id),tr("معرّف الطالب: ","Student ID: ")+x.student_id+" · "+safeDate(x.created_at),x.status);
