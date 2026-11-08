@@ -30,5 +30,5 @@ ok(sig.includes("__NABD_MESSENGER_REQUESTED")&&nav.includes("__NABD_MESSENGER_RE
 ok(sig.includes('new URL("nabd-assistant.js?v=2",source)')&&nav.includes('new URL("nabd-assistant.js?v=2",source)'),"Same bootstrap from shared scripts");
 for(const p of ["academy.html","portal.html","nabd-2050.html","global-lectures.html","nabd-global-research.html","skill-passport.html","index.html#feedback","atlas/clinical-hub.html"]){ok(js.includes('"'+p+'"'),"Connect real existing academy route "+p)}
 ok(js.includes('no source')===false,"Avoid fake sources");
-ok(js.includes("لا تحول الرسائل تلقائيًا")||js.includes("لا تُنشئ تذاكر دعم")||js.includes("لا تحول الرسائل تلقائيًا"),"Support handoff is honest");
+ok(js.includes("does not forward messages automatically")&&js.includes("nabd-connect.html"),"Support handoff honestly routes to real private tickets");
 console.log("NABD messenger integrity: "+n+" assertions passed");
