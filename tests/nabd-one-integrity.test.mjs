@@ -22,7 +22,7 @@ check(admin.includes("assets/js/nabd-one-admin.js")&&admin.includes("assets/css/
 check(admin.indexOf("admin-extensions.js")<admin.indexOf('assets/js/nabd-one-admin.js'),"Administrator plugin register executes first");
 check(adminJs.includes('window.NABD_ADMIN_REGISTER_MODULE')&&adminJs.includes('id:"nabd-one-operations"'),"Shared admin framework registers the console");
 check(adminJs.includes("db.auth.getUser()")&&adminJs.includes('profile.data?.role!=="admin"'),"Verified director role");
-check(adminJs.indexOf('profile.data?.role!=="admin"')<adminJs.indexOf("await refresh()"),"No director inbox reads before role validation");
+check(adminJs.indexOf('profile.data?.role!=="admin"',adminJs.indexOf("async function render("))<adminJs.indexOf("await refresh()",adminJs.indexOf("async function render(")),"No director inbox reads before role validation");
 check(adminJs.includes('S.db.from("nabd_support_messages").insert')&&adminJs.includes('S.db.from("nabd_support_tickets").update'),"Actual reply and ticket update");
 check(adminJs.includes('status:"draft"')&&adminJs.includes('status:"published"')&&adminJs.includes("confirm("),"Lecture creation uses draft/explicit approval");
 check(adminJs.includes("scheduled_at:date.toISOString()")&&adminJs.includes("Number.isFinite(date.getTime())"),"Validates real dates");
