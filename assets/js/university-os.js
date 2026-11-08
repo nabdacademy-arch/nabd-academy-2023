@@ -21,16 +21,27 @@ function newChip(status){const c=elt("span","os-chip"+(["pending","in_review","d
 function newRow(heading,description,tag){const row=elt("article","os-list-row"),body=elt("div");if(tag)body.append(newChip(tag));body.append(elt("h5","",heading),elt("p","",description));row.append(body);return {row,body}}
 function runButton(text,fn,variant="secondary"){const b=elt("button","os-button "+variant,text);b.type="button";b.addEventListener("click",async()=>{if(b.disabled)return;b.disabled=true;try{await fn()}catch(e){report(errMessage(e),true)}finally{b.disabled=false}});return b}
 function updateSelect(id,rows,selected){const el=$(id);if(!el)return;const old=selected??el.value;clear(el);if(!rows.length){const opt=elt("option","",tr("لا توجد خيارات متاحة","No available options"));opt.value="";el.append(opt);el.disabled=true;return}el.disabled=false;rows.forEach(([value,label])=>{const op=elt("option","",label);op.value=value;el.append(op)});if(rows.some(x=>x[0]===old))el.value=old}
+function resetPrivateState(){
+ S.user=null;S.profile=null;S.isAdmin=false;S.isFaculty=false;S.view="study";
+ for(const k of ["courses","enrollments","modules","attendance","exams","attempts","faculty","requests","proposals","audit","questions","roster"])S[k]=[];
+ S.chosenExam=null;S.answers={};S.rosterRequest++;
+ $("osExamPlayer").hidden=true;$("osExamResult").textContent="";
+ for(const id of ["osMetrics","osCourses","osModules","osAttendance","osExamList","osGrades","osExamQuestions","osCredentialRequests","osResearchList","osFacultyAssignments","osAdminCourses","osAdminExams","osAdminCerts","osAdminResearch","osQualityList"])clear($(id));
+ for(const id of ["osAttendanceStudent","osAttendanceModule","osModuleCourse","osCredentialCourse","osAssignCourse","osExamCourse","osQuestionExam"])updateSelect(id,[]);
+ $("osIdentity").textContent="";$("osRosterStatus").textContent="";
+ $("osApp").hidden=true;$("osGate").hidden=false;roleTabs();
+}
 function roleTabs(){d.querySelectorAll("[data-role='admin']").forEach(x=>x.hidden=!S.isAdmin);d.querySelectorAll("[data-role='faculty']").forEach(x=>x.hidden=!(S.isFaculty||S.isAdmin))}
 function navigate(view){const button=d.querySelector('[data-os-view="'+view+'"]');if(!button||button.hidden)return;S.view=view;d.querySelectorAll("[data-os-panel]").forEach(x=>x.hidden=x.dataset.osPanel!==view);d.querySelectorAll("[data-os-view]").forEach(x=>{x.classList.toggle("active",x.dataset.osView===view);x.setAttribute("aria-current",x.dataset.osView===view?"page":"false")});if(innerWidth<800)byViewFocus()}
 function byViewFocus(){d.querySelector('[data-os-panel="'+S.view+'"]')?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
 async function getSession(){
- if(!db){$("osGate").hidden=false;report(tr("خدمة تسجيل الدخول غير متاحة في المتصفح. افتح الصفحة باتصال إنترنت.","Account connection unavailable. Reload with internet access."),true);return false}
+ if(!db){resetPrivateState();report(tr("خدمة تسجيل الدخول غير متاحة في المتصفح. افتح الصفحة باتصال إنترنت.","Account connection unavailable. Reload with internet access."),true);return false}
  const {data,error}=await db.auth.getUser();
- if(error||!data.user){$("osApp").hidden=true;$("osGate").hidden=false;report(tr("سجّل الدخول لعرض مساحة الدراسة الخاصة بك.","Sign in to view your personal workspace."));return false}
+ if(error||!data?.user){resetPrivateState();report(tr("سجّل الدخول لعرض مساحة الدراسة الخاصة بك.","Sign in to view your personal workspace."));return false}
+ if(S.user&&S.user.id!==data.user.id)resetPrivateState();
  S.user=data.user;
  const prof=await q(db.from("profiles").select("id,full_name,role").eq("id",S.user.id).maybeSingle());
- if(!prof||!prof.id){$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تعذّر التحقق من ملف الحساب؛ لا يمكن عرض بيانات خاصة.","Unable to verify your profile. Private data remains hidden."),true);return false}
+ if(!prof?.id){resetPrivateState();report(tr("تعذّر التحقق من ملف الحساب؛ لا يمكن عرض بيانات خاصة.","Unable to verify your profile. Private data remains hidden."),true);return false}
  S.profile=prof;S.isAdmin=prof.role==="admin";
  $("osApp").hidden=false;$("osGate").hidden=true;
  $("osIdentity").textContent=(prof.full_name||S.user.email||"")+" · "+(S.isAdmin?"ADMIN":prof.role?.toUpperCase()||"STUDENT");
@@ -38,6 +49,7 @@ async function getSession(){
 }
 async function loadCollections(){
  const userId=S.user.id;
+ if(!S.isAdmin)S.audit=[];
  // Every query below is subject to RLS; no blanket service token is used.
  const tasks=[
  ["courses",db.from("courses").select("id,code,title_ar,title_en,status,hours").order("created_at",{ascending:false}).limit(200)],
@@ -53,14 +65,15 @@ async function loadCollections(){
  if(S.isAdmin)tasks.push(["audit",db.from("nabd_os_audit_events").select("id,actor_id,event_type,object_type,object_id,detail,created_at").order("created_at",{ascending:false}).limit(50)]);
  const results=await Promise.allSettled(tasks.map(async([name,promise])=>[name,await q(promise)]));
  const failed=[];
- results.forEach((result,i)=>{if(result.status==="fulfilled"){const [name,data]=result.value;S[name]=Array.isArray(data)?data:[]}else failed.push(tasks[i][0])});
+ results.forEach((result,i)=>{const name=tasks[i][0];if(result.status==="fulfilled"){const data=result.value[1];S[name]=Array.isArray(data)?data:[]}else{S[name]=[];failed.push(name)}});
  if(failed.length){report(tr("تعذّر تحميل بعض الأقسام: ","Some sections could not load: ")+failed.join("، "),true)}
  S.isFaculty=S.faculty.some(a=>a.lecturer_id===userId&&a.active);
  roleTabs();
  renderAll();
  // Keep the selected role view visible after every data refresh.
  const targetView=S.isAdmin&&S.view==="study"?"admin":S.isFaculty&&S.view==="study"&&S.enrollments.length===0?"faculty":S.view;
- navigate(targetView);
+ const allowed=["study","exams","credentials","research",...(S.isFaculty||S.isAdmin?["faculty"]:[]),...(S.isAdmin?["admin","bank","review","quality"]:[])];
+ navigate(allowed.includes(targetView)?targetView:"study");
  if(!failed.length)report(tr("تم تحديث بياناتك من قاعدة الأكاديمية بنجاح.","Workspace synchronised with the academy database."));
 }
 async function bootstrap(){if(S.busy)return;S.busy=true;try{if(await getSession())await loadCollections()}catch(e){report(errMessage(e),true);$("osApp").hidden=true;$("osGate").hidden=false}finally{S.busy=false}}
@@ -145,7 +158,7 @@ function renderReview(){const certs=$("osAdminCerts"),research=$("osAdminResearc
  if(["submitted","in_review"].includes(x.status))reviewActions(row,[[tr("قيد التقييم","Review"),()=>reviewProposal(x,"in_review")],[tr("اعتماد إداري","Admin accept"),()=>reviewProposal(x,"accepted")],[tr("رفض","Decline"),()=>reviewProposal(x,"declined")]]);research.append(row)})}
 function renderQuality(){const out=$("osQualityList");clear(out);if(!S.audit.length){empty(out,"لا توجد أحداث تدقيق مسجلة بعد. سيسجل النظام محاولات الاختبار ونشره وإنشاء أسئلته.","No logged audit events yet. The system logs exam submissions, publishing and question creation.");return}
  S.audit.forEach(x=>out.append(newRow(x.event_type,x.object_type+" · "+(x.object_id||"")+" · "+safeDate(x.created_at),"active").row))}
-function renderAll(){renderMetrics();renderCourses();renderModules();renderAttendance();renderExamList();renderGrades();renderCredentials();renderResearch();renderFaculty();if(S.isAdmin){renderAdminCourses();renderAdminExams();renderReview();renderQuality()}if(S.chosenExam)renderExamQuestions()}
+function renderAll(){renderMetrics();renderCourses();renderModules();renderAttendance();renderExamList();renderGrades();renderCredentials();renderResearch();renderFaculty();if(S.isAdmin){renderAdminCourses();renderAdminExams();renderReview();renderQuality()}else{for(const id of ["osAdminCourses","osAdminExams","osAdminCerts","osAdminResearch","osQualityList"])clear($(id))}if(S.chosenExam)renderExamQuestions()}
 async function createCourse(e){e.preventDefault();if(!S.isAdmin)return;
  const input={slug:$("osCourseSlug").value.trim(),code:$("osCourseCode").value.trim().toUpperCase(),title_ar:$("osCourseAr").value.trim(),title_en:$("osCourseEn").value.trim(),hours:Number($("osCourseHours").value),status:"draft"};
  await q(db.from("courses").insert(input).select("id").single());e.target.reset();report(tr("أُنشئت مسودة المقرر في قاعدة البيانات، ولم تُفتح للتسجيل بعد.","Course draft saved to the database; enrolment is not open."));await loadCollections()}
@@ -178,7 +191,7 @@ async function reviewProposal(entry,status){if(!S.isAdmin)return;const detail=pr
 function bind(){
  $("osLang").addEventListener("click",()=>{S.language=S.language==="ar"?"en":"ar";d.documentElement.lang=S.language;d.documentElement.dir=S.language==="ar"?"rtl":"ltr";d.querySelectorAll("[data-ar][data-en]").forEach(e=>{e.textContent=e.getAttribute("data-"+S.language)});$("osLang").textContent=S.language==="ar"?"EN":"عربي";if(S.user)renderAll()});
  $("osLoginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db)return;const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$("osEmail").value.trim(),password:$("osPassword").value});$("osPassword").value="";if(error)throw error;await bootstrap()}catch(err){report(tr("فشل الدخول. تحقق من بيانات الحساب.","Sign-in failed; verify account credentials."),true)}finally{btn.disabled=false}});
- $("osLogout").addEventListener("click",async()=>{if(db)await db.auth.signOut();S.user=null;S.profile=null;S.courses=[];S.enrollments=[];S.roster=[];S.rosterRequest++;updateSelect("osAttendanceStudent",[]);$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تم تسجيل الخروج.","Signed out."))});
+ $("osLogout").addEventListener("click",async()=>{try{if(db)await db.auth.signOut()}finally{resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}});
  $("osRefresh").addEventListener("click",bootstrap);
  d.querySelectorAll("[data-os-view]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.osView)));
  $("osCloseExam").addEventListener("click",()=>{$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={}});
@@ -187,6 +200,10 @@ function bind(){
  forms.forEach(([id,handler])=>$(id).addEventListener("submit",async e=>{e.preventDefault();const b=e.target.querySelector('button[type="submit"]');if(!S.user||b?.disabled)return;if(b)b.disabled=true;try{await handler(e)}catch(err){report(errMessage(err),true)}finally{if(b)b.disabled=false}}));
  $("osModuleCourse").addEventListener("change",updateAttendanceModules);
  $("osAttendanceModule").addEventListener("change",()=>{void refreshRoster()});
+ if(db?.auth?.onAuthStateChange)db.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT"){resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}
+  else if(event==="SIGNED_IN"&&session?.user?.id&&S.user&&session.user.id!==S.user.id){resetPrivateState();setTimeout(()=>{void bootstrap()},0)}
+ });
  bootstrap();
 }
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",bind);else bind();
