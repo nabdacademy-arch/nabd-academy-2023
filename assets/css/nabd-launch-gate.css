@@ -1,0 +1,42 @@
+/* NABD FINAL LAUNCH admin-only operational readiness dashboard */
+#launch-readiness{line-height:1.75;direction:rtl;text-align:start;color:#163e4b}
+#launch-readiness *{box-sizing:border-box}
+#launch-readiness .nlg-head{display:flex;align-items:start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+#launch-readiness .nlg-head h2{font-size:clamp(21px,2.4vw,30px);color:#083c4b;margin:0 0 6px}
+#launch-readiness .nlg-head p{max-width:820px;color:#56717c;font-size:14px;margin:0 0 16px}
+#launch-readiness .nlg-actions{display:flex;gap:8px;flex-wrap:wrap}
+#launch-readiness .nlg-button{border:1px solid #17858a;border-radius:11px;background:#076f7c;color:#fff;font-weight:750;font-size:13px;padding:10px 15px;min-height:42px;cursor:pointer}
+#launch-readiness .nlg-secondary{background:#f1fafa;color:#076f7c}
+#launch-readiness button:focus-visible,#launch-readiness a:focus-visible{outline:3px solid #e39e29;outline-offset:3px}
+#launch-readiness .nlg-status{display:flex;gap:17px;align-items:center;flex-wrap:wrap;margin:17px 0 5px;padding:20px 22px;border:1px solid #dfc295;background:#fffbf2;border-radius:17px}
+#launch-readiness .nlg-hold{font-weight:900;color:#925b12;font-size:14px}
+#launch-readiness .nlg-status strong{margin-inline-start:auto;color:#14647a;font-size:25px}
+#launch-readiness .nlg-status p{width:100%;margin:0;font-size:12px;color:#795e3c}
+#launch-readiness .nlg-meta{font-size:11px;color:#667d85;direction:auto}
+#launch-readiness .nlg-group{margin-top:26px;border-top:1px solid #d8e8eb;padding-top:17px}
+#launch-readiness .nlg-group h3{font-size:19px;margin:0 0 9px;color:#0b5767}
+#launch-readiness .nlg-group>p{color:#607f88;font-size:13px;margin:0 0 14px}
+#launch-readiness .nlg-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#launch-readiness .nlg-card{border:1px solid #d3e6e9;border-radius:15px;padding:16px;background:linear-gradient(145deg,#fff,#f5fbfc);min-width:0}
+#launch-readiness .nlg-card-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+#launch-readiness .nlg-card h4{font-size:14px;font-weight:750;margin:0 0 13px;color:#164d59}
+#launch-readiness .nlg-count{font-size:26px;font-weight:900;color:#085f69}
+#launch-readiness .nlg-state{display:inline-flex;border-radius:80px;padding:4px 10px;font-size:11px;font-weight:750;margin:0 0 12px}
+#launch-readiness .nlg-state.blocked{background:#fdece8;color:#9e3e29}
+#launch-readiness .nlg-state.seeded{background:#e6f7ee;color:#256e4a}
+#launch-readiness .nlg-state.unknown{background:#edf0f4;color:#53647c}
+#launch-readiness .nlg-link{display:inline-block;text-decoration:underline;text-underline-offset:3px;color:#087d8a;font-size:12px;font-weight:700;overflow-wrap:anywhere}
+#launch-readiness .nlg-human{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;list-style:none;padding:0;margin:17px 0}
+#launch-readiness .nlg-human li{display:grid;align-content:start;gap:8px;border:1px solid #dfebe9;background:#fcfefd;padding:15px;border-radius:13px;min-width:0}
+#launch-readiness .nlg-human-state{color:#81581d;font-size:10px;padding:4px 9px;border-radius:6px;background:#fff3d8;justify-self:start}
+#launch-readiness .nlg-human li>span{color:#173f4c;font-size:13px}
+#launch-readiness .nlg-note{padding:13px 15px;border:1px solid #f0d7a8;background:#fffaee;border-radius:11px;color:#74572e!important}
+#launch-readiness .nlg-extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}
+#launch-readiness .nlg-extra{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #dbeaea;background:#f8fcfc;padding:10px 13px;border-radius:10px;font-size:12px}
+#launch-readiness .nlg-extra strong{font-size:17px;color:#096b7a}
+#launch-readiness .nlg-wait,#launch-readiness .nlg-error{padding:17px;border:1px solid #dbeaea;border-radius:10px;color:#5d7780;background:#f7fbfc}
+#launch-readiness .nlg-error{color:#9b3f3a;border-color:#eed0c9;background:#fff1ee}
+#launch-readiness[dir=ltr]{direction:ltr}
+@media(max-width:900px){#launch-readiness .nlg-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){#launch-readiness .nlg-cards,#launch-readiness .nlg-human,#launch-readiness .nlg-extras{grid-template-columns:1fr}#launch-readiness .nlg-status strong{margin-inline-start:0}}
+@media(prefers-reduced-motion:reduce){#launch-readiness *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
