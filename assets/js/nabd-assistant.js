@@ -90,6 +90,7 @@ function historyAdd(who,record){
 function renderHistory(){stream.replaceChildren();for(const h of state.history)addBubble(h.who,h.text,h.links||[],h.kind||"")}
 function welcome(){
  state.history=[];
+ stream.replaceChildren();
  historyAdd("bot",{text:say("أهلًا بك في أكاديمية نبض! ✨ أنا دليل الأكاديمية الرقمي. اسألني عن المقررات أو الشهادات أو البحث أو المختبرات، أو اختر المعلم الذكي للأسئلة العلمية بعد تسجيل الدخول.","Welcome to NABD Academy! ✨ I'm your digital academy guide. Ask about courses, certificates, research or interactive labs. Switch to AI Tutor for science questions after signing in."),kind:say("المساعد الرقمي","Digital guide")});
 }
 function chosenSuggestions(){
