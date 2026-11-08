@@ -23,7 +23,7 @@ const topics=[
  {id:"applications",name:["طلبات التطوع والتعاون","Applications & volunteering"],words:["تطوع","وظيف","متطوع","تعاون","طلبات","طلب انضمام","وظائف","volunteer","job","apply","application","collaborat","partnership"],reply:["تجد نموذج طلبات التطوع ومساحة متابعة حالة الطلب في روابط الأكاديمية. إرسال النموذج أو تغيير حالته لا يتم داخل هذه المحادثة؛ افتح البوابة الرسمية.","Use the academy's volunteering application and application status pages. This chat does not submit applications or change their status."],links:[["executive-application.html","التقديم للتطوع","Volunteer application"],["application-status.html","متابعة الطلب","Track application"],["nabd-partners.html","الشراكات","Partnerships"]]},
  {id:"offline",name:["التعلم دون إنترنت","Offline learning"],words:["انترنت","نت","اوفلاين","انقطاع","ضعيف","تحميل المحاضرات","offline","download","connectivity","network"],reply:["تتوفر حزم تعلم دون إنترنت لأجزاء من أطلس وإنفينيتي بعد تحميلها مرة مسبقًا. أما بيانات الحساب والاختبارات الرسمية فتحتاج اتصالًا والتحقق من الصلاحيات.","Parts of ATLAS and INFINITY support offline learning after the initial download. Account information and official examinations still require connectivity and authorisation."],links:[["atlas/index.html","أطلس دون إنترنت","ATLAS offline pack"],["infinity/","NABD INFINITY","INFINITY"]]},
  {id:"privacy",name:["الخصوصية والأمان","Privacy & security"],words:["خصوصي","بيانات","حذف","امان","سر","البيانات","سياس","privacy","personal","security","delete","data","consent"],reply:["وضع «دليل الأكاديمية» يعالج السؤال في متصفحك ولا يحفظ المحادثة أو يرسلها إلى خادم. وضع الذكاء الاصطناعي يرسل السؤال التعليمي فقط إلى خدمة نبض بعد اختيارك له والتحقق من حسابك، وقد تستخدم الخدمة مزود ذكاء اصطناعي خارجيًا. لا ترسل بيانات مرضى أو كلمات مرور.","Guide mode works locally in your browser without saving or sending messages. Opt-in AI mode submits your educational question to NABD's authenticated tutor, which may use an external model provider. Never submit patient identifiers or passwords."],links:[["policies.html","سياسة الخصوصية","Privacy policy"]]},
- {id:"contact",name:["التواصل مع الإدارة","Contact the academy"],words:["تواصل","اراسل","راسل","رسالة","شكوى","اقتراح","مشكلة","دعم","مساعده","إدارة","اداره","complaint","support","contact","feedback","message","help"],reply:["لإرسال رسالة فعلية إلى إدارة الأكاديمية، افتح نموذج «الشكاوى والمقترحات» في الرئيسية واملأ بياناته ثم اضغط إرسال. هذه الدردشة دليل ومساعد تعليمي؛ لا تحول الرسائل تلقائيًا إلى موظفين ولا تُنشئ تذاكر دعم.","To send a real message to academy staff, use the official Feedback & Complaints form on the homepage. This chatbot does not automatically forward chat messages or create support tickets."],links:[["index.html#feedback","أرسل رسالة للإدارة","Send feedback to academy"],["policies.html","السياسات والخصوصية","Privacy & policies"]]}
+ {id:"contact",name:["التواصل مع الإدارة","Contact the academy"],words:["تواصل","اراسل","راسل","رسالة","شكوى","اقتراح","مشكلة","دعم","مساعده","إدارة","اداره","complaint","support","contact","feedback","message","help"],reply:["لإرسال رسالة فعلية إلى إدارة الأكاديمية، افتح نموذج «الشكاوى والمقترحات» في الرئيسية واملأ بياناته ثم اضغط إرسال. هذه الدردشة دليل ومساعد تعليمي؛ ولإرسال تذكرة فعلية ومتابعة الرد افتح NABD CONNECT بحسابك.","To send a real message to academy staff, use the official Feedback & Complaints form on the homepage. This chat does not forward messages automatically. Open NABD CONNECT to create and track a real support ticket using your account."],links:[["nabd-connect.html","مراسلاتي مع الإدارة","My support tickets"],["index.html#feedback","نموذج الشكاوى العام","Public feedback"],["policies.html","السياسات","Privacy"]]}
 ];
 const welcomePages=[
  ["nabd-2050.html","anatomy"],["atlas/","anatomy"],["infinity/","anatomy"],["university-os.html","university"],
@@ -38,7 +38,7 @@ root.innerHTML=
  '<div id="nb-chat-shade" class="nb-chat-shade" hidden></div>'+
  '<section id="nb-chat-panel" class="nb-chat-panel" role="dialog" aria-modal="true" aria-labelledby="nb-chat-title" hidden>'+
   '<header class="nb-chat-head"><span class="nb-chat-avatar" aria-hidden="true">✦</span><span class="nb-chat-identity"><strong id="nb-chat-title">مساعد نبض الذكي</strong><small id="nb-chat-subtitle">دليل رقمي · ليس موظفًا مباشرًا</small></span><button class="nb-chat-utility" type="button" id="nb-chat-lang" aria-label="Switch language">EN</button><button class="nb-chat-utility" type="button" id="nb-chat-clear" aria-label="Clear chat" title="Clear chat">↺</button><button class="nb-chat-utility nb-chat-close" type="button" id="nb-chat-close" aria-label="Close chat">×</button></header>'+
-  '<nav class="nb-chat-modes" aria-label="Chat modes"><button id="nb-chat-guide" class="nb-chat-mode" type="button" aria-pressed="true">⌕ دليل الأكاديمية</button><button id="nb-chat-ai" class="nb-chat-mode" type="button" aria-pressed="false">✦ المعلم الذكي AI</button></nav>'+
+  '<nav class="nb-chat-modes" aria-label="Chat modes"><button id="nb-chat-guide" class="nb-chat-mode" type="button" aria-pressed="true">⌕ دليل الأكاديمية</button><button id="nb-chat-ai" class="nb-chat-mode" type="button" aria-pressed="false">✦ المعلم الذكي AI</button><a id="nb-chat-connect" class="nb-chat-mode" href="#">✉ مراسلاتي</a></nav>'+
   '<p id="nb-chat-disclosure" class="nb-chat-disclosure"></p>'+
   '<div id="nb-chat-stream" class="nb-chat-stream" role="log" aria-live="polite" aria-relevant="additions text"></div>'+
   '<div id="nb-chat-suggestions" class="nb-chat-suggestions"></div>'+
@@ -59,6 +59,7 @@ function updateLabels(){
  $("nb-chat-clear").setAttribute("aria-label",say("حذف المحادثة من هذه الصفحة","Clear conversation on this page"));
  $("nb-chat-guide").textContent=say("⌕ دليل الأكاديمية","⌕ Academy guide");
  $("nb-chat-ai").textContent=say("✦ المعلم الذكي AI","✦ AI Learning Tutor");
+ $("nb-chat-connect").textContent=say("✉ مراسلاتي","✉ My tickets");$("nb-chat-connect").href=url("nabd-connect.html");
  $("nb-chat-guide").setAttribute("aria-pressed",String(state.mode==="guide"));
  $("nb-chat-ai").setAttribute("aria-pressed",String(state.mode==="ai"));
  $("nb-chat-guide").classList.toggle("active",state.mode==="guide");
@@ -68,7 +69,7 @@ function updateLabels(){
  $("nb-chat-send").textContent=say("إرسال ←","Send →");
  $("nb-chat-footnote").textContent=state.mode==="guide"?say("المحادثة مؤقتة ولا تُحفظ","Ephemeral chat · not saved"):say("الإجابات التوليدية تحتاج مراجعة مصادر موثوقة","Verify generated answers with trusted sources");
  $("nb-chat-support").textContent=say("راسل الإدارة رسميًا ↗","Message academy staff ↗");
- $("nb-chat-support").href=url("index.html#feedback");
+ $("nb-chat-support").href=url("nabd-connect.html");
  $("nb-chat-mic").setAttribute("aria-label",say("إملاء صوتي عبر المتصفح","Voice dictation using browser"));
  $("nb-chat-mic").title=say("الإملاء الصوتي قد يستخدم خدمة المتصفح، ولن يرسل السؤال تلقائيًا.","Speech recognition may use your browser's service; never sends automatically.");
  $("nb-chat-mic").hidden=!(window.SpeechRecognition||window.webkitSpeechRecognition);
@@ -233,6 +234,7 @@ function setMode(mode){
 launcher.addEventListener("click",openChat);
 $("nb-chat-close").addEventListener("click",closeChat);shade.addEventListener("click",closeChat);
 $("nb-chat-support").addEventListener("click",closeChat);
+$("nb-chat-connect").addEventListener("click",closeChat);
 stream.addEventListener("click",e=>{if(e.target.closest("a[href]"))closeChat()});
 $("nb-chat-lang").addEventListener("click",()=>{state.lang=state.lang==="ar"?"en":"ar";updateLabels()});
 $("nb-chat-clear").addEventListener("click",()=>{state.request++;setBusy(false);state.history=[];welcome();renderSuggestions();input.value="";updateCount();input.focus()});
