@@ -67,8 +67,8 @@ async function run(){
     })}
    });
    const page=await ctx.newPage();await page.goto(base+"/nabd-next-frontier.html",{waitUntil:"domcontentloaded"});
-   await page.locator("#nf-congress-form").waitFor({state:"visible"});
    await page.locator("#nf-tab-congress").click();
+   await page.locator("#nf-congress-form").waitFor({state:"visible"});
    await page.locator('#nf-congress-form [name="display_name"]').fill("Student Presenter");
    await page.locator('#nf-congress-form [name="title"]').fill("Cardiovascular teaching methods");
    await page.locator('#nf-congress-form [name="abstract"]').fill("This poster explores how students learn cardiovascular anatomy through evidence-based educational methods with clear learning outcomes.");
