@@ -16,7 +16,7 @@ ok(js.includes('window.NABD_CONFIG')&&js.includes('smart-processor'),"Reuse exis
 ok(js.includes('source=D.currentScript?.src')&&js.includes('new URL("../../",source)'),"Resolve links relative to shared asset root");
 ok(js.includes('role="dialog"')&&js.includes('aria-modal="true"'),"Accessible interactive modal");
 ok(js.includes("state.priorOverflow"),"Restore body overflow");
-ok(js.includes('e.key==="Escape"')&&js.includes('e.key==="Tab"'),"Escape/focus trap");
+ok(js.includes('e.key==="Escape"')&&js.includes('e.key!=="Tab"'),"Escape/focus trap");
 ok(js.includes("textContent")&&!js.includes("insertAdjacentHTML"),"Safe text rendering");
 ok(js.includes("innerHTML=")&&js.includes("root.innerHTML="),"Trusted static UI scaffold only");
 ok(!/localStorage|sessionStorage|indexedDB|service_role|sb_secret_|\.from\("feedback"\)\.insert/i.test(js),"No chat persistence or private keys/automatic fake feedback");
