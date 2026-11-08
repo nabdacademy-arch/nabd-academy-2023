@@ -14,7 +14,7 @@ ok(js.includes('db.auth.getUser()'),"Authenticated AI access");
 ok(js.includes('db.functions.invoke(slug,{body:{question:q,language:state.lang,image:null}})'),"Reuse real secured AI Tutor endpoint");
 ok(js.includes('window.NABD_CONFIG')&&js.includes('smart-processor'),"Reuse existing academic app config");
 ok(js.includes('source=D.currentScript?.src')&&js.includes('new URL("../../",source)'),"Resolve links relative to shared asset root");
-ok(js.includes("role=\\"dialog\\"")&&js.includes('aria-modal=\\"true\\"'),"Accessible interactive modal");
+ok(js.includes('role="dialog"')&&js.includes('aria-modal="true"'),"Accessible interactive modal");
 ok(js.includes("state.priorOverflow"),"Restore body overflow");
 ok(js.includes('e.key==="Escape"')&&js.includes('e.key==="Tab"'),"Escape/focus trap");
 ok(js.includes("textContent")&&!js.includes("insertAdjacentHTML"),"Safe text rendering");
