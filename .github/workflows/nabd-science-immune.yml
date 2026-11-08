@@ -1,0 +1,48 @@
+name: NABD Science Immune System
+on:
+  pull_request:
+    paths:
+      - 'nabd-science-immune.html'
+      - 'index.html'
+      - 'admin.html'
+      - 'assets/js/nabd-science-immune.js'
+      - 'assets/css/nabd-science-immune.css'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'supabase/migrations/*science_immune*'
+      - 'docs/NABD_SCIENCE_IMMUNE_RELEASE.md'
+      - 'tests/nabd-science-immune-*'
+      - '.github/workflows/nabd-science-immune.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-science-immune.html'
+      - 'assets/js/nabd-science-immune.js'
+      - 'tests/nabd-science-immune-*'
+      - '.github/workflows/nabd-science-immune.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check assets/js/nabd-science-immune.js
+          node tests/nabd-science-immune-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - run: node tests/nabd-science-immune-browser.cjs
