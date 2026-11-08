@@ -164,7 +164,7 @@ const tutorErrors={
  PROVIDER_UNAVAILABLE:["تعذّر الوصول إلى مولّد الإجابات حاليًا.","The answer provider is currently unavailable."],
  NETWORK_OR_CORS_ERROR:["تعذّر اتصال المتصفح بخدمة الذكاء الاصطناعي.","The browser could not connect to the AI service."],
  ORIGIN_NOT_ALLOWED:["لم يُسمح لهذا العنوان بالاتصال بخدمة المساعد.","This site origin is not allowed to access the AI Tutor."],
- TUTOR_RATE_LIMIT:["بلغت الحد المؤقت لطلبات المساعد. حاول لاحقًا.","Temporary AI request limit reached. Try later."],
+
  INVALID_REQUEST:["تعذّر قبول السؤال. جرّب إعادة الصياغة دون بيانات شخصية.","The question could not be accepted. Try rephrasing without personal details."]
 };
 async function tutorRequest(q){
@@ -232,7 +232,7 @@ function setMode(mode){
 launcher.addEventListener("click",openChat);
 $("nb-chat-close").addEventListener("click",closeChat);shade.addEventListener("click",closeChat);
 $("nb-chat-lang").addEventListener("click",()=>{state.lang=state.lang==="ar"?"en":"ar";updateLabels()});
-$("nb-chat-clear").addEventListener("click",()=>{state.request++;state.history=[];welcome();renderSuggestions();input.value="";updateCount();input.focus()});
+$("nb-chat-clear").addEventListener("click",()=>{state.request++;setBusy(false);state.history=[];welcome();renderSuggestions();input.value="";updateCount();input.focus()});
 $("nb-chat-guide").addEventListener("click",()=>setMode("guide"));
 $("nb-chat-ai").addEventListener("click",()=>setMode("ai"));
 $("nb-chat-mic").addEventListener("click",startDictation);
