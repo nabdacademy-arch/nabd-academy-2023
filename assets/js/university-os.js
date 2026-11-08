@@ -4,7 +4,7 @@
  */
 (()=>{"use strict";
 const d=document,$=id=>d.getElementById(id),db=window.nabdSupabase;
-const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false,roster:[],rosterRequest:0};
+const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false,roster:[],rosterRequest:0,sessionEpoch:0,refreshQueued:false};
 const tr=(ar,en)=>S.language==="ar"?ar:en;
 const loc=(ar,en)=>S.language==="ar"?(ar||en||""):(en||ar||"");
 const elt=(tag,cl,text)=>{const x=d.createElement(tag);if(cl)x.className=cl;if(text!==undefined&&text!==null)x.textContent=String(text);return x};
@@ -22,6 +22,7 @@ function newRow(heading,description,tag){const row=elt("article","os-list-row"),
 function runButton(text,fn,variant="secondary"){const b=elt("button","os-button "+variant,text);b.type="button";b.addEventListener("click",async()=>{if(b.disabled)return;b.disabled=true;try{await fn()}catch(e){report(errMessage(e),true)}finally{b.disabled=false}});return b}
 function updateSelect(id,rows,selected){const el=$(id);if(!el)return;const old=selected??el.value;clear(el);if(!rows.length){const opt=elt("option","",tr("لا توجد خيارات متاحة","No available options"));opt.value="";el.append(opt);el.disabled=true;return}el.disabled=false;rows.forEach(([value,label])=>{const op=elt("option","",label);op.value=value;el.append(op)});if(rows.some(x=>x[0]===old))el.value=old}
 function resetPrivateState(){
+ S.sessionEpoch++;
  S.user=null;S.profile=null;S.isAdmin=false;S.isFaculty=false;S.view="study";
  for(const k of ["courses","enrollments","modules","attendance","exams","attempts","faculty","requests","proposals","audit","questions","roster"])S[k]=[];
  S.chosenExam=null;S.answers={};S.rosterRequest++;
@@ -43,11 +44,14 @@ function navigate(view){const button=d.querySelector('[data-os-view="'+view+'"]'
 function byViewFocus(){d.querySelector('[data-os-panel="'+S.view+'"]')?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
 async function getSession(){
  if(!db){resetPrivateState();report(tr("خدمة تسجيل الدخول غير متاحة في المتصفح. افتح الصفحة باتصال إنترنت.","Account connection unavailable. Reload with internet access."),true);return false}
+ let epoch=S.sessionEpoch;
  const {data,error}=await db.auth.getUser();
+ if(epoch!==S.sessionEpoch)return false;
  if(error||!data?.user){resetPrivateState();report(tr("سجّل الدخول لعرض مساحة الدراسة الخاصة بك.","Sign in to view your personal workspace."));return false}
- if(S.user&&S.user.id!==data.user.id)resetPrivateState();
+ if(S.user&&S.user.id!==data.user.id){resetPrivateState();epoch=S.sessionEpoch}
  S.user=data.user;
  const prof=await q(db.from("profiles").select("id,full_name,role").eq("id",S.user.id).maybeSingle());
+ if(epoch!==S.sessionEpoch)return false;
  if(!prof?.id){resetPrivateState();report(tr("تعذّر التحقق من ملف الحساب؛ لا يمكن عرض بيانات خاصة.","Unable to verify your profile. Private data remains hidden."),true);return false}
  S.profile=prof;S.isAdmin=prof.role==="admin";
  $("osApp").hidden=false;$("osGate").hidden=true;
@@ -55,7 +59,7 @@ async function getSession(){
  return true
 }
 async function loadCollections(){
- const userId=S.user.id;
+ const userId=S.user.id,epoch=S.sessionEpoch;
  if(!S.isAdmin)S.audit=[];
  // Every query below is subject to RLS; no blanket service token is used.
  const tasks=[
@@ -71,6 +75,7 @@ async function loadCollections(){
  ];
  if(S.isAdmin)tasks.push(["audit",db.from("nabd_os_audit_events").select("id,actor_id,event_type,object_type,object_id,detail,created_at").order("created_at",{ascending:false}).limit(50)]);
  const results=await Promise.allSettled(tasks.map(async([name,promise])=>[name,await q(promise)]));
+ if(epoch!==S.sessionEpoch||!S.user||S.user.id!==userId)return;
  const failed=[];
  results.forEach((result,i)=>{const name=tasks[i][0];if(result.status==="fulfilled"){const data=result.value[1];S[name]=Array.isArray(data)?data:[]}else{S[name]=[];failed.push(name)}});
  if(failed.length){report(tr("تعذّر تحميل بعض الأقسام: ","Some sections could not load: ")+failed.join("، "),true)}
@@ -83,7 +88,7 @@ async function loadCollections(){
  navigate(allowed.includes(targetView)?targetView:"study");
  if(!failed.length)report(tr("تم تحديث بياناتك من قاعدة الأكاديمية بنجاح.","Workspace synchronised with the academy database."));
 }
-async function bootstrap(){if(S.busy)return;S.busy=true;try{if(await getSession())await loadCollections()}catch(e){report(errMessage(e),true);$("osApp").hidden=true;$("osGate").hidden=false}finally{S.busy=false}}
+async function bootstrap(){if(S.busy){S.refreshQueued=true;return}S.busy=true;try{if(await getSession())await loadCollections()}catch(e){resetPrivateState();report(errMessage(e),true)}finally{S.busy=false;if(S.refreshQueued){S.refreshQueued=false;void bootstrap()}}}
 function metric(number,label){const card=elt("div","os-metric");card.append(elt("b","",number),elt("span","",label));return card}
 function renderMetrics(){const host=$("osMetrics");clear(host);const stats=S.isAdmin?[[S.courses.length,tr("مقررات في النتيجة","Courses loaded")],[S.exams.length,tr("اختبارات","Exams")],[S.requests.filter(x=>x.status==="pending").length,tr("طلبات شهادات جديدة","New credential requests")],[S.proposals.filter(x=>x.status==="submitted").length,tr("مقترحات بحث جديدة","New proposals")]]:[[S.enrollments.length,tr("مقرراتي المسجّلة","My enrolments")],[S.exams.filter(x=>x.status==="published"&&examAvailability(x)==="open"&&S.enrollments.some(e=>e.course_id===x.course_id)&&!S.attempts.some(a=>a.student_id===S.user.id&&a.exam_id===x.id)).length,tr("اختبارات متاحة","Available exams")],[S.attempts.filter(x=>x.student_id===S.user.id).length,tr("محاولاتي المسجلة","Submitted exams")],[S.requests.filter(x=>x.student_id===S.user.id).length,tr("طلبات الشهادات","Credential requests")]];stats.forEach(x=>host.append(metric(...x)))}
 function renderCourses(){const out=$("osCourses");clear(out);if(!S.enrollments.length){empty(out,"لا توجد تسجيلات للمقررات على حسابك حاليًا. إدارة التسجيل تتم عبر بوابة الأكاديمية.","No enrolled courses found. Enrolment is managed through the academy.");return}
@@ -211,7 +216,7 @@ async function reviewProposal(entry,status){if(!S.isAdmin)return;const detail=pr
 function bind(){
  $("osLang").addEventListener("click",()=>{S.language=S.language==="ar"?"en":"ar";d.documentElement.lang=S.language;d.documentElement.dir=S.language==="ar"?"rtl":"ltr";d.querySelectorAll("[data-ar][data-en]").forEach(e=>{e.textContent=e.getAttribute("data-"+S.language)});$("osLang").textContent=S.language==="ar"?"EN":"عربي";if(S.user)renderAll()});
  $("osLoginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db)return;const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$("osEmail").value.trim(),password:$("osPassword").value});$("osPassword").value="";if(error)throw error;await bootstrap()}catch(err){report(tr("فشل الدخول. تحقق من بيانات الحساب.","Sign-in failed; verify account credentials."),true)}finally{btn.disabled=false}});
- $("osLogout").addEventListener("click",async()=>{try{if(db)await db.auth.signOut()}finally{resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}});
+ $("osLogout").addEventListener("click",async()=>{try{const {error}=await db.auth.signOut();if(error)throw error;resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}catch(e){resetPrivateState();report(tr("تعذّر التأكد من إنهاء الجلسة على الخادم. أعد المحاولة.","Could not confirm server sign-out. Please retry."),true)}});
  $("osRefresh").addEventListener("click",bootstrap);
  d.querySelectorAll("[data-os-view]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.osView)));
  $("osCloseExam").addEventListener("click",()=>{$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={}});
@@ -222,7 +227,7 @@ function bind(){
  $("osAttendanceModule").addEventListener("change",()=>{void refreshRoster()});
  if(db?.auth?.onAuthStateChange)db.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT"){resetPrivateState();report(tr("تم تسجيل الخروج.","Signed out."))}
-  else if(event==="SIGNED_IN"&&session?.user?.id&&S.user&&session.user.id!==S.user.id){resetPrivateState();setTimeout(()=>{void bootstrap()},0)}
+  else if(event==="SIGNED_IN"&&session?.user?.id&&S.user?.id!==session.user.id){resetPrivateState();setTimeout(()=>{void bootstrap()},0)}
  });
  bootstrap();
 }
