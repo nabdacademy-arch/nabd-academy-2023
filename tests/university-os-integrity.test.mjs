@@ -1,0 +1,39 @@
+import assert from "node:assert/strict";
+import {readFileSync,existsSync} from "node:fs";
+import {resolve,dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import {Script} from "node:vm";
+const root=resolve(dirname(fileURLToPath(import.meta.url)),".."),read=p=>readFileSync(resolve(root,p),"utf8");
+let checks=0;const check=(v,msg)=>{assert.ok(v,msg);checks++};
+const html=read("university-os.html"),js=read("assets/js/university-os.js"),css=read("assets/css/university-os.css");
+new Script(js,{filename:"university-os.js"});checks++;
+check(css.includes("@media(max-width:540px)")&&css.includes("prefers-reduced-motion"),"Responsive academic UI");
+check(html.includes('name="robots" content="noindex,nofollow"'),"Personal academic workspace is not indexed");
+check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=1'),"Uses existing browser auth client");
+check(!/(?:service_role|sb_secret_|SUPABASE_SERVICE_ROLE_KEY)/i.test(js+html),"No secret/server role key in UI");
+check(!/\b(?:localStorage|sessionStorage)\b/.test(js),"No local persistence of user grades or private records");
+check(js.includes("nabd_os_submit_exam")&&js.includes("db.rpc("),"Exam submitted to server for scoring");
+check(!/\.from\("nabd_os_exam_keys"\)/.test(js),"Student-facing JS never fetches answer keys");
+check(js.includes('window.nabdSupabase')&&js.includes('db.auth.getUser'),"Account identity verified with backend");
+const tabs=["study","exams","credentials","research","faculty","admin","bank","review","quality"];
+for(const pane of tabs){check(html.includes('data-os-view="'+pane+'"'),"Tab "+pane+" missing");check(html.includes('data-os-panel="'+pane+'"'),"Pane "+pane+" missing")}
+for(const id of ["osLoginForm","osCourses","osModules","osAttendance","osExamList","osGrades","osExamQuestions","osCredentialForm","osResearchForm","osModuleForm","osAttendanceForm","osAssignForm","osCreateCourseForm","osCreateExamForm","osQuestionForm","osAdminCerts","osAdminResearch","osQualityList"])check(html.includes('id="'+id+'"'),"Missing "+id);
+check(html.includes('data-role="admin" hidden')&&html.includes('data-role="faculty" hidden'),"Privileged UI hidden by default");
+check(html.includes('id="osGate" hidden')&&html.includes('id="osApp" hidden'),"No sensitive UI on initial page render");
+check(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),"Same authentication package as existing portal");
+check(js.includes("nabd_os_assign_faculty")&&js.includes("nabd_os_publish_exam")&&js.includes("nabd_os_add_exam_question"),"Faculty sync and admin question/publishing RPCs");
+const schema=read("supabase/migrations/20261108_university_os_v17_v22.sql"),
+hardening=read("supabase/migrations/20261108_university_os_faculty_attendance_hardening.sql");
+for(const t of ["faculty_assignments","course_modules","attendance","exams","exam_questions","exam_keys","exam_attempts","certificate_requests","research_proposals","audit_events"])check(schema.includes("public.nabd_os_"+t),"Missing schema table "+t);
+check((schema.match(/enable row level security;/g)||[]).length===10,"All ten new tables have RLS enabled");
+check(schema.includes("revoke all on function public.nabd_os_submit_exam")&&schema.includes("grant execute on function public.nabd_os_submit_exam")&&schema.includes("to authenticated;"),"Grade RPC restricted to logged-in accounts");
+check(schema.includes("revoke execute on function public.issue_certificate")&&schema.includes("revoke execute on function public.approve_application"),"Existing admin RPCs no longer execute for anonymous users");
+check(schema.includes("student_id=(select auth.uid())")&&schema.includes("created_by=(select auth.uid())"),"Owner-bound policies");
+check(schema.includes("unique(exam_id,student_id)")&&schema.includes("pg_column_size(p_answers)>16384"),"Attempt uniqueness and payload limit");
+check(schema.includes("nabd_os_exam_keys")&&schema.includes("correct_index")&&js.includes("p_correct_index")&&!js.includes('db.from("nabd_os_exam_keys")'),"Answer correctness stored server-side only");
+check(hardening.includes("nabd_teaching_assignments")&&hardening.includes("nabd_os_faculty_assignments"),"Both faculty systems synchronised atomically");
+check(hardening.includes("nabd_os_validate_attendance")&&hardening.includes("Identifiers cannot change")===false,"Attendance validation trigger declared");
+const home=read("index.html");check(home.includes('id="university-os-v22"'),"Homepage V22 gateway");
+for(const p of ["portal.html","lecturers.html","admin.html","nabd-global-research.html"]){check(read(p).includes('href="university-os.html"'),"V22 integration in "+p);check(existsSync(resolve(root,p)),"Missing existing "+p)}
+for(const p of ["supabase/migrations/20261105_teaching_studio.sql","assets/js/lecturers.js","assets/js/portal.js"])check(existsSync(resolve(root,p)),"Existing learning/faculty scripts remain "+p);
+console.log("NABD University OS V17–V22 integrity: "+checks+" checks passed.");
