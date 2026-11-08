@@ -37,11 +37,11 @@ async function run(){
    assert.equal(await page.locator(".nlg-human li").count(),8,"Eight manual approvals are kept pending");
    assert.equal(await page.locator(".nlg-extra").count(),5,"Real supporting tables are counted separately");
    assert.match(await page.locator("#launch-readiness").innerText(),/الشهادات/,"Legacy certificate counts are qualified");
-   const timestamp=await page.evaluate(()=>window.testStatusTimestamp||document.querySelector(".nlg-meta")?.textContent);
+   const timestamp=(await page.locator(".nlg-meta").innerText()).match(/\d{4}-\d{2}-\d{2}[^·]+UTC/)?.[0];
    await page.getByRole("button",{name:/تغيير لغة التقرير/}).click();
    assert.match(await page.locator("#launch-readiness").innerText(),/Core operating prerequisites/);
    assert.equal(await page.locator("#launch-readiness").getAttribute("dir"),"ltr","English direction");
-   assert.equal(await page.locator(".nlg-meta").innerText(),timestamp,"Switching language must not refresh verification time");
+   assert.equal((await page.locator(".nlg-meta").innerText()).match(/\d{4}-\d{2}-\d{2}[^·]+UTC/)?.[0],timestamp,"Switching language must not refresh verification time");
    await page.evaluate(()=>{window.testFailure="nabd_os_exam_questions";window.launchModule.render(document.querySelector("#launch-readiness"),{db:window.testDb,user:{id:"test-admin"}})});
    await page.locator(".nlg-state.unknown").waitFor();
    assert.equal(await page.locator(".nlg-state.unknown").count(),1,"Errors are unknown, not empty");
