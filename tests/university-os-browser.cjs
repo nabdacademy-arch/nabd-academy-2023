@@ -67,7 +67,13 @@ async function run(){
    assert.equal(await page.locator("[data-os-view='admin']").isHidden(),true,"Student cannot see admin controls");
    assert.equal(await page.locator("[data-os-view='faculty']").isHidden(),true,"Student cannot see faculty controls");
    assert.match(await page.locator("#osCourses").innerText(),/فسيولوجيا القلب/);
+   // A future-dated exam is visible but cannot be started.
+   await page.evaluate(()=>{const exam=window.__mockData.nabd_os_exams[0];window.__mockData.nabd_os_exams.push({...exam,id:"77777777-7777-4777-8777-777777777778",title_ar:"اختبار قادم",title_en:"Upcoming exam",opens_at:"2099-01-01T00:00:00Z"})});
+   await page.locator("#osRefresh").click();
+   await page.waitForFunction(()=>document.querySelector("#osExamList")?.textContent?.includes("اختبار قادم"));
    await page.locator("[data-os-view='exams']").click();
+   assert.match(await page.locator("#osExamList").innerText(),/لم يبدأ|يفتح/,"Future exam marked unavailable");
+   assert.equal(await page.locator("#osExamList button").count(),1,"Only the open exam has a start button");
    await page.locator("#osExamList button").click();
    await page.locator("#osExamQuestions input[type=radio]").first().check();
    page.once("dialog",dialog=>dialog.accept());
@@ -82,6 +88,11 @@ async function run(){
    assert.ok(await page.locator("#osCredentialForm").isVisible(),"Credential review view");
    const scroll=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
    assert.ok(scroll<=4,"Student UI has no horizontal overflow at "+width+"px: "+scroll);
+   await page.locator("#osLogout").click();
+   await page.locator("#osGate").waitFor({state:"visible"});
+   assert.ok(await page.locator("#osApp").isHidden(),"Sign-out hides account data");
+   assert.equal(await page.locator("#osCourses").textContent(),"","Sign-out removes enrolled course DOM");
+   assert.equal(await page.locator("#osGrades").textContent(),"","Sign-out removes private grade DOM");
    await student.close();
    const admin=await browser.newContext({viewport:{width,height:850},reducedMotion:"reduce"});
    await admin.route(/^https:\/\//,r=>r.abort());await admin.addInitScript(initMock,{role:"admin"});
@@ -113,6 +124,11 @@ async function run(){
    assert.ok(await page.locator("#osQualityList").isVisible(),"Admin quality workspace");
    const adminScroll=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
    assert.ok(adminScroll<=4,"Admin UI has no horizontal overflow at "+width+"px: "+adminScroll);
+   await page.evaluate(()=>{window.__mockData.profiles[0].role="student"});
+   await page.locator("#osRefresh").click();
+   await page.waitForFunction(()=>document.querySelector("[data-os-view='admin']").hidden);
+   assert.ok(await page.locator("[data-os-panel='quality']").isHidden(),"Revoking admin access closes privileged panel");
+   assert.equal(await page.locator("#osAdminCourses").textContent(),"","Revoking admin access removes privileged course DOM");
    await admin.close();
   }
   console.log("NABD University OS browser: unauthenticated privacy gate, student learning and mock server grade, admin authoring, responsive RTL/LTR at 390 and 1440 px PASS.");
