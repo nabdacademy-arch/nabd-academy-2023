@@ -4,17 +4,28 @@
  var NAME_AR="أكاديمية نبض العلوم الطبية",NAME_EN="NABD Academy of Medical Sciences";
  var pages=[
   ["index.html","الرئيسية","Home"],
-  ["nabd-campus.html","الحرم الرقمي","Campus"],
-  ["campus.html","توفير البيانات","Lite"],
-  ["portal.html","بوابة الطالب","Students"],
-  ["academy.html","المسارات","Pathways"],
-  ["lecturers.html","المحاضرون","Lecturers"],
-  ["nabd-partners.html","الشراكات","Partners"],
-  ["global-lectures.html","المحاضرات الدولية","Lectures"],
+  ["nabd-campus.html","الحرم الرقمي الشخصي","Personal Campus"],
+  ["campus.html","الحرم الخفيف","Lite Campus"],
+  ["portal.html","بوابة الطالب","Student Portal"],
+  ["university-os.html","المقررات والاختبارات V22","Academic OS V22"],
+  ["academy.html","مسارات الأكاديمية","Pathways"],
+  ["lecturers.html","استوديو المحاضر","Faculty Studio"],
+  ["skill-passport.html","جواز المهارات","Skill Passport"],
+  ["learning/","مكتبة التعليم","Learning Universe"],
+  ["atlas/index.html","الأطلس الطبي","NABD ATLAS"],
+  ["infinity/","العالم الطبي التفاعلي","NABD INFINITY"],
+  ["nabd-medical-knowledge.html","المعرفة الطبية","Medical Knowledge"],
+  ["global-lectures.html","المحاضرات الدولية","Global Lectures"],
+  ["nabd-global-research.html","الشبكة البحثية","Research Network"],
+  ["research-starter-lab.html","مختبر الباحث الناشئ","Research Starter Lab"],
+  ["research-office.html","المكتب البحثي","Research Office"],
+  ["nabd-partners.html","الشراكات","Partnerships"],
+  ["executive-application.html","طلبات التطوع","Volunteer Applications"],
+  ["application-status.html","حالة الطلب","Application Status"],
+  ["admin.html","الإدارة (مصرح فقط)","Administration (restricted)"],
   ["index.html#founder","المؤسس","Founder"],
-  ["index.html#verify","التحقق من الشهادات","Verify"],
-  ["atlas/index.html","الأطلس الطبي","ATLAS"],
-  ["nabd-medical-knowledge.html","المعرفة الطبية","Medical Knowledge"]
+  ["index.html#verify","التحقق من الشهادات","Certificate Verification"],
+  ["policies.html","الخصوصية والسياسات","Policies & Privacy"]
  ];
  function ar(){return (document.documentElement.lang||"ar").toLowerCase().startsWith("ar");}
  function route(){var p=window.location.pathname.split("/").pop();return p||"index.html";}
@@ -54,7 +65,14 @@
   var bar=null;
   if(!document.body.classList.contains("nfs-home"))bar=identityBar();
   var search=commandPalette();
-  var mo=new MutationObserver(function(){if(bar){bar.text.textContent=ar()?NAME_AR:NAME_EN;bar.text.appendChild(bar.small);bar.nav.querySelectorAll("[data-ar][data-en]").forEach(function(n){n.textContent=n.getAttribute(ar()?"data-ar":"data-en")})}});
+  if(!document.querySelector("[data-nfs-search]")){
+   var launcher=document.createElement("button");launcher.type="button";
+   launcher.className="nfs-floating-search";launcher.setAttribute("aria-haspopup","dialog");
+   launcher.textContent=ar()?"◈ دليل نبض":"◈ NABD guide";
+   launcher.setAttribute("aria-label",ar()?"فتح البحث في بوابات نبض":"Search NABD portals");
+   launcher.addEventListener("click",search);document.body.appendChild(launcher);
+  }
+  var mo=new MutationObserver(function(){if(bar){bar.text.textContent=ar()?NAME_AR:NAME_EN;bar.text.appendChild(bar.small);bar.nav.querySelectorAll("[data-ar][data-en]").forEach(function(n){n.textContent=n.getAttribute(ar()?"data-ar":"data-en")})}var button=document.querySelector(".nfs-floating-search");if(button)button.textContent=ar()?"◈ دليل نبض":"◈ NABD guide";});
   mo.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   window.NABDOpenSearch=search;
  }
