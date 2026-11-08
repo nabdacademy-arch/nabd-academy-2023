@@ -1,0 +1,58 @@
+name: NABD University OS V17–V22
+on:
+  pull_request:
+    paths:
+      - 'university-os.html'
+      - 'assets/css/university-os.css'
+      - 'assets/js/university-os.js'
+      - 'index.html'
+      - 'portal.html'
+      - 'admin.html'
+      - 'lecturers.html'
+      - 'nabd-global-research.html'
+      - 'supabase/migrations/20261108_university_os*.sql'
+      - 'tests/university-os-*'
+      - '.github/workflows/university-os.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'university-os.html'
+      - 'assets/css/university-os.css'
+      - 'assets/js/university-os.js'
+      - 'index.html'
+      - 'portal.html'
+      - 'admin.html'
+      - 'lecturers.html'
+      - 'nabd-global-research.html'
+      - 'supabase/migrations/20261108_university_os*.sql'
+      - 'tests/university-os-*'
+      - '.github/workflows/university-os.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source, permissions and all 9 role-specific views
+        run: |
+          node --check assets/js/university-os.js
+          node tests/university-os-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Playwright and Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run role-specific browser acceptance
+        run: node tests/university-os-browser.cjs
