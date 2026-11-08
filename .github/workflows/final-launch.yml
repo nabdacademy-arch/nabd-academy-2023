@@ -1,0 +1,50 @@
+name: NABD FINAL LAUNCH operational gate
+on:
+  pull_request:
+    paths:
+      - 'admin.html'
+      - 'admin-extensions.js'
+      - 'assets/js/nabd-launch-gate.js'
+      - 'assets/css/nabd-launch-gate.css'
+      - 'docs/NABD_FINAL_LAUNCH_2026-11-08.md'
+      - 'tests/final-launch-*'
+      - '.github/workflows/final-launch.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'admin.html'
+      - 'admin-extensions.js'
+      - 'assets/js/nabd-launch-gate.js'
+      - 'assets/css/nabd-launch-gate.css'
+      - 'docs/NABD_FINAL_LAUNCH_2026-11-08.md'
+      - 'tests/final-launch-*'
+      - '.github/workflows/final-launch.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify secure launch readiness
+        run: |
+          node --check assets/js/nabd-launch-gate.js
+          node tests/final-launch-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run administrator permission and bilingual browser regression
+        run: node tests/final-launch-browser.cjs
