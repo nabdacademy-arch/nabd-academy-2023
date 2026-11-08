@@ -18,6 +18,7 @@ script.defer=true;document.head.append(script);
   ["university-os.html","المقررات والاختبارات V22","Academic OS V22"],
   ["nabd-one.html","NABD ONE · الحرم المتكامل","NABD ONE Campus"],
   ["nabd-university-360.html","NABD UNIVERSITY 360 · مساري الأكاديمي","NABD UNIVERSITY 360 · Personal campus"],
+  ["nabd-science-immune.html","جهاز المناعة العلمي","Science Immune System"],
   ["nabd-next-frontier.html","NABD NEXT FRONTIER · المشاريع الثمانية","NEXT FRONTIER Eight Science Projects"],
   ["nabd-360-lecturers.html","شبكة المحاضرين المتطوعين","Volunteer faculty applications"],
   ["nabd-connect.html","مراسلاتي مع الإدارة","My support tickets"],
