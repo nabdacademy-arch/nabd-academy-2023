@@ -1,0 +1,34 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {resolve,dirname} from "node:path";
+import {fileURLToPath} from "node:url";
+import {Script} from "node:vm";
+const root=resolve(dirname(fileURLToPath(import.meta.url)),"..");
+const read=p=>readFileSync(resolve(root,p),"utf8");
+const js=read("assets/js/nabd-assistant.js"),css=read("assets/css/nabd-assistant.css"),sig=read("assets/js/nabd-signature.js"),nav=read("assets/js/nabd-campus-navigator.js");
+let n=0;function ok(value,why){assert.ok(value,why);n++}
+new Script(js,{filename:"nabd-assistant.js"});n++;
+for(const id of ["nabd-chat-root","nb-chat-launch","nb-chat-panel","nb-chat-guide","nb-chat-ai","nb-chat-stream","nb-chat-form","nb-chat-input","nb-chat-send","nb-chat-support","nb-chat-clear","nb-chat-lang","nb-chat-mic"])ok(js.includes('"'+id+'"'),"Missing widget "+id);
+ok(js.includes("window.SpeechRecognition||window.webkitSpeechRecognition"),"Voice dictation feature detection");
+ok(js.includes('db.auth.getUser()'),"Authenticated AI access");
+ok(js.includes('db.functions.invoke(slug,{body:{question:q,language:state.lang,image:null}})'),"Reuse real secured AI Tutor endpoint");
+ok(js.includes('window.NABD_CONFIG')&&js.includes('smart-processor'),"Reuse existing academic app config");
+ok(js.includes('source=D.currentScript?.src')&&js.includes('new URL("../../",source)'),"Resolve links relative to shared asset root");
+ok(js.includes("role=\\"dialog\\"")&&js.includes('aria-modal=\\"true\\"'),"Accessible interactive modal");
+ok(js.includes("state.priorOverflow"),"Restore body overflow");
+ok(js.includes('e.key==="Escape"')&&js.includes('e.key==="Tab"'),"Escape/focus trap");
+ok(js.includes("textContent")&&!js.includes("insertAdjacentHTML"),"Safe text rendering");
+ok(js.includes("innerHTML=")&&js.includes("root.innerHTML="),"Trusted static UI scaffold only");
+ok(!/localStorage|sessionStorage|indexedDB|service_role|sb_secret_|\.from\("feedback"\)\.insert/i.test(js),"No chat persistence or private keys/automatic fake feedback");
+ok(!js.includes("document.cookie"),"No manual cookie access");
+ok(js.includes("sensitive.test(q)")&&js.includes("medical.test(q)"),"Medical and privacy guards");
+ok(js.includes('data?.user'),"AI requires authenticated user");
+ok(js.includes('nabd-chat-open'),"Re-open chat accessible via event");
+ok(css.includes("right:18px!important")&&css.includes("right:12px!important"),"Physically right anchored in all directions");
+ok(css.includes("max-width:650px")&&css.includes("prefers-reduced-motion")&&css.includes("focus-visible"),"Mobile+accessibility");
+ok(sig.includes("__NABD_MESSENGER_REQUESTED")&&nav.includes("__NABD_MESSENGER_REQUESTED"),"Launch from both existing shared navigations");
+ok(sig.includes('new URL("nabd-assistant.js?v=1",source)')&&nav.includes('new URL("nabd-assistant.js?v=1",source)'),"Same bootstrap from shared scripts");
+for(const p of ["academy.html","portal.html","nabd-2050.html","global-lectures.html","nabd-global-research.html","skill-passport.html","index.html#feedback","atlas/clinical-hub.html"]){ok(js.includes('"'+p+'"'),"Connect real existing academy route "+p)}
+ok(js.includes('no source')===false,"Avoid fake sources");
+ok(js.includes("لا تحول الرسائل تلقائيًا")||js.includes("لا تُنشئ تذاكر دعم")||js.includes("لا تحول الرسائل تلقائيًا"),"Support handoff is honest");
+console.log("NABD messenger integrity: "+n+" assertions passed");
