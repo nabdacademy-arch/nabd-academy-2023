@@ -25,11 +25,11 @@ const tasks=[
 ["راجع الاستحقاق قبل إصدار أي شهادة رسمية.","Review eligibility before issuing official credentials.","requests"]
 ];
 function link(href,label){const a=el("a","nar-link",label);a.href=href;return a}
-function draw(panel,stats,failures){
+function draw(panel,stats,failures,db,user){
  panel.replaceChildren();
  const header=el("div","nar-head"),title=el("h2","",tr("جاهزية التشغيل الأكاديمي","Academic activation status")),sub=el("p","",tr("عدادات مباشرة من قاعدة البيانات وفق صلاحيات المدير. وجود سجلات لا يعني اعتمادًا أكاديميًا أو جاهزية نهائية.","Live database counts under administrator permissions. Records alone do not imply academic accreditation or launch readiness."));
  const reload=el("button","nar-refresh",tr("تحديث البيانات ↻","Refresh data ↻"));reload.type="button";
- reload.addEventListener("click",()=>void load(panel,window.nabdSupabase));
+ reload.addEventListener("click",()=>void load(panel,db,user));
  const htxt=el("div");htxt.append(title,sub);header.append(htxt,reload);panel.append(header);
  const summary=el("div","nar-summary");
  const countPresent=sections.filter(x=>typeof stats[x[0]]==="number"&&stats[x[0]]>0).length;
@@ -61,7 +61,7 @@ async function load(panel,db,user){
   const results=await Promise.allSettled(sections.map(async([id,table,col])=>{const {count,error}=await db.from(table).select(col,{count:"exact",head:true});if(error)throw error;return [id,count]}));
   if(current!==ticket)return;
   const stats={},failures=[];results.forEach((r,i)=>{if(r.status==="fulfilled"&&Number.isInteger(r.value[1]))stats[r.value[0]]=r.value[1];else failures.push(sections[i][3])});
-  draw(panel,stats,failures);
+  draw(panel,stats,failures,db,user);
  }catch(e){if(current===ticket)panel.replaceChildren(el("p","nar-alert",tr("تعذّر التحقق من الصلاحيات أو اتصال قاعدة البيانات.","Unable to verify permission or reach the database.")))}
 }
 register({id:"academic-readiness",title:"جاهزية التعليم",render(panel,{db,user}){return load(panel,db,user)}});
