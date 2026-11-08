@@ -17,6 +17,8 @@ script.defer=true;document.head.append(script);
   ["portal.html","بوابة الطالب","Student Portal"],
   ["university-os.html","المقررات والاختبارات V22","Academic OS V22"],
   ["nabd-one.html","NABD ONE · الحرم المتكامل","NABD ONE Campus"],
+  ["nabd-university-360.html","UNIVERSITY 360 · مساري","UNIVERSITY 360 Academic Journey"],
+  ["nabd-360-lecturers.html","التقديم كمحاضر متطوع","Apply to Volunteer Lecturer"],
   ["nabd-university-360.html","NABD UNIVERSITY 360 · مساري الأكاديمي","NABD UNIVERSITY 360 · Personal campus"],
   ["nabd-360-lecturers.html","شبكة المحاضرين المتطوعين","Volunteer faculty applications"],
   ["nabd-connect.html","مراسلاتي مع الإدارة","My support tickets"],
