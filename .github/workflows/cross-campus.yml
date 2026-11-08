@@ -1,0 +1,73 @@
+name: NABD Cross-Campus Navigation and Academic Readiness
+on:
+  pull_request:
+    paths:
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/academic-readiness.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/css/nabd-campus-navigator.css'
+      - 'assets/css/academic-readiness.css'
+      - 'assets/css/nabd-signature.css'
+      - 'admin.html'
+      - 'university-os.html'
+      - 'nabd-global-research.html'
+      - 'research-starter-lab.html'
+      - 'research-office.html'
+      - 'nabd-v10.html'
+      - 'nabd-ai-executive.html'
+      - 'atlas/index.html'
+      - 'learning/index.html'
+      - 'infinity/index.html'
+      - 'tests/cross-campus-*'
+      - '.github/workflows/cross-campus.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'assets/js/academic-readiness.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/css/nabd-campus-navigator.css'
+      - 'assets/css/academic-readiness.css'
+      - 'assets/css/nabd-signature.css'
+      - 'admin.html'
+      - 'university-os.html'
+      - 'nabd-global-research.html'
+      - 'research-starter-lab.html'
+      - 'research-office.html'
+      - 'nabd-v10.html'
+      - 'nabd-ai-executive.html'
+      - 'atlas/index.html'
+      - 'learning/index.html'
+      - 'infinity/index.html'
+      - 'tests/cross-campus-*'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static integrity and safety checks
+        run: |
+          node --check assets/js/nabd-campus-navigator.js
+          node --check assets/js/academic-readiness.js
+          node --check assets/js/nabd-signature.js
+          node tests/cross-campus-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser navigation and nested route checks
+        run: node tests/cross-campus-browser.cjs
