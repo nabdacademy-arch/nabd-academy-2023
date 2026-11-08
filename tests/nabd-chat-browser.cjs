@@ -35,7 +35,7 @@ async function run(){
    await page.locator("#nb-chat-send").click();
    assert.match(await page.locator(".nb-chat-bot").last().innerText(),/البيانات|كلمات مرور|خاصة/,"Privacy warning");
    await page.locator("#nb-chat-ai").click();
-   assert.match(await page.locator("#nb-chat-disclosure").innerText(),/الحسابات المسجلة/,"Explicit AI mode disclosure");
+   assert.match(await page.locator("#nb-chat-disclosure").innerText(),/للحسابات المسجلة/,"Explicit AI mode disclosure");
    await page.locator("#nb-chat-input").fill("اشرح الدورة الدموية");
    await page.locator("#nb-chat-send").click();
    await page.waitForFunction(()=>document.querySelector("#nb-chat-send")?.disabled===false,{timeout:10000});
