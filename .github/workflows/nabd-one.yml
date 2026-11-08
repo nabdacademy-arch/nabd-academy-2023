@@ -1,0 +1,64 @@
+name: NABD ONE integrated release
+on:
+  pull_request:
+    paths:
+      - 'nabd-one.html'
+      - 'nabd-connect.html'
+      - 'admin.html'
+      - 'index.html'
+      - 'assets/css/nabd-one*.css'
+      - 'assets/js/nabd-one*.js'
+      - 'assets/js/nabd-connect.js'
+      - 'assets/js/nabd-assistant.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'supabase/migrations/20261108_nabd_one_connect_secure_tickets_v1.sql'
+      - 'tests/nabd-one-*'
+      - '.github/workflows/nabd-one.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-one.html'
+      - 'nabd-connect.html'
+      - 'admin.html'
+      - 'index.html'
+      - 'assets/css/nabd-one*.css'
+      - 'assets/js/nabd-one*.js'
+      - 'assets/js/nabd-connect.js'
+      - 'assets/js/nabd-assistant.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'supabase/migrations/20261108_nabd_one_connect_secure_tickets_v1.sql'
+      - 'tests/nabd-one-*'
+      - '.github/workflows/nabd-one.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check new scripts and access boundaries
+        run: |
+          node --check assets/js/nabd-one-public.js
+          node --check assets/js/nabd-connect.js
+          node --check assets/js/nabd-one-admin.js
+          node tests/nabd-one-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium runner
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Exercise real workflows with mocked accounts (no production writes)
+        run: node tests/nabd-one-browser.cjs

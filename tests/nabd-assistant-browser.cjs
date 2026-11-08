@@ -46,7 +46,7 @@ async function run(){
    await page.locator("#nb-chat-send").click();
    await page.locator('.nb-chat-bot').last().waitFor();
    await page.waitForFunction(()=>document.querySelector("#nb-chat-stream")?.textContent?.includes("Sign in")||document.querySelector("#nb-chat-stream")?.textContent?.includes("configuration"),null,{timeout:12000});
-   assert.equal(await page.locator("#nb-chat-support").getAttribute("href"),base+"/index.html#feedback","Real support form");
+   assert.equal(await page.locator("#nb-chat-support").getAttribute("href"),base+"/nabd-connect.html","Real authenticated support inbox");
    await page.keyboard.press("Escape");
    assert.equal(await page.locator("#nb-chat-panel").isVisible(),false,"Escape dismisses panel");
    assert.equal(await page.locator("#nb-chat-launch").getAttribute("aria-expanded"),"false");
