@@ -1,0 +1,52 @@
+name: NABD 2050 Future Lab
+on:
+  pull_request:
+    paths:
+      - 'nabd-2050.html'
+      - 'assets/css/nabd-2050.css'
+      - 'assets/js/nabd-2050.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'index.html'
+      - 'tests/nabd-2050-*'
+      - '.github/workflows/nabd-2050.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'nabd-2050.html'
+      - 'assets/css/nabd-2050.css'
+      - 'assets/js/nabd-2050.js'
+      - 'assets/js/nabd-signature.js'
+      - 'assets/js/nabd-campus-navigator.js'
+      - 'index.html'
+      - 'tests/nabd-2050-*'
+      - '.github/workflows/nabd-2050.yml'
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate scripting and educational integrity
+        run: |
+          node --check assets/js/nabd-2050.js
+          node tests/nabd-2050-integrity.test.mjs
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runner
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Validate actual student journey and AR graceful fallback
+        run: node tests/nabd-2050-browser.cjs
