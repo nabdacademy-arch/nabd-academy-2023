@@ -96,7 +96,8 @@ async function run(){
    await page.locator("#osCourseAr").fill("التشريح التطبيقي");
    await page.locator("#osCourseEn").fill("Applied Anatomy");
    await page.locator('#osCreateCourseForm button[type="submit"]').click();
-   await page.getByText("التشريح التطبيقي",{exact:true}).first().waitFor();
+   console.log("ADMIN DOM DIAG",await page.evaluate(()=>{const panel=document.querySelector('[data-os-panel="admin"]');const card=[...document.querySelectorAll("#osAdminCourses h5")].find(x=>x.textContent==="التشريح التطبيقي");return {appHidden:document.getElementById("osApp").hidden,panelHidden:panel.hidden,active:document.querySelector(".os-view-button.active")?.dataset.osView,buttonHidden:document.querySelector('[data-os-view="admin"]').hidden,cardText:card?.textContent,hiddenAncestor:card?.closest("[hidden]")?.id||card?.closest("[hidden]")?.dataset?.osPanel,globalStatus:document.getElementById("osGlobalStatus").textContent}}));
+   await page.getByText("التشريح التطبيقي",{exact:true}).first().waitFor({timeout:4000});
    await page.locator("[data-os-view='quality']").click();
    assert.ok(await page.locator("#osQualityList").isVisible(),"Admin quality workspace");
    const adminScroll=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
