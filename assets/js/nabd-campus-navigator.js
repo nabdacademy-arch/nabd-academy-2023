@@ -1,7 +1,7 @@
 /* NABD Cross-Campus Navigator — public routes only; no account data or browser storage. */
 (()=>{"use strict";
 if(document.getElementById("ncn-open"))return;
-const D=document, tr=(ar,en)=>D.documentElement.lang==="en"?en:ar;
+const D=document, siteRoot=D.currentScript?new URL("../../",D.currentScript.src):new URL("./",location.href), tr=(ar,en)=>D.documentElement.lang==="en"?en:ar;
 const data=[
 ["portal","study","بوابة الطالب","Student portal","حسابي مقرراتي الشهادات login", "My courses, certificates and account","portal.html"],
 ["university","study","نظام الجامعة V22","University OS V22","مقررات اختبارات درجات حضور شهادات","Academic courses, exams, grades, attendance","university-os.html"],
@@ -60,7 +60,7 @@ function render(){
  meta.textContent=tr("المسارات المتاحة: ","Available routes: ")+found.length;
  if(!found.length){results.append(el("p","ncn-empty",tr("لم نجد مسارًا مطابقًا. جرب عبارة أخرى.","No matching route. Try another term.")));return}
  for(const x of found){
-  const link=el("a","ncn-link");link.href=x[6];link.dataset.route=x[0];
+  const link=el("a","ncn-link");link.href=new URL(x[6],siteRoot).href;link.dataset.route=x[0];
   const symbol=el("span","ncn-mark",({study:"✦",faculty:"⌘",research:"⌬",management:"▣"}[x[1]]||"◈"));
   symbol.setAttribute("aria-hidden","true");
   const body=el("span","ncn-link-body"),name=el("strong","",tr(x[2],x[3])),desc=el("small","",tr(x[4],x[5]));
