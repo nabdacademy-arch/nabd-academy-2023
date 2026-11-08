@@ -1,0 +1,58 @@
+/* NABD ONE ADMIN console, isolated from existing admin dashboard */
+#nabd-one-operations{direction:rtl;text-align:start;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;color:#143d4a;line-height:1.65}
+#nabd-one-operations *{box-sizing:border-box}
+#nabd-one-operations h2,#nabd-one-operations h3,#nabd-one-operations h4{color:#074754}
+#nabd-one-operations .no-head{display:flex;justify-content:space-between;align-items:start;gap:18px;flex-wrap:wrap;border-bottom:1px solid #d5e7e9;padding-bottom:17px}
+#nabd-one-operations .no-head h2{font-size:25px;margin:5px 0}
+#nabd-one-operations .no-head p{color:#527580;font-size:13px;max-width:730px}
+#nabd-one-operations .no-kicker{color:#097e87;font:900 10px system-ui;letter-spacing:.18em}
+#nabd-one-operations .no-actions{display:flex;gap:7px;flex-wrap:wrap}
+#nabd-one-operations .no-link{display:inline-block;background:#e8f7f5;border-radius:10px;border:1px solid #bcdedd;padding:9px 12px;color:#036c73;text-decoration:none;font-weight:750;font-size:12px;margin:4px}
+#nabd-one-operations .no-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}
+#nabd-one-operations .no-tab{border-radius:11px;border:1px solid #bcd9de;background:#f0f8fa;color:#1d5663;padding:10px 14px;min-height:42px;font-weight:800;font-size:12px}
+#nabd-one-operations .no-tab.selected{background:#097584;color:#fff;border-color:#087584}
+#nabd-one-operations .no-status{min-height:28px;font-size:12px;color:#387777}
+#nabd-one-operations .no-error{color:#a72c37!important;background:#fff4f4;padding:10px;border:1px solid #f3c3ca;border-radius:10px}
+#nabd-one-operations .no-row{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap;margin-bottom:14px}
+#nabd-one-operations .no-btn{border:1px solid #187a82;border-radius:9px;background:#087985;color:#fff;padding:10px 13px;font-size:12px;font-weight:800;min-height:41px}
+#nabd-one-operations button:disabled{opacity:.53;cursor:not-allowed}
+#nabd-one-operations button:focus-visible,#nabd-one-operations input:focus-visible,#nabd-one-operations select:focus-visible,#nabd-one-operations textarea:focus-visible,#nabd-one-operations a:focus-visible{outline:3px solid #e7ab3c;outline-offset:2px}
+#nabd-one-operations .no-inbox{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(0,1.5fr);gap:13px}
+#nabd-one-operations .no-ticket-list{max-height:650px;overflow:auto;display:flex;flex-direction:column;gap:7px}
+#nabd-one-operations .no-ticket{border:1px solid #cfe1e5;border-radius:10px;background:#f3fafa;text-align:start;color:#104755;display:flex;flex-direction:column;gap:5px;padding:12px;font-size:12px;cursor:pointer}
+#nabd-one-operations .no-ticket:hover,#nabd-one-operations .no-ticket[aria-current=true]{background:#dff4f2;border-color:#269eaa}
+#nabd-one-operations .no-ticket strong{overflow-wrap:anywhere}
+#nabd-one-operations .no-ticket small{color:#5d7983}
+#nabd-one-operations .no-ticket-detail{border:1px solid #d8e9ea;border-radius:13px;background:#fff;padding:16px;min-height:200px;min-width:0}
+#nabd-one-operations .no-meta{font-size:12px;color:#667e85;line-height:1.8;overflow-wrap:anywhere}
+#nabd-one-operations .no-empty{font-size:12px;color:#65818d;padding:18px}
+#nabd-one-operations .no-messages{display:flex;flex-direction:column;gap:8px;max-height:420px;min-height:100px;overflow:auto;margin:12px 0}
+#nabd-one-operations .no-message{background:#eef8fa;border:1px solid #d0e5e9;border-radius:12px;padding:12px;max-width:93%;white-space:pre-wrap;overflow-wrap:anywhere}
+#nabd-one-operations .no-message.staff{background:#e7f7f1;margin-inline-start:auto}
+#nabd-one-operations .no-message strong{font-size:11px;color:#126c70}
+#nabd-one-operations .no-message p{font-size:12px;line-height:1.8;margin:5px 0}
+#nabd-one-operations .no-message small{font-size:10px;color:#6c8590}
+#nabd-one-operations .no-reply{border-top:1px solid #dcebec;padding-top:15px}
+#nabd-one-operations .no-label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:750;color:#345c67;min-width:0}
+#nabd-one-operations .no-input{width:100%;background:#f8fcfc;color:#134a56;border:1px solid #bad4db;border-radius:9px;padding:10px 12px;font-size:12px;min-height:43px}
+#nabd-one-operations textarea.no-input{min-height:85px;resize:vertical}
+#nabd-one-operations .no-status-controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px;border-top:1px solid #dcebec;padding-top:15px;margin-top:15px}
+#nabd-one-operations .no-status-controls label{min-width:170px;max-width:250px}
+#nabd-one-operations .no-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;background:#f4fafa;padding:20px;border:1px solid #d2e6e7;border-radius:15px}
+#nabd-one-operations .no-consent{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#305764;grid-column:1/-1}
+#nabd-one-operations .no-consent input{width:18px;height:18px;accent-color:#16858a;flex:none}
+#nabd-one-operations .no-form button{justify-self:start}
+#nabd-one-operations .no-session-list{display:flex;flex-direction:column;gap:8px;margin-top:21px}
+#nabd-one-operations .no-session{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid #d5e8e9;padding:14px;background:#fbfdfd;border-radius:11px}
+#nabd-one-operations .no-session strong{font-size:12px}
+#nabd-one-operations .no-state{display:inline-block;font:750 11px system-ui;color:#127e7b;border:1px solid #7fc6c7;border-radius:8px;background:#eef9f7;padding:5px 9px}
+#nabd-one-operations .no-publish,#nabd-one-operations .no-cancel{background:#087f85;color:#fff;border:1px solid #187d85;padding:8px 11px;border-radius:8px;font-size:11px;font-weight:750}
+#nabd-one-operations .no-cancel{background:#9e4b3c;border-color:#9e4b3c}
+#nabd-one-operations .no-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+#nabd-one-operations .no-metric{border:1px solid #cce2e6;border-radius:13px;padding:15px;background:#f9fcfc;display:flex;flex-direction:column;gap:9px;align-items:start}
+#nabd-one-operations .no-metric strong{font-size:13px}
+#nabd-one-operations .no-metric span{font-size:27px;color:#09808a;font-weight:900}
+#nabd-one-operations .no-warning{font-size:13px;border:1px solid #f0dcb4;padding:15px;border-radius:10px;background:#fffaf1;color:#765622}
+#nabd-one-operations .no-ai-result{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f1faf9;padding:16px;border:1px solid #d3e7e5;border-radius:11px;margin-top:14px}
+@media(max-width:900px){#nabd-one-operations .no-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){#nabd-one-operations .no-inbox,#nabd-one-operations .no-form,#nabd-one-operations .no-metrics{grid-template-columns:1fr}#nabd-one-operations .no-ticket-list{max-height:320px}#nabd-one-operations .no-session{align-items:start}#nabd-one-operations .no-head h2{font-size:21px}}
