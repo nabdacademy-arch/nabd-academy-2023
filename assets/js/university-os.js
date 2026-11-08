@@ -4,7 +4,7 @@
  */
 (()=>{"use strict";
 const d=document,$=id=>d.getElementById(id),db=window.nabdSupabase;
-const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false};
+const S={user:null,profile:null,isAdmin:false,isFaculty:false,language:"ar",view:"study",courses:[],enrollments:[],modules:[],attendance:[],exams:[],attempts:[],faculty:[],requests:[],proposals:[],audit:[],questions:[],chosenExam:null,answers:{},busy:false,roster:[],rosterRequest:0};
 const tr=(ar,en)=>S.language==="ar"?ar:en;
 const loc=(ar,en)=>S.language==="ar"?(ar||en||""):(en||ar||"");
 const elt=(tag,cl,text)=>{const x=d.createElement(tag);if(cl)x.className=cl;if(text!==undefined&&text!==null)x.textContent=String(text);return x};
@@ -102,7 +102,32 @@ function renderFaculty(){const ids=facultyCourseIds(),out=$("osFacultyAssignment
  ids.forEach(id=>out.append(newRow(titleOfCourse(id),tr("يمكنك إضافة وحدات وحضور ضمن صلاحيتك.","You may manage units and attendance within your permissions."),"active").row));
  updateSelect("osModuleCourse",ids.map(id=>[id,titleOfCourse(id)]));updateAttendanceModules();
 }
-function updateAttendanceModules(){const allowed=new Set(facultyCourseIds()),rows=S.modules.filter(m=>allowed.has(m.course_id));updateSelect("osAttendanceModule",rows.map(x=>[x.id,titleOfCourse(x.course_id)+" · "+loc(x.title_ar,x.title_en)]))}
+function updateAttendanceModules(){
+ const allowed=new Set(facultyCourseIds()),rows=S.modules.filter(m=>allowed.has(m.course_id));
+ updateSelect("osAttendanceModule",rows.map(x=>[x.id,titleOfCourse(x.course_id)+" · "+loc(x.title_ar,x.title_en)]));
+ void refreshRoster();
+}
+async function refreshRoster(){
+ const ticket=++S.rosterRequest;
+ const unit=S.modules.find(m=>m.id===$("osAttendanceModule").value);
+ S.roster=[];updateSelect("osAttendanceStudent",[]);
+ if(!S.user||!unit||!facultyCourseIds().includes(unit.course_id)){
+  $("osRosterStatus").textContent=tr("لا توجد وحدة مختارة أو تكليف تدريس متاح.","No selected unit or faculty assignment.");
+  return;
+ }
+ $("osRosterStatus").textContent=tr("جارٍ تحميل طلاب المقرر المصرح لك بعرضهم.","Loading the authorised course roster.");
+ try{
+  const rows=await q(db.rpc("nabd_os_course_roster",{p_course_id:unit.course_id}));
+  if(ticket!==S.rosterRequest||!S.user||$("osAttendanceModule").value!==unit.id)return;
+  S.roster=Array.isArray(rows)?rows.filter(r=>r.student_id&&typeof r.full_name==="string"):[];
+  updateSelect("osAttendanceStudent",S.roster.map(r=>[r.student_id,r.full_name]));
+  $("osRosterStatus").textContent=tr("الطلاب المسجلون المتاحون: ","Available enrolled students: ")+S.roster.length;
+ }catch(error){
+  if(ticket!==S.rosterRequest)return;
+  S.roster=[];updateSelect("osAttendanceStudent",[]);
+  $("osRosterStatus").textContent=tr("تعذر تحميل القائمة؛ راجع تكليف المحاضر وصلاحياته.","Unable to load roster; check faculty assignment and permissions.");
+ }
+}
 function renderAdminCourses(){const out=$("osAdminCourses");clear(out);S.courses.forEach(c=>{const card=elt("article","os-mini-card");card.append(newChip(c.status),elt("strong","",loc(c.title_ar,c.title_en)),elt("p","",c.code+" · "+tr("ساعات: ","Hours: ")+c.hours));out.append(card)});
  const options=S.courses.map(c=>[c.id,loc(c.title_ar,c.title_en)+" · "+c.code]);["osAssignCourse","osExamCourse"].forEach(id=>updateSelect(id,options));
 }
@@ -131,7 +156,8 @@ async function saveModule(e){e.preventDefault();const id=$("osModuleCourse").val
  if(m.resource_url&&!m.resource_url.startsWith("https://")){report(tr("يجب أن يستخدم رابط المصدر HTTPS.","Resource links must use HTTPS."),true);return}
  await q(db.from("nabd_os_course_modules").insert(m).select("id").single());e.target.reset();report(tr("تم حفظ الوحدة التعليمية وفق الصلاحيات.","Learning unit saved under your role permissions."));await loadCollections()}
 async function saveAttendance(e){e.preventDefault();const moduleId=$("osAttendanceModule").value,module=S.modules.find(m=>m.id===moduleId);if(!module||!facultyCourseIds().includes(module.course_id))return;
- const payload={course_id:module.course_id,module_id:moduleId,student_id:$("osAttendanceStudent").value.trim(),status:$("osAttendanceStatus").value,recorded_by:S.user.id};
+ const studentId=$("osAttendanceStudent").value;if(!S.roster.some(r=>r.student_id===studentId)){report(tr("اختر طالبًا من القائمة المصرح بها.","Select an enrolled student from the authorised roster."),true);return}
+ const payload={course_id:module.course_id,module_id:moduleId,student_id:studentId,status:$("osAttendanceStatus").value,recorded_by:S.user.id};
  await q(db.from("nabd_os_attendance").upsert(payload,{onConflict:"module_id,student_id"}).select("id").single());e.target.reset();report(tr("تم تسجيل الحضور بالاعتماد على بيانات التسجيل.","Attendance recorded after enrolment and permissions checks."));await loadCollections()}
 async function createExam(e){e.preventDefault();if(!S.isAdmin)return;await q(db.from("nabd_os_exams").insert({course_id:$("osExamCourse").value,title_ar:$("osExamAr").value.trim(),title_en:$("osExamEn").value.trim(),passing_percent:Number($("osExamPass").value),created_by:S.user.id,status:"draft"}).select("id").single());e.target.reset();report(tr("أُنشئت مسودة اختبار. أضف الأسئلة ثم انشرها يدويًا.","Exam draft created. Add questions and publish only after review."));await loadCollections()}
 async function createQuestion(e){e.preventDefault();if(!S.isAdmin)return;
@@ -152,7 +178,7 @@ async function reviewProposal(entry,status){if(!S.isAdmin)return;const detail=pr
 function bind(){
  $("osLang").addEventListener("click",()=>{S.language=S.language==="ar"?"en":"ar";d.documentElement.lang=S.language;d.documentElement.dir=S.language==="ar"?"rtl":"ltr";d.querySelectorAll("[data-ar][data-en]").forEach(e=>{e.textContent=e.getAttribute("data-"+S.language)});$("osLang").textContent=S.language==="ar"?"EN":"عربي";if(S.user)renderAll()});
  $("osLoginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db)return;const btn=e.target.querySelector('button[type="submit"]');btn.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$("osEmail").value.trim(),password:$("osPassword").value});$("osPassword").value="";if(error)throw error;await bootstrap()}catch(err){report(tr("فشل الدخول. تحقق من بيانات الحساب.","Sign-in failed; verify account credentials."),true)}finally{btn.disabled=false}});
- $("osLogout").addEventListener("click",async()=>{if(db)await db.auth.signOut();S.user=null;S.profile=null;S.courses=[];S.enrollments=[];$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تم تسجيل الخروج.","Signed out."))});
+ $("osLogout").addEventListener("click",async()=>{if(db)await db.auth.signOut();S.user=null;S.profile=null;S.courses=[];S.enrollments=[];S.roster=[];S.rosterRequest++;updateSelect("osAttendanceStudent",[]);$("osApp").hidden=true;$("osGate").hidden=false;report(tr("تم تسجيل الخروج.","Signed out."))});
  $("osRefresh").addEventListener("click",bootstrap);
  d.querySelectorAll("[data-os-view]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.osView)));
  $("osCloseExam").addEventListener("click",()=>{$("osExamPlayer").hidden=true;S.chosenExam=null;S.questions=[];S.answers={}});
@@ -160,6 +186,7 @@ function bind(){
  const forms=[["osCreateCourseForm",createCourse],["osAssignForm",assignFaculty],["osModuleForm",saveModule],["osAttendanceForm",saveAttendance],["osCreateExamForm",createExam],["osQuestionForm",createQuestion],["osCredentialForm",requestCredential],["osResearchForm",sendProposal]];
  forms.forEach(([id,handler])=>$(id).addEventListener("submit",async e=>{e.preventDefault();const b=e.target.querySelector('button[type="submit"]');if(!S.user||b?.disabled)return;if(b)b.disabled=true;try{await handler(e)}catch(err){report(errMessage(err),true)}finally{if(b)b.disabled=false}}));
  $("osModuleCourse").addEventListener("change",updateAttendanceModules);
+ $("osAttendanceModule").addEventListener("change",()=>{void refreshRoster()});
  bootstrap();
 }
 if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",bind);else bind();

@@ -39,7 +39,7 @@ const initMock=({role})=>{
  window.supabase={createClient:()=>({
   auth:{getUser:async()=>({data:{user:{id:uid,email:"testing@example.invalid"}},error:null}),signInWithPassword:async()=>({data:{user:{id:uid}},error:null}),signOut:async()=>({error:null})},
   from:name=>query(name),
-  rpc:async (name,args)=>{window.__rpcCalls.push({name,args});if(name==="nabd_os_submit_exam"){dataset.nabd_os_exam_attempts.push({id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",exam_id:args.p_exam_id,student_id:uid,score:1,max_score:1,passed:true,submitted_at:new Date().toISOString()});return {data:{score:1,max_score:1,passed:true,attempt_id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"},error:null}}if(name==="nabd_os_publish_exam"){const row=dataset.nabd_os_exams.find(x=>x.id===args.p_exam_id);if(row)row.status="published";return {data:true,error:null}}if(name==="nabd_os_add_exam_question")return {data:"cccccccc-cccc-4ccc-8ccc-cccccccccccc",error:null};if(name==="nabd_os_assign_faculty")return {data:true,error:null};return {data:null,error:null}}
+  rpc:async (name,args)=>{window.__rpcCalls.push({name,args});if(name==="nabd_os_submit_exam"){dataset.nabd_os_exam_attempts.push({id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",exam_id:args.p_exam_id,student_id:uid,score:1,max_score:1,passed:true,submitted_at:new Date().toISOString()});return {data:{score:1,max_score:1,passed:true,attempt_id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"},error:null}}if(name==="nabd_os_publish_exam"){const row=dataset.nabd_os_exams.find(x=>x.id===args.p_exam_id);if(row)row.status="published";return {data:true,error:null}}if(name==="nabd_os_add_exam_question")return {data:"cccccccc-cccc-4ccc-8ccc-cccccccccccc",error:null};if(name==="nabd_os_assign_faculty")return {data:true,error:null};if(name==="nabd_os_course_roster")return {data:role==="admin"?[{student_id:"22222222-2222-4222-8222-222222222222",full_name:"Enrolled Learner Test"}]:[],error:null};return {data:null,error:null}}
  })};
 };
 async function run(){
@@ -90,6 +90,13 @@ async function run(){
    await page.locator("#osApp").waitFor({state:"visible"});
    assert.equal(await page.locator("[data-os-view='admin']").isHidden(),false,"Admin role can see course tools");
    assert.equal(await page.locator("[data-os-view='bank']").isHidden(),false,"Admin can see exam authoring");
+   await page.locator("[data-os-view='faculty']").click();
+   await page.waitForFunction(()=>document.querySelector("#osAttendanceStudent")?.options.length===1,{timeout:5000});
+   assert.equal(await page.locator("#osAttendanceStudent").isEnabled(),true,"Roster select enabled for authorised course");
+   assert.match(await page.locator("#osAttendanceStudent").innerText(),/Enrolled Learner Test/,"Faculty selects enrolled learner by name, not UUID");
+   const rosterCalls=await page.evaluate(()=>window.__rpcCalls.filter(x=>x.name==="nabd_os_course_roster"));
+   assert.ok(rosterCalls.length>=1&&rosterCalls[0].args.p_course_id===courseId,"Only the selected course roster requested via authenticated RPC");
+
    await page.locator("[data-os-view='admin']").click();
    await page.locator("#osCourseCode").fill("ANAT-120");
    await page.locator("#osCourseSlug").fill("human-anatomy-test");

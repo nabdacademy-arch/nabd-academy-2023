@@ -9,10 +9,12 @@ const html=read("university-os.html"),js=read("assets/js/university-os.js"),css=
 new Script(js,{filename:"university-os.js"});checks++;
 check(css.includes("@media(max-width:540px)")&&css.includes("prefers-reduced-motion"),"Responsive academic UI");
 check(html.includes('name="robots" content="noindex,nofollow"'),"Personal academic workspace is not indexed");
-check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=1'),"Uses existing browser auth client");
+check(html.includes("assets/js/supabase-client.js")&&html.includes('assets/js/university-os.js?v=2'),"Uses existing browser auth client");
 check(!/(?:service_role|sb_secret_|SUPABASE_SERVICE_ROLE_KEY)/i.test(js+html),"No secret/server role key in UI");
 check(!/\b(?:localStorage|sessionStorage)\b/.test(js),"No local persistence of user grades or private records");
 check(js.includes("nabd_os_submit_exam")&&js.includes("db.rpc("),"Exam submitted to server for scoring");
+check(html.includes('id="osAttendanceStudent" required disabled')&&html.includes('id="osRosterStatus"'),"Attendance uses an initially disabled roster selector instead of a free-text UUID");
+check(js.includes('db.rpc("nabd_os_course_roster"')&&js.includes('S.roster.some(r=>r.student_id===studentId)'),"Attendance restricted to the authorised roster with a second client-side guard");
 check(!/\.from\("nabd_os_exam_keys"\)/.test(js),"Student-facing JS never fetches answer keys");
 check(js.includes('window.nabdSupabase')&&js.includes('db.auth.getUser'),"Account identity verified with backend");
 const tabs=["study","exams","credentials","research","faculty","admin","bank","review","quality"];
@@ -22,6 +24,9 @@ check(html.includes('data-role="admin" hidden')&&html.includes('data-role="facul
 check(html.includes('id="osGate" hidden')&&html.includes('id="osApp" hidden'),"No sensitive UI on initial page render");
 check(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),"Same authentication package as existing portal");
 check(js.includes("nabd_os_assign_faculty")&&js.includes("nabd_os_publish_exam")&&js.includes("nabd_os_add_exam_question"),"Faculty sync and admin question/publishing RPCs");
+const rosterMigration=read("supabase/migrations/20261108_university_os_secure_course_roster.sql");
+check(rosterMigration.includes("security definer")&&rosterMigration.includes("revoke all on function public.nabd_os_course_roster(uuid) from public, anon;")&&rosterMigration.includes("grant execute on function public.nabd_os_course_roster(uuid) to authenticated;"),"Roster has authenticated-only RPC grant and denies anonymous execution");
+check(rosterMigration.includes("fa.course_id=p_course_id and fa.lecturer_id=caller and fa.active"),"Roster rows gated by active course assignment");
 const schema=read("supabase/migrations/20261108_university_os_v17_v22.sql"),
 hardening=read("supabase/migrations/20261108_university_os_faculty_attendance_hardening.sql");
 for(const t of ["faculty_assignments","course_modules","attendance","exams","exam_questions","exam_keys","exam_attempts","certificate_requests","research_proposals","audit_events"])check(schema.includes("public.nabd_os_"+t),"Missing schema table "+t);
