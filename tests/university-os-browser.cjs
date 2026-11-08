@@ -97,7 +97,11 @@ async function run(){
    await page.locator("#osCourseEn").fill("Applied Anatomy");
    await page.locator('#osCreateCourseForm button[type="submit"]').click();
    console.log("ADMIN DOM DIAG",await page.evaluate(()=>{const panel=document.querySelector('[data-os-panel="admin"]');const card=[...document.querySelectorAll("#osAdminCourses h5")].find(x=>x.textContent==="التشريح التطبيقي");return {appHidden:document.getElementById("osApp").hidden,panelHidden:panel.hidden,active:document.querySelector(".os-view-button.active")?.dataset.osView,buttonHidden:document.querySelector('[data-os-view="admin"]').hidden,cardText:card?.textContent,hiddenAncestor:card?.closest("[hidden]")?.id||card?.closest("[hidden]")?.dataset?.osPanel,globalStatus:document.getElementById("osGlobalStatus").textContent}}));
-   await page.getByText("التشريح التطبيقي",{exact:true}).first().waitFor({timeout:4000});
+   const added=page.locator("#osAdminCourses h5").filter({hasText:"التشريح التطبيقي"}).first();
+   await added.waitFor({state:"attached",timeout:5000});
+   const cardDiag=await added.evaluate(el=>{let node=el;const ancestors=[];while(node&&ancestors.length<16){ancestors.push({tag:node.tagName,id:node.id||"",hidden:node.hidden,display:getComputedStyle(node).display,visibility:getComputedStyle(node).visibility});node=node.parentElement}return {ancestors,rect:el.getBoundingClientRect().toJSON()}});
+   console.log("COURSE CARD VISIBILITY",cardDiag);
+   assert.equal(await added.isVisible(),true,"New course card should remain visible in admin tab");
    await page.locator("[data-os-view='quality']").click();
    assert.ok(await page.locator("#osQualityList").isVisible(),"Admin quality workspace");
    const adminScroll=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
