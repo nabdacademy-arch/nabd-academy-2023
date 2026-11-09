@@ -42,6 +42,12 @@ jobs:
           if(/supabase|functions\/v1|\/auth\/v1/.test(sw))
             throw new Error('Service worker must never cache the backend');
           if(!js.includes('consent_to_ai'))throw new Error('Missing explicit model-consent gate');
+          for(const id of ['agentForm','agentGoal','generatePlan','agentResult'])
+            if(!html.includes('id="'+id+'"'))throw new Error('AI planner control missing: '+id);
+          if(!html.includes('data-page="agent"'))throw new Error('Planner navigation missing');
+          for(const key of ["invokeAI('plan'","renderAgentPlan","confirm(","refreshTasks()"])
+            if(!js.includes(key))throw new Error('Planner approval flow missing '+key);
+          if(!sw.includes('shell-v4'))throw new Error('Stale service worker; refresh must match planner assets');
           NODE
       - name: Ensure source is independent of public academy home
         run: |
