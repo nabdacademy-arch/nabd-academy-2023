@@ -34,6 +34,7 @@ function navigate(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function showGate(){
+  if(typeof stopVoiceSession==='function')stopVoiceSession('الاستماع غير مفعل.');
   state.user=null;state.profile=null;state.memories=[];state.messages=[];state.tasks=[];state.events=[];
   state.challenges=[];state.challenge=null;state.human=[];state.humanDone=false;state.ai=null;
   $('workspace').hidden=true;$('gate').hidden=false;$('logout').hidden=true;
@@ -97,6 +98,7 @@ $('loginForm').addEventListener('submit',async event=>{
   finally{buttonBusy(button,false);}
 });
 $('logout').addEventListener('click',async()=>{
+  stopVoiceSession('تم إيقاف الميكروفون.');
   await api.auth.signOut();showGate();toast('تم تسجيل الخروج من التوأم الرقمي.');
 });
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
@@ -241,14 +243,116 @@ $('speakLast').addEventListener('click',()=>{
   utterance.lang=/[\u0600-\u06ff]/.test(value)?'ar':'en-US';utterance.rate=.94;
   speechSynthesis.speak(utterance);
 });
-$('voiceInput').addEventListener('click',()=>{
+// Transparent, user-started voice sessions inside the visible web app only.
+// The browser speech engine may use cloud processing and can stop the session at any time.
+const voiceSession={recognition:null,enabled:false,starting:false,keepAlive:false,failures:0,restartId:null};
+function voiceStatus(text,active=false){
+  const label=$('voiceStatus'),toggle=$('voiceContinuous'),indicator=$('voiceIndicator');
+  if(label)label.textContent=text;
+  if(indicator)indicator.classList.toggle('listening',active);
+  if(toggle){
+    toggle.textContent=active?'⏹ إيقاف الاستماع':'🎙️ جلسة صوتية مستمرة';
+    toggle.setAttribute('aria-pressed',String(active));
+    toggle.classList.toggle('voice-on',active);
+  }
+}
+function stopVoiceSession(reason='الاستماع متوقف'){
+  voiceSession.enabled=false;voiceSession.keepAlive=false;voiceSession.starting=false;
+  if(voiceSession.restartId){clearTimeout(voiceSession.restartId);voiceSession.restartId=null;}
+  const rec=voiceSession.recognition;voiceSession.recognition=null;
+  if(rec){try{rec.onend=null;rec.onerror=null;rec.stop();}catch{}}
+  voiceStatus(reason,false);
+}
+function voiceSectionCommand(text){
+  const phrase=text.toLocaleLowerCase('ar').replace(/[^\p{L}\s]/gu,' ').replace(/\s+/g,' ').trim();
+  const routes=[
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?ذاكر(?:ة|تي)$/,page:'memory'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?مهام$/,page:'tasks'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?محادث(?:ة|ات)$/,page:'chat'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?هوي(?:ة|تي)$/,page:'identity'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?تحدي$/,page:'challenge'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?خصوصي(?:ة|تي)$/,page:'privacy'},
+    {pat:/^(?:افتح|اذهب إلى|انتقل إلى) (?:ال)?رئيسي(?:ة|ة)$/,page:'home'}
+  ];
+  if(/^(?:أوقف الاستماع|توقف عن الاستماع|وقف الاستماع|ايقاف الاستماع|إيقاف الاستماع)$/.test(phrase)){
+    stopVoiceSession('أوقفت الاستماع بأمرك.');return true;
+  }
+  const matched=routes.find(x=>x.pat.test(phrase));
+  if(!matched)return false;
+  navigate(matched.page);toast('تم فتح القسم المطلوب بأمرك الصوتي.');
+  return true;
+}
+function beginRecognition({continuous=false}={}){
+  if(!state.user)return toast('سجّل الدخول أولًا لاستخدام الأوامر الصوتية.',true);
+  if(document.hidden)return toast('افتح التطبيق على الشاشة لتفعيل الميكروفون.',true);
   const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition){toast('متصفحك لا يدعم الإملاء الصوتي حاليًا.');return;}
-  const rec=new Recognition();rec.lang='ar-PS';rec.interimResults=false;rec.maxAlternatives=1;
-  rec.onresult=ev=>{$('chatInput').value=($('chatInput').value+' '+ev.results[0][0].transcript).trim();};
-  rec.onerror=()=>toast('تعذر الإملاء. تأكد من إذن الميكروفون.',true);
-  rec.start();toast('الاستماع بدأ بإذنك، تكلم الآن.');
+  if(!Recognition){voiceStatus('هذا المتصفح لا يدعم الاستماع الصوتي المستمر.',false);return;}
+  stopVoiceSession();
+  const rec=new Recognition();
+  rec.lang='ar-PS';rec.interimResults=false;rec.maxAlternatives=1;rec.continuous=continuous;
+  voiceSession.recognition=rec;voiceSession.enabled=true;voiceSession.keepAlive=continuous;
+  voiceSession.failures=0;
+  voiceStatus('الميكروفون قيد الاستماع داخل التطبيق. انطق «افتح الذاكرة» أو «أوقف الاستماع».',true);
+  rec.onresult=event=>{
+    if(!voiceSession.enabled||document.hidden)return;
+    for(let i=event.resultIndex;i<event.results.length;i++){
+      const result=event.results[i];
+      if(!result.isFinal)continue;
+      const transcript=String(result[0]?.transcript||'').trim();
+      if(!transcript)continue;
+      if(!voiceSectionCommand(transcript)){
+        const input=$('chatInput');
+        input.value=(input.value+' '+transcript).trim().slice(0,1800);
+        // The user's spoken content is never sent to AI automatically.
+        toast('تمت كتابة كلامك. اضغط إرسال إذا أردت مشاركة النص مع التوأم.');
+      }
+    }
+  };
+  rec.onerror=event=>{
+    if(!voiceSession.enabled)return;
+    const code=event?.error||'unknown';
+    if(['not-allowed','service-not-allowed','audio-capture'].includes(code)){
+      stopVoiceSession('توقف الاستماع: لا يوجد إذن ميكروفون أو الجهاز غير متاح.');
+      toast('الاستماع يحتاج إذن الميكروفون؛ لن نحاول إعادة تشغيله تلقائيًا.',true);
+      return;
+    }
+    voiceSession.failures++;
+    if(voiceSession.failures>=3){
+      stopVoiceSession('توقف الاستماع بعد تكرار أخطاء المتصفح.');
+      toast('المتصفح أوقف خدمة التعرف الصوتي. يمكنك إعادة تشغيلها يدويًا.',true);
+    }
+  };
+  rec.onend=()=>{
+    if(!voiceSession.enabled)return;
+    if(!voiceSession.keepAlive||document.hidden){
+      stopVoiceSession('انتهى الاستماع الصوتي.');return;
+    }
+    if(voiceSession.restartId)clearTimeout(voiceSession.restartId);
+    voiceSession.restartId=setTimeout(()=>{
+      voiceSession.restartId=null;
+      if(!voiceSession.enabled||document.hidden)return;
+      try{rec.start();}catch{
+        stopVoiceSession('تعذر الاستمرار في الاستماع.');toast('أوقف المتصفح الجلسة؛ أعد تشغيلها يدويًا.',true);
+      }
+    },650);
+  };
+  try{rec.start();}catch{
+    stopVoiceSession('تعذر بدء الميكروفون.');toast('تأكد من منح الإذن للمتصفح.',true);
+  }
+}
+$('voiceInput').addEventListener('click',()=>{
+  beginRecognition({continuous:false});
 });
+$('voiceContinuous').addEventListener('click',()=>{
+  if(voiceSession.enabled&&voiceSession.keepAlive)stopVoiceSession('تم إيقاف الجلسة الصوتية.');
+  else beginRecognition({continuous:true});
+});
+document.addEventListener('visibilitychange',()=>{
+  // Web microphone capture is deliberately not maintained outside the visible app.
+  if(document.hidden)stopVoiceSession('الاستماع متوقف أثناء إغلاق التطبيق أو الانتقال لتطبيق آخر.');
+});
+window.addEventListener('pagehide',()=>stopVoiceSession('تم إيقاف الميكروفون.'));
+
 
 function renderTasks(){
   const tasks=$('taskList'),events=$('eventList');clearNode(tasks);clearNode(events);
