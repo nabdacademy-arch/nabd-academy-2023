@@ -42,3 +42,9 @@ The GitHub workflow installs Java 17, Android SDK API 36, Gradle 9.6 and Android
 
 ## Free services
 GitHub Pages hosts the website free under public repo terms; GitHub Actions uses standard public-repository runners, subject to rate limits. The existing Supabase / Groq / Gemini integrations are subject to their own free-tier availability and quotas.
+
+## Android share-sheet integration (v0.3)
+- Select text in another Android app, tap **Share**, then choose **MOHAMMED AI TWIN**.
+- The native app displays the received text for your explicit approval. Approving inserts up to 2,000 characters into the private twin chat composer only; **nothing is uploaded or sent to AI until you personally press Send**.
+- The app does not scan other applications, read device clipboard history, read contacts wholesale, or intercept third-party sessions.
+- For Android foreground microphone service, a visible permission grant and ongoing notification are required; availability is subject to device and OS restrictions. Restarting background capture automatically on reboot is not supported.
