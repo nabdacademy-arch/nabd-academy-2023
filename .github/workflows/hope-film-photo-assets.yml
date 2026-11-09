@@ -1,0 +1,26 @@
+name: Hope Film Licensed Photo Assets
+on:
+  push:
+    branches: [media/hope-silent-film-assets-2027]
+    paths:
+      - 'tools/prepare_hope_film_photos.py'
+      - '.github/workflows/hope-film-photo-assets.yml'
+  workflow_dispatch:
+jobs:
+  source-photos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install Pillow requests
+      - name: Fetch and optimize licensed real photographs
+        run: python tools/prepare_hope_film_photos.py
+      - name: Package selected media
+        uses: actions/upload-artifact@v4
+        with:
+          name: nabd-hope-film-photo-assets-2027
+          path: video-photo-assets/
+          retention-days: 5
