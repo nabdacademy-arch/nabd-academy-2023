@@ -103,6 +103,7 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     });
     if(tab==='chat')$('nebChatInput').focus();
     if(bank)loadBankBrowser();
+    if(exam&&!examLoaded)loadExam();
   }
   launcher.addEventListener('click',async()=>{
     await verifyOwner();
