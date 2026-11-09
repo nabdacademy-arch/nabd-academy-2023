@@ -1,0 +1,35 @@
+name: Director Head & Neck Assistant Checks
+on:
+  push:
+    paths:
+      - 'assets/js/nabd-director-head-neck.js'
+      - 'assets/css/nabd-director-head-neck.css'
+      - 'nabd-ai-executive.html'
+      - '.github/workflows/director-head-neck.yml'
+  pull_request:
+    paths:
+      - 'assets/js/nabd-director-head-neck.js'
+      - 'nabd-ai-executive.html'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: node --check assets/js/nabd-director-head-neck.js
+      - name: Check director-only inclusion
+        run: |
+          grep -q 'id="nabd-head-neck-root"' nabd-ai-executive.html
+          grep -q 'assets/js/nabd-director-head-neck.js' nabd-ai-executive.html
+          if grep -q 'assets/js/nabd-director-head-neck.js' index.html; then
+            echo "Private assistant must not be mounted on public landing page"
+            exit 1
+          fi
+      - name: Check no static bank was published
+        run: |
+          if find . -type f -name '*Head_Neck_Exam_Bank*' | grep -q .; then
+            echo "Exam bank must remain in RLS-protected database"
+            exit 1
+          fi
