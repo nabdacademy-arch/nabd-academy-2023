@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import org.json.JSONObject;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -55,6 +56,7 @@ public final class MainActivity extends Activity {
     private EditText commandField;
     private TextView status;
     private boolean loaded=false;
+    private String pendingSharedText=null;
 
     @Override public void onCreate(Bundle state){
         super.onCreate(state);
@@ -186,6 +188,7 @@ public final class MainActivity extends Activity {
             }
             @Override public void onPageFinished(WebView view,String url){
                 loaded=true;status("واجهة التوأم جاهزة. استخدم الأزرار لفتح تطبيقات Android المسموحة.");
+                insertReviewedShareIntoChat();
             }
             @Override public void onReceivedError(WebView view,WebResourceRequest request,android.webkit.WebResourceError error){
                 if(request.isForMainFrame())status("تعذر فتح الموقع. تحقق من الاتصال بالإنترنت.");
@@ -246,6 +249,31 @@ public final class MainActivity extends Activity {
     }
     private void reviewIncoming(Intent intent){
         if(intent==null)return;
+        if(Intent.ACTION_SEND.equals(intent.getAction())){
+            // Deliberate share-target workflow: user chooses the text in another app.
+            // No background access, clipboard scraping or automatic AI submission.
+            if("text/plain".equals(intent.getType())){
+                CharSequence supplied=intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+                intent.removeExtra(Intent.EXTRA_TEXT);
+                if(supplied!=null){
+                    String text=supplied.toString().trim();
+                    if(!text.isEmpty()){
+                        final String safeText=text.length()>2000?text.substring(0,2000):text;
+                        String preview=safeText.length()>230?safeText.substring(0,230)+"…":safeText;
+                        new AlertDialog.Builder(this)
+                            .setTitle("مشاركة نص مع التوأم الرقمي")
+                            .setMessage("أنت اخترت مشاركة هذا النص من تطبيق آخر:\n\n"+
+                                preview+"\n\nسيُضاف إلى مربع المحادثة فقط، ولن يُرسل للذكاء الاصطناعي إلا إذا ضغطت إرسال بنفسك.")
+                            .setPositiveButton("إدراج النص",(d,w)->{
+                                pendingSharedText=safeText;
+                                insertReviewedShareIntoChat();
+                            })
+                            .setNegativeButton("إلغاء",null).show();
+                    }
+                }
+            }
+            return;
+        }
         String phrase=intent.getStringExtra(VoiceListeningService.EXTRA_COMMAND);
         if(phrase==null||phrase.isBlank())return;
         intent.removeExtra(VoiceListeningService.EXTRA_COMMAND);
@@ -259,6 +287,31 @@ public final class MainActivity extends Activity {
         super.onNewIntent(intent);
         setIntent(intent);
         reviewIncoming(intent);
+    }
+    private void insertReviewedShareIntoChat(){
+        if(pendingSharedText==null||pendingSharedText.isBlank())return;
+        if(web==null||!loaded){status("تمت الموافقة على النص. سيتم إدراجه بعد تحميل التوأم.");return;}
+        String current=web.getUrl();
+        Uri location=Uri.parse(current==null?"":current);
+        if(!"https".equalsIgnoreCase(location.getScheme()) ||
+          !"nabdacademy-arch.github.io".equalsIgnoreCase(location.getHost()) ||
+          location.getPath()==null ||
+          !location.getPath().startsWith("/nabd-academy-2023/mohammed-ai-twin/")){
+            status("اربط النص بصفحة التوأم الموثوقة أولًا.");return;
+        }
+        String text=pendingSharedText;
+        String encoded=JSONObject.quote(text); // safely encodes external text as a JavaScript string literal.
+        String script="(function(){var input=document.getElementById('chatInput');"+
+          "if(!input)return 'missing';"+
+          "input.value="+encoded+";"+
+          "document.querySelector('[data-page=\"chat\"]')?.click();"+
+          "return 'inserted';})()";
+        web.evaluateJavascript(script,result->{
+            if("\"inserted\"".equals(result)){
+                pendingSharedText=null;
+                status("تم إدراج النص للمراجعة. اضغط «إرسال» بنفسك إذا أردت.");
+            }else status("النص ينتظر فتح صفحة التوأم ثم يمكنك إعادة إدراجه.");
+        });
     }
     private void pickPhoneContact(){
         Intent pick=new Intent(Intent.ACTION_PICK);
