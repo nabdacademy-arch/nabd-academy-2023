@@ -2,14 +2,16 @@ name: Director Head & Neck Assistant Checks
 on:
   push:
     paths:
-      - 'assets/js/nabd-director-head-neck.js'
-      - 'assets/css/nabd-director-head-neck.css'
+      - 'assets/js/nabd-director-exam-bot.js'
+      - 'assets/css/nabd-director-exam-bot.css'
       - 'nabd-ai-executive.html'
+      - 'admin.html'
       - '.github/workflows/director-head-neck.yml'
   pull_request:
     paths:
-      - 'assets/js/nabd-director-head-neck.js'
+      - 'assets/js/nabd-director-exam-bot.js'
       - 'nabd-ai-executive.html'
+      - 'admin.html'
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -17,17 +19,30 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Check JavaScript syntax
-        run: node --check assets/js/nabd-director-head-neck.js
-      - name: Check director-only inclusion
+      - name: Check private tutor JavaScript syntax
+        run: node --check assets/js/nabd-director-exam-bot.js
+      - name: Check director-only single launcher and prevent stale launchers
         run: |
-          grep -q 'id="nabd-head-neck-root"' nabd-ai-executive.html
-          grep -q 'assets/js/nabd-director-head-neck.js' nabd-ai-executive.html
-          if grep -q 'assets/js/nabd-director-head-neck.js' index.html; then
-            echo "Private assistant must not be mounted on public landing page"
-            exit 1
-          fi
-      - name: Check no static bank was published
+          node <<'NODE'
+          const fs = require('node:fs');
+          for (const page of ['admin.html','nabd-ai-executive.html']) {
+            const html = fs.readFileSync(page, 'utf8');
+            const canonical = html.match(/src="assets\/js\/nabd-director-exam-bot\.js\?v=3"/g) || [];
+            if(canonical.length !== 1) throw new Error(page+': expected exactly one current tutor launcher');
+            if(/src="assets\/js\/(?:director-headneck-launch|nabd-director-head-neck)\.js/.test(html)) {
+              throw new Error(page+': old conflicting exam launcher is still mounted');
+            }
+          }
+          const executive = fs.readFileSync('nabd-ai-executive.html', 'utf8');
+          if (executive.includes('</main><script defer src="assets/js/nabd-campus-navigator.js')) {
+            throw new Error('Malformed certificate preview script was reintroduced');
+          }
+          const landing = fs.readFileSync('index.html', 'utf8');
+          if (landing.includes('nabd-director-exam-bot.js')) {
+            throw new Error('Director-only assistant must not mount on public landing page');
+          }
+          NODE
+      - name: Prevent shipping private question bank files
         run: |
           if find . -type f -name '*Head_Neck_Exam_Bank*' | grep -q .; then
             echo "Exam bank must remain in RLS-protected database"
