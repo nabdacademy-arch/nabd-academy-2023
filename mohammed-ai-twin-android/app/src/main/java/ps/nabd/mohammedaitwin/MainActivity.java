@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Locale;
 
 public final class MainActivity extends Activity {
-    private static final String TWIN_URL="https://nabdacademy-arch.github.io/nabd-academy-2023/mohammed-ai-twin/";
+    private static final String TWIN_URL="https://nabdacademy-arch.github.io/nabd-academy-2023/mohammed-ai-twin/?app=android";
     private static final String ACADEMY_URL="https://nabdacademy-arch.github.io/nabd-academy-2023/";
     private static final int VOICE_REQUEST=202, CONTACT_REQUEST=203, NOTIFY_REQUEST=204, MIC_REQUEST=205;
     private static final int NAVY=Color.rgb(7,17,31), PANEL=Color.rgb(14,33,51);
@@ -102,10 +102,10 @@ public final class MainActivity extends Activity {
         setContentView(root);
 
         LinearLayout hero=new LinearLayout(this);hero.setOrientation(LinearLayout.VERTICAL);
-        hero.setPadding(dp(17),dp(15),dp(17),dp(9));
-        TextView heading=text("✦  MOHAMMED AI TWIN",20,CYAN,true);
+        hero.setPadding(dp(14),dp(5),dp(14),dp(1));
+        TextView heading=text("✦ MOHAMMED AI TWIN",17,CYAN,true);
         heading.setContentDescription("Mohammed AI Twin");
-        TextView subtitle=text("مساعد Android شخصي · أوامر ظاهرة · موافقتك أولًا",11,SOFT,false);
+        TextView subtitle=text("أوامر واضحة · مساعد شخصي · موافقتك أولًا",10,SOFT,false);
         hero.addView(heading);hero.addView(subtitle);
         root.addView(hero,new LinearLayout.LayoutParams(-1,-2));
 
@@ -131,7 +131,7 @@ public final class MainActivity extends Activity {
             LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-2,dp(45));
             p.setMargins(dp(4),0,dp(4),0);commands.addView(b,p);
         }
-        strip.addView(commands);root.addView(strip);
+        strip.addView(commands);strip.setVisibility(View.GONE);
 
         LinearLayout bar=new LinearLayout(this);bar.setOrientation(LinearLayout.HORIZONTAL);
         bar.setPadding(dp(12),0,dp(12),dp(8));
@@ -148,10 +148,32 @@ public final class MainActivity extends Activity {
         bar.addView(commandField,fieldParams);
         Button execute=action("تنفيذ",()->handleCommand(commandField.getText().toString()));
         bar.addView(execute,new LinearLayout.LayoutParams(dp(76),dp(49)));
+        bar.setVisibility(View.GONE);
+        LinearLayout quickActions=new LinearLayout(this);
+        quickActions.setOrientation(LinearLayout.HORIZONTAL);
+        quickActions.setGravity(Gravity.CENTER_VERTICAL);
+        quickActions.setPadding(dp(10),dp(3),dp(10),dp(4));
+        Button quickMic=action("🎙️ صوت",this::listenVoice);
+        Button quickListen=action("🎧 مستمر",this::startContinuousVoice);
+        Button quickStop=action("⏹",this::stopContinuousVoice);
+        Button expandTools=action("☰ الأدوات",()->{
+            boolean expand=strip.getVisibility()==View.GONE;
+            strip.setVisibility(expand?View.VISIBLE:View.GONE);
+            bar.setVisibility(expand?View.VISIBLE:View.GONE);
+            status(expand?"الأدوات مفتوحة. يمكنك فتح التطبيقات وكتابة أوامر الهاتف.":"تم تصغير الأدوات لإظهار التوأم.");
+        });
+        for(Button b:new Button[]{quickMic,quickListen,quickStop,expandTools}){
+            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(43),1f);
+            p.setMargins(dp(2),0,dp(2),0);
+            b.setTextSize(11);b.setPadding(0,0,0,0);
+            quickActions.addView(b,p);
+        }
+        root.addView(quickActions);
+        root.addView(strip);
         root.addView(bar);
         status=text("",11,SOFT,false);
-        status.setPadding(dp(16),0,dp(16),dp(10));
-        status.setMaxLines(2);root.addView(status);
+        status.setPadding(dp(13),0,dp(13),dp(3));
+        status.setMaxLines(1);root.addView(status);
 
         web=new WebView(this);
         WebSettings setting=web.getSettings();
