@@ -19,13 +19,13 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
   }[ch]));
   const state = {
     owner:null, authorized:false, bank:[], loaded:false, loading:false,
-    progress:{}, lang:'ar', page:'chat', session:[], index:0, selected:null,
+    progress:{}, references:[], lang:'ar', page:'chat', session:[], index:0, selected:null,
     chat:[], showingResult:false, score:0, lastQuestion:null
   };
   const ui = {
     ar:{
       launch:'🧠 مساعد Head & Neck',subtitle:'خاص بحساب المؤسس • Level 2 / S1',
-      chat:'اسأل البوت', quiz:'تدريب وامتحان', stats:'تقدّمي',
+      chat:'اسأل البوت', quiz:'تدريب وامتحان', stats:'تقدّمي', sources:'المراجع',
       search:'اسأل عن عصب أو عضلة أو سؤال سابق…',send:'إرسال',
       start:'ابدأ الاختبار',next:'السؤال التالي',finish:'إنهاء الجلسة',
       chapter:'الفصل',kind:'البنك',difficulty:'الصعوبة',amount:'عدد الأسئلة',
@@ -50,7 +50,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
     },
     en:{
       launch:'🧠 Head & Neck Assistant',subtitle:'Founder account only • Level 2 / S1',
-      chat:'Ask the bot',quiz:'Practice & Exam',stats:'My progress',
+      chat:'Ask the bot',quiz:'Practice & Exam',stats:'My progress',sources:'Sources',
       search:'Ask about a nerve, muscle, or previous exam…',send:'Send',
       start:'Start quiz',next:'Next question',finish:'Finish session',
       chapter:'Chapter',kind:'Bank',difficulty:'Difficulty',amount:'Questions',
@@ -104,7 +104,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         '<nav class="hn-tabs" aria-label="Exam assistant views">'+
           '<button class="hn-tab active" data-hn-tab="chat" type="button">'+esc(t('chat'))+'</button>'+
           '<button class="hn-tab" data-hn-tab="quiz" type="button">'+esc(t('quiz'))+'</button>'+
-          '<button class="hn-tab" data-hn-tab="stats" type="button">'+esc(t('stats'))+'</button>'+
+          '<button class="hn-tab" data-hn-tab="stats" type="button">'+esc(t('stats'))+'</button>'+ 
+          '<button class="hn-tab" data-hn-tab="sources" type="button">'+esc(t('sources'))+'</button>'+
         '</nav>'+
         '<div id="hn-body" class="hn-body" aria-live="polite"></div>'+
       '</section>';
@@ -125,6 +126,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
     root.querySelector('[data-hn-tab=chat]').textContent=t('chat');
     root.querySelector('[data-hn-tab=quiz]').textContent=t('quiz');
     root.querySelector('[data-hn-tab=stats]').textContent=t('stats');
+    root.querySelector('[data-hn-tab=sources]').textContent=t('sources');
   }
   function close(){x('.hn-panel').hidden=true;x('.hn-launch').hidden=!state.authorized;}
   function bodyHtml(str){x('#hn-body').innerHTML=str;}
@@ -136,7 +138,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
     if(!state.loaded){bodyHtml('<p class="hn-note">'+esc(t('loadingError'))+'</p>');return;}
     if(state.page==='chat')chatView();
     else if(state.page==='quiz')quizView();
-    else statsView();
+    else if(state.page==='stats')statsView();
+    else sourcesView();
   }
   async function check(){
     try{
@@ -170,6 +173,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         .select('question_id,attempts,correct_count,last_choice,last_correct,next_review,updated_at')
         .eq('owner_id',state.owner).limit(10000);
       if(!progressError)(progress||[]).forEach(row=>state.progress[row.question_id]=row);
+      const {data:refs,error:refsError}=await client.from('nabd_director_exam_references').select('ref_id,payload').order('ref_id').limit(300);
+      if(!refsError)state.references=(refs||[]).map(r=>r.payload);
     }catch(err){
       state.loaded=false;state.bank=[];console.warn('NABD private exam bank unavailable',err?.message);
     }finally{state.loading=false;view();}
@@ -360,6 +365,16 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       if(state.session.length){state.page='quiz';view();}
       else alert(t('noItems'));
     };
+  }
+  function sourcesView(){
+    bodyHtml(statsBar()+'<h3>'+esc(t('sources'))+' ('+state.references.length+')</h3>'+
+      '<p class="hn-muted">'+esc(state.lang==='ar'?'هذه روابط المصادر المرجعية الخاصة بك؛ بعض الملفات تظل على Google Drive حسب صلاحيات المشاركة الخاصة بها.':'These are your reference links; Drive file access depends on the original sharing permissions.')+'</p>'+
+      state.references.map(r=>{
+        const url=typeof r.url==='string' && /^https:\/\//i.test(r.url)?r.url:'';
+        return '<div class="hn-match"><b>'+esc(r.name||r.title||r.source||'Reference')+'</b>'+
+          (r.note?'<p class="hn-muted">'+esc(r.note)+'</p>':'')+
+          (url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(state.lang==='ar'?'فتح المرجع':'Open source')+'</a>':'')+'</div>';
+      }).join(''));
   }
   base();baseRetitle();check();
   client.auth.onAuthStateChange((_event,_session)=>{setTimeout(check,180);});
