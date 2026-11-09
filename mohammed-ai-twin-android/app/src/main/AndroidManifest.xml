@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- The microphone can run only in a user-started foreground service with a visible notification. No hidden capture, broad contacts, SMS, call, overlay, accessibility, or package-all access. -->
     <queries>
+        <intent><action android:name="android.speech.RecognitionService"/></intent>
         <intent>
             <action android:name="android.intent.action.MAIN"/>
             <category android:name="android.intent.category.LAUNCHER"/>
