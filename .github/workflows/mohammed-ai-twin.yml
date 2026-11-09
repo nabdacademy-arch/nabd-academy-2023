@@ -1,0 +1,51 @@
+name: MOHAMMED AI TWIN — Build and Privacy Checks
+on:
+  push:
+    paths:
+      - 'mohammed-ai-twin/**'
+      - '.github/workflows/mohammed-ai-twin.yml'
+  pull_request:
+    paths:
+      - 'mohammed-ai-twin/**'
+      - '.github/workflows/mohammed-ai-twin.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify JavaScript syntax
+        run: |
+          node --check --input-type=module < mohammed-ai-twin/app.js
+          node --check mohammed-ai-twin/sw.js
+      - name: Validate complete standalone app and privacy boundaries
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs');
+          const root='mohammed-ai-twin/';
+          const html=fs.readFileSync(root+'index.html','utf8');
+          const js=fs.readFileSync(root+'app.js','utf8');
+          const sw=fs.readFileSync(root+'sw.js','utf8');
+          const manifest=JSON.parse(fs.readFileSync(root+'manifest.webmanifest','utf8'));
+          for(const f of ['index.html','style.css','app.js','icon.svg','manifest.webmanifest','sw.js','README.md'])
+            if(!fs.statSync(root+f).isFile())throw new Error('Missing '+f);
+          for(const id of ['gate','workspace','loginForm','profileForm','memoryForm','chatForm','taskForm','challengeArena','exportData','deleteEverything'])
+            if(!html.includes('id="'+id+'"'))throw new Error('Missing UI control '+id);
+          for(const fragment of ['moh_twin_profiles','moh_twin_memories','moh_twin_tasks','moh_twin_challenges','moh-twin-agent','self_study_or_authorized_demo','owner_id'])
+            if(!js.includes(fragment))throw new Error('Core function missing '+fragment);
+          for(const fragment of ['data-page="chat"','data-page="memory"','data-page="tasks"','data-page="challenge"'])
+            if(!html.includes(fragment))throw new Error('Section missing '+fragment);
+          if(!manifest.start_url.includes('index.html'))throw new Error('Missing standalone app start');
+          if(/SUPABASE_SERVICE_ROLE_KEY|GROQ_API_KEY|GEMINI_API_KEY/.test(js))
+            throw new Error('Client code must not use service role or AI provider secrets');
+          if(/supabase|functions\/v1|\/auth\/v1/.test(sw))
+            throw new Error('Service worker must never cache the backend');
+          if(!js.includes('consent_to_ai'))throw new Error('Missing explicit model-consent gate');
+          NODE
+      - name: Ensure source is independent of public academy home
+        run: |
+          if grep -q 'moh_twin_memories' index.html; then
+            echo 'Private AI twin memory must not be embedded in academy landing'
+            exit 1
+          fi
