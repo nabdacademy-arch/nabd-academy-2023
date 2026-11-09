@@ -47,6 +47,19 @@ const path=require("path");
         if(result.horizOverflow)reasons.push("gateway horizontal overflow");
         if(!result.title||result.title.length<12)reasons.push("gateway title missing");
         if(result.features!==3)reasons.push("feature chips missing");
+        if(route==="portal.html" && profile==="mobile") {
+          const collision=await page.evaluate(()=>{
+            const brand=document.querySelector(".portal-topbar .brand"),actions=document.querySelector(".portal-topbar .portal-top-actions");
+            if(!brand||!actions)return {error:"student header missing"};
+            const a=brand.getBoundingClientRect(),b=actions.getBoundingClientRect();
+            const overlap=(Math.min(a.right,b.right)-Math.max(a.left,b.left)>2)&&(Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>2);
+            const copy=document.querySelector(".portal-topbar .brand-copy");
+            return {overlap,copyOverflow:copy?copy.scrollWidth>copy.clientWidth+3:false};
+          });
+          if(collision.error)reasons.push(collision.error);
+          if(collision.overlap)reasons.push("student header brand/buttons overlap");
+          if(collision.copyOverflow)reasons.push("student header brand text overflows");
+        }
         if(!result.hasWorkingLink)reasons.push("broken CTA anchor");
         if(reasons.length)failed++;
         const safe=route.replace(/[^a-z0-9]+/gi,"-");
