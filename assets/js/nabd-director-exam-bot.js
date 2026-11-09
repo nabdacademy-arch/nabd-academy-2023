@@ -26,10 +26,20 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
       '<div><h2>NABD · HEAD & NECK EXAM TUTOR</h2><div class="neb-sub">المدير فقط · بنك خاص · 2,082 سؤالًا · عربي / English</div></div></div>'+
       '<button class="neb-close" type="button" id="nebClose" aria-label="إغلاق">✕</button></header>'+
       '<nav class="neb-nav" aria-label="أقسام المساعد">'+
-      '<button class="neb-tab active" type="button" data-neb-tab="exam">📚 محاكي الامتحانات</button>'+
+      '<button class="neb-tab active" type="button" data-neb-tab="bank">📖 جميع الأسئلة (2,082)</button>'+ 
+      '<button class="neb-tab" type="button" data-neb-tab="exam">📚 محاكي الامتحانات</button>'+
       '<button class="neb-tab" type="button" data-neb-tab="chat">🤖 اسأل البوت</button></nav>'+
       '<div class="neb-body">'+
-        '<div class="neb-pane" id="nebExamPane"><div class="neb-state" id="nebExamState">اختر «فتح المحاكي» لعرض جميع الامتحانات بعد التحقق من صلاحية المدير.<p><button class="neb-send" id="nebLoadExam" type="button">فتح المحاكي الخاص</button></p></div><div id="nebFrameSlot" style="flex:1;min-height:0" hidden></div></div>'+
+        '<div class="neb-pane" id="nebBankPane">'+
+          '<div class="neb-bank-toolbar"><input id="nebBankSearch" type="search" maxlength="180" placeholder="ابحث في جميع الأسئلة والخيارات..." aria-label="بحث شامل في الأسئلة" />'+
+          '<select id="nebBankPool" aria-label="مصدر الأسئلة"><option value="all">جميع المصادر</option><option value="generated">1,000 سؤال جديد</option><option value="original">أسئلة المصادر السابقة</option><option value="archived">الأسئلة التاريخية</option></select>'+
+          '<select id="nebBankChapter" aria-label="الفصل"><option value="all">كل الفصول</option></select>'+
+          '<button type="button" class="neb-chip" id="nebBankReset">إعادة التصفية</button></div>'+
+          '<div class="neb-bank-status" id="nebBankStatus" role="status" aria-live="polite">الأسئلة محفوظة بشكل خاص؛ سيتم تحميلها عند فتح البوت.</div>'+
+          '<div class="neb-bank-list" id="nebBankList"></div>'+
+          '<div class="neb-bank-footer"><button id="nebBankPrev" type="button" class="neb-chip">السابق</button><span id="nebBankPages">—</span><button id="nebBankNext" type="button" class="neb-chip">التالي</button></div>'+
+        '</div>'+
+        '<div class="neb-pane" id="nebExamPane" hidden><div class="neb-state" id="nebExamState">اختر «فتح المحاكي» لعرض جميع الامتحانات بعد التحقق من صلاحية المدير.<p><button class="neb-send" id="nebLoadExam" type="button">فتح المحاكي الخاص</button></p></div><div id="nebFrameSlot" style="flex:1;min-height:0" hidden></div></div>'+
         '<div class="neb-pane" id="nebChatPane" hidden>'+
           '<div class="neb-tools"><button class="neb-chip" type="button" data-neb-prompt="Foramen ovale">Foramen ovale</button>'+
           '<button class="neb-chip" type="button" data-neb-prompt="facial nerve">Facial nerve</button>'+
@@ -44,8 +54,9 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   document.body.append(launcher,overlay);
 
   const $=id=>document.getElementById(id);
-  let authorized=false,checking=false,owner=null,examLoaded=false,bankPromise=null,chatEnglish=false;
-  const examPane=$('nebExamPane'), chatPane=$('nebChatPane'), frameSlot=$('nebFrameSlot'), examState=$('nebExamState');
+  let authorized=false,checking=false,owner=null,examLoaded=false,bankPromise=null,chatEnglish=false,bankRows=null,bankFiltered=[],bankPage=0,bankLoadPromise=null;
+  const BANK_PAGE_SIZE=20;
+  const bankPane=$('nebBankPane'),examPane=$('nebExamPane'), chatPane=$('nebChatPane'), frameSlot=$('nebFrameSlot'), examState=$('nebExamState');
   function addMessage(kind,value){
     const el=document.createElement('div');
     el.className='neb-msg '+kind;
@@ -56,7 +67,8 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   addMessage('bot','أهلًا في مساعدك الخاص! اكتب اسم عصب أو شريان أو عضو أو ثقب، وسأبحث في أسئلتك وأعرض الإجابة وسببها إن كانا موثقين. للمحاكاة الكاملة افتح تبويب الامتحانات.');
 
   function revoke(){
-    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;
+    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;bankRows=null;bankFiltered=[];bankPage=0;bankLoadPromise=null;
+    $('nebBankList').replaceChildren();$('nebBankStatus').textContent='سجّل الدخول بحساب المدير لاستعراض الأسئلة.';$('nebBankPages').textContent='—';
     frameSlot.replaceChildren();frameSlot.hidden=true;examState.hidden=false;
     examState.replaceChildren();
     const description=document.createElement('p');
@@ -83,19 +95,20 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   }
   function close(){overlay.hidden=true;launcher.focus();}
   function switchTab(tab){
-    const exam=tab==='exam';
-    examPane.hidden=!exam;chatPane.hidden=exam;
+    const exam=tab==='exam',bank=tab==='bank';
+    bankPane.hidden=!bank;examPane.hidden=!exam;chatPane.hidden=tab!=='chat';
     overlay.querySelectorAll('[data-neb-tab]').forEach(button=>{
       button.classList.toggle('active',button.dataset.nebTab===tab);
       button.setAttribute('aria-selected',String(button.dataset.nebTab===tab));
     });
-    if(!exam)$('nebChatInput').focus();
+    if(tab==='chat')$('nebChatInput').focus();
+    if(bank)loadBankBrowser();
   }
   launcher.addEventListener('click',async()=>{
     await verifyOwner();
     if(!authorized)return;
     overlay.hidden=false;
-    switchTab('exam');
+    switchTab('bank');
     $('nebClose').focus();
   });
   $('nebClose').addEventListener('click',close);
@@ -142,6 +155,78 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     })();
     try{return await bankPromise;}catch(err){bankPromise=null;throw err;}
   }
+  async function loadBankBrowser(){
+    if(!authorized||!owner)return;
+    if(bankRows){filterBankBrowser();return;}
+    if(bankLoadPromise)return bankLoadPromise;
+    const expectedOwner=owner;
+    $('nebBankStatus').textContent='⏳ جارٍ تحميل بنك الأسئلة الحقيقي من قاعدة البيانات الخاصة...';
+    bankLoadPromise=(async()=>{
+      try{
+        const rows=await getBank();
+        if(!authorized||owner!==expectedOwner||dashboard.classList.contains('hidden'))return;
+        bankRows=rows.filter(entry=>{
+          const q=entry.content||{};
+          return typeof q.q==='string'&&q.q.trim().length>0&&Array.isArray(q.opts)&&q.opts.length>=2;
+        });
+        const select=$('nebBankChapter'),chapters=[...new Set(bankRows.map(row=>row.chapter||row.content?.chapter).filter(Boolean))].sort();
+        select.replaceChildren(new Option('كل الفصول','all'));
+        for(const chapter of chapters)select.append(new Option(chapter,chapter));
+        filterBankBrowser();
+      }catch(error){
+        $('nebBankStatus').textContent='تعذر تحميل الأسئلة: '+(error.message||'خطأ اتصال')+' — جرّب فتح البوت مجددًا.';
+        $('nebBankList').replaceChildren();$('nebBankPages').textContent='—';
+      }finally{bankLoadPromise=null;}
+    })();
+    return bankLoadPromise;
+  }
+  function filterBankBrowser(){
+    if(!bankRows)return;
+    const source=$('nebBankPool').value,chapter=$('nebBankChapter').value;
+    const terms=clean($('nebBankSearch').value).split(/\s+/).filter(Boolean);
+    bankFiltered=bankRows.filter(row=>{
+      const q=row.content||{};
+      if(source!=='all'&&row.pool!==source&&q.kind!==source)return false;
+      if(chapter!=='all'&&(row.chapter||q.chapter)!==chapter)return false;
+      if(terms.length){
+        const searchable=clean([q.q,q.qAr,...(q.opts||[]),...(q.optsAr||[]),q.why,q.whyAr,q.chapter,q.source].join(' '));
+        if(!terms.every(word=>searchable.includes(word)))return false;
+      }
+      return true;
+    });
+    bankPage=0;renderBankBrowser();
+  }
+  function renderBankBrowser(){
+    const list=$('nebBankList');list.replaceChildren();
+    if(!authorized||!bankRows)return;
+    const total=bankFiltered.length,pages=Math.max(1,Math.ceil(total/BANK_PAGE_SIZE));
+    bankPage=Math.min(bankPage,pages-1);
+    const start=bankPage*BANK_PAGE_SIZE;
+    const shown=bankFiltered.slice(start,start+BANK_PAGE_SIZE);
+    $('nebBankStatus').textContent='📚 '+total.toLocaleString('ar')+' سؤالًا مطابقًا من '+bankRows.length.toLocaleString('ar')+' سؤالًا محمّلًا. اعرض الإجابة وشرحها بعد المحاولة.';
+    if(!total){
+      const p=document.createElement('p');p.className='neb-bank-empty';p.textContent='لا توجد أسئلة بهذه التصفية. جرّب اختيار جميع المصادر أو تغيير مصطلح البحث.';list.append(p);
+    }
+    const frag=document.createDocumentFragment();
+    for(let i=0;i<shown.length;i++){
+      const item=document.createElement('div');item.className='neb-bank-entry';
+      const number=document.createElement('small');number.className='neb-bank-n';number.textContent='سؤال '+(start+i+1)+' من '+total;
+      item.append(number,qaCard(shown[i]));frag.append(item);
+    }
+    list.append(frag);
+    $('nebBankPages').textContent='صفحة '+(bankPage+1)+' / '+pages;
+    $('nebBankPrev').disabled=bankPage<=0;
+    $('nebBankNext').disabled=bankPage>=pages-1;
+    list.scrollTop=0;
+  }
+  $('nebBankSearch').addEventListener('input',filterBankBrowser);
+  $('nebBankPool').addEventListener('change',filterBankBrowser);
+  $('nebBankChapter').addEventListener('change',filterBankBrowser);
+  $('nebBankReset').addEventListener('click',()=>{
+    $('nebBankSearch').value='';$('nebBankPool').value='all';$('nebBankChapter').value='all';filterBankBrowser();
+  });
+  $('nebBankPrev').addEventListener('click',()=>{if(bankPage>0){bankPage--;renderBankBrowser();}});
+  $('nebBankNext').addEventListener('click',()=>{if((bankPage+1)*BANK_PAGE_SIZE<bankFiltered.length){bankPage++;renderBankBrowser();}});
   const stop=new Set(['اشرح','اشرحلي','ماذا','ما','هو','هي','عن','في','من','على','يا','بدي','عندي','اكتب','لي','أسئلة','سؤال','امتحان','اختبار','شرح','تفصيل','كيف','لماذا','what','which','the','and','for','from','with','this','explain','about','give','me','please','is','a','an','are']);
   function clean(v){return String(v||'').normalize('NFKD').toLowerCase().replace(/[\u064B-\u065F]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim();}
   function keywords(v){return clean(v).split(/\s+/).filter(x=>x.length>2&&!stop.has(x));}
