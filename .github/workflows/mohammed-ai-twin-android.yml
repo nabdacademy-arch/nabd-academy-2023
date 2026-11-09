@@ -42,16 +42,26 @@ jobs:
           folder=Path("mohammed-ai-twin-android")
           manifest=(folder/"app/src/main/AndroidManifest.xml").read_text()
           for forbidden in ["QUERY_ALL_PACKAGES","BIND_ACCESSIBILITY_SERVICE","SYSTEM_ALERT_WINDOW",
-                            "READ_SMS","SEND_SMS","CALL_PHONE","READ_CONTACTS","RECORD_AUDIO","REQUEST_INSTALL_PACKAGES"]:
+                            "READ_SMS","SEND_SMS","CALL_PHONE","READ_CONTACTS","REQUEST_INSTALL_PACKAGES"]:
               assert forbidden not in manifest, f"Forbidden broad privilege {forbidden}"
           for required in ['android.permission.INTERNET','android.permission.POST_NOTIFICATIONS',
-                           'android.permission.RECEIVE_BOOT_COMPLETED']:
+                           'android.permission.RECEIVE_BOOT_COMPLETED',
+                           'android.permission.RECORD_AUDIO','android.permission.FOREGROUND_SERVICE',
+                           'android.permission.FOREGROUND_SERVICE_MICROPHONE']:
               assert required in manifest
           activity=(folder/"app/src/main/java/ps/nabd/mohammedaitwin/MainActivity.java").read_text()
           for required in ['RecognizerIntent.ACTION_RECOGNIZE_SPEECH','Intent.ACTION_DIAL',
                            'Intent.ACTION_SENDTO','ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE',
                            'queryIntentActivities','mohammed-ai-twin/','onPermissionRequest']:
               assert required in activity, f"Missing safe user-driven capability: {required}"
+          service=(folder/"app/src/main/java/ps/nabd/mohammedaitwin/VoiceListeningService.java").read_text()
+          for required in ['ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE','NotificationChannel',
+                           'ACTION_STOP','SpeechRecognizer.createSpeechRecognizer',
+                           'EXTRA_COMMAND','startForeground']:
+              assert required in service, f"Transparent voice service missing {required}"
+          assert 'android:foregroundServiceType="microphone"' in manifest
+          assert 'android:exported="false"' in manifest
+          assert 'startContinuousVoice' in activity and 'stopContinuousVoice' in activity
           assert "startActivityForResult" in activity
           print("Minimal-privilege native app checks passed.")
           PY
