@@ -33,7 +33,8 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
         '<div class="neb-pane" id="nebBankPane">'+
           '<div class="neb-bank-toolbar"><input id="nebBankSearch" type="search" maxlength="180" placeholder="ابحث في جميع الأسئلة والخيارات..." aria-label="بحث شامل في الأسئلة" />'+
           '<select id="nebBankPool" aria-label="مصدر الأسئلة"><option value="all">جميع المصادر</option><option value="generated">1,000 سؤال جديد</option><option value="original">أسئلة المصادر السابقة</option><option value="archived">الأسئلة التاريخية</option></select>'+
-          '<select id="nebBankChapter" aria-label="الفصل"><option value="all">كل الفصول</option></select>'+
+          '<select id="nebBankChapter" aria-label="الفصل"><option value="all">كل الفصول</option></select>'+ 
+          '<select id="nebBankVerification" aria-label="حالة توثيق الإجابة"><option value="all">جميع حالات الإجابة</option><option value="checked">مراجع علميًا</option><option value="keyed">له مفتاح إجابة</option><option value="missing">بانتظار المراجعة</option></select>'+
           '<button type="button" class="neb-chip" id="nebBankReset">إعادة التصفية</button></div>'+
           '<div class="neb-bank-status" id="nebBankStatus" role="status" aria-live="polite">الأسئلة محفوظة بشكل خاص؛ سيتم تحميلها عند فتح البوت.</div>'+
           '<div class="neb-bank-list" id="nebBankList"></div>'+
@@ -185,12 +186,16 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   }
   function filterBankBrowser(){
     if(!bankRows)return;
-    const source=$('nebBankPool').value,chapter=$('nebBankChapter').value;
+    const source=$('nebBankPool').value,chapter=$('nebBankChapter').value,verified=$('nebBankVerification').value;
     const terms=clean($('nebBankSearch').value).split(/\s+/).filter(Boolean);
     bankFiltered=bankRows.filter(row=>{
       const q=row.content||{};
       if(source!=='all'&&row.pool!==source&&q.kind!==source)return false;
       if(chapter!=='all'&&(row.chapter||q.chapter)!==chapter)return false;
+      const validKey=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<(q.opts||[]).length;
+      if(verified==='checked'&&q.answerVerified!=='externally_checked')return false;
+      if(verified==='keyed'&&!validKey)return false;
+      if(verified==='missing'&&validKey)return false;
       if(terms.length){
         const searchable=clean([q.q,q.qAr,...(q.opts||[]),...(q.optsAr||[]),q.why,q.whyAr,q.chapter,q.source].join(' '));
         if(!terms.every(word=>searchable.includes(word)))return false;
@@ -206,7 +211,9 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     bankPage=Math.min(bankPage,pages-1);
     const start=bankPage*BANK_PAGE_SIZE;
     const shown=bankFiltered.slice(start,start+BANK_PAGE_SIZE);
-    $('nebBankStatus').textContent='📚 '+total.toLocaleString('ar')+' سؤالًا مطابقًا من '+bankRows.length.toLocaleString('ar')+' سؤالًا محمّلًا. اعرض الإجابة وشرحها بعد المحاولة.';
+    const keyed=bankRows.filter(row=>Number.isInteger(row.content?.answer)&&row.content.answer>=0&&row.content.answer<(row.content.opts||[]).length).length;
+    $('nebBankStatus').textContent='📚 '+total.toLocaleString('ar')+' سؤالًا مطابقًا من '+bankRows.length.toLocaleString('ar')+
+      ' · مفاتيح متاحة: '+keyed.toLocaleString('ar')+' · بانتظار التدقيق: '+(bankRows.length-keyed).toLocaleString('ar')+'.';
     if(!total){
       const p=document.createElement('p');p.className='neb-bank-empty';p.textContent='لا توجد أسئلة بهذه التصفية. جرّب اختيار جميع المصادر أو تغيير مصطلح البحث.';list.append(p);
     }
@@ -225,8 +232,9 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   $('nebBankSearch').addEventListener('input',filterBankBrowser);
   $('nebBankPool').addEventListener('change',filterBankBrowser);
   $('nebBankChapter').addEventListener('change',filterBankBrowser);
+  $('nebBankVerification').addEventListener('change',filterBankBrowser);
   $('nebBankReset').addEventListener('click',()=>{
-    $('nebBankSearch').value='';$('nebBankPool').value='all';$('nebBankChapter').value='all';filterBankBrowser();
+    $('nebBankSearch').value='';$('nebBankPool').value='all';$('nebBankChapter').value='all';$('nebBankVerification').value='all';filterBankBrowser();
   });
   $('nebBankPrev').addEventListener('click',()=>{if(bankPage>0){bankPage--;renderBankBrowser();}});
   $('nebBankNext').addEventListener('click',()=>{if((bankPage+1)*BANK_PAGE_SIZE<bankFiltered.length){bankPage++;renderBankBrowser();}});
