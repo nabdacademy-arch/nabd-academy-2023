@@ -31,3 +31,11 @@ Owner-only digital twin app with opt-in personality and memory, private AI chat,
 ## Verify
 Run: node --check --input-type=module < mohammed-ai-twin/app.js
 GitHub Actions workflow: mohammed-ai-twin.yml.
+
+## Foreground voice mode (V3)
+- User may start a visible continuous recognition session from the chat page. A green microphone-status indicator and a clear stop control are displayed.
+- Recognized spoken commands can navigate only **within this app**: memory, tasks, chat, profile, challenge, privacy and home. The stop phrase also ends listening.
+- Other phrases are transcribed to the message composer and **not sent** to the AI or stored until the user explicitly presses Send.
+- SpeechRecognition availability varies by mobile browser; the browser's recognition provider may process audio outside the app, and permission must be granted in browser controls.
+- Microphone recognition stops immediately when the document is hidden, the app is backgrounded, the user signs out or the page is left. This web feature is **not 24/7 Android background listening**.
+- A separately built, opt-in native Android assistant with visible permissions, Android role selection, and microphone indicators would be required for permitted device integrations. No hidden recording, anti-detection, unattended access to accounts, or proctored exam automation is built.
