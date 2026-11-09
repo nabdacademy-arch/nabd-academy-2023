@@ -34,3 +34,27 @@ label{display:flex;flex-direction:column;gap:7px;color:#d2e8f1;font-size:12px;fo
 @media(max-width:830px){.gate-shell{grid-template-columns:1fr;gap:30px;padding:33px 20px}.gate-copy h1{font-size:36px}.workspace{display:flex;flex-direction:column}.side{border-left:0;border-bottom:1px solid #24465e;padding:12px}.profile-card,.side-note{display:none}.side nav{flex-direction:row;overflow-x:auto;gap:5px;scrollbar-width:thin}.nav-btn{flex:0 0 auto;white-space:nowrap;padding:8px 10px;font-size:11px}.nav-btn span{font-size:14px}.content{padding:22px 14px}.columns{grid-template-columns:1fr}.privacy-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:550px){.topbar{padding:11px 13px;min-height:72px}.brand-mark{width:43px;height:43px;font-size:25px}.brand-name b{font-size:11px;letter-spacing:.4px}.brand-name small{font-size:7px;letter-spacing:.4px}.status-chip{font-size:0;padding:6px}.status-chip i{width:8px;height:8px}.header-right .btn{font-size:10px;padding:6px 10px}.login-card{padding:21px}.stats{gap:8px}.stat{padding:15px 12px}.stat strong{font-size:30px}.stat span{font-size:10px}.section-head{align-items:flex-start;flex-wrap:wrap}.section-head h1,.headline h1{font-size:24px}.version-tag{display:none}.hero-panel{padding:20px}.hero-panel h2{font-size:21px}.form-grid,.privacy-grid{grid-template-columns:1fr}.form-panel,.panel{padding:17px}.chat-log{padding:13px}.bubble{max-width:95%;padding:11px;font-size:12px}.chat-form{padding:8px;gap:6px}.chat-form .btn{padding:8px 12px}.icon-btn{width:37px;flex-basis:37px}.item-card{flex-direction:column}.item-actions{width:100%;justify-content:flex-start}.scoreboard{padding:13px}.scoreboard .score{font-size:32px}.gate-tags{margin-top:15px}.site-footer{font-size:8px;flex-direction:column;text-align:center}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+/* Transparent agent: compact, actionable plans instead of decorative controls. */
+.agent-result{margin-top:19px;display:flex;flex-direction:column;gap:10px}
+.agent-result>h2{font-size:20px;color:var(--cyan);margin:0}
+.agent-result>.item-card{background:linear-gradient(110deg,#0d2a3d,#113445);border-color:#327286}
+.agent-step .item-main strong{font-size:14px;color:#edfaff}
+.agent-step .item-main small{display:block;color:#89cbd5;margin-bottom:7px}
+.agent-step .item-actions{align-self:center}
+.agent-step .btn{white-space:nowrap;font-size:11px}
+@media(max-width:830px){
+  .gate-shell{display:flex;flex-direction:column;align-items:stretch;gap:17px;min-height:auto;padding:15px 15px 34px}
+  .gate-shell .login-card{order:-1;width:100%;max-width:520px;margin-inline:auto;padding:20px}
+  .gate-shell .gate-copy{order:1;width:100%;max-width:620px;margin-inline:auto}
+  .gate-shell .gate-copy h1{font-size:clamp(28px,7vw,39px);line-height:1.55;margin:10px 0}
+  .gate-shell .gate-copy p{font-size:12px;line-height:1.95}
+  .gate-shell .gate-tags{margin-top:12px}
+}
+@media(max-width:550px){
+  .gate-shell{padding:12px}
+  .gate-shell .login-card{padding:17px;gap:10px}
+  .gate-shell .login-card h2{font-size:20px}
+  .gate-shell .login-card p{margin:0}
+  .agent-step .item-actions{align-self:stretch;width:100%}
+  .agent-step .item-actions .btn{width:100%}
+}
