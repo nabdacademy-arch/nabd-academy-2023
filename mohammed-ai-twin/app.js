@@ -175,7 +175,26 @@ async function deleteMemory(id){
 function renderChat(){
   const target=$('chatLog');clearNode(target);
   if(!state.messages.length)target.append(make('div','bubble assistant','مرحبًا! أنا مساعدك الرقمي، أستخدم فقط ما تختار إضافته في ملفك وذاكرتك. كيف أساعدك اليوم؟'));
-  else for(const m of state.messages)target.append(make('div','bubble '+(m.role==='user'?'user':'assistant'),m.content));
+  else for(const m of state.messages){
+    const bubble=make('div','bubble '+(m.role==='user'?'user':'assistant'),m.content);
+    if(m.role!=='user'){target.append(bubble);continue;}
+    const line=make('div','chat-user-block');
+    const remember=make('button','tiny-btn','＋ تذكّر هذه المعلومة');
+    remember.type='button';remember.title='أحفظ هذا النص في ذاكرة التوأم فقط بإذنك';
+    remember.addEventListener('click',async()=>{
+      if(!confirm('هل توافق على حفظ هذا النص في ذاكرة التوأم واستخدامه لاحقًا عند تفعيل AI؟'))return;
+      if(state.memories.some(x=>x.content===m.content)){toast('هذه المعلومة محفوظة مسبقًا.');return;}
+      remember.disabled=true;
+      try{
+        const {error}=await api.from(tables.memory).insert({owner_id:state.user.id,
+          category:'general',content:m.content.slice(0,2000),source:'owner_input'});
+        if(error)throw Error(error.message);
+        state.memories=await list(tables.memory,{order:'created_at',limit:100});
+        renderMemory();renderHome();toast('أُضيفت المعلومة إلى ذاكرة التوأم بإذنك.');
+      }catch(e){toast(safe(e.message),true)}finally{remember.disabled=false;}
+    });
+    line.append(bubble,remember);target.append(line);
+  }
   target.scrollTop=target.scrollHeight;
 }
 async function saveMessage(role,content){
