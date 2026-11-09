@@ -311,24 +311,23 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
       if(cached?.qAr&&cached?.optsAr?.length===englishOptions.length)return cached;
       if(!authorized||!owner)throw Error('انتهت صلاحية جلسة المدير.');
       const requestOwner=owner;
-      const textToTranslate=JSON.stringify({question:q.q||'',options:englishOptions});
-      const prompt='Translate the following Head & Neck anatomy exam question and ALL answer choices from English to Modern Standard Arabic. Preserve technical accuracy, negations (NOT / EXCEPT), option order, and meaning. Do not solve the question. Output ONLY JSON with exactly two fields: "qAr" (Arabic question string) and "optsAr" (array of Arabic choices in the identical order and count). Keep standard Arabic medical terminology, retaining English anatomical names in parentheses if helpful. SOURCE_JSON: '+textToTranslate;
-      if(prompt.length>1500)throw Error('هذا السؤال طويل جدًا للترجمة التلقائية.');
-      const {data,error}=await api.functions.invoke('smart-processor',{body:{question:prompt,language:'ar'}});
-      if(error)throw Error('تعذر الاتصال بمساعد الترجمة أو وصل للحد اليومي.');
-      if(!authorized||owner!==requestOwner||dashboard.classList.contains('hidden'))throw Error('انتهت جلسة المدير.');
-      const raw=typeof data?.answer==='string'?data.answer:'';
-      const first=raw.indexOf('{'),last=raw.lastIndexOf('}');
-      if(first<0||last<=first)throw Error('لم يرجع المساعد ترجمة منظمة؛ أعد المحاولة.');
-      let parsed;
-      try{parsed=JSON.parse(raw.slice(first,last+1));}catch{throw Error('فشل قراءة الترجمة التلقائية؛ حاول مرة أخرى.');}
-      if(typeof parsed.qAr!=='string'||!/[\u0600-\u06ff]/.test(parsed.qAr)
-        ||!Array.isArray(parsed.optsAr)||parsed.optsAr.length!==englishOptions.length
-        ||!parsed.optsAr.every(x=>typeof x==='string'&&x.trim()&&/[\u0600-\u06ff]/.test(x))){
-        throw Error('الترجمة غير مكتملة؛ لم يتم تغيير السؤال الأصلي.');
+      // The owner-only function looks up this question behind RLS; do not send the bank text from the browser.
+      const {data,error}=await api.functions.invoke('nabd-exam-translate',{body:{question_id:entry.id}});
+      if(!authorized||owner!==requestOwner||dashboard.classList.contains('hidden'))
+        throw Error('انتهت جلسة المدير.');
+      if(error||!data?.ok){
+        if(data?.code==='PROVIDER_NOT_CONFIGURED')throw Error('يلزم تفعيل مزوّد الترجمة في إعدادات الخدمة.');
+        if(data?.code==='TRANSLATION_UNAVAILABLE')throw Error('خدمة الترجمة مشغولة الآن، أعد المحاولة.');
+        throw Error('تعذر الاتصال بخدمة الترجمة، حاول مرة أخرى.');
       }
-      const translated={qAr:parsed.qAr.trim(),optsAr:parsed.optsAr.map(x=>x.trim())};
+      if(typeof data.qAr!=='string'||!/[\u0600-\u06ff]/.test(data.qAr)||
+        !Array.isArray(data.optsAr)||data.optsAr.length!==englishOptions.length||
+        !data.optsAr.every(x=>typeof x==='string'&&x.trim()&&/[\u0600-\u06ff]/.test(x)))
+        throw Error('الترجمة غير مكتملة؛ لم يتم تغيير السؤال الأصلي.');
+      const translated={qAr:data.qAr.trim(),optsAr:data.optsAr.map(x=>x.trim())};
       translationState.set(entry.id,translated);
+      q.qAr=translated.qAr;q.optsAr=translated.optsAr;
+      q.translationMethod=data.mode==='translated'?'AI_machine_translation':q.translationMethod;
       return translated;
     }
     const optionList=document.createElement('div');
