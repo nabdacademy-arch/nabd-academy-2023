@@ -1,0 +1,31 @@
+name: NABD Gateway Identity
+on:
+  push:
+    paths:
+      - 'assets/css/nabd-gateway-system.css'
+      - 'assets/js/nabd-gateway-system.js'
+      - 'tests/gateway-identity-integrity.test.mjs'
+      - '.github/workflows/gateway-identity.yml'
+      - '*.html'
+      - 'learning/index.html'
+      - 'portal/index.html'
+  pull_request:
+    paths:
+      - 'assets/css/nabd-gateway-system.css'
+      - 'assets/js/nabd-gateway-system.js'
+      - 'tests/gateway-identity-integrity.test.mjs'
+      - '.github/workflows/gateway-identity.yml'
+      - '*.html'
+      - 'learning/index.html'
+      - 'portal/index.html'
+  workflow_dispatch:
+jobs:
+  gateway-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/gateway-identity-integrity.test.mjs
