@@ -5,7 +5,7 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const ALLOWED_HOST = 'nabdacademy-arch.github.io';
 const PROJECT = 'https://zsmmmljgguycrvyrmakl.supabase.co';
 const PUBLISHABLE = 'sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM';
-const dashboard = document.getElementById('dashboard');
+const dashboard = document.getElementById('dashboard') || document.getElementById('app');
 if (location.hostname === ALLOWED_HOST && dashboard) {
   const api = createClient(PROJECT, PUBLISHABLE, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
   const launcher = document.createElement('button');
