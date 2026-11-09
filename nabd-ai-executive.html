@@ -406,5 +406,6 @@ smartEl('smartLearn')?.addEventListener('click',async()=>{smartText('smartEducat
 smartDb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session)setTimeout(smartLoad,250);if(event==='SIGNED_OUT'){smartBrief='';smartSummary=[];smartText('smartMessage','تم تسجيل الخروج')}});
 setTimeout(async()=>{const {data}=await smartDb.auth.getSession();if(data?.session)smartLoad()},600);
 </script>
+<script defer src="assets/js/nabd-campus-navigator.js?v=1"></script>
 <script type="module" src="assets/js/nabd-director-exam-bot.js?v=3"></script>
 </body></html>
