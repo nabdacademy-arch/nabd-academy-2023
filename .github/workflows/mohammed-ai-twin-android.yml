@@ -61,6 +61,9 @@ jobs:
               assert required in service, f"Transparent voice service missing {required}"
           assert 'android:foregroundServiceType="microphone"' in manifest
           assert 'android:exported="false"' in manifest
+          assert 'android.intent.action.SEND' in manifest and 'android:mimeType="text/plain"' in manifest
+          for required in ['Intent.ACTION_SEND','Intent.EXTRA_TEXT','JSONObject.quote','insertReviewedShareIntoChat']:
+              assert required in activity, f"Share review feature missing {required}"
           assert 'startContinuousVoice' in activity and 'stopContinuousVoice' in activity
           assert "startActivityForResult" in activity
           print("Minimal-privilege native app checks passed.")
