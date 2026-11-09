@@ -27,7 +27,7 @@ jobs:
           const fs = require('node:fs');
           for (const page of ['admin.html','nabd-ai-executive.html']) {
             const html = fs.readFileSync(page, 'utf8');
-            const canonical = html.match(/src="assets\/js\/nabd-director-exam-bot\.js\?v=4"/g) || [];
+            const canonical = html.match(/src="assets\/js\/nabd-director-exam-bot\.js\?v=5"/g) || [];
             if(canonical.length !== 1) throw new Error(page+': expected exactly one current tutor launcher');
             if(/src="assets\/js\/(?:director-headneck-launch|nabd-director-head-neck)\.js/.test(html)) {
               throw new Error(page+': old conflicting exam launcher is still mounted');
@@ -38,7 +38,7 @@ jobs:
             throw new Error('Malformed certificate preview script was reintroduced');
           }
           const assistant = fs.readFileSync('assets/js/nabd-director-exam-bot.js','utf8');
-          for (const fragment of ['nebBankPane','nebBankList','filterBankBrowser','BANK_PAGE_SIZE=20','loadBankBrowser']) {
+          for (const fragment of ['nebBankPane','nebBankList','filterBankBrowser','BANK_PAGE_SIZE=20','loadBankBrowser','neb-choice','تأكيد إجابتي','nabd_exam_progress','nebBankVerification']) {
             if (!assistant.includes(fragment)) throw new Error('Private question browser missing '+fragment);
           }
           const landing = fs.readFileSync('index.html', 'utf8');
