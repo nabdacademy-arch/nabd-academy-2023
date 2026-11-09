@@ -1,0 +1,89 @@
+name: Build MOHAMMED AI TWIN Android APK
+
+on:
+  push:
+    paths:
+      - 'mohammed-ai-twin-android/**'
+      - '.github/workflows/mohammed-ai-twin-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Build installable beta APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Setup Gradle 9.6.0
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+          cache-read-only: false
+      - name: Install SDK API 36
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'platform-tools'
+      - name: Static safety checks
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          folder=Path("mohammed-ai-twin-android")
+          manifest=(folder/"app/src/main/AndroidManifest.xml").read_text()
+          for forbidden in ["QUERY_ALL_PACKAGES","BIND_ACCESSIBILITY_SERVICE","SYSTEM_ALERT_WINDOW",
+                            "READ_SMS","SEND_SMS","CALL_PHONE","READ_CONTACTS","RECORD_AUDIO","REQUEST_INSTALL_PACKAGES"]:
+              assert forbidden not in manifest, f"Forbidden broad privilege {forbidden}"
+          for required in ['android.permission.INTERNET','android.permission.POST_NOTIFICATIONS',
+                           'android.permission.RECEIVE_BOOT_COMPLETED']:
+              assert required in manifest
+          activity=(folder/"app/src/main/java/ps/nabd/mohammedaitwin/MainActivity.java").read_text()
+          for required in ['RecognizerIntent.ACTION_RECOGNIZE_SPEECH','Intent.ACTION_DIAL',
+                           'Intent.ACTION_SENDTO','ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE',
+                           'queryIntentActivities','mohammed-ai-twin/','onPermissionRequest']:
+              assert required in activity, f"Missing safe user-driven capability: {required}"
+          assert "startActivityForResult" in activity
+          print("Minimal-privilege native app checks passed.")
+          PY
+      - name: Compile debug APK
+        working-directory: mohammed-ai-twin-android
+        run: gradle --no-daemon --stacktrace :app:assembleDebug
+      - name: Prepare distributable
+        run: |
+          cp mohammed-ai-twin-android/app/build/outputs/apk/debug/app-debug.apk Mohammed-AI-Twin-Android-beta.apk
+          test -s Mohammed-AI-Twin-Android-beta.apk
+          sha256sum Mohammed-AI-Twin-Android-beta.apk | tee mohammed-ai-twin-android/SHA256SUMS.txt
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mohammed-AI-Twin-Android-beta
+          path: |
+            Mohammed-AI-Twin-Android-beta.apk
+            mohammed-ai-twin-android/SHA256SUMS.txt
+          retention-days: 90
+      - name: Publish public beta release (no app-store account)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: moh-twin-android-beta
+          name: 'MOHAMMED AI TWIN — Android Beta'
+          prerelease: true
+          make_latest: false
+          files: Mohammed-AI-Twin-Android-beta.apk
+          body: |
+            Prototype native Android companion for the private MOHAMMED AI TWIN website.
+            Features: transparent push-to-talk, open launchable apps, contact picker, dialer,
+            SMS composer, device settings, and explicitly scheduled local notifications.
+            Not an invisible always-on assistant, a proctoring bypass, or full-device control.
+            APK is debug-signed for testing. Future CI builds may use a different debug signing
+            certificate and may require uninstall/reinstall; export any private app data first.
+            Do not sideload APKs from untrusted sources.
