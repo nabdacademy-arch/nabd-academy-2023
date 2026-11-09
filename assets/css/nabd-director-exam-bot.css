@@ -44,6 +44,29 @@
 #nabdExamOverlay .neb-qa small{color:#9ec8d4;font-size:11px}
 #nabdExamOverlay .neb-qa b{color:#79e6e2;font-size:13px}
 #nabdExamOverlay .neb-qa p{margin:0;font-size:13px}
+
+#nabdExamOverlay .neb-question{font-size:clamp(14px,2vw,16px);font-weight:750;line-height:1.95;white-space:pre-wrap}
+#nabdExamOverlay .neb-options{display:grid;gap:9px}
+#nabdExamOverlay .neb-choice{display:flex;align-items:flex-start;text-align:start;gap:11px;width:100%;padding:11px 13px;border:1px solid #3b6678;border-radius:13px;background:#0a2338;color:#f2fbff;font:500 13px/1.85 system-ui;transition:border-color .12s,background .12s}
+#nabdExamOverlay .neb-choice:hover:not(:disabled),#nabdExamOverlay .neb-choice:focus-visible{border-color:#67e4e0;background:#143e51}
+#nabdExamOverlay .neb-choice.selected{border-color:#23d4d1;background:#0b4651}
+#nabdExamOverlay .neb-choice.correct{border-color:#54c795;background:#103d38}
+#nabdExamOverlay .neb-choice.incorrect{border-color:#ed9a9b;background:#512c40}
+#nabdExamOverlay .neb-choice:disabled{cursor:default;opacity:1}
+#nabdExamOverlay .neb-choice-marker{font-size:19px;color:#94e5e3;line-height:1.3;flex:0 0 19px}
+#nabdExamOverlay .neb-choice b{flex:0 0 24px;color:#bdeff1;font-size:13px}
+#nabdExamOverlay .neb-choice span:last-child{flex:1;overflow-wrap:anywhere}
+#nabdExamOverlay .neb-answer-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#nabdExamOverlay .neb-answer-actions .neb-send{padding:8px 16px;font-size:12px}
+#nabdExamOverlay .neb-answer-actions button:disabled{opacity:.48;cursor:not-allowed}
+#nabdExamOverlay .neb-answer-feedback{font-weight:700;font-size:12px;min-height:1px;color:#dfedf9}
+#nabdExamOverlay .neb-answer-feedback.good{color:#83f2be}
+#nabdExamOverlay .neb-answer-feedback.bad{color:#ffb4b4}
+#nabdExamOverlay .neb-answer-explain{display:grid;gap:8px;padding:13px 15px;border:1px solid #4c6b7a;border-radius:13px;background:#081e31;line-height:1.8}
+#nabdExamOverlay .neb-answer-explain[hidden]{display:none!important}
+#nabdExamOverlay .neb-answer-explain a{color:#72e7e7;text-decoration:underline}
+#nabdExamOverlay .neb-provenance{color:#b1d8de}
+#nabdExamOverlay .neb-progress-badge{color:#99dfe0}
 #nabdExamOverlay .neb-form{display:flex;gap:9px;padding:13px;background:#0b2239;border-top:1px solid #2f5568}
 #nabdExamOverlay .neb-form input{flex:1;min-width:0;padding:12px;border-radius:10px;border:1px solid #40657a;background:#0d3046;color:white;font:500 14px system-ui}
 #nabdExamOverlay .neb-send{background:#28d8d4;border:0;border-radius:10px;padding:11px 20px;font:800 14px system-ui;color:#062232}
