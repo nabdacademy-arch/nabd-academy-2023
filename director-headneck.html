@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NABD • Head & Neck Director Lab</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;color:#edfaff;background:#061625;font:15px/1.6 system-ui,Arial}button,input,select{font:inherit}button{cursor:pointer}
+header{padding:17px;background:linear-gradient(125deg,#0a334b,#091a2f);border-bottom:1px solid #245568;display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-size:20px;margin:0}h2{font-size:18px;margin:0 0 13px}p{margin:7px 0 13px}.muted,small{color:#a4c5d3;font-size:12px}
+main{max-width:1000px;margin:auto;padding:15px}.panel{padding:16px;margin:14px 0;background:#0a263a;border:1px solid #235064;border-radius:17px}
+.tabbar{display:flex;gap:5px;overflow-x:auto;padding:9px;border-bottom:1px solid #26516a}
+button,.btn{border:1px solid #2c6675;border-radius:11px;background:#174055;color:#efffff;padding:9px 13px;white-space:normal}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #41e1ce;outline-offset:2px}button.primary{background:#22d9ca;color:#04232c;font-weight:800;border-color:#22d9ca}
+button.active{background:#157475;border-color:#32e1d5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{display:block;font-size:12px;color:#c5e3ed}select,input{background:#071c2a;color:white;width:100%;padding:10px;border:1px solid #356274;border-radius:10px}
+.option{width:100%;text-align:start;display:block;margin:8px 0;padding:12px;border:1px solid #3b657b;border-radius:12px;background:#0b3147;color:white;line-height:1.5}
+.option.good{background:#114938;border-color:#32d6a0}.option.bad{background:#542436;border-color:#ed697d}.option.sel{border-color:#4cdbf0}
+.info{padding:11px 12px;margin:11px 0;background:#104055;border-inline-start:3px solid #34decf;border-radius:8px;white-space:pre-line}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.tag{border:1px solid #387688;border-radius:99px;padding:3px 9px;color:#9df6f2;font-size:11px}
+.chatbox{max-height:38vh;overflow-y:auto}.msg{background:#103449;border:1px solid #2b6176;padding:11px;border-radius:12px;margin:9px 0;white-space:pre-wrap}
+.meter{height:6px;background:#17374b;overflow:hidden;border-radius:5px;margin:11px 0}.meter div{height:100%;background:#32d9ca}
+[hidden]{display:none!important}a{color:#74d9ff;overflow-wrap:anywhere}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stats strong{display:block;font-size:21px}
+@media(max-width:560px){main{padding:8px}.panel{padding:12px}.stats{grid-template-columns:repeat(3,1fr)}header{padding:11px}h1{font-size:18px}}
+</style></head><body>
+<header><div><h1>🧠 NABD • Head & Neck Lab</h1><small id="subtitle">مساحة المدير الخاصة • Anatomy III</small></div><button id="lang" aria-label="Language">English</button></header>
+<main><div id="gate" class="panel" role="status">جارٍ التحقق من صلاحيات المدير…</div>
+<div id="app" hidden>
+<div class="stats"><div class="panel"><small id="s-total">الأسئلة</small><strong id="total">—</strong></div><div class="panel"><small id="s-seen">المراجعة</small><strong id="seen">—</strong></div><div class="panel"><small id="s-accuracy">الدقة</small><strong id="accuracy">—</strong></div></div>
+<nav class="tabbar" aria-label="Private study sections">
+<button id="nav-quiz" data-tab="quiz" class="active">📚 الامتحان</button><button id="nav-chat" data-tab="chat">🤖 اسأل البوت</button><button id="nav-weak" data-tab="weak">🎯 أخطائي</button><button id="nav-refs" data-tab="refs">📎 المصادر</button><button id="nav-data" data-tab="data">🔐 مكتبتي</button>
+</nav>
+<section id="tab-quiz" class="panel">
+<div id="setup">
+<h2 id="setup-title">ابدأ جلسة جديدة</h2>
+<div class="grid">
+<div><label id="source-label" for="source">نوع الأسئلة</label><select id="source"><option value="all">الكل</option><option value="generated">1000 سؤال جديد</option><option value="original">AYAMBasic</option><option value="archived">السنوات السابقة</option></select></div>
+<div><label id="chapter-label" for="chapter">الفصل</label><select id="chapter"><option value="all">الكل</option></select></div>
+<div><label id="level-label" for="level">الصعوبة</label><select id="level"><option value="all">الكل</option><option value="medium">متوسط</option><option value="hard">صعب</option><option value="source">من المصدر</option></select></div>
+<div><label id="count-label" for="count">عدد الأسئلة</label><select id="count"><option>10</option><option selected>20</option><option>40</option><option>80</option></select></div>
+</div><p><button id="start" class="primary">ابدأ الاختبار</button></p></div>
+<div id="quiz" hidden></div>
+</section>
+<section id="tab-chat" class="panel" hidden><h2 id="chat-title">مساعدك التشريحي</h2><p id="chat-help" class="muted">ابحث داخل الأسئلة السابقة والجديدة والشرح.</p>
+<div id="chat-log" class="chatbox" aria-live="polite"></div><div class="row"><input id="ask" style="flex:1" placeholder="مثل: foramen ovale / recurrent laryngeal"><button id="send" class="primary">ابحث</button></div></section>
+<section id="tab-weak" class="panel" hidden><h2 id="weak-title">مراجعة الأخطاء</h2><div id="weak-body"></div></section>
+<section id="tab-refs" class="panel" hidden><h2 id="refs-title">مصادر الأسئلة</h2><div id="ref-body"></div></section>
+<section id="tab-data" class="panel" hidden><h2 id="data-title">مكتبتي الخاصة</h2>
+<p id="data-help" class="muted">استورد ملف Head_Neck_Exam_Bank_V2.json مرة واحدة. يُحفظ في قاعدة بيانات محمية بحسابك، لا ضمن ملفات الموقع العامة.</p>
+<input id="file" type="file" accept=".json,application/json"><p><button id="upload" class="primary">استيراد بنك الأسئلة</button></p>
+<div id="upload-status" class="info" role="status"></div><p id="security-note" class="muted">لن تُعرض الأسئلة للطلاب أو الزوار. الشرح الأصلي متاح حين توجد نسخة مُراجعة؛ بعض أسئلة الصور والمفاتيح التاريخية غير مدققة.</p></section>
+</div></main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const sb=createClient('https://zsmmmljgguycrvyrmakl.supabase.co','sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const el=id=>document.getElementById(id);
+const put=(id,s)=>{el(id).textContent=String(s??'')};
+const node=(type,content,cls)=>{const n=document.createElement(type);n.textContent=String(content??'');if(cls)n.className=cls;return n};
+let currentLang='ar',owner=null,bank=null,items=[],stats={},progress={},quiz=[],index=0,picked=null,shown=false,correct=0,incorrect=0,ungraded=0,tab='quiz';
+const ui={
+ar:{seen:'درست',accuracy:'الدقة',total:'الأسئلة',quiz:'📚 الامتحان',chat:'🤖 اسأل البوت',weak:'🎯 أخطائي',refs:'📎 المصادر',data:'🔐 مكتبتي',start:'ابدأ الاختبار',next:'السؤال التالي',end:'النتيجة',source:'نوع الأسئلة',chapter:'الفصل',level:'الصعوبة',count:'عدد الأسئلة',ask:'ابحث',chatTitle:'مساعدك التشريحي',help:'اسأل عن عضلة أو عصب أو ثقب؛ سأبحث داخل أسئلتك وأعرض الإجابة المتاحة وسببها.',weakTitle:'مراجعة الأخطاء',refsTitle:'مصادر الأسئلة',dataTitle:'مكتبتي الخاصة',upload:'استيراد بنك الأسئلة',setup:'ابدأ جلسة جديدة',empty:'لم يتم رفع بنك الأسئلة الخاص بعد. انتقل إلى «مكتبتي» واستورد ملف JSON.',score:'صحيح',wrong:'خطأ',ungraded:'غير مصحح',why:'لماذا الإجابة صحيحة؟',missing:'هذا السؤال بلا مفتاح موثوق، ولن يُحسب في الدرجة.',noexp:'لا يوجد شرح مرتبط ومدقق بهذا السؤال بعد.',notrans:'لا توجد ترجمة عربية مُراجعة لكل أجزاء هذا السؤال؛ سيظهر النص الإنجليزي الأصلي.',image:'هذا السؤال يحتاج صورة غير موجودة في النص، لذا يُستبعد من الاختبار العادي.',nores:'لا توجد نتيجة مطابقة. جرّب مصطلحًا أدق أو الإنجليزية.',back:'اختبار جديد',show:'عرض السؤال',privacy:'هذه مساحة خاصة؛ بيانات الأسئلة لا تُنشر في مستودع GitHub.',nobanks:'استورد بنكك الخاص أولًا.',saved:'تم حفظ البنك في قاعدة بيانات المدير الخاصة.',load:'جارٍ حفظ البيانات…',sourceKey:'الإجابة من مفتاح المصدر، وليست مُراجعة مستقلًا.'},
+en:{seen:'Studied',accuracy:'Accuracy',total:'Questions',quiz:'📚 Quiz',chat:'🤖 Ask bot',weak:'🎯 Mistakes',refs:'📎 Sources',data:'🔐 My library',start:'Start quiz',next:'Next question',end:'Results',source:'Bank',chapter:'Chapter',level:'Difficulty',count:'Question count',ask:'Search',chatTitle:'Anatomy retrieval assistant',help:'Search for a nerve, muscle, or foramen. I will retrieve questions with available answers and explanations.',weakTitle:'Review mistakes',refsTitle:'Question sources',dataTitle:'My private library',upload:'Import question bank',setup:'Start a new session',empty:'No private question bank has been uploaded yet. Go to My library and import the JSON file.',score:'Correct',wrong:'Wrong',ungraded:'Ungraded',why:'Why this answer?',missing:'No verified key for this item, so it is not scored.',noexp:'No reviewed explanation is available yet.',notrans:'A reviewed Arabic translation is missing; original English is displayed.',image:'This item requires a missing image and is excluded from normal quizzes.',nores:'No matching question. Try a more specific English term.',back:'New quiz',show:'Open question',privacy:'Private workspace; the question content is not committed to the public GitHub repository.',nobanks:'Import your bank first.',saved:'Question bank saved into your protected database.',load:'Saving your bank…',sourceKey:'This is the source key, not independently verified.'}
+};
+const T=k=>ui[currentLang][k]||k;
+function qtext(q){return currentLang==='ar'?(q.qAr||q.q):q.q}
+function opts(q){return currentLang==='ar'&&Array.isArray(q.optsAr)&&q.optsAr.length===q.opts.length?q.optsAr:q.opts}
+function why(q){return currentLang==='ar'?(q.whyAr||q.why):q.why}
+function qkind(q){return q.sourceLevel||q.kind||q.source||''}
+function btn(s,fn,cls){const b=node('button',s,cls||'');b.type='button';b.onclick=fn;return b}
+async function ensureAccess(){
+try{
+if(location.hostname!=='nabdacademy-arch.github.io')throw Error('Open on the official academy domain');
+const r=await sb.auth.getUser();if(r.error||!r.data?.user)throw Error('Sign in to the director dashboard first');
+const a=await sb.rpc('nabd_headneck_owner_access');if(a.error||a.data!==true)throw Error('Founder-only permission required');
+owner=r.data.user;
+const b=await sb.from('nabd_headneck_private_bank').select('payload').eq('owner_id',owner.id).maybeSingle();if(b.error)throw b.error;
+bank=b.data?.payload||null;items=bank?[...(bank.new||[]),...(bank.original||[]),...(bank.archived||[])]:[];
+const p=await sb.from('nabd_headneck_private_progress').select('state').eq('owner_id',owner.id).maybeSingle();
+progress=p.data?.state?.answers||{};
+el('gate').hidden=true;el('app').hidden=false;render();
+if(!bank)openTab('data');
+}catch(e){put('gate','🔒 '+(e?.message||'Permission check failed'));el('gate').hidden=false;el('app').hidden=true}
+}
+async function saveProgress(){
+if(!owner)return;
+const {error}=await sb.from('nabd_headneck_private_progress').upsert({owner_id:owner.id,state:{answers:progress},updated_at:new Date().toISOString()},{onConflict:'owner_id'});
+if(error)console.warn('Private save unavailable:',error.message)
+}
+function top(){
+const n=Object.keys(progress).filter(x=>progress[x].seen>0).length, a=Object.values(progress);
+const good=a.reduce((v,x)=>v+(x.good||0),0),bad=a.reduce((v,x)=>v+(x.bad||0),0);
+put('total',items.length);put('seen',n);put('accuracy',(good+bad)?Math.round(good*100/(good+bad))+'%':'—');
+put('s-total',T('total'));put('s-seen',T('seen'));put('s-accuracy',T('accuracy'));
+for(const k of ['quiz','chat','weak','refs','data'])put('nav-'+k,T(k));
+put('setup-title',T('setup'));put('source-label',T('source'));put('chapter-label',T('chapter'));put('level-label',T('level'));put('count-label',T('count'));put('start',T('start'));
+put('chat-title',T('chatTitle'));put('chat-help',T('help'));put('send',T('ask'));put('weak-title',T('weakTitle'));put('refs-title',T('refsTitle'));put('data-title',T('dataTitle'));put('upload',T('upload'));
+put('subtitle',currentLang==='ar'?'للمدير فقط • Anatomy III':'Director only • Anatomy III');put('lang',currentLang==='ar'?'English':'العربية');
+document.documentElement.lang=currentLang;document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';
+}
+function populateChapters(){
+const sel=el('chapter'),old=sel.value;sel.replaceChildren();
+const all=node('option',currentLang==='ar'?'الكل':'All');all.value='all';sel.append(all);
+for(const c of (bank?.chapters||[])){const o=node('option',currentLang==='ar'?c.ar:c.en);o.value=c.id;sel.append(o)}
+const mixed=node('option','Mixed');mixed.value='Mixed';sel.append(mixed);if([...sel.options].some(o=>o.value===old))sel.value=old;
+}
+function start(list){
+if(!bank){openTab('data');return}
+let pool=list;
+if(!pool){
+const src=el('source').value,ch=el('chapter').value,d=el('level').value;
+pool=items.filter(x=>(src==='all'||x.kind===src)&&(ch==='all'||x.chapter===ch)&&(d==='all'||x.difficulty===d));
+}
+pool=pool.filter(x=>Array.isArray(x.opts)&&x.opts.length>=2&&!x.imageHint);
+if(!pool.length){alert(T('nores'));return}
+const shuffled=pool.slice();for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
+quiz=shuffled.slice(0,Number(el('count').value));index=0;picked=null;shown=false;correct=0;incorrect=0;ungraded=0;
+openTab('quiz');drawQuestion();
+}
+function pick(i){
+if(shown)return;const q=quiz[index];picked=i;shown=true;
+if(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.opts.length){
+const good=i===q.answer;if(good)correct++;else incorrect++;
+const row=progress[q.id]||{seen:0,good:0,bad:0};row.seen++;row[good?'good':'bad']++;row.last=Date.now();progress[q.id]=row;saveProgress();
+}else ungraded++;
+drawQuestion()
+}
+function drawQuestion(){
+const root=el('quiz');root.replaceChildren();el('setup').hidden=!!quiz.length;root.hidden=!quiz.length;
+if(!quiz.length)return;
+if(index>=quiz.length){
+const box=node('div','', '');box.append(node('h2',T('end')),node('p',T('score')+': '+correct+'   '+T('wrong')+': '+incorrect+'   '+T('ungraded')+': '+ungraded));
+box.append(btn(T('back'),()=>{quiz=[];index=0;drawQuestion();},'primary'));root.append(box);top();return
+}
+const q=quiz[index],valid=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.opts.length;
+const head=node('div','', 'row');head.append(node('b',(index+1)+' / '+quiz.length),node('span',qkind(q),'tag'));root.append(head);
+const meter=node('div','', 'meter'),fill=node('div','');fill.style.width=(100*index/quiz.length)+'%';meter.append(fill);root.append(meter);
+root.append(node('h2',qtext(q)));
+if(currentLang==='ar'&&(!q.qAr||!Array.isArray(q.optsAr)))root.append(node('p',T('notrans'),'muted'));
+opts(q).forEach((op,i)=>{let cls='option';if(shown&&valid&&i===q.answer)cls+=' good';else if(shown&&valid&&i===picked)cls+=' bad';else if(shown&&i===picked)cls+=' sel';
+const b=btn(String.fromCharCode(65+i)+'. '+op,()=>pick(i),cls);b.disabled=shown;root.append(b)});
+if(shown){
+if(!valid)root.append(node('div',T('missing'),'info'));
+else root.append(node('b',picked===q.answer?'✓ '+T('score'):'× '+T('wrong')));
+root.append(node('div',T('why')+'\n'+(why(q)||T('noexp')),'info'));
+if(q.answerVerified==='source_key')root.append(node('p',T('sourceKey'),'muted'));
+root.append(btn(index===quiz.length-1?T('end'):T('next'),()=>{index++;shown=false;picked=null;drawQuestion()},'primary'))
+}
+}
+function openTab(k){
+tab=k;for(const id of ['quiz','chat','weak','refs','data']){el('tab-'+id).hidden=id!==k;el('nav-'+id).classList.toggle('active',id===k)}
+if(k==='weak')drawWeak();if(k==='refs')drawRefs();if(k==='quiz')drawQuestion();
+}
+function drawWeak(){
+const root=el('weak-body');root.replaceChildren();
+const missed=items.filter(x=>progress[x.id]?.bad>0&&!x.imageHint&&x.opts?.length>1);
+root.append(node('p',(currentLang==='ar'?'عدد الأسئلة التي أخطأت بها: ':'Previously missed: ')+missed.length));
+if(missed.length)root.append(btn(T('start'),()=>start(missed),'primary'));
+for(const q of missed.slice(0,30)){const c=node('div','', 'panel');c.append(node('small',qkind(q)),node('p',qtext(q)));c.append(btn(T('show'),()=>{quiz=[q];index=0;picked=null;shown=false;openTab('quiz') }));root.append(c)}
+}
+function drawRefs(){
+const root=el('ref-body');root.replaceChildren();
+for(const ref of (bank?.references||[])){const c=node('div','', 'panel');c.append(node('b',ref.name||'Reference'));if(ref.note)c.append(node('p',ref.note,'muted'));
+if(ref.url&&ref.url.startsWith('https://')){const a=node('a',ref.url);a.href=ref.url;a.target='_blank';a.rel='noopener noreferrer';c.append(a)}
+root.append(c)}
+}
+function sendSearch(){
+const input=el('ask'),q=input.value.trim();if(!q)return;input.value='';
+const log=el('chat-log');log.append(node('div',q,'msg'));
+const toks=q.toLowerCase().replace(/[\u064b-\u065f]/g,'').split(/[^\p{L}\p{N}]+/u).filter(w=>w.length>2&&!['the','what','why','الذي','التي','كيف','ماذا'].includes(w));
+const hits=items.map(x=>{const hay=[x.q,x.qAr,x.why,x.whyAr,...(x.opts||[])].join(' ').toLowerCase();return {q:x,n:toks.filter(w=>hay.includes(w)).length}}).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,4);
+if(!hits.length)log.append(node('div',T('nores'),'msg'));
+for(const hit of hits){
+const x=hit.q,wrap=node('div','', 'msg');
+wrap.append(node('small',qkind(x)),node('p',qtext(x)));
+if(Number.isInteger(x.answer)&&x.answer>=0&&x.answer<x.opts.length){
+wrap.append(node('b',(currentLang==='ar'?'الإجابة: ':'Answer: ')+opts(x)[x.answer]));
+if(why(x))wrap.append(node('p',why(x),'muted'));
+}else wrap.append(node('p',T('missing'),'muted'));
+wrap.append(btn(T('show'),()=>{quiz=[x];index=0;picked=null;shown=false;openTab('quiz')}));
+log.append(wrap)
+}log.scrollTop=log.scrollHeight
+}
+async function upload(){
+const file=el('file').files?.[0];if(!file){put('upload-status','Select a JSON file');return}
+if(file.size>9000000){put('upload-status','File too large');return}
+const button=el('upload');button.disabled=true;put('upload-status',T('load'));
+try{
+const data=JSON.parse(await file.text());
+if(!Array.isArray(data.new)||!Array.isArray(data.original)||!Array.isArray(data.archived)||data.new.length+data.original.length+data.archived.length===0)throw Error('Invalid Head & Neck V2 JSON bank');
+const r=await sb.from('nabd_headneck_private_bank').upsert({owner_id:owner.id,payload:data,updated_at:new Date().toISOString()},{onConflict:'owner_id'});
+if(r.error)throw r.error;
+bank=data;items=[...data.new,...data.original,...data.archived];put('upload-status',T('saved'));render();
+}catch(e){put('upload-status','⚠ '+(e.message||'Import failed'))}
+finally{button.disabled=false}
+}
+function render(){top();populateChapters();if(tab==='quiz')drawQuestion();if(tab==='weak')drawWeak();if(tab==='refs')drawRefs()}
+el('lang').onclick=()=>{currentLang=currentLang==='ar'?'en':'ar';render()};
+for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>openTab(b.dataset.tab);
+el('start').onclick=()=>start();el('send').onclick=sendSearch;el('ask').onkeydown=e=>{if(e.key==='Enter')sendSearch()};
+el('upload').onclick=upload;sb.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){owner=null;items=[];bank=null;el('app').hidden=true;el('gate').hidden=false;put('gate','🔒 Signed out.')}});
+ensureAccess();
+</script></body></html>
