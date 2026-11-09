@@ -1,0 +1,40 @@
+name: NABD Gateway Browser Visual Check
+on:
+  push:
+    paths:
+      - 'assets/css/nabd-gateway-system.css'
+      - 'assets/js/nabd-gateway-system.js'
+      - 'tests/gateway-browser-smoke.cjs'
+      - '.github/workflows/gateway-browser-check.yml'
+  pull_request:
+    paths:
+      - 'assets/css/nabd-gateway-system.css'
+      - 'assets/js/nabd-gateway-system.js'
+      - 'tests/gateway-browser-smoke.cjs'
+      - '.github/workflows/gateway-browser-check.yml'
+  workflow_dispatch:
+jobs:
+  visual-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless browser
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Run local server and verify portal layouts
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/nabd-local-http.log 2>&1 &
+          sleep 2
+          node tests/gateway-browser-smoke.cjs
+      - name: Save responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nabd-gateway-mobile-desktop-screenshots
+          path: gateway-browser-results/
+          retention-days: 5
