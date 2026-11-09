@@ -27,7 +27,7 @@ jobs:
           const fs = require('node:fs');
           for (const page of ['admin.html','nabd-ai-executive.html']) {
             const html = fs.readFileSync(page, 'utf8');
-            const canonical = html.match(/src="assets\/js\/nabd-director-exam-bot\.js\?v=6"/g) || [];
+            const canonical = html.match(/src="assets\/js\/nabd-director-exam-bot\.js\?v=7"/g) || [];
             if(canonical.length !== 1) throw new Error(page+': expected exactly one current tutor launcher');
             if(/src="assets\/js\/(?:director-headneck-launch|nabd-director-head-neck)\.js/.test(html)) {
               throw new Error(page+': old conflicting exam launcher is still mounted');
@@ -41,6 +41,11 @@ jobs:
           for (const fragment of ['nebBankPane','nebBankList','filterBankBrowser','BANK_PAGE_SIZE=20','loadBankBrowser','neb-choice','تأكيد إجابتي','nabd_exam_progress','nebBankVerification','neb-translate-btn','requestArabicTranslation','translationState']) {
             if (!assistant.includes(fragment)) throw new Error('Private question browser missing '+fragment);
           }
+          const assistantSource=fs.readFileSync('assets/js/nabd-director-exam-bot.js','utf8');
+          const translatorSource=fs.readFileSync('supabase/functions/nabd-exam-translate/index.ts','utf8');
+          if (!assistantSource.includes("api.functions.invoke('nabd-exam-translate'")) throw new Error('Question translate action is not wired');
+          if (!translatorSource.includes('nabd_exam_owner') || !translatorSource.includes('nabd_exam_questions'))
+            throw new Error('Translation endpoint lacks private owner scope');
           const landing = fs.readFileSync('index.html', 'utf8');
           if (landing.includes('nabd-director-exam-bot.js')) {
             throw new Error('Director-only assistant must not mount on public landing page');
