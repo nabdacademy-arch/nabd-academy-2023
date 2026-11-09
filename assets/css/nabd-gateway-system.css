@@ -57,3 +57,27 @@
 @media(max-width:850px){.nabd-gate .ng-inner{grid-template-columns:minmax(0,1fr) minmax(240px,.8fr);gap:20px}.nabd-gate .ng-copy h2{font-size:clamp(1.9rem,4vw,3rem)}}
 @media(max-width:670px){.nabd-gate .ng-inner{grid-template-columns:minmax(0,1fr);width:calc(100% - 28px);padding:34px 0 40px;gap:23px}.nabd-gate .ng-copy h2{font-size:clamp(1.9rem,8.2vw,2.8rem)}.nabd-gate .ng-access{padding:21px;max-width:580px}.nabd-gate .ng-lead{font-size:.95rem}.nabd-gate .ng-copy{order:0}.nabd-gate .ng-access{order:1}.nabd-gate .ng-art{display:none}}
 @media(prefers-reduced-motion:reduce){.nabd-gate *{animation:none!important;transition:none!important}}
+
+
+/* Responsive refinements from live-browser screenshots */
+@media(max-width:670px){
+  .nabd-gate .ng-inner{padding:25px 0 32px;gap:17px}
+  .nabd-gate .ng-eyebrow{margin-bottom:10px;font-size:.7rem}
+  .nabd-gate .ng-copy h2{font-size:clamp(1.85rem,7.5vw,2.3rem);margin:12px 0;line-height:1.2}
+  .nabd-gate .ng-lead{font-size:.88rem;line-height:1.7}
+  .nabd-gate .ng-points{gap:6px;margin-top:14px}
+  .nabd-gate .ng-points span{padding:5px 10px;font-size:.7rem}
+  .nabd-gate .ng-actions{gap:8px;margin-top:13px}
+  .nabd-gate .ng-actions .ng-outline,.nabd-gate .ng-actions .ng-language{font-size:.77rem;min-height:41px;padding:7px 12px}
+}
+/* Student portal legacy header must wrap rather than overlap the home and language controls. */
+@media(max-width:670px){
+  body.portal-body .portal-topbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:9px;width:calc(100% - 28px);margin:11px auto!important}
+  body.portal-body .portal-topbar .brand{min-width:0!important;max-width:100%;overflow:visible;gap:9px!important}
+  body.portal-body .portal-topbar .brand-copy{min-width:0;max-width:100%;white-space:normal!important;overflow-wrap:break-word}
+  body.portal-body .portal-topbar .brand-copy strong{white-space:normal!important;overflow-wrap:break-word;line-height:1.26!important;font-size:.78rem!important}
+  body.portal-body .portal-topbar .brand-copy small{font-size:.64rem!important}
+  body.portal-body .portal-topbar .brand-mark{flex:0 0 40px;width:40px;height:40px}
+  body.portal-body .portal-topbar .portal-top-actions{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:4px;max-width:140px}
+  body.portal-body .portal-topbar .portal-lang-btn,body.portal-body .portal-topbar .portal-home{font-size:.73rem!important;min-height:40px!important;padding:6px 8px!important;border-radius:10px!important;white-space:nowrap}
+}
