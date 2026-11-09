@@ -222,6 +222,37 @@ function previewExistingCertificate(id){const c=state.certificates.find(x=>x.id=
 <script type="module" src="assets/js/nabd-director-exam-bot.js?v=1"></script>
 <script type="module" src="assets/js/director-headneck-launch.js?v=1"></script>
 <script type="module" src="assets/js/nabd-director-head-neck.js?v=1"></script>
+
+<!-- NABD private Head & Neck lab: launcher visible to the one server-allowlisted owner only -->
+<style>
+.nabd-hn-private-fab{position:fixed;right:18px;bottom:85px;z-index:5000;padding:13px 18px;border:1px solid #74d8d6;border-radius:50px;background:linear-gradient(120deg,#076276,#10afa7);color:#f5ffff;box-shadow:0 13px 38px #00141dbb;font:800 14px system-ui;cursor:pointer}
+.nabd-hn-private-layer{position:fixed;inset:0;z-index:9995;display:flex;align-items:center;justify-content:center;background:#000c16cf;padding:12px}
+.nabd-hn-private-modal{position:relative;width:min(1350px,98vw);height:min(94vh,1000px);border:1px solid #3b9ca8;border-radius:22px;background:#061523;overflow:hidden;box-shadow:0 24px 80px #000b}
+.nabd-hn-private-close{position:absolute;top:9px;left:10px;z-index:3;background:#e4fbfc;border:0;border-radius:12px;color:#06232c;font-weight:900;padding:8px 13px;cursor:pointer}
+.nabd-hn-private-modal iframe{width:100%;height:100%;border:0;background:#061523}
+@media(max-width:700px){.nabd-hn-private-layer{padding:0}.nabd-hn-private-modal{width:100vw;height:100dvh;border-radius:0}.nabd-hn-private-fab{right:12px;bottom:90px;font-size:13px;padding:11px}}
+</style>
+<script type="module">
+import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const hnDb=createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const hnDashboard=document.getElementById("dashboard");
+let hnFab=null,hnDialog=null,hnChecking=false;
+function hnClose(){if(hnDialog){hnDialog.remove();hnDialog=null;}document.body.style.overflow="";}
+function hnRemove(){if(hnFab){hnFab.remove();hnFab=null;}hnClose();}
+function hnOpen(){if(hnDialog)return;hnDialog=document.createElement("div");hnDialog.className="nabd-hn-private-layer";hnDialog.setAttribute("role","dialog");hnDialog.setAttribute("aria-modal","true");hnDialog.setAttribute("aria-label","بوت مراجعة تشريح الرأس والرقبة الخاص بالمدير");const box=document.createElement("div");box.className="nabd-hn-private-modal";const close=document.createElement("button");close.className="nabd-hn-private-close";close.type="button";close.textContent="✕ إغلاق";close.onclick=hnClose;const frame=document.createElement("iframe");frame.src="nabd-headneck-private.html";frame.title="NABD Private Head and Neck Exam Coach";box.append(close,frame);hnDialog.append(box);hnDialog.onclick=e=>{if(e.target===hnDialog)hnClose()};document.body.append(hnDialog);document.body.style.overflow="hidden";close.focus();}
+async function hnCheckOwner(){
+ if(hnChecking||!hnDashboard)return;
+ if(hnDashboard.classList.contains("hidden")){hnRemove();return;}
+ if(hnFab)return;
+ hnChecking=true;
+ try{const auth=await hnDb.auth.getUser();if(!auth.data?.user)return;const permitted=await hnDb.rpc("nabd_hn_access");if(permitted.error||permitted.data!==true)return;if(hnDashboard.classList.contains("hidden"))return;
+ hnFab=document.createElement("button");hnFab.className="nabd-hn-private-fab";hnFab.type="button";hnFab.textContent="🧠 Head & Neck · بوتي الخاص";hnFab.setAttribute("aria-label","افتح محاكي امتحان التشريح الخاص بالمدير");hnFab.onclick=hnOpen;document.body.append(hnFab);
+ }catch(e){console.warn("Private study launcher unavailable",e.message)}finally{hnChecking=false;}
+}
+if(hnDashboard){new MutationObserver(hnCheckOwner).observe(hnDashboard,{attributes:true,attributeFilter:["class"]});hnCheckOwner();}
+hnDb.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")hnRemove();if(event==="SIGNED_IN")setTimeout(hnCheckOwner,200);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")hnClose();});
+</script>
 </body></html>`;
  const w=window.open('','_blank');if(!w){message('اسمح بالنوافذ المنبثقة لطباعة الشهادة.',true);return;}w.opener=null;w.document.open();w.document.write(doc);w.document.close();
 }
