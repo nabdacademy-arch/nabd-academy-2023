@@ -82,6 +82,17 @@
 @media(max-width:800px){.hope-photo-grid{grid-template-columns:1fr}.hope-photo-grid figure{height:315px}.hope-wallet-layout{grid-template-columns:1fr}}
 @media(max-width:580px){.hope-stories{padding:57px 0}.hope-wallet-card{padding:18px}.hope-bottom-cta{position:fixed;bottom:12px;inset-inline:11px;display:flex;align-items:center;justify-content:space-between;gap:9px;z-index:95;background:#092837eb;border:1px solid #d7d7b965;border-radius:14px;padding:9px 11px;backdrop-filter:blur(13px);box-shadow:0 13px 35px #0008}.hope-bottom-cta span{font-size:.79rem;font-weight:900}.hope-bottom-cta a{white-space:nowrap;border-radius:10px;background:#e9c98b;color:#08202c;padding:10px 16px;font-weight:900;font-size:.8rem}.foot{padding-bottom:70px}}
 
+
+/* HOPE 2027 - persistent prominent bilingual language selector */
+.hope-language-control{display:flex;align-items:center;gap:10px;border:1px solid rgba(241,205,139,.58);border-radius:16px;padding:5px 8px 5px 13px;background:linear-gradient(115deg,rgba(239,203,137,.16),rgba(34,114,119,.19));box-shadow:0 4px 22px rgba(3,18,29,.3)}
+.hope-language-label{font-size:.96rem;white-space:nowrap;color:#ffdfa6;font-weight:900;letter-spacing:.01em}
+.hope-language-select{min-width:160px;max-width:none;min-height:52px;padding:11px 18px;border:2px solid rgba(242,210,159,.94);border-radius:12px;background:#f7e4bf;color:#0b2734;font-size:1rem;font-weight:900;line-height:1.45;cursor:pointer}
+.hope-language-select:hover{background:#fff1d6}
+.hope-language-select:focus-visible{outline:3px solid #71e0d0;outline-offset:3px}
+@media(max-width:960px){.hope-language-label{font-size:.86rem}.hope-language-select{min-width:140px}}
+@media(max-width:760px){.topbar .nav{flex-wrap:wrap;align-items:center;padding-block:10px;row-gap:8px}.topbar .nav .brand{flex:1 1 100%}.topbar .navtools{width:100%;justify-content:flex-end}.hope-language-control{width:100%;justify-content:space-between;padding-inline:12px}.hope-language-label{font-size:1rem}.hope-language-select{min-width:170px;flex:0 0 auto}}
+@media(max-width:400px){.hope-language-select{min-width:142px}.hope-language-label{font-size:.87rem}}
+
   </style>
 </head>
 <body>
@@ -92,10 +103,12 @@
       <div class="navtools">
         <a class="navlink" href="./" data-t="home">الرئيسية</a>
         <a class="navlink" href="#transparency" data-t="navTransparency">الشفافية</a>
-        <label class="tiny-label" for="language" data-t="language">اللغة</label>
-        <select id="language" class="lang" aria-label="Select language / اختر اللغة">
-          <option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="zh">中文</option><option value="ru">Русский</option>
-        </select>
+        <div class="hope-language-control">
+          <label class="hope-language-label" for="language">🌐 <span lang="en">Language</span> / <span lang="ar">اللغة</span></label>
+          <select id="language" class="lang hope-language-select" aria-label="Select page language / اختر لغة الصفحة">
+          <option value="ar">🇵🇸 العربية</option><option value="en">🇬🇧 English</option><option value="fr">🇫🇷 Français</option><option value="es">🇪🇸 Español</option><option value="zh">🇨🇳 中文</option><option value="ru">🇷🇺 Русский</option>
+          </select>
+        </div>
       </div>
     </div>
   </header>
