@@ -39,7 +39,7 @@ main{max-width:1340px;margin:auto;padding:24px 16px 60px}.toolbar{display:flex;j
 .smart-hub{margin-top:22px;border:1px solid #426579;background:linear-gradient(130deg,#0e2d3e,#102b39);border-radius:18px;padding:20px}.smart-hub h2{margin:0;color:#f5ca77}.smart-sub{color:#b8d2dc;font-size:13px}.smart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}.smart-tile{background:#17394b;border:1px solid #385d70;padding:15px;border-radius:13px}.smart-tile strong{font-size:25px;color:#73e5d1;display:block}.smart-tile span{color:#d0e0e8;font-size:13px}.smart-panel{padding:16px;border:1px solid #355568;border-radius:14px;background:#0b2535;margin:14px 0}.smart-panel h3{margin:0 0 10px}.smart-list{display:grid;gap:8px}.smart-entry{background:#173849;padding:11px;border-radius:10px;border:1px solid #365b6b;overflow-wrap:anywhere}.smart-entry small{color:#b4ccd6}.smart-hub button,.smart-hub select{margin:4px}.smart-hub button{border-radius:10px;padding:9px 13px}.smart-status{color:#b8d4dc;font-size:13px;min-height:18px}.smart-warning{border-right:3px solid #f5ca77;padding:10px;background:#403722;color:#fff0ce;border-radius:7px}.smart-pill{border:1px solid #4c7584;border-radius:20px;padding:2px 9px;font-size:12px;display:inline-block}.smart-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}.smart-hub input,.smart-hub select{background:#12394b;color:#fff;border:1px solid #547081;border-radius:9px;padding:9px;max-width:100%}
 </style>
 <link rel="stylesheet" href="assets/css/nabd-campus-navigator.css?v=1">
-<link rel="stylesheet" href="assets/css/nabd-director-exam-bot.css?v=6">
+<link rel="stylesheet" href="assets/css/nabd-director-exam-bot.css?v=7">
 
 </head><body>
 <header><div><h1>✦ NABD AI Executive <span style="font-size:12px;color:#9edbd2">v6.0</span></h1><p>مركز العمليات الذكية لأكاديمية نبض للعلوم الطبية</p></div><div class="actions"><a class="linkpill" href="./">الرئيسية ↗</a><a class="linkpill" href="portal/">المجلس التنفيذي ↗</a><span id="connection" class="chip warn">غير متصل</span></div></header>
@@ -407,5 +407,5 @@ smartDb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session
 setTimeout(async()=>{const {data}=await smartDb.auth.getSession();if(data?.session)smartLoad()},600);
 </script>
 <script defer src="assets/js/nabd-campus-navigator.js?v=1"></script>
-<script type="module" src="assets/js/nabd-director-exam-bot.js?v=6"></script>
+<script type="module" src="assets/js/nabd-director-exam-bot.js?v=7"></script>
 </body></html>
