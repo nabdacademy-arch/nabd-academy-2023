@@ -56,6 +56,7 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   const $=id=>document.getElementById(id);
   let authorized=false,checking=false,owner=null,examLoaded=false,bankPromise=null,chatEnglish=false,bankRows=null,bankFiltered=[],bankPage=0,bankLoadPromise=null;
   const BANK_PAGE_SIZE=20;
+  const answerState=new Map(),progressState=new Map();
   const bankPane=$('nebBankPane'),examPane=$('nebExamPane'), chatPane=$('nebChatPane'), frameSlot=$('nebFrameSlot'), examState=$('nebExamState');
   function addMessage(kind,value){
     const el=document.createElement('div');
@@ -67,7 +68,7 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   addMessage('bot','أهلًا في مساعدك الخاص! اكتب اسم عصب أو شريان أو عضو أو ثقب، وسأبحث في أسئلتك وأعرض الإجابة وسببها إن كانا موثقين. للمحاكاة الكاملة افتح تبويب الامتحانات.');
 
   function revoke(){
-    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;bankRows=null;bankFiltered=[];bankPage=0;bankLoadPromise=null;
+    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;bankRows=null;bankFiltered=[];bankPage=0;bankLoadPromise=null;answerState.clear();progressState.clear();
     $('nebBankList').replaceChildren();$('nebBankStatus').textContent='سجّل الدخول بحساب المدير لاستعراض الأسئلة.';$('nebBankPages').textContent='—';
     frameSlot.replaceChildren();frameSlot.hidden=true;examState.hidden=false;
     examState.replaceChildren();
@@ -174,6 +175,7 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
         select.replaceChildren(new Option('كل الفصول','all'));
         for(const chapter of chapters)select.append(new Option(chapter,chapter));
         filterBankBrowser();
+        loadSavedProgress(expectedOwner).catch(err=>console.warn('[NABD] Could not load owner progress',err?.message));
       }catch(error){
         $('nebBankStatus').textContent='تعذر تحميل الأسئلة: '+(error.message||'خطأ اتصال')+' — جرّب فتح البوت مجددًا.';
         $('nebBankList').replaceChildren();$('nebBankPages').textContent='—';
@@ -238,27 +240,150 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     for(const word of terms){if(main.includes(word))points+=4;if(detail.includes(word))points+=1;}
     return points;
   }
+  async function loadSavedProgress(expectedOwner){
+    const fetched=[];
+    for(let start=0;start<4000;start+=500){
+      const {data,error}=await api.from('nabd_exam_progress')
+        .select('question_id,attempts,wrong,last_correct').eq('user_id',expectedOwner)
+        .order('question_id',{ascending:true}).range(start,start+499);
+      if(error)throw error;
+      fetched.push(...(data||[]));
+      if(!data||data.length<500)break;
+    }
+    if(!authorized||owner!==expectedOwner)return;
+    for(const record of fetched){
+      if(!progressState.has(record.question_id))progressState.set(record.question_id,record);
+    }
+  }
+  async function storeAttempt(entry,wasCorrect,status){
+    if(!wasCorrect && wasCorrect!==false)return;
+    const uid=owner;
+    if(!authorized||!uid)return;
+    const id=entry.id;
+    const prev=progressState.get(id)||{attempts:0,wrong:0};
+    const next={question_id:id,user_id:uid,attempts:(Number(prev.attempts)||0)+1,
+      wrong:(Number(prev.wrong)||0)+(wasCorrect?0:1),last_correct:wasCorrect,
+      updated_at:new Date().toISOString()};
+    progressState.set(id,next);
+    const {error}=await api.from('nabd_exam_progress').upsert(next,{onConflict:'user_id,question_id'});
+    if(error){
+      progressState.set(id,prev);
+      status.textContent+=' · تعذّر حفظ التقدم: '+error.message;
+    }else{
+      status.textContent+=' · ✓ حُفظ التقدم الخاص بك';
+    }
+  }
   function qaCard(entry){
-    const q=entry.content||{}, card=document.createElement('article');card.className='neb-qa';
-    const source=document.createElement('small');source.textContent=(q.sourceLevel||entry.pool)+' · '+(q.chapter||entry.chapter)+' · '+(q.source||'NABD exam bank');
-    const title=document.createElement('p');title.textContent=!chatEnglish&&q.qAr?q.qAr:q.q||'سؤال غير مكتمل';
+    const q=entry.content||{}, card=document.createElement('article');
+    card.className='neb-qa';
+    const source=document.createElement('small');
+    source.textContent=(q.sourceLevel||entry.pool)+' · '+(q.chapter||entry.chapter)+' · '+(q.source||'NABD exam bank');
+    const title=document.createElement('p');
+    title.className='neb-question';
+    title.textContent=!chatEnglish&&q.qAr?q.qAr:q.q||'سؤال غير مكتمل';
     card.append(source,title);
     const options=(!chatEnglish&&Array.isArray(q.optsAr)&&q.optsAr.length===q.opts.length?q.optsAr:q.opts)||[];
-    options.forEach((option,i)=>{const line=document.createElement('p');line.textContent=String.fromCharCode(65+i)+'. '+option;card.append(line);});
-    const answer=document.createElement('div');answer.hidden=true;answer.style.borderTop='1px solid #375c6a';answer.style.paddingTop='8px';
-    if(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<(q.opts||[]).length){
-      const label=document.createElement('b');label.textContent='✓ '+(chatEnglish?'Answer':'الإجابة')+': '+String.fromCharCode(65+q.answer)+' · '+(options[q.answer]||q.opts[q.answer]);
-      const why=document.createElement('p');why.textContent=(!chatEnglish&&q.whyAr?q.whyAr:q.why)||'المفتاح متاح، لكن لا يوجد تفسير مدقق لهذا السؤال حاليًا.';
-      answer.append(label,why);
-      if(q.answerVerified==='source_key'||q.answerVerified==='not_verified'){
-        const warning=document.createElement('small');
-        warning.textContent='تنبيه: المفتاح من مصدر سابق ولم يُدقَّق بشكل مستقل.';
-        answer.append(warning);
-      }
-    }else{answer.textContent='⚠ لا توجد إجابة موثقة في المصدر لهذا السؤال؛ لا تعتمد على التخمين.';}
+    const hasKey=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<options.length;
+    const keyLevel=q.answerVerified||'not_verified';
+    const state=answerState.get(entry.id)||{chosen:null,submitted:false};
+    const optionList=document.createElement('div');
+    optionList.className='neb-options';
+    optionList.setAttribute('role','group');
+    optionList.setAttribute('aria-label','اختر الإجابة لهذا السؤال');
+    const feedback=document.createElement('div');feedback.className='neb-answer-feedback';feedback.setAttribute('role','status');
+    const actions=document.createElement('div');actions.className='neb-answer-actions';
+    const confirm=document.createElement('button');confirm.type='button';confirm.className='neb-send';
+    confirm.textContent='تأكيد إجابتي';confirm.disabled=state.chosen===null||state.submitted;
+    const reset=document.createElement('button');reset.type='button';reset.className='neb-chip';reset.textContent='محاولة جديدة';
+    reset.hidden=!state.submitted;
+    const answer=document.createElement('div');answer.className='neb-answer-explain';answer.hidden=true;
     const toggle=document.createElement('button');toggle.className='neb-chip';toggle.type='button';toggle.textContent='إظهار الإجابة والسبب';
-    toggle.addEventListener('click',()=>{answer.hidden=!answer.hidden;toggle.textContent=answer.hidden?'إظهار الإجابة والسبب':'إخفاء الإجابة';});
-    card.append(toggle,answer);return card;
+    const saved=progressState.get(entry.id);
+    if(saved){
+      const badge=document.createElement('small');badge.className='neb-progress-badge';
+      badge.textContent='محاولات محفوظة: '+saved.attempts+' · أخطاء: '+saved.wrong;
+      card.append(badge);
+    }
+    const provenance=document.createElement('small');
+    provenance.className='neb-provenance';
+    if(keyLevel==='externally_checked')provenance.textContent='✓ تمت مراجعة الإجابة بمصدر علمي مرفق.';
+    else if(keyLevel==='curated_fact')provenance.textContent='مفتاح من مجموعة الحقائق التعليمية المنقحة؛ لم تُراجع جميع صياغات الأسئلة بمصدر مستقل.';
+    else if(keyLevel==='source_key')provenance.textContent='مفتاح من ملف الأسئلة السابق؛ يحتاج مراجعة مرجعية مستقلة.';
+    else provenance.textContent='⚠ لا يوجد مفتاح إجابة قابل للتحقق لهذا السؤال حاليًا.';
+    card.append(provenance);
+    function drawOptions(){
+      optionList.replaceChildren();
+      options.forEach((option,i)=>{
+        const row=document.createElement('button');
+        row.type='button';row.className='neb-choice';row.disabled=state.submitted;
+        row.setAttribute('aria-pressed',String(state.chosen===i));
+        if(state.chosen===i)row.classList.add('selected');
+        if(state.submitted&&hasKey&&i===q.answer)row.classList.add('correct');
+        if(state.submitted&&hasKey&&i===state.chosen&&state.chosen!==q.answer)row.classList.add('incorrect');
+        const marker=document.createElement('span');marker.className='neb-choice-marker';marker.textContent=state.chosen===i?'●':'○';
+        const letter=document.createElement('b');letter.textContent=String.fromCharCode(65+i)+'.';
+        const label=document.createElement('span');label.textContent=option;
+        row.append(marker,letter,label);
+        row.addEventListener('click',()=>{
+          if(state.submitted)return;
+          state.chosen=i;answerState.set(entry.id,state);confirm.disabled=false;
+          drawOptions();
+        });
+        optionList.append(row);
+      });
+    }
+    function createAnswer(){
+      answer.replaceChildren();
+      if(hasKey){
+        const label=document.createElement('b');
+        label.textContent='✓ '+(chatEnglish?'Correct answer':'الإجابة الصحيحة')+': '+
+          String.fromCharCode(65+q.answer)+' · '+(options[q.answer]||q.opts[q.answer]);
+        const explanation=document.createElement('p');
+        explanation.textContent=(!chatEnglish&&q.whyAr?q.whyAr:q.why)||
+          'المفتاح متوفر ولكن لم يُضف له تفسير موثوق بعد؛ راجع المرجع الأصلي.';
+        answer.append(label,explanation);
+        const note=document.createElement('small');note.textContent=provenance.textContent;answer.append(note);
+        if(typeof q.referenceUrl==='string'&&/^https:\/\/[a-z0-9.-]+\//i.test(q.referenceUrl)){
+          const link=document.createElement('a');link.href=q.referenceUrl;link.rel='noopener noreferrer';
+          link.target='_blank';link.textContent='المرجع العلمي للإجابة';
+          answer.append(link);
+        }
+      }else{
+        const p=document.createElement('p');p.textContent='⚠ لا تتوفر إجابة مدققة لهذا السؤال؛ سجّل اختيارك للتدريب فقط ولا تعتبره صحيحًا أو خاطئًا حتى تتم مراجعته.';
+        answer.append(p);
+      }
+    }
+    function showFeedback(){
+      if(!state.submitted){feedback.textContent='';return;}
+      if(!hasKey)feedback.textContent='تم تسجيل اختيارك للتدريب. هذا السؤال لم تتم مراجعة إجابته بعد؛ لا يوجد حكم بصح أو خطأ.';
+      else feedback.textContent=state.chosen===q.answer?'✓ إجابة صحيحة!':'✕ ليست الإجابة الصحيحة. راجع الشرح بالأسفل.';
+      feedback.classList.toggle('good',hasKey&&state.chosen===q.answer);
+      feedback.classList.toggle('bad',hasKey&&state.chosen!==q.answer);
+    }
+    confirm.addEventListener('click',()=>{
+      if(state.submitted||state.chosen===null)return;
+      state.submitted=true;answerState.set(entry.id,state);
+      confirm.disabled=true;reset.hidden=false;answer.hidden=false;toggle.textContent='إخفاء الإجابة والسبب';
+      showFeedback();drawOptions();
+      const ownerAtAnswer=owner;
+      if(hasKey&&authorized&&ownerAtAnswer){
+        storeAttempt(entry,state.chosen===q.answer,feedback)
+          .catch(err=>{feedback.textContent+=' · تعذّر حفظ التقدم: '+(err?.message||'خطأ');});
+      }
+    });
+    reset.addEventListener('click',()=>{
+      state.chosen=null;state.submitted=false;answer.hidden=true;
+      answerState.set(entry.id,state);toggle.textContent='إظهار الإجابة والسبب';reset.hidden=true;confirm.disabled=true;
+      showFeedback();drawOptions();
+    });
+    toggle.addEventListener('click',()=>{
+      answer.hidden=!answer.hidden;
+      toggle.textContent=answer.hidden?'إظهار الإجابة والسبب':'إخفاء الإجابة';
+    });
+    createAnswer();drawOptions();showFeedback();
+    card.append(optionList,feedback,actions,answer);
+    actions.append(confirm,reset,toggle);
+    return card;
   }
   async function ask(raw){
     const query=raw.trim();if(!query)return;
