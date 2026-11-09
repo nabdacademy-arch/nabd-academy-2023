@@ -1,6 +1,6 @@
 /* Static shell cache only: never cache Supabase auth, messages or private records. */
-const VERSION='moh-ai-twin-shell-v2';
-const SHELL=['./index.html','./style.css?v=2','./app.js?v=2','./manifest.webmanifest','./icon.svg'];
+const VERSION='moh-ai-twin-shell-v3';
+const SHELL=['./index.html','./style.css?v=3','./app.js?v=3','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(VERSION).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
 });
