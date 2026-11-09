@@ -1,0 +1,41 @@
+/* NABD Director-Only Head & Neck Exam Tutor. No question data ships in this asset. */
+#nabdExamLauncher[hidden],#nabdExamOverlay[hidden]{display:none!important}
+#nabdExamLauncher{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:100020;display:flex;align-items:center;gap:11px;background:linear-gradient(135deg,#061c31,#075f6c);color:#f5fcff;border:1px solid rgba(69,230,224,.65);border-radius:999px;padding:11px 18px 11px 12px;box-shadow:0 16px 44px rgba(0,14,30,.45),0 0 0 5px rgba(41,209,210,.12);cursor:pointer;font:800 14px system-ui;direction:rtl;transition:transform .18s,box-shadow .18s}
+#nabdExamLauncher:hover,#nabdExamLauncher:focus-visible{transform:translateY(-3px);box-shadow:0 20px 48px rgba(0,14,30,.52),0 0 0 6px rgba(41,209,210,.17)}
+#nabdExamLauncher .neb-orb{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;font-size:23px;background:linear-gradient(140deg,#37dddb,#f2cb77);color:#052535;box-shadow:inset 0 1px 2px #fff9}
+#nabdExamLauncher .neb-label{display:grid;gap:2px;text-align:right}
+#nabdExamLauncher .neb-label small{font:500 10px system-ui;color:#a7dde5}
+#nabdExamOverlay{position:fixed;inset:0;z-index:100030;background:rgba(2,11,23,.8);display:grid;place-items:center;padding:12px;backdrop-filter:blur(10px);direction:rtl}
+#nabdExamOverlay *{box-sizing:border-box}
+#nabdExamOverlay .neb-shell{width:min(1180px,100%);height:min(91dvh,920px);min-height:380px;background:#071b30;border:1px solid rgba(100,227,230,.3);border-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 35px 130px rgba(0,0,0,.67);color:#eaf8ff;font-family:system-ui}
+#nabdExamOverlay .neb-top{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:76px;padding:14px 19px;background:linear-gradient(100deg,#081c32,#104456);border-bottom:1px solid #316270}
+#nabdExamOverlay .neb-heading{display:flex;gap:12px;align-items:center}
+#nabdExamOverlay .neb-icon{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#20e1d7,#ebc778);color:#082034;font-size:24px}
+#nabdExamOverlay h2{font:800 clamp(15px,2vw,22px) system-ui;margin:0;color:#fff}
+#nabdExamOverlay .neb-sub{font-size:11px;color:#a9d2df;line-height:1.8}
+#nabdExamOverlay button{cursor:pointer}
+#nabdExamOverlay .neb-close{background:#20435b;color:#fff;border:1px solid #48717f;border-radius:11px;padding:9px 12px;min-width:42px;font-size:21px}
+#nabdExamOverlay .neb-nav{display:flex;gap:9px;padding:12px 18px;background:#0b2239;border-bottom:1px solid rgba(96,186,200,.3)}
+#nabdExamOverlay .neb-tab{background:#14354b;color:#b5dbe8;border:1px solid #2c566e;border-radius:11px;padding:10px 15px;font:750 13px system-ui}
+#nabdExamOverlay .neb-tab.active{background:linear-gradient(135deg,#22d4d0,#19a4c5);color:#051e2d;border-color:#40e6dc}
+#nabdExamOverlay .neb-body{flex:1;min-height:0;position:relative;background:#0a1d32}
+#nabdExamOverlay .neb-pane{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0}
+#nabdExamOverlay .neb-pane[hidden]{display:none!important}
+#nabdExamOverlay .neb-state{margin:auto;padding:24px;text-align:center;max-width:500px;color:#b9d9e7;line-height:1.9}
+#nabdExamOverlay .neb-frame{border:0;width:100%;height:100%;background:#08152b}
+#nabdExamOverlay .neb-chat-log{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:13px;overscroll-behavior:contain}
+#nabdExamOverlay .neb-msg{padding:12px 14px;border-radius:15px;line-height:1.85;max-width:87%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+#nabdExamOverlay .neb-msg.bot{align-self:flex-start;background:#183a52;border:1px solid #2e5872;color:#e6f7ff}
+#nabdExamOverlay .neb-msg.user{align-self:flex-end;background:#095e67;color:#fff;border:1px solid #10abb5}
+#nabdExamOverlay .neb-qa{background:#102d42;border:1px solid #335b68;border-radius:15px;padding:15px;line-height:1.8;display:grid;gap:8px;color:#e7f8ff}
+#nabdExamOverlay .neb-qa small{color:#9ec8d4;font-size:11px}
+#nabdExamOverlay .neb-qa b{color:#79e6e2;font-size:13px}
+#nabdExamOverlay .neb-qa p{margin:0;font-size:13px}
+#nabdExamOverlay .neb-form{display:flex;gap:9px;padding:13px;background:#0b2239;border-top:1px solid #2f5568}
+#nabdExamOverlay .neb-form input{flex:1;min-width:0;padding:12px;border-radius:10px;border:1px solid #40657a;background:#0d3046;color:white;font:500 14px system-ui}
+#nabdExamOverlay .neb-send{background:#28d8d4;border:0;border-radius:10px;padding:11px 20px;font:800 14px system-ui;color:#062232}
+#nabdExamOverlay .neb-tools{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px 0}
+#nabdExamOverlay .neb-chip{padding:7px 11px;border-radius:999px;background:#17364d;color:#acecf0;border:1px solid #35637b;font:600 11px system-ui}
+#nabdExamOverlay .neb-foot{padding:7px 16px;background:#08192b;color:#82a5b3;font-size:10px}
+@media(max-width:700px){#nabdExamOverlay{padding:0}#nabdExamOverlay .neb-shell{height:100dvh;border-radius:0;max-width:none}#nabdExamOverlay .neb-top{padding:10px 12px;min-height:67px}#nabdExamOverlay .neb-nav{padding:10px}#nabdExamOverlay .neb-tab{flex:1;padding:11px 8px}#nabdExamLauncher{padding:9px 13px 9px 9px}#nabdExamLauncher .neb-orb{width:38px;height:38px}#nabdExamOverlay .neb-chat-log{padding:11px}#nabdExamOverlay .neb-msg{max-width:95%}}
+@media(prefers-reduced-motion:reduce){#nabdExamLauncher{transition:none}}
