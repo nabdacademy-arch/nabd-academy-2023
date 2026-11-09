@@ -109,9 +109,11 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     try{
       await verifyOwner();
       if(!authorized)throw Error('الدخول غير مصرح.');
-      const {data,error}=await api.from('nabd_exam_private_app_parts').select('part_no,html_content').order('part_no',{ascending:true}).limit(100);
+      const requestOwner=owner;
+      const {data,error}=await api.from('nabd_exam_private_app_parts').select('part_no,html_content').eq('owner_id',requestOwner).order('part_no',{ascending:true}).limit(100);
       if(error)throw error;
-      if(!data||data.length!==15||data.some((v,i)=>v.part_no!==i))throw Error('ملفات المحاكي غير مكتملة؛ أعد المحاولة.');
+      if(!authorized||owner!==requestOwner||dashboard.classList.contains('hidden'))throw Error('انتهت جلسة المدير؛ سجّل الدخول مجددًا.');
+      if(!data||!data.length||data.length>100||data.some((v,i)=>v.part_no!==i||typeof v.html_content!=='string'))throw Error('ملفات المحاكي غير مكتملة؛ أعد المحاولة.');
       const html=data.map(v=>v.html_content).join('');
       if(!html.startsWith('<!DOCTYPE html>')||!html.includes('<script id="db"'))throw Error('فشل التحقق من ملف المحاكي.');
       const frame=document.createElement('iframe');
@@ -162,6 +164,11 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
       const label=document.createElement('b');label.textContent='✓ '+(chatEnglish?'Answer':'الإجابة')+': '+String.fromCharCode(65+q.answer)+' · '+(options[q.answer]||q.opts[q.answer]);
       const why=document.createElement('p');why.textContent=(!chatEnglish&&q.whyAr?q.whyAr:q.why)||'المفتاح متاح، لكن لا يوجد تفسير مدقق لهذا السؤال حاليًا.';
       answer.append(label,why);
+      if(q.answerVerified==='source_key'||q.answerVerified==='not_verified'){
+        const warning=document.createElement('small');
+        warning.textContent='تنبيه: المفتاح من مصدر سابق ولم يُدقَّق بشكل مستقل.';
+        answer.append(warning);
+      }
     }else{answer.textContent='⚠ لا توجد إجابة موثقة في المصدر لهذا السؤال؛ لا تعتمد على التخمين.';}
     const toggle=document.createElement('button');toggle.className='neb-chip';toggle.type='button';toggle.textContent='إظهار الإجابة والسبب';
     toggle.addEventListener('click',()=>{answer.hidden=!answer.hidden;toggle.textContent=answer.hidden?'إظهار الإجابة والسبب':'إخفاء الإجابة';});
@@ -180,7 +187,9 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     const log=$('nebChatLog'),waiting=log.lastElementChild;
     try{
       await verifyOwner();if(!authorized)throw Error('انتهت صلاحية جلسة المدير.');
+      const requestOwner=owner;
       const rows=await getBank();
+      if(!authorized||owner!==requestOwner||dashboard.classList.contains('hidden'))throw Error('انتهت جلسة المدير.');
       const found=rows.map(x=>({row:x,s:score(x.content||{},terms)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
       waiting.textContent=found.length?'وجدت '+found.length+' أسئلة ذات صلة. اضغط «إظهار الإجابة والسبب» بعد محاولة الحل:':'لم أجد تطابقًا واضحًا. جرّب اسمًا إنجليزيًا أدق أو أحد المصطلحات الموجودة في المحاضرات.';
       for(const x of found)log.append(qaCard(x.row));
