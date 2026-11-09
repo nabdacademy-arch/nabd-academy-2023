@@ -39,3 +39,11 @@ GitHub Actions workflow: mohammed-ai-twin.yml.
 - SpeechRecognition availability varies by mobile browser; the browser's recognition provider may process audio outside the app, and permission must be granted in browser controls.
 - Microphone recognition stops immediately when the document is hidden, the app is backgrounded, the user signs out or the page is left. This web feature is **not 24/7 Android background listening**.
 - A separately built, opt-in native Android assistant with visible permissions, Android role selection, and microphone indicators would be required for permitted device integrations. No hidden recording, anti-detection, unattended access to accounts, or proctored exam automation is built.
+
+## V2 goal-planning agent — transparent workflows
+- Open **الوكيل الذكي** and describe a concrete goal: e.g., plan a personal study week with optional reminders.
+- The authenticated Supabase Edge Function `moh-twin-agent` now accepts `action: "plan"` and uses the owner's approved persona and memory, if the owner has opted into AI processing.
+- The model returns a strictly validated JSON plan (up to 6 advisory steps of type reminder, draft, research or manual). No tool or device action is executed from model output.
+- For a recommended reminder with a clear interval (15 minutes to 7 days), the app shows an explicit, individual confirmation. Only after approval does it create a row in the owner's RLS-protected personal tasks table; a server Cron may later generate an in-app reminder event.
+- Plans are suggestions, not proof of actual research. The app does not auto-submit forms, log into third-party applications, bypass monitoring, or act inside graded/proctored exams.
+- **Model availability requires server-side provider configuration** (Groq/Gemini), and provider quotas may limit usage. AI failures must be shown honestly rather than claimed as completed work.
