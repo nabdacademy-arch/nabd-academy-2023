@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Mohammed AI Twin</string>
+  <string name="notification_channel_name">تذكيرات التوأم الرقمي</string>
+  <string name="notification_channel_description">التذكيرات التي تنشئها بنفسك في التطبيق</string>
+</resources>
