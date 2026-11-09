@@ -48,7 +48,7 @@ import java.util.Locale;
 public final class MainActivity extends Activity {
     private static final String TWIN_URL="https://nabdacademy-arch.github.io/nabd-academy-2023/mohammed-ai-twin/";
     private static final String ACADEMY_URL="https://nabdacademy-arch.github.io/nabd-academy-2023/";
-    private static final int VOICE_REQUEST=202, CONTACT_REQUEST=203, NOTIFY_REQUEST=204;
+    private static final int VOICE_REQUEST=202, CONTACT_REQUEST=203, NOTIFY_REQUEST=204, MIC_REQUEST=205;
     private static final int NAVY=Color.rgb(7,17,31), PANEL=Color.rgb(14,33,51);
     private static final int CYAN=Color.rgb(40,215,229), SOFT=Color.rgb(184,218,231);
     private WebView web;
@@ -66,6 +66,7 @@ public final class MainActivity extends Activity {
         else web.loadUrl(TWIN_URL);
         ReminderReceiver.createNotificationChannel(this);
         status("جاهز. الأوامر تعمل بإذنك فقط، ولا يوجد استماع خفي.");
+        reviewIncoming(getIntent());
     }
     private int dp(float n){return Math.round(getResources().getDisplayMetrics().density*n);}
     private GradientDrawable pill(int fill,int stroke,int radius){
@@ -109,10 +110,12 @@ public final class MainActivity extends Activity {
         HorizontalScrollView strip=new HorizontalScrollView(this);strip.setHorizontalScrollBarEnabled(false);
         LinearLayout commands=new LinearLayout(this);commands.setOrientation(LinearLayout.HORIZONTAL);
         commands.setPadding(dp(10),dp(8),dp(10),dp(10));
-        String[] keys={"🧠 التوأم","🎙️ صوت","📲 التطبيقات","👤 جهة اتصال","☎️ اتصال","✉️ رسالة","⚙️ الإعدادات","⏰ تذكير","🌐 المتصفح"};
+        String[] keys={"🧠 التوأم","🎙️ صوت","🎧 جلسة مستمرة","⏹ إيقاف الصوت","📲 التطبيقات","👤 جهة اتصال","☎️ اتصال","✉️ رسالة","⚙️ الإعدادات","⏰ تذكير","🌐 المتصفح"};
         Runnable[] tasks={
           ()->web.loadUrl(TWIN_URL),
           this::listenVoice,
+          this::startContinuousVoice,
+          this::stopContinuousVoice,
           this::showLaunchableApps,
           this::pickPhoneContact,
           ()->askNumber(false),
@@ -215,6 +218,47 @@ public final class MainActivity extends Activity {
         speech.putExtra(RecognizerIntent.EXTRA_PROMPT,"تحدث بأمر واضح؛ الاستماع يتوقف عند انتهاء هذا الطلب");
         try{startActivityForResult(speech,VOICE_REQUEST);}
         catch(ActivityNotFoundException e){notify("لا يوجد محرك تعرّف صوتي على هذا الهاتف. استعمل مربع الكتابة.");}
+    }
+    private void startContinuousVoice(){
+        if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)!=PackageManager.PERMISSION_GRANTED){
+            if(Build.VERSION.SDK_INT>=33)
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.POST_NOTIFICATIONS},MIC_REQUEST);
+            else requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},MIC_REQUEST);
+            return;
+        }
+        new AlertDialog.Builder(this)
+            .setTitle("تشغيل استماع صوتي مستمر بإذنك")
+            .setMessage("سيعمل الميكروفون عبر خدمة أمامية بإشعار Android ظاهر وزر إيقاف. قد يعالج مزوّد التعرف الصوتي على الجهاز أو عبر الإنترنت الصوت. الأوامر تُعرض عليك للموافقة، ولن تُنفذ تلقائيًا أثناء إغلاق التطبيق. قد يوقف النظام الجلسة لتوفير الطاقة. هل توافق؟")
+            .setPositiveButton("تشغيل", (d,w)->{
+                try{
+                    Intent intent=new Intent(this,VoiceListeningService.class)
+                      .setAction(VoiceListeningService.ACTION_START);
+                    startForegroundService(intent);
+                    notify("بدأ استماع مرئي بإشعار دائم. اضغط إيقاف متى أردت.");
+                }catch(Exception e){notify("تعذر تشغيل خدمة الاستماع على هذا الجهاز.");}
+            })
+            .setNegativeButton("إلغاء",null).show();
+    }
+    private void stopContinuousVoice(){
+        stopService(new Intent(this,VoiceListeningService.class));
+        notify("تم إيقاف الاستماع المستمر وطلب تحرير الميكروفون.");
+    }
+    private void reviewIncoming(Intent intent){
+        if(intent==null)return;
+        String phrase=intent.getStringExtra(VoiceListeningService.EXTRA_COMMAND);
+        if(phrase==null||phrase.isBlank())return;
+        intent.removeExtra(VoiceListeningService.EXTRA_COMMAND);
+        new AlertDialog.Builder(this)
+           .setTitle("أمر صوتي يحتاج موافقتك")
+           .setMessage("التقط التوأم: «"+phrase+"»\nهل تريد تنفيذ هذا الأمر؟")
+           .setPositiveButton("تأكيد وتنفيذ",(d,w)->handleCommand(phrase))
+           .setNegativeButton("إلغاء",null).show();
+    }
+    @Override protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        setIntent(intent);
+        reviewIncoming(intent);
     }
     private void pickPhoneContact(){
         Intent pick=new Intent(Intent.ACTION_PICK);
@@ -412,6 +456,11 @@ public final class MainActivity extends Activity {
         super.onRequestPermissionsResult(code,permissions,grants);
         if(code==NOTIFY_REQUEST && grants.length>0 && grants[0]==PackageManager.PERMISSION_GRANTED)
             notify("إذن الإشعارات مفعّل. اضغط تذكير لتحديد الموعد.");
+        if(code==MIC_REQUEST){
+            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)==PackageManager.PERMISSION_GRANTED)
+                startContinuousVoice();
+            else notify("لم تمنح إذن الميكروفون. لم يبدأ الاستماع.");
+        }
     }
     @Override public void onBackPressed(){
         if(web!=null&&web.canGoBack())web.goBack();else super.onBackPressed();
