@@ -58,6 +58,15 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   function revoke(){
     authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;
     frameSlot.replaceChildren();frameSlot.hidden=true;examState.hidden=false;
+    examState.replaceChildren();
+    const description=document.createElement('p');
+    description.textContent='المحاكي الخاص متاح بعد تسجيل الدخول بحساب المدير.';
+    const reopen=document.createElement('button');
+    reopen.className='neb-send';reopen.type='button';reopen.textContent='فتح المحاكي الخاص';
+    reopen.addEventListener('click',loadExam);
+    examState.append(description,reopen);
+    $('nebChatLog').replaceChildren();
+    addMessage('bot','أهلًا في مساعدك الخاص! اسأل عن موضوع من أسئلة Head & Neck أو اختر المحاكي.');
   }
   async function verifyOwner(){
     if(checking)return;
