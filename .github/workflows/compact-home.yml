@@ -1,0 +1,25 @@
+name: NABD Compact Institutional Homepage
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'academy-full.html'
+      - 'tests/compact-home-integrity.test.mjs'
+      - '.github/workflows/compact-home.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'academy-full.html'
+      - 'tests/compact-home-integrity.test.mjs'
+      - '.github/workflows/compact-home.yml'
+  workflow_dispatch:
+jobs:
+  homepage-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/compact-home-integrity.test.mjs
