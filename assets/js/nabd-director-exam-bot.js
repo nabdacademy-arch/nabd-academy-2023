@@ -50,14 +50,14 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
           '<div id="nebChatLog" class="neb-chat-log" role="log" aria-live="polite"></div>'+
           '<form id="nebChatForm" class="neb-form"><input id="nebChatInput" required maxlength="280" aria-label="اسأل عن موضوع التشريح" placeholder="اكتب موضوعًا مثل: foramen ovale أو اشرح لي facial nerve..."><button class="neb-send" type="submit">إرسال</button></form>'+
         '</div>'+
-      '</div><div class="neb-foot">مساعد بحث في بنكك الخاص؛ لا يرسل أسئلتك إلى خدمة ذكاء اصطناعي خارجية. الإجابات غير المدققة معلّمة في المصدر.</div>'+
+      '</div><div class="neb-foot">البنك خاص بحساب المدير. عند طلب ترجمة غير محفوظة، يُرسل نص السؤال وخياراته فقط إلى مساعد الأكاديمية للترجمة الآلية عبر مزوّد الذكاء الاصطناعي. الإجابات غير المدققة معلّمة.</div>'+
     '</div>';
   document.body.append(launcher,overlay);
 
   const $=id=>document.getElementById(id);
   let authorized=false,checking=false,owner=null,examLoaded=false,bankPromise=null,chatEnglish=false,bankRows=null,bankFiltered=[],bankPage=0,bankLoadPromise=null;
   const BANK_PAGE_SIZE=20;
-  const answerState=new Map(),progressState=new Map();
+  const answerState=new Map(),progressState=new Map(),translationState=new Map();
   const bankPane=$('nebBankPane'),examPane=$('nebExamPane'), chatPane=$('nebChatPane'), frameSlot=$('nebFrameSlot'), examState=$('nebExamState');
   function addMessage(kind,value){
     const el=document.createElement('div');
@@ -69,7 +69,7 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
   addMessage('bot','أهلًا في مساعدك الخاص! اكتب اسم عصب أو شريان أو عضو أو ثقب، وسأبحث في أسئلتك وأعرض الإجابة وسببها إن كانا موثقين. للمحاكاة الكاملة افتح تبويب الامتحانات.');
 
   function revoke(){
-    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;bankRows=null;bankFiltered=[];bankPage=0;bankLoadPromise=null;answerState.clear();progressState.clear();
+    authorized=false;owner=null;launcher.hidden=true;overlay.hidden=true;examLoaded=false;bankPromise=null;bankRows=null;bankFiltered=[];bankPage=0;bankLoadPromise=null;answerState.clear();progressState.clear();translationState.clear();
     $('nebBankList').replaceChildren();$('nebBankStatus').textContent='سجّل الدخول بحساب المدير لاستعراض الأسئلة.';$('nebBankPages').textContent='—';
     frameSlot.replaceChildren();frameSlot.hidden=true;examState.hidden=false;
     examState.replaceChildren();
@@ -286,14 +286,51 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     card.className='neb-qa';
     const source=document.createElement('small');
     source.textContent=(q.sourceLevel||entry.pool)+' · '+(q.chapter||entry.chapter)+' · '+(q.source||'NABD exam bank');
-    const title=document.createElement('p');
-    title.className='neb-question';
-    title.textContent=!chatEnglish&&q.qAr?q.qAr:q.q||'سؤال غير مكتمل';
-    card.append(source,title);
-    const options=(!chatEnglish&&Array.isArray(q.optsAr)&&q.optsAr.length===q.opts.length?q.optsAr:q.opts)||[];
-    const hasKey=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<options.length;
+    let locale='en';
+    const englishOptions=Array.isArray(q.opts)?q.opts:[];
+    let options=englishOptions;
+    const bundledTranslation=typeof q.qAr==='string'&&q.qAr.trim()&&Array.isArray(q.optsAr)
+      &&q.optsAr.length===englishOptions.length&&q.optsAr.every(x=>typeof x==='string'&&x.trim())
+      ?{qAr:q.qAr,optsAr:q.optsAr}:null;
+    const titleRow=document.createElement('div');titleRow.className='neb-question-row';
+    const title=document.createElement('p');title.className='neb-question';
+    title.textContent=q.q||'سؤال غير مكتمل';
+    const translate=document.createElement('button');translate.type='button';
+    translate.className='neb-chip neb-translate-btn';translate.textContent='🌐 ترجمة للعربي';
+    translate.setAttribute('aria-label','ترجمة هذا السؤال وجميع خياراته إلى العربية');
+    titleRow.append(title,translate);card.append(source,titleRow);
+    const translationNote=document.createElement('small');
+    translationNote.className='neb-translation-note';translationNote.setAttribute('role','status');
+    card.append(translationNote);
+    const hasKey=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<englishOptions.length;
     const keyLevel=q.answerVerified||'not_verified';
     const state=answerState.get(entry.id)||{chosen:null,submitted:false};
+    async function requestArabicTranslation(){
+      if(bundledTranslation)return bundledTranslation;
+      const cached=translationState.get(entry.id);
+      if(cached?.qAr&&cached?.optsAr?.length===englishOptions.length)return cached;
+      if(!authorized||!owner)throw Error('انتهت صلاحية جلسة المدير.');
+      const requestOwner=owner;
+      const textToTranslate=JSON.stringify({question:q.q||'',options:englishOptions});
+      const prompt='Translate the following Head & Neck anatomy exam question and ALL answer choices from English to Modern Standard Arabic. Preserve technical accuracy, negations (NOT / EXCEPT), option order, and meaning. Do not solve the question. Output ONLY JSON with exactly two fields: "qAr" (Arabic question string) and "optsAr" (array of Arabic choices in the identical order and count). Keep standard Arabic medical terminology, retaining English anatomical names in parentheses if helpful. SOURCE_JSON: '+textToTranslate;
+      if(prompt.length>1500)throw Error('هذا السؤال طويل جدًا للترجمة التلقائية.');
+      const {data,error}=await api.functions.invoke('smart-processor',{body:{question:prompt,language:'ar'}});
+      if(error)throw Error('تعذر الاتصال بمساعد الترجمة أو وصل للحد اليومي.');
+      if(!authorized||owner!==requestOwner||dashboard.classList.contains('hidden'))throw Error('انتهت جلسة المدير.');
+      const raw=typeof data?.answer==='string'?data.answer:'';
+      const first=raw.indexOf('{'),last=raw.lastIndexOf('}');
+      if(first<0||last<=first)throw Error('لم يرجع المساعد ترجمة منظمة؛ أعد المحاولة.');
+      let parsed;
+      try{parsed=JSON.parse(raw.slice(first,last+1));}catch{throw Error('فشل قراءة الترجمة التلقائية؛ حاول مرة أخرى.');}
+      if(typeof parsed.qAr!=='string'||!/[\u0600-\u06ff]/.test(parsed.qAr)
+        ||!Array.isArray(parsed.optsAr)||parsed.optsAr.length!==englishOptions.length
+        ||!parsed.optsAr.every(x=>typeof x==='string'&&x.trim()&&/[\u0600-\u06ff]/.test(x))){
+        throw Error('الترجمة غير مكتملة؛ لم يتم تغيير السؤال الأصلي.');
+      }
+      const translated={qAr:parsed.qAr.trim(),optsAr:parsed.optsAr.map(x=>x.trim())};
+      translationState.set(entry.id,translated);
+      return translated;
+    }
     const optionList=document.createElement('div');
     optionList.className='neb-options';
     optionList.setAttribute('role','group');
@@ -344,10 +381,10 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
       answer.replaceChildren();
       if(hasKey){
         const label=document.createElement('b');
-        label.textContent='✓ '+(chatEnglish?'Correct answer':'الإجابة الصحيحة')+': '+
+        label.textContent='✓ '+(locale==='en'?'Correct answer':'الإجابة الصحيحة')+': '+
           String.fromCharCode(65+q.answer)+' · '+(options[q.answer]||q.opts[q.answer]);
         const explanation=document.createElement('p');
-        explanation.textContent=(!chatEnglish&&q.whyAr?q.whyAr:q.why)||
+        explanation.textContent=(locale==='ar'&&q.whyAr?q.whyAr:q.why)||
           'المفتاح متوفر ولكن لم يُضف له تفسير موثوق بعد؛ راجع المرجع الأصلي.';
         answer.append(label,explanation);
         const note=document.createElement('small');note.textContent=provenance.textContent;answer.append(note);
@@ -387,6 +424,27 @@ if (location.hostname === ALLOWED_HOST && dashboard) {
     toggle.addEventListener('click',()=>{
       answer.hidden=!answer.hidden;
       toggle.textContent=answer.hidden?'إظهار الإجابة والسبب':'إخفاء الإجابة';
+    });
+    translate.addEventListener('click',async()=>{
+      if(locale==='ar'){
+        locale='en';options=englishOptions;title.textContent=q.q||'سؤال غير مكتمل';
+        title.setAttribute('dir','ltr');optionList.setAttribute('dir','ltr');
+        translate.textContent='🌐 ترجمة للعربي';translationNote.textContent='';
+        drawOptions();createAnswer();return;
+      }
+      translate.disabled=true;translate.textContent='⏳ جارٍ الترجمة...';translationNote.textContent='';
+      try{
+        const translated=await requestArabicTranslation();
+        if(!authorized||!owner||dashboard.classList.contains('hidden'))return;
+        locale='ar';options=translated.optsAr;title.textContent=translated.qAr;
+        title.setAttribute('dir','rtl');optionList.setAttribute('dir','rtl');
+        translate.textContent='🌐 English';
+        translationNote.textContent=bundledTranslation?'ترجمة عربية محفوظة.':'ترجمة آلية؛ قد تحتاج مراجعة المصطلحات التشريحية.';
+        drawOptions();createAnswer();
+      }catch(err){
+        translate.textContent='🌐 ترجمة للعربي';
+        translationNote.textContent='⚠ '+(err?.message||'تعذرت الترجمة حاليًا.');
+      }finally{translate.disabled=false;}
     });
     createAnswer();drawOptions();showFeedback();
     card.append(optionList,feedback,actions,answer);
