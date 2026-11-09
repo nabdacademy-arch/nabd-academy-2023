@@ -23,6 +23,19 @@
 #nabdExamOverlay .neb-pane[hidden]{display:none!important}
 #nabdExamOverlay .neb-state{margin:auto;padding:24px;text-align:center;max-width:500px;color:#b9d9e7;line-height:1.9}
 #nabdExamOverlay .neb-frame{border:0;width:100%;height:100%;background:#08152b}
+#nabdExamOverlay .neb-bank-toolbar{display:flex;flex-wrap:wrap;gap:9px;padding:13px 16px;background:#0c263e;border-bottom:1px solid #2d5969}
+#nabdExamOverlay .neb-bank-toolbar input,#nabdExamOverlay .neb-bank-toolbar select{border:1px solid #426f7e;border-radius:11px;background:#102f49;color:#e8fbff;padding:11px 13px;min-height:43px;font:600 13px system-ui}
+#nabdExamOverlay .neb-bank-toolbar input{flex:2;min-width:180px}
+#nabdExamOverlay .neb-bank-toolbar select{flex:1;min-width:130px}
+#nabdExamOverlay .neb-bank-status{padding:10px 17px;color:#bfece7;background:#0c2439;border-bottom:1px solid #294a5e;font-size:12px;line-height:1.7}
+#nabdExamOverlay .neb-bank-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px;display:grid;gap:14px;align-content:start}
+#nabdExamOverlay .neb-bank-entry{display:grid;gap:5px}
+#nabdExamOverlay .neb-bank-n{color:#9edcdb;font-weight:700;padding-inline:5px;font-size:12px}
+#nabdExamOverlay .neb-bank-footer{display:flex;gap:13px;justify-content:center;align-items:center;padding:12px 14px;background:#091f33;border-top:1px solid #355368;color:#e0f7fa;font-size:13px}
+#nabdExamOverlay .neb-bank-footer button:disabled{opacity:.42;cursor:not-allowed}
+#nabdExamOverlay .neb-bank-empty{padding:32px 18px;text-align:center;color:#c1dfe8}
+#nabdExamOverlay .neb-nav{overflow-x:auto}
+#nabdExamOverlay .neb-nav .neb-tab{white-space:nowrap}
 #nabdExamOverlay .neb-chat-log{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:13px;overscroll-behavior:contain}
 #nabdExamOverlay .neb-msg{padding:12px 14px;border-radius:15px;line-height:1.85;max-width:87%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
 #nabdExamOverlay .neb-msg.bot{align-self:flex-start;background:#183a52;border:1px solid #2e5872;color:#e6f7ff}
@@ -37,5 +50,5 @@
 #nabdExamOverlay .neb-tools{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px 0}
 #nabdExamOverlay .neb-chip{padding:7px 11px;border-radius:999px;background:#17364d;color:#acecf0;border:1px solid #35637b;font:600 11px system-ui}
 #nabdExamOverlay .neb-foot{padding:7px 16px;background:#08192b;color:#82a5b3;font-size:10px}
-@media(max-width:700px){#nabdExamOverlay{padding:0}#nabdExamOverlay .neb-shell{height:100dvh;border-radius:0;max-width:none}#nabdExamOverlay .neb-top{padding:10px 12px;min-height:67px}#nabdExamOverlay .neb-nav{padding:10px}#nabdExamOverlay .neb-tab{flex:1;padding:11px 8px}#nabdExamLauncher{padding:9px 13px 9px 9px}#nabdExamLauncher .neb-orb{width:38px;height:38px}#nabdExamOverlay .neb-chat-log{padding:11px}#nabdExamOverlay .neb-msg{max-width:95%}}
+@media(max-width:700px){#nabdExamOverlay .neb-bank-toolbar{padding:9px}#nabdExamOverlay .neb-bank-toolbar input{min-width:100%;flex-basis:100%}#nabdExamOverlay .neb-bank-toolbar select{min-width:115px}#nabdExamOverlay .neb-bank-list{padding:9px}#nabdExamOverlay .neb-nav .neb-tab{font-size:12px;flex:1}#nabdExamOverlay{padding:0}#nabdExamOverlay .neb-shell{height:100dvh;border-radius:0;max-width:none}#nabdExamOverlay .neb-top{padding:10px 12px;min-height:67px}#nabdExamOverlay .neb-nav{padding:10px}#nabdExamOverlay .neb-tab{flex:1;padding:11px 8px}#nabdExamLauncher{padding:9px 13px 9px 9px}#nabdExamLauncher .neb-orb{width:38px;height:38px}#nabdExamOverlay .neb-chat-log{padding:11px}#nabdExamOverlay .neb-msg{max-width:95%}}
 @media(prefers-reduced-motion:reduce){#nabdExamLauncher{transition:none}}
