@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- No ambient microphone, contact dump, SMS, call, overlay, accessibility or package-all permissions. -->
+    <!-- The microphone can run only in a user-started foreground service with a visible notification. No hidden capture, broad contacts, SMS, call, overlay, accessibility, or package-all access. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN"/>
@@ -28,12 +31,13 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="unspecified">
+            android:screenOrientation="unspecified" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name=".VoiceListeningService" android:exported="false" android:foregroundServiceType="microphone"/>
         <receiver android:name=".ReminderReceiver" android:exported="false"/>
         <receiver android:name=".BootReceiver" android:exported="false">
             <intent-filter>
