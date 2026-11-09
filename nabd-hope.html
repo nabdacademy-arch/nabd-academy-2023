@@ -49,6 +49,39 @@
     @media(max-width:760px){.hero-grid,.reach,.status,.donate-layout,.faq{grid-template-columns:1fr}.hero{padding:43px 0 66px}.art-shell,.art{min-height:355px;height:355px}.hero h1{max-width:660px}.nav{min-height:70px}.brand small{display:none}.navlink{display:none}.section{padding:60px 0}}
     @media(max-width:530px){.services,.steps{grid-template-columns:1fr}.service.wide{grid-column:auto}.hero-actions .btn{width:100%}.art-shell,.art{height:325px;min-height:325px}.floating{font-size:.73rem;padding:9px 12px}.floating b{font-size:1.2rem}.art-caption{font-size:.65rem;padding:8px 10px}.status-pane{padding:22px}.wrap{width:min(100% - 26px,1170px)}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+.hope-photo{width:100%;height:100%;display:block;object-fit:cover;object-position:center 40%;filter:saturate(.85) contrast(1.05)}
+.art-shell{position:relative}.art-shell::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,transparent 25%,#071923b0 95%);pointer-events:none}.art-shell .floating,.art-shell .art-caption{z-index:2}
+.hope-stories{background:linear-gradient(130deg,#061d2b,#0a2e3d);padding:80px 0;border-block:1px solid #ffffff30}
+.hope-stories h2{font-size:clamp(1.8rem,3.6vw,3rem);max-width:780px;margin:12px 0 29px}
+.hope-photo-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+.hope-photo-grid figure{position:relative;margin:0;height:400px;overflow:hidden;border-radius:26px;border:1px solid #ffffff3a;background:#143745}
+.hope-photo-grid img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .45s ease}
+.hope-photo-grid figure:hover img{transform:scale(1.04)}
+.hope-photo-grid figure:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,#031923eb 100%);pointer-events:none}
+.hope-photo-grid figcaption{position:absolute;z-index:2;inset-inline:22px;bottom:25px;font-weight:900;color:#fff;font-size:clamp(1.13rem,2vw,1.48rem);line-height:1.55;text-shadow:0 2px 10px #0008}
+.hope-photo-grid figcaption small{font-size:.74rem;display:block;font-weight:500;color:#d4e1e2;margin-top:7px}
+.hope-photo-credit{font-size:.69rem;line-height:1.4}
+.hope-wallet-card{border-radius:29px;padding:clamp(19px,4vw,36px);border:1px solid #a5c2bb67;background:linear-gradient(145deg,#123c4a,#072333);box-shadow:0 20px 55px #00151f6b}
+.hope-wallet-top{display:flex;align-items:center;gap:12px;margin-bottom:17px}.hope-token{height:48px;width:48px;flex:none;border-radius:15px;display:grid;place-items:center;background:#d5b36e;color:#05202b;font-size:27px;font-weight:900}
+.hope-wallet-top strong{font-size:1.24rem;color:white;display:block}.hope-wallet-top span{font-size:.8rem;color:#bad3d7}
+.hope-wallet-layout{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:center}
+.hope-wallet-address{direction:ltr;text-align:center;word-break:break-all;overflow-wrap:anywhere;border:1px solid #69d6ca8f;border-radius:13px;background:#031c28;color:white;font-weight:900;font-size:clamp(.98rem,1.8vw,1.2rem);letter-spacing:.015em;padding:19px 14px;margin:13px 0}
+.hope-network{display:inline-block;border-radius:50px;padding:5px 14px;background:#72e0d51a;border:1px solid #72e0d59a;color:#9df6e8;font-weight:900;font-size:.82rem}
+.hope-wallet-actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.hope-wallet-actions button,.hope-wallet-actions a{display:inline-flex;align-items:center;justify-content:center;font-weight:900;min-height:46px;padding:10px 18px;border-radius:12px;border:1px solid #ffffff6a;text-decoration:none}
+.hope-wallet-actions button{background:#ebce99;color:#0a2933;border:0}.hope-wallet-actions a{background:#ffffff10;color:white}
+.hope-wallet-status{min-height:20px;color:#8df0d8;font-size:.82rem}
+.hope-qr-box{border-radius:22px;border:1px solid #ffffff39;background:#ffffff09;padding:23px;text-align:center}
+.hope-qr-box svg{display:block;width:min(100%,235px);height:auto;aspect-ratio:1/1;margin:0 auto 14px;border:9px solid white;border-radius:9px;background:white;image-rendering:pixelated}
+.hope-qr-box p{color:#d5e3e5;font-size:.83rem;line-height:1.8;margin:0}
+.hope-wallet-warning{font-size:.85rem;line-height:1.95;color:#e7e7df;border-inline-start:3px solid #eccb89;background:#e7c88815;padding:12px 17px;border-radius:9px;margin-top:18px}
+.hope-wallet-intro{color:#c7d9dc;font-size:.99rem;margin-bottom:25px}
+.hope-hint{font-size:.79rem;color:#b3cbd0;margin-top:15px}
+.hope-bottom-cta{display:none}
+@media(max-width:800px){.hope-photo-grid{grid-template-columns:1fr}.hope-photo-grid figure{height:315px}.hope-wallet-layout{grid-template-columns:1fr}}
+@media(max-width:580px){.hope-stories{padding:57px 0}.hope-wallet-card{padding:18px}.hope-bottom-cta{position:fixed;bottom:12px;inset-inline:11px;display:flex;align-items:center;justify-content:space-between;gap:9px;z-index:95;background:#092837eb;border:1px solid #d7d7b965;border-radius:14px;padding:9px 11px;backdrop-filter:blur(13px);box-shadow:0 13px 35px #0008}.hope-bottom-cta span{font-size:.79rem;font-weight:900}.hope-bottom-cta a{white-space:nowrap;border-radius:10px;background:#e9c98b;color:#08202c;padding:10px 16px;font-weight:900;font-size:.8rem}.foot{padding-bottom:70px}}
+
   </style>
 </head>
 <body>
@@ -81,37 +114,10 @@
         </div>
         <div class="art-shell">
           <!-- Original scalable illustration: a learner and Gaza's skyline, dignity and resilience without photographs of beneficiaries. -->
-          <svg class="art" viewBox="0 0 650 530" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a student with an open book in front of a Gaza city skyline, with a dawn of hope">
-            <defs>
-              <radialGradient id="sun"><stop stop-color="#ffe4aa" stop-opacity=".92"/><stop offset=".45" stop-color="#e6c592" stop-opacity=".33"/><stop offset="1" stop-color="#e6c592" stop-opacity="0"/></radialGradient>
-              <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#36778a"/><stop offset=".6" stop-color="#164456"/><stop offset="1" stop-color="#082738"/></linearGradient>
-              <linearGradient id="book" x1="0" x2="1"><stop stop-color="#fff0c7"/><stop offset="1" stop-color="#e1b97c"/></linearGradient>
-              <linearGradient id="floor" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#0d3445"/><stop offset="1" stop-color="#071b29"/></linearGradient>
-            </defs>
-            <path fill="url(#sky)" d="M0 0h650v530H0z"/><circle cx="326" cy="226" r="211" fill="url(#sun)"/>
-            <g fill="#dbe6d5" opacity=".52"><circle cx="74" cy="90" r="2"/><circle cx="166" cy="49" r="2"/><circle cx="550" cy="109" r="3"/><circle cx="484" cy="55" r="2"/><circle cx="422" cy="140" r="2"/></g>
-            <path d="M0 285h55v-82l23 10 18-29 15 8v93h35v-48l19-13 19 8v53h28v-106h54v39l17-11 11 12v66h35v-72h46v72h40v-100h28v100h30v-64l23-16 17 11v69h42v-90l19 9 14-18 27 14v85h43v245H0z" fill="#153b4b" opacity=".86"/>
-            <path d="M0 326h26v-71h15v13h14v58h33v-44l13-9 15 7 14-6v52h36v-89h20v15h20v74h36v-70l16-11 12 9 13-8v80h44v-56h31v56h49v-95h22v21h19v74h30v-66l18-17 17 13 11-9v79h32v-49h26v49h40v204H0z" fill="#0b2d3e"/>
-            <path d="M42 326l16-32 15 7 18-24 22 49M453 327l18-23 23 9 13-22 23 36" fill="none" stroke="#071d2b" stroke-width="11" opacity=".75"/>
-            <g fill="#e2cfa5" opacity=".2"><rect x="65" y="307" width="8" height="9"/><rect x="178" y="270" width="9" height="12"/><rect x="185" y="294" width="9" height="12"/><rect x="427" y="272" width="8" height="9"/><rect x="496" y="293" width="8" height="10"/><rect x="550" y="260" width="8" height="9"/></g>
-            <path d="M0 406q150-38 303 5t347-8v127H0z" fill="url(#floor)"/>
-            <g transform="translate(326 320)">
-              <ellipse cx="0" cy="158" rx="155" ry="23" fill="#051b27" opacity=".65"/>
-              <circle cx="0" cy="-32" r="38" fill="#dfab83"/><path d="M-40-39q5-53 42-50 39 1 43 46-22-22-36-19-23 13-49 23" fill="#142638"/>
-              <path d="M-34-3q-48 22-63 92l-16 71h230l-17-71Q78 15 35-4l-34 18z" fill="#e0c6a6"/>
-              <path d="M-34-3q-15 12-22 33l47 43L0 14l8 59 51-44Q48 6 34-5" fill="#173f4c"/>
-              <path d="M-114 80Q-67 49-7 80v85q-53-33-107-16z" fill="url(#book)" stroke="#f8ead0" stroke-width="4"/>
-              <path d="M-7 80Q54 48 114 80v69Q56 133-7 165z" fill="#f5d6a3" stroke="#f8ead0" stroke-width="4"/>
-              <path d="M-7 81v83" stroke="#bf975f" stroke-width="4"/>
-              <path d="M-94 102q33-10 73 7M-94 118q33-10 73 6M9 108q37-14 86-4M9 124q37-14 86-4" stroke="#ab8956" stroke-width="3" stroke-linecap="round" opacity=".55"/>
-              <path d="M-117 80l14-8 17 18-4 17q-10 13-23 3M117 80l-14-8-17 18 4 17q10 13 23 3" fill="#dfab83"/>
-            </g>
-            <g opacity=".72"><path d="M211 138q22-18 39 0M244 116q14-12 27 0M413 116q21-19 41-2" fill="none" stroke="#f5dba9" stroke-width="3" stroke-linecap="round"/><path d="M292 82l8-18 8 18 17 8-17 8-8 18-8-18-17-8z" fill="#f8e2ae" opacity=".8"/></g>
-            <path d="M40 475q45-27 73-8M530 465q35-26 88-7" stroke="#4e8c78" stroke-width="4" fill="none" opacity=".65"/>
-          </svg>
+          <img class="hope-photo" src="https://images.pexels.com/photos/36637781/pexels-photo-36637781.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400" loading="eager" decoding="async" fetchpriority="high" width="1200" height="800" alt="شباب من غزة في صورة فوتوغرافية تعبيرية">
           <div class="floating first"><b>100</b><span data-t="studentsTarget">طالب وطالبة · هدف أولي</span></div>
           <div class="floating second">✦ <span data-t="artMessage">من قلب التحدي، يولد الأمل</span></div>
-          <div class="art-caption"><span data-t="artCaption">رسم رمزي أصلي يعبّر عن صمود الطالب في غزة</span><strong>NABD HOPE</strong></div>
+          <div class="art-caption"><span class="hope-photo-credit" data-hope="credit">صورة من غزة · Hosny Salah / Pexels · ليست لمستفيد من المنحة</span><strong>NABD HOPE</strong></div>
         </div>
       </div>
     </section>
@@ -128,7 +134,18 @@
       </div>
     </div></section>
 
-    <section class="section dark" id="reach"><div class="wrap reach">
+    
+<section class="hope-stories" aria-label="Hope Scholarship photographs">
+<div class="wrap">
+<span class="tag" data-hope="photoTag">الإنسان أولًا · قصص تستحق فرصة</span>
+<h2 data-hope="photoHeadline">وراء كل رحلة إلى الجامعة حلم، ووراء كل حلم طالب ينتظر فرصة.</h2>
+<div class="hope-photo-grid">
+<figure><img src="https://images.pexels.com/photos/8419199/pexels-photo-8419199.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1300" loading="lazy" width="1000" height="667" alt="طلاب يدرسون ويقرؤون الكتب"><figcaption><span data-hope="photoQuoteOne">أحيانًا ما ينقص الطالب ليس الطموح، بل وسيلة الوصول.</span><small>RDNE Stock Project / Pexels · <span data-hope="illustration">صورة تعبيرية، ليست لمستفيد من المنحة</span></small></figcaption></figure>
+<figure><img src="https://images.pexels.com/photos/36450018/pexels-photo-36450018.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1300" loading="lazy" width="1000" height="667" alt="مشهد تعليمي حقيقي من غزة"><figcaption><span data-hope="photoQuoteTwo">حين تستمر المعرفة، يبقى المستقبل ممكنًا.</span><small>Hosny Salah / Pexels · <span data-hope="realGaza">صورة من غزة، وليست لمستفيدي المنحة</span></small></figcaption></figure>
+</div>
+</div>
+</section>
+<section class="section dark" id="reach"><div class="wrap reach">
       <div><span class="tag" data-t="reachTag">ONE GAZA · FIVE GOVERNORATES</span><h2 data-t="reachTitle">من الشمال إلى الجنوب. الفرصة لكل طالب يحتاجها.</h2><p class="lead" data-t="reachText">نستهدف محافظات شمال غزة، وغزة، ودير البلح، وخان يونس، ورفح. توزَّع المساعدات وفق الاحتياج ومعايير معلنة، دون افتراض حصص ثابتة قبل دراسة الطلبات.</p>
         <div class="governorates"><span data-t="north">📍 شمال غزة</span><span data-t="gaza">📍 غزة</span><span data-t="deir">📍 دير البلح</span><span data-t="khan">📍 خان يونس</span><span data-t="rafah">📍 رفح</span></div>
       </div>
@@ -156,16 +173,28 @@
       </div>
     </div></section>
 
-    <section class="section donate" id="give"><div class="wrap donate-layout">
-      <div><div class="section-head"><span class="tag" data-t="giveTag">JOIN THE MISSION</span><h2 data-t="giveTitle">قد يكون دعمك بداية فصل دراسي جديد.</h2><p data-t="giveText">نعمل على تجهيز وسيلة مساهمة معتمدة ومخصصة للمنحة. سنعرض اسم الجهة المستلمة، وشروط المساهمة، والرابط والرمز بعد التحقق منها قبل استقبال الأموال.</p></div>
-        <div class="hero-actions"><button class="btn gold" type="button" disabled aria-disabled="true" data-t="giveButton">التبرع — قريبًا</button><button class="btn outline" type="button" disabled aria-disabled="true" data-t="applyButton">تقديم طلب مساعدة — قريبًا</button></div>
-        <p class="small-note" data-t="warning">لا تُرسل أموالًا بناءً على صورة أو رقم متداول باسم المنحة. اعتمد فقط بيانات التبرع التي ستُنشر في هذه الصفحة بعد اعتمادها رسميًا.</p>
-      </div>
-      <aside class="code-placeholder" aria-label="Donation QR integration pending"><div class="fake-qr" aria-hidden="true">⌁</div><h3 data-t="qrTitle">منطقة رمز التبرع QR</h3><p data-t="qrText">بانتظار رمز الدفع والرابط وبيانات المستلم المؤكدة. لم يتم تفعيل أي تحويل.</p></aside>
-      <!-- PAYMENT_INTEGRATION_PENDING: Verify recipient, purpose, link/QR ownership, platform terms and applicable requirements before making payment link active. Never collect card information in a static GitHub Pages form. -->
-    </div></section>
-
-    <section class="section" id="faq"><div class="wrap faq">
+    
+<section class="section donate" id="give">
+<div class="wrap">
+<div class="section-head"><span class="tag" data-hope="donateTag">وسائل الدعم · USDT</span><h2 data-hope="donateTitle">ساعد حلمًا على الاستمرار.</h2><p class="hope-wallet-intro" data-hope="donateLead">هذه بيانات عنوان إيداع USDT على Binance التي قدمتها إدارة المبادرة. نعرضها بدقة مع وسائل تحقق واضحة. يجب التحقق من ملكية المحفظة ومن المتطلبات اللازمة لجمع التبرعات قبل أي تحويل.</p></div>
+<div class="hope-wallet-card">
+<div class="hope-wallet-top"><span class="hope-token">₮</span><div><strong data-hope="walletHead">USDT · عنوان الإيداع</strong><span data-hope="walletSub">شبكة Tron (TRC20) فقط · معلومات مقدمة من إدارة المنحة</span></div></div>
+<div class="hope-wallet-layout">
+<div>
+<span class="hope-network">TRON · TRC20 ONLY</span>
+<p class="hope-wallet-intro" style="margin:15px 0 4px" data-hope="addressLabel">عنوان المحفظة بحسب لقطة Binance:</p>
+<div class="hope-wallet-address" id="hopeWalletAddress">TMcYCsXodV13piF7CgCX3VJgaqLezm1hEZ</div>
+<div class="hope-wallet-actions"><button type="button" id="hopeCopyButton" data-hope="copy">نسخ عنوان المحفظة</button><a href="https://www.binance.com/" target="_blank" rel="noopener noreferrer" data-hope="binance">موقع Binance الرسمي ↗</a></div>
+<div class="hope-wallet-status" id="hopeCopyStatus" aria-live="polite"></div>
+<div class="hope-wallet-warning" data-hope="warning">تنبيه مهم: هذا عنوان إيداع عملة رقمية وليس رابط Binance Pay. استخدم USDT على شبكة TRC20 فقط؛ لا تستخدم ERC20 أو BEP20، ولا ترسل TRX أو أي عملة أخرى. التحويلات قد تكون غير قابلة للاسترجاع. لم نتحقق بصورة مستقلة من ملكية المحفظة أو أهلية جمع التبرعات.</div>
+</div>
+<div class="hope-qr-box"><svg id="hopeWalletQR" viewBox="0 0 37 37" shape-rendering="crispEdges" role="img" aria-label="USDT TRC20 wallet address QR"><rect width="37" height="37" fill="#fff"/></svg><p data-hope="qrLabel">باركود مطابق للعنوان الموجود في لقطة الشاشة المرسلة. راجع العنوان والشبكة قبل الإرسال.</p></div>
+</div>
+</div>
+<p class="hope-hint" data-hope="footerPayment">الموقع لا يُجري تحويلات ولا يجمع بيانات بطاقات أو كلمات مرور. قد لا تُسترد تحويلات العملات الرقمية. هذا العنوان ليس إثباتًا لتسجيل جهة خيرية أو ترخيص جمع التبرعات.</p>
+</div>
+</section>
+<section class="section" id="faq"><div class="wrap faq">
       <div class="section-head"><span class="tag" data-t="faqTag">QUESTIONS & ANSWERS</span><h2 data-t="faqTitle">كل سؤال يستحق إجابة واضحة.</h2><p data-t="faqIntro">المشروع في مرحلة التأسيس، وتتحدد التفاصيل التشغيلية النهائية بعد تأمين الموارد.</p></div>
       <div>
         <details><summary data-t="qOne">هل التسجيل مفتوح الآن؟</summary><p data-t="aOne">لا. سيتم نشر رابط تسجيل رسمي وآمن عندما تصبح اللجنة والنظام جاهزين. لن تُطلب رسوم تسجيل.</p></details>
@@ -206,5 +235,27 @@
       setLang(initial);
     })();
   </script>
+<div class="hope-bottom-cta"><span data-hope="stickyLabel">منحة نبض الأمل · 100 فرصة</span><a href="#give" data-hope="stickyCta">معلومات الدعم ↗</a></div>
+<script>
+(function(){
+"use strict";
+const address="TMcYCsXodV13piF7CgCX3VJgaqLezm1hEZ";
+const rows="0000000000|0000000000|0000000000|0000000000|01fc99c7f0|0104ce0410|0174f9f5d0|01747e75d0|01747d65d0|01057ce410|01fd5557f0|0000c4e000|012d331a00|0011a684c0|00b6a07260|0040f47850|002f02ae50|010062da20|00a5f0d1f0|01409fc200|007ebc3a30|00fa53a8e0|0156490cb0|007b9bb8b0|013c371fb0|000199b1c0|01fc1d15e0|01052a5170|0174f49f10|01756d7ce0|01749449d0|01047fa220|01fde29fa0|0000000000|0000000000|0000000000|0000000000".split("|");
+const svg=document.getElementById("hopeWalletQR"),namespace="http://www.w3.org/2000/svg";
+rows.forEach((hex,y)=>{const b=BigInt("0x"+hex);for(let x=0;x<37;x++){if((b>>BigInt(36-x))&1n){const r=document.createElementNS(namespace,"rect");r.setAttribute("x",x);r.setAttribute("y",y);r.setAttribute("width","1");r.setAttribute("height","1");r.setAttribute("fill","#092a35");svg.appendChild(r)}}});
+const dict={
+ar:["صورة فوتوغرافية من غزة · Hosny Salah / Pexels · ليست لمستفيد من المنحة","الإنسان أولًا · قصص تستحق فرصة","وراء كل رحلة إلى الجامعة حلم، ووراء كل حلم طالب ينتظر فرصة.","أحيانًا ما ينقص الطالب ليس الطموح، بل وسيلة الوصول.","صورة تعبيرية، ليست لمستفيد من المنحة","حين تستمر المعرفة، يبقى المستقبل ممكنًا.","صورة من غزة، وليست لمستفيدي المنحة","وسائل الدعم · USDT","ساعد حلمًا على الاستمرار.","هذه بيانات عنوان إيداع USDT على Binance التي قدمتها إدارة المبادرة. نعرضها بدقة، لكن يجب التحقق من ملكية المحفظة ومن متطلبات جمع التبرعات قبل التحويل.","USDT · عنوان الإيداع","شبكة Tron (TRC20) فقط · معلومات قدمتها إدارة المنحة","عنوان المحفظة بحسب لقطة Binance:","نسخ عنوان المحفظة","موقع Binance الرسمي ↗","تنبيه: هذا عنوان إيداع، وليس رابط Binance Pay. استخدم USDT وشبكة TRC20 فقط؛ لا ترسل على ERC20 أو BEP20 ولا ترسل TRX. التحويلات قد لا تسترد. لم نتحقق من ملكية المحفظة أو تصاريح جمع التبرعات.","QR مطابق للعنوان في الصورة المرسلة. راجع الشبكة والعنوان.","الموقع لا يجري تحويلات ولا يجمع بيانات البطاقات. هذا العنوان لا يثبت وجود ترخيص لجمع التبرعات.","تم نسخ العنوان؛ تحقق من هوية المستلم والشبكة.","تعذر النسخ؛ انسخ العنوان يدويًا.","منحة نبض الأمل · 100 فرصة","معلومات الدعم ↗"],
+en:["Gaza photo · Hosny Salah / Pexels · Not a scholarship recipient","PEOPLE FIRST · STORIES WORTH CONTINUING","Behind every university journey is a dream worth supporting.","Sometimes students need access, not more ambition.","Illustrative photo · Not a beneficiary","When learning continues, the future remains possible.","Gaza photo · Not a scholarship recipient","SUPPORT INFORMATION · USDT","Help a dream move forward.","This USDT Binance deposit address was supplied by the initiative's administration. Verify wallet ownership and fundraising eligibility before transferring.","USDT · Deposit address","Tron (TRC20) only · Provided by the initiative","Wallet address from the Binance screenshot:","Copy address","Official Binance website ↗","Caution: This is a deposit address, NOT a Binance Pay link. Send only USDT on TRC20, not ERC20/BEP20 or TRX. Transfers may be irreversible. Wallet ownership and fundraising authorizations have not been independently verified.","QR matches the address shown in the supplied image. Check network and recipient.","This website processes no transfers or card data. A wallet address is not evidence of fundraising authorization.","Address copied. Verify network and recipient.","Copy failed. Select and copy the address manually.","NABD Hope · 100 opportunities","Support details ↗"],
+fr:["Photo de Gaza · Hosny Salah / Pexels · Pas de bénéficiaire","L'HUMAIN D'ABORD","Derrière chaque trajet universitaire, un rêve à soutenir.","Parfois, l'étudiant manque de moyens et non d'ambition.","Photo illustrative · Pas de bénéficiaire","Quand on apprend, l'avenir reste possible.","Photo de Gaza · Pas de bénéficiaire","SOUTIEN · USDT","Aidez un rêve à avancer.","Adresse USDT Binance fournie par l'administration. Vérifiez le propriétaire et l'autorisation de collecte avant tout transfert.","USDT · Adresse de dépôt","Tron (TRC20) seulement · Données de l'administration","Adresse figurant sur la capture Binance :","Copier l'adresse","Site officiel Binance ↗","Attention : adresse de dépôt, pas un lien Binance Pay. USDT sur TRC20 uniquement, pas ERC20/BEP20 ni TRX. Les transferts peuvent être irréversibles. Propriété et autorisations non vérifiées.","QR conforme à l'adresse de la capture. Vérifiez le réseau.","Ce site ne traite pas de paiements ni de cartes. L'adresse ne prouve aucune autorisation.","Adresse copiée. Vérifiez le destinataire.","Copie impossible. Copiez manuellement.","NABD Espoir · 100 chances","Détails du soutien ↗"],
+es:["Foto de Gaza · Hosny Salah / Pexels · No representa a beneficiarios","PERSONAS PRIMERO","Detrás de cada camino a la universidad hay un sueño.","A veces falta acceso, no ambición.","Foto ilustrativa · No beneficiarios","Con educación, el futuro sigue siendo posible.","Foto de Gaza · No beneficiarios","APOYO · USDT","Ayuda a que un sueño continúe.","Esta dirección USDT de Binance la facilitó la administración. Verifica la titularidad y los permisos antes de transferir.","USDT · Dirección de depósito","Solo Tron (TRC20) · Información de la iniciativa","Dirección mostrada en la captura Binance:","Copiar dirección","Sitio oficial Binance ↗","Atención: es una dirección de depósito, NO un enlace Binance Pay. Envía solo USDT en TRC20, no ERC20/BEP20 ni TRX. Las transferencias pueden ser irreversibles. Titularidad y permisos no verificados.","El QR coincide con la dirección de la captura. Verifica la red.","Esta web no procesa pagos ni tarjetas. Una dirección no acredita permiso de recaudar donaciones.","Dirección copiada. Verifica el destinatario.","Error al copiar. Copia manualmente.","NABD Esperanza · 100 oportunidades","Información ↗"],
+zh:["加沙照片 · Hosny Salah / Pexels · 非本项目受益人","以人为本 · 让故事继续","每一段求学旅程背后，都有一个值得支持的梦想。","学生有时缺的是机会，而不是志向。","示意照片 · 非受益人","教育继续，未来才有希望。","加沙照片 · 非本项目受益人","支持信息 · USDT","帮助梦想继续前行。","这是管理方提供的 Binance USDT 存款地址。转账前请核实钱包归属和募捐资格。","USDT · 存款地址","仅限 Tron (TRC20) · 管理方提供","Binance 截图中的地址：","复制地址","Binance 官方网站 ↗","注意：这是存款地址，不是 Binance Pay 链接。只能在 TRC20 发送 USDT，不能用 ERC20/BEP20，也不能发 TRX。交易可能无法撤销。钱包归属和募捐授权未独立核实。","二维码与提供的截图地址一致，请核实网络。","本网页不处理付款或卡信息。钱包地址不代表已获得募捐许可。","地址已复制，请核实网络和收款人。","复制失败，请手动复制。","NABD 希望 · 100个机会","支持详情 ↗"],
+ru:["Фото из Газы · Hosny Salah / Pexels · Не получатель помощи","ПРЕЖДЕ ВСЕГО — ЛЮДИ","За каждой дорогой в университет стоит мечта.","Иногда не хватает возможностей, а не стремления.","Иллюстративное фото · Не получатели","Когда учеба продолжается, будущее возможно.","Фото из Газы · Не получатели помощи","ПОДДЕРЖКА · USDT","Помогите мечте продолжиться.","Это адрес USDT Binance, предоставленный администрацией. Проверьте владельца и право на сбор пожертвований.","USDT · Адрес депозита","Только Tron (TRC20) · Данные администрации","Адрес на снимке Binance:","Копировать адрес","Официальный сайт Binance ↗","Внимание: это адрес депозита, НЕ ссылка Binance Pay. Отправляйте только USDT в сети TRC20, не ERC20/BEP20 и не TRX. Переводы могут быть необратимы. Владение и разрешения не проверены.","QR соответствует адресу на снимке. Проверьте сеть.","Сайт не обрабатывает переводы и данные карт. Адрес не подтверждает право собирать пожертвования.","Адрес скопирован. Проверьте сеть и получателя.","Ошибка копирования. Скопируйте вручную.","Надежда NABD · 100 возможностей","Поддержка ↗"]
+};
+const keys=["credit","photoTag","photoHeadline","photoQuoteOne","illustration","photoQuoteTwo","realGaza","donateTag","donateTitle","donateLead","walletHead","walletSub","addressLabel","copy","binance","warning","qrLabel","footerPayment","copied","copyFailed","stickyLabel","stickyCta"];
+function local(){let l=document.documentElement.lang;let d=dict[l]||dict.ar;document.querySelectorAll("[data-hope]").forEach(el=>{let idx=keys.indexOf(el.getAttribute("data-hope"));if(idx>=0)el.textContent=d[idx]||dict.en[idx];});}
+document.getElementById("language").addEventListener("change",local);local();
+document.getElementById("hopeCopyButton").addEventListener("click",async function(){const current=dict[document.documentElement.lang]||dict.ar;const box=document.getElementById("hopeCopyStatus");try{await navigator.clipboard.writeText(address);box.textContent=current[18];}catch(e){box.textContent=current[19];let r=document.createRange();r.selectNodeContents(document.getElementById("hopeWalletAddress"));let sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}});
+})();
+</script>
 </body>
 </html>
