@@ -1,0 +1,20 @@
+{
+  "name": "MOHAMMED AI TWIN — التوأم الرقمي",
+  "short_name": "AI TWIN",
+  "description": "Private digital twin, secure memory, background reminders and authorized practice challenges.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
