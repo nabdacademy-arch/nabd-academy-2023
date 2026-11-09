@@ -9,6 +9,7 @@ const tables={profile:'moh_twin_profiles',memory:'moh_twin_memories',messages:'m
 const state={user:null,profile:null,memories:[],messages:[],tasks:[],events:[],challenges:[],
   challenge:null,human:[],humanDone:false,ai:null,lastAnswer:'',loading:false};
 const safe=(v,n=1000)=>String(v??'').slice(0,n);
+let currentAgentPlan=null;
 let toastTimer=null;
 function toast(message,error=false){
   const target=$('toast');target.textContent=safe(message,400);target.classList.toggle('error',error);
@@ -218,11 +219,87 @@ async function invokeAI(action,payload){
       INVALID_SESSION:'انتهت جلسة تسجيل الدخول.',
       QUOTA_UNAVAILABLE:'خدمة ضبط الاستهلاك غير متاحة.',
       BAD_MODEL_OUTPUT:'لم يرد النموذج بالصيغة المطلوبة؛ حاول مرة أخرى.',
+      INVALID_GOAL:'اكتب هدفًا واضحًا لا يقل عن عشرة أحرف.',
+      UNSUPPORTED_COVERT_REQUEST:'هذه الميزة لا تخطّط للتحايل على المراقبة أو تشغيل أدوات مخفية.',
       TEMPORARY_FAILURE:'خدمة التوأم مشغولة حاليًا، حاول لاحقًا.'};
     throw Error(messages[code]||'فشلت الاستجابة من المحرك: '+(code||error?.message||'خطأ مؤقت'));
   }
   return data;
 }
+
+const agentTypes={reminder:'تذكير قابل للجدولة',research:'بحث يحتاج مراجعتك',draft:'مسودة لكتابتك',manual:'خطوة يدوية'};
+$('agentExample').addEventListener('click',()=>{
+  $('agentGoal').value='أريد تنظيم مراجعة 8 محاضرات تشريح على ثلاثة أيام، وتذكيرًا غدًا بعد الظهر للمراجعة الأولى، مع اختبار تجريبي نهاية الأسبوع.';
+});
+function renderAgentPlan(){
+  const root=$('agentResult');root.replaceChildren();
+  if(!currentAgentPlan){root.hidden=true;return;}
+  root.hidden=false;
+  root.append(make('h2','','الخطة المقترحة — موافقتك مطلوبة'));
+  root.append(make('p','',currentAgentPlan.summary||'خطة عملية مقترحة'));
+  const note=make('p','note','هذه خطة مُولّدة بالذكاء الاصطناعي وقد تحتوي أخطاء في التوقيت أو التفاصيل. لم يُنفّذ أي إجراء تلقائيًا. راجع كل مهمة قبل اعتمادها.');
+  root.append(note);
+  currentAgentPlan.steps.forEach((step,i)=>{
+    const item=make('article','item-card agent-step'),inner=make('div','item-main');
+    inner.append(make('small','',String(i+1)+' / '+currentAgentPlan.steps.length+' · '+(agentTypes[step.type]||'خطوة مقترحة')));
+    inner.append(make('strong','',step.title));
+    inner.append(make('p','',step.details||''));
+    if(step.type==='reminder'&&Number.isInteger(step.due_minutes)){
+      const due=new Date(Date.now()+step.due_minutes*60000);
+      inner.append(make('small','','الموعد المقترح: '+prettyDate(due.toISOString())));
+      const actions=make('div','item-actions');
+      const schedule=make('button','btn ghost','+ جدولة بعد موافقتي');
+      schedule.type='button';
+      schedule.addEventListener('click',async()=>{
+        const when=new Date(Date.now()+step.due_minutes*60000);
+        if(!confirm('هل توافق على إنشاء تذكير في التوأم بعنوان «'+step.title+'» بتاريخ '+prettyDate(when.toISOString())+'؟'))return;
+        buttonBusy(schedule,true,'جارٍ الحفظ...');
+        try{
+          const {error}=await api.from(tables.tasks).insert({
+            owner_id:state.user.id,title:step.title.slice(0,180),
+            details:String(step.details||'').slice(0,1500),next_run:when.toISOString(),
+            repeat_every_minutes:null
+          });
+          if(error)throw Error(error.message);
+          await refreshTasks();
+          schedule.textContent='✓ تمت الجدولة';
+          schedule.disabled=true;
+          toast('حُفظ التذكير بإذنك وسيظهر في صفحة الوكيل الخلفي.');
+        }catch(e){
+          buttonBusy(schedule,false);
+          toast(safe(e.message),true);
+        }
+      });
+      actions.append(schedule);item.append(inner,actions);
+    }else{
+      if(step.type==='reminder')inner.append(make('small','', 'لم يقترح النموذج موعدًا محددًا؛ يمكنك جدولتها بنفسك من صفحة المهام.'));
+      item.append(inner);
+    }
+    root.append(item);
+  });
+}
+$('agentForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const goal=$('agentGoal').value.trim();
+  if(!state.user)return;
+  if(!state.profile?.consent_to_ai){
+    toast('وافق على استخدام الذكاء الاصطناعي من صفحة الهوية أولاً.',true);
+    navigate('identity');return;
+  }
+  if(goal.length<10){toast('اكتب هدفًا واضحًا لا يقل عن عشرة أحرف.',true);return;}
+  const button=$('generatePlan');buttonBusy(button,true,'الوكيل يحلل الخطوات...');
+  try{
+    currentAgentPlan=null;renderAgentPlan();
+    const output=await invokeAI('plan',{goal});
+    if(!Array.isArray(output.steps)||!output.steps.length)throw Error('لم يُنشئ النموذج خطة صالحة.');
+    currentAgentPlan={summary:String(output.summary||''),steps:output.steps.slice(0,6)};
+    renderAgentPlan();
+    $('agentResult').scrollIntoView({behavior:'smooth',block:'start'});
+    toast('الخطة جاهزة للمراجعة. لم يتم تنفيذ خطواتها.');
+  }catch(e){toast(safe(e.message),true);}
+  finally{buttonBusy(button,false);}
+});
+
 $('chatForm').addEventListener('submit',async event=>{
   event.preventDefault();
   const input=$('chatInput'),message=input.value.trim();if(!message||!state.user)return;
