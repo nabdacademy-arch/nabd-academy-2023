@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#061f30">
+  <title>بوابة مدير المنح الخارجية والدولية | أكاديمية نبض</title>
+  <link rel="stylesheet" href="assets/css/scholarship-center.css?v=1">
+</head>
+<body class="sch-center" data-scholarship-manager>
+ <div class="sch-container">
+   <header class="sch-header">
+     <a href="index.html" class="sch-brand">أكاديمية نبض للعلوم الطبية <span>INTERNATIONAL SCHOLARSHIPS · STAFF PORTAL</span></a>
+     <nav class="sch-header-links" aria-label="التنقل">
+       <a href="index.html">الرئيسية</a>
+       <a href="scholarships.html">أخبار المنح</a>
+     </nav>
+   </header>
+   <main>
+     <div class="sch-hero">
+       <span class="sch-eyebrow">NABD ACADEMY · SECURE STAFF ACCESS</span>
+       <h1>بوابة المنح الخارجية والدولية</h1>
+       <p>مساحة عمل مخصصة للموظف المخوّل بإدارة ونشر فرص المنح لطلاب أكاديمية نبض للعلوم الطبية.</p>
+     </div>
+     <section class="sch-panel" id="sch-login-panel" aria-labelledby="sch-login-heading">
+       <h2 id="sch-login-heading">تسجيل دخول مدير المنح</h2>
+       <p class="sch-subtitle">هذه البوابة مخصصة للحسابات التي اعتمدتها إدارة الأكاديمية فقط. تسجيل الدخول لا يمنح صلاحية النشر تلقائيًا.</p>
+       <form class="sch-form" id="sch-login-form">
+         <div class="sch-field"><label for="sch-email">البريد الإلكتروني</label><input type="email" id="sch-email" required autocomplete="username" placeholder="name@example.com"></div>
+         <div class="sch-field"><label for="sch-password">كلمة المرور</label><input type="password" id="sch-password" required autocomplete="current-password"></div>
+         <div class="sch-form-actions"><button class="sch-btn sch-btn--gold" id="sch-login-button" type="submit">دخول البوابة</button><button class="sch-btn sch-btn--muted" type="button" id="sch-reset-password">نسيت كلمة المرور؟</button></div>
+       </form>
+       <p id="sch-auth-status" class="sch-alert" role="status" aria-live="polite" hidden></p>
+     </section>
+     <section class="sch-panel" id="sch-new-password-panel" hidden>
+       <h2>تعيين كلمة مرور جديدة</h2>
+       <form class="sch-form" id="sch-new-password-form">
+         <div class="sch-field"><label for="sch-new-password-value">كلمة المرور الجديدة (12 حرفًا على الأقل)</label><input type="password" minlength="12" id="sch-new-password-value" required autocomplete="new-password"></div>
+         <button type="submit" class="sch-btn sch-btn--gold">تحديث كلمة المرور</button>
+       </form>
+       <p id="sch-new-password-status" class="sch-alert" role="status" hidden></p>
+     </section>
+     <section id="sch-dashboard" hidden aria-labelledby="sch-dashboard-heading">
+       <div class="sch-panel">
+         <div class="sch-header" style="border:0;padding:0 0 14px">
+           <div><span class="sch-eyebrow">SCHOLARSHIP PUBLISHER</span><h2 id="sch-dashboard-heading" style="margin:5px 0 0">أهلًا وسهلًا بك، مدير المنح الخارجية والدولية</h2><small id="sch-current-email" style="color:#b4d7d4"></small></div>
+           <button type="button" id="sch-logout" class="sch-btn sch-btn--muted">تسجيل الخروج</button>
+         </div>
+         <p class="sch-subtitle">يمكنك نشر فرصة جديدة لتظهر في قسم «أخبار المنح» بالصفحة الرئيسية. يمكنك أيضًا تعديل المنشورات وأرشفتها وإعادة نشرها.</p>
+         <form id="sch-publish-form" class="sch-form">
+           <input type="hidden" id="sch-edit-id">
+           <div class="sch-field"><label for="sch-title">1. اسم المنحة *</label><input type="text" id="sch-title" minlength="3" maxlength="180" required placeholder="مثال: منحة جامعة دولية 2027"></div>
+           <div class="sch-field"><label for="sch-description">2. معلومات المنحة *</label><textarea id="sch-description" minlength="10" maxlength="12000" required placeholder="أدخل تفاصيل المنحة، التخصصات، شروط التقديم، المميزات، وآخر موعد إن وُجد..."></textarea><small>اكتب التفاصيل بوضوح، مع التأكد من شروط الجهة المعلنة.</small></div>
+           <div class="sch-field"><label for="sch-url">3. رابط التقديم الرسمي *</label><input type="url" id="sch-url" maxlength="1500" required pattern="https?://.+" placeholder="https://university.edu/apply" inputmode="url" dir="ltr"><small>ضع رابط التقديم على موقع الجامعة أو الجهة المانحة، وليس رابطًا مختصرًا غير موثوق.</small></div>
+           <div class="sch-form-actions"><button id="sch-submit" type="submit" class="sch-btn sch-btn--gold">نشر المنحة الآن</button><button type="button" id="sch-cancel-edit" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><a href="scholarships.html" class="sch-btn sch-btn--muted" target="_blank" rel="noopener noreferrer">عرض أخبار المنح ↗</a></div>
+         </form>
+         <p class="sch-alert" id="sch-publish-status" role="status" aria-live="polite" hidden></p>
+       </div>
+       <section class="sch-panel" aria-labelledby="sch-own-heading">
+         <h2 id="sch-own-heading">إدارة فرص المنح المنشورة</h2>
+         <p class="sch-subtitle">ستجد هنا إعلاناتك السابقة مع إمكانية تعديلها أو إخفائها مؤقتًا.</p>
+         <div class="sch-list" id="sch-managed-posts" aria-live="polite"></div>
+       </section>
+     </section>
+   </main>
+ </div>
+ <footer class="sch-footer">بوابة داخلية لأكاديمية نبض للعلوم الطبية · لا تشارك كلمة المرور أو بيانات الدخول مع الآخرين.</footer>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <script src="assets/js/config.js?v=12"></script>
+ <script src="assets/js/supabase-client.js?v=12"></script>
+ <script src="assets/js/scholarship-center.js?v=1"></script>
+</body>
+</html>
