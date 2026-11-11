@@ -1,10 +1,21 @@
 /* NABD Scholarships Centre v1 — secured with Supabase Auth + PostgreSQL RLS */
 (function(){
   "use strict";
-  const client = window.nabdSupabase;
   const home = document.querySelector("[data-scholarship-home]");
   const listings = document.querySelector("[data-scholarship-list]");
   const manager = document.querySelector("[data-scholarship-manager]");
+  /* Keep the staff session separate from student/academy sessions. */
+  const cfg = window.NABD_CONFIG || {};
+  const client = manager && window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey
+    ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+        auth: {
+          storageKey: "nabd-scholarships-manager-auth-v1",
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      })
+    : window.nabdSupabase;
   if (!home && !listings && !manager) return;
 
   const dateText = value => {
