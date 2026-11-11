@@ -17,6 +17,8 @@ const routes=[
 ["researchnet","◎","شبكة البحث العالمية","Global Research Network","مبادرة التواصل والتثقيف البحثي","Emerging research network and literacy","nabd-global-research.html","research lecturer"],
 ["campus","▣","الحرم الرقمي","Digital Campus","خدمات أكاديمية نبض في مكان واحد","Academy services in one place","nabd-campus.html","student lecturer research leadership"],
 ["volunteer","✦","متابعة طلبات التطوع","Volunteer Applications","متابعة الطلبات المؤسسية","Institutional application status","application-status.html","leadership"],
+["scholarships-manager","✦","مدير المنح الخارجية والدولية","International Scholarships Manager","بوابة خاصة للموظف المخوّل بنشر المنح الدولية وتعديلها","Restricted staff portal for international scholarship publishing","scholarship-manager.html","leadership"],
+["scholarships-news","🌍","أخبار المنح الخارجية والدولية","International Scholarship News","المنح المنشورة وروابط التقديم الرسمية","Published opportunities and official application links","scholarships.html","student leadership research"],
 ["partners","⌬","مركز الشراكات والأثر","Partnerships & Impact","مبادرات تعاون ودعم مقترحة","Proposed academic support initiatives","nabd-partners.html","leadership research"]
 ];
 const tracks=[
