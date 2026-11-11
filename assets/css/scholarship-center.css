@@ -61,3 +61,11 @@
 .neo-site .nabd-scholarships-home .sch-card{background:linear-gradient(160deg,#124353,#0b2a3d)}
 .neo-site .nabd-scholarships-home .sch-btn{white-space:nowrap}
 .neo-site .nabd-scholarships-home .sch-home-empty{color:#c6dce0}
+
+/* Four primary pathways on the live NABD homepage, with a staff-only access card. */
+.neo-site #neo-programs .neo-programs{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.neo-site #neo-programs .neo-program--scholarships{border-color:#d5c08b;box-shadow:0 14px 40px #a88d5520}
+.neo-site #neo-programs .neo-program--scholarships .neo-program-label{color:#97722a}
+.neo-site .nabd-scholarships-home .sch-btn--gold,.neo-site .nabd-scholarships-home .sch-card .sch-btn--gold{color:#102d3b}
+.neo-site .nabd-scholarships-home .sch-card{min-width:0}
+@media(max-width:680px){.neo-site #neo-programs .neo-programs{grid-template-columns:1fr;gap:12px}}
