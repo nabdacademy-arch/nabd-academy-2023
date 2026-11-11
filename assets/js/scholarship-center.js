@@ -108,9 +108,23 @@
   if (home || listings) {
     document.getElementById("sch-search")?.addEventListener("input",renderPublicList);
     fetchPublished();
-    const cadence=home?30000:45000;
+    // Live database notifications refresh newly published scholarships without a reload.
+    // Visibility changes and periodic checks are fallbacks for slow/disconnected networks.
+    if (client && typeof client.channel === "function") {
+      client.channel("nabd-public-scholarship-news-v2")
+        .on("postgres_changes", {
+          event: "*",
+          schema: "public",
+          table: "nabd_scholarship_opportunities"
+        }, () => { if (!document.hidden) fetchPublished(); })
+        .subscribe();
+    }
+    const cadence = 30000;
     setInterval(()=>{if(!document.hidden)fetchPublished()},cadence);
     document.addEventListener("visibilitychange",()=>{if(!document.hidden)fetchPublished()});
+    window.addEventListener("storage",e=>{
+      if (e.key==="nabd-scholarship-news-updated" && !document.hidden) fetchPublished();
+    });
   }
 
   if (!manager) return;
@@ -248,6 +262,7 @@
     if(response.error){setStatus(publishStatus,"تعذر نشر الإعلان. تأكد من صلاحية الحساب واتصال الإنترنت ثم حاول مرة أخرى.", "error");return;}
     resetEditor();
     setStatus(publishStatus,id?"تم حفظ تعديلات المنحة بنجاح.":"نُشرت المنحة بنجاح وستظهر الآن في أخبار المنح على الموقع.","success");
+    try{localStorage.setItem("nabd-scholarship-news-updated",String(Date.now()));}catch(_){}
     await refreshOwnPosts();
   });
   if (!client){showLogin();setStatus(authStatus,"إعداد Supabase غير متاح.","error");return;}
