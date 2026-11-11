@@ -1,0 +1,63 @@
+/* NABD International Scholarships Centre — responsive, self-contained styles */
+:root{--sch-navy:#061f30;--sch-deep:#041521;--sch-teal:#43cbbb;--sch-gold:#e9c98e;--sch-muted:#a8c4cb;--sch-panel:#092c3e}
+.sch-center{color:#eaf6f5;background:radial-gradient(circle at 86% 5%,rgba(67,203,187,.13),transparent 38%),linear-gradient(150deg,#082a3c,#041521);min-height:100vh;font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+.sch-container{width:min(1160px,calc(100% - 32px));margin-inline:auto}
+.sch-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:22px 0;border-bottom:1px solid #ffffff20}
+.sch-brand{color:#fff;font-weight:900;text-decoration:none;font-size:1.1rem}
+.sch-brand span{display:block;color:var(--sch-muted);font-size:.72rem;font-weight:600;letter-spacing:.08em}
+.sch-header-links{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.sch-header-links a{color:#bfece4;text-decoration:none;font-weight:700;font-size:.88rem}
+.sch-hero{padding:70px 0 32px;max-width:840px}
+.sch-eyebrow{color:var(--sch-gold);letter-spacing:.16em;font-size:.78rem;font-weight:900}
+.sch-hero h1{font-size:clamp(2rem,5vw,3.9rem);line-height:1.35;margin:14px 0;color:#fff}
+.sch-hero p{color:#bed4d8;max-width:730px;font-size:1.06rem}
+.sch-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.sch-btn,.sch-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:45px;border:1px solid #438d8a;border-radius:12px;background:#0f4854;color:#fff;font:800 .92rem Tahoma,Arial,sans-serif;text-decoration:none;cursor:pointer;padding:10px 20px;transition:transform .15s,background .15s}
+.sch-btn:hover,.sch-button:hover{transform:translateY(-2px);background:#12616a}
+.sch-btn--gold{background:var(--sch-gold);color:#123343;border-color:var(--sch-gold)}
+.sch-btn--gold:hover{background:#f5d9a2}
+.sch-btn--muted{background:transparent;border-color:#56747e}
+.sch-btn:disabled{opacity:.55;cursor:wait;transform:none}
+.sch-panel{border:1px solid #ffffff21;border-radius:22px;background:rgba(255,255,255,.055);padding:clamp(20px,3.5vw,34px);box-shadow:0 18px 50px #0002;margin:24px 0}
+.sch-panel h2{font-size:1.45rem;margin:0 0 12px}
+.sch-subtitle{font-size:.92rem;color:var(--sch-muted);margin:0 0 24px}
+.sch-form{display:grid;gap:18px}
+.sch-field{display:grid;gap:7px}
+.sch-field label{font-weight:800;color:#e8faf7;font-size:.93rem}
+.sch-field input,.sch-field textarea{width:100%;box-sizing:border-box;background:#f9fcfa;color:#112f3b;border:2px solid transparent;border-radius:11px;padding:13px 15px;font:500 1rem/1.65 Tahoma,Arial,sans-serif}
+.sch-field input:focus,.sch-field textarea:focus{outline:3px solid #6cdbca;outline-offset:1px}
+.sch-field textarea{min-height:200px;resize:vertical}
+.sch-field small{color:#bdcfd4}
+.sch-form-actions{display:flex;gap:12px;flex-wrap:wrap}
+.sch-alert{color:#bfe7e6;border:1px solid #4b8c8d66;border-radius:12px;background:#0d3644;padding:12px 16px;margin:14px 0}
+.sch-alert[hidden],.sch-panel[hidden],.sch-center [hidden]{display:none!important}
+.sch-alert.error{color:#ffe5dd;border-color:#e3988170;background:#72352244}
+.sch-alert.success{color:#d5fae8;border-color:#5bcc9a70;background:#0b4e3544}
+.sch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:24px 0 60px}
+.sch-card{background:linear-gradient(160deg,#123c4d,#092638);border:1px solid #ffffff2d;border-radius:20px;padding:22px;display:flex;flex-direction:column;min-width:0;box-shadow:0 12px 32px #00162120}
+.sch-card .sch-card-label{color:var(--sch-gold);font-size:.72rem;letter-spacing:.08em;font-weight:900}
+.sch-card h3{font-size:1.15rem;margin:10px 0;color:#fff;overflow-wrap:anywhere}
+.sch-card .sch-card-desc{white-space:pre-line;overflow-wrap:anywhere;color:#c5dadd;line-height:1.85;flex:1}
+.sch-card time{color:#adc4c9;font-size:.78rem}
+.sch-card a{align-self:flex-start;margin-top:16px}
+.sch-section-title{font-size:1.5rem;color:#fff;margin:26px 0 12px}
+.sch-search{width:min(500px,100%);border:1px solid #647981;border-radius:12px;background:#fbfefd;color:#102e3b;padding:13px 16px;font:inherit}
+.sch-list{display:grid;gap:12px}
+.sch-manage-item{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:15px 18px;background:#ffffff0b;border:1px solid #ffffff26;border-radius:13px}
+.sch-manage-item strong{display:block;overflow-wrap:anywhere}
+.sch-manage-item small{display:block;color:#b5d1d4}
+.sch-manage-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sch-manage-actions button{border:1px solid #52908e;background:#0d4652;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700}
+.sch-footer{text-align:center;padding:28px 16px;border-top:1px solid #ffffff1b;color:var(--sch-muted);font-size:.82rem}
+@media(max-width:850px){.sch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.sch-grid{grid-template-columns:1fr}.sch-hero{padding:42px 0 24px}.sch-panel{margin:16px 0}.sch-header{align-items:flex-start}.sch-manage-item{align-items:flex-start}}
+/* Homepage integration into the modern compact NABD experience */
+.neo-site .nabd-scholarships-home{background:linear-gradient(150deg,#062637,#0a3344);color:#fff;padding:clamp(36px,6vw,80px) 0}
+.neo-site .nabd-scholarships-home .sch-container{width:min(1210px,calc(100% - 36px))}
+.neo-site .nabd-scholarships-home .sch-home-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:20px}
+.neo-site .nabd-scholarships-home .sch-section-title{font-size:clamp(1.7rem,3vw,2.5rem);margin:6px 0}
+.neo-site .nabd-scholarships-home .sch-home-intro{color:#c6dce0;margin:6px 0}
+.neo-site .nabd-scholarships-home .sch-grid{margin:20px 0 10px}
+.neo-site .nabd-scholarships-home .sch-card{background:linear-gradient(160deg,#124353,#0b2a3d)}
+.neo-site .nabd-scholarships-home .sch-btn{white-space:nowrap}
+.neo-site .nabd-scholarships-home .sch-home-empty{color:#c6dce0}
