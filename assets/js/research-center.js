@@ -250,7 +250,7 @@
   async function uploadPdf(file) {
     if (!file) throw new Error("يرجى اختيار ملف PDF أولًا.");
     if (file.size < 5 || file.size > 15728640) throw new Error("حجم الملف يجب أن يكون أقل من 15 ميغابايت.");
-    if (!/\\.pdf$/i.test(file.name)) throw new Error("يرجى رفع ملف PDF فقط.");
+    if (!/\.pdf$/i.test(file.name)) throw new Error("يرجى رفع ملف PDF فقط.");
     const header = await file.slice(0,5).text();
     if (header !== "%PDF-") throw new Error("الملف المحدد ليس PDF صالحًا.");
     const path = user.id + "/" + crypto.randomUUID() + ".pdf";
