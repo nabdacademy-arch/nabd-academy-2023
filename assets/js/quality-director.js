@@ -199,7 +199,11 @@ async function extractPDF(file){
    const page=await pdf.getPage(p);
    images.push({page:p,mime_type:"image/jpeg",data:await renderPageAsJpeg(page)});
  }
- const pdfBase64=file.size<=5*1024*1024 ? encodeBase64(new Uint8Array(buffer)) : null;
+ let pdfBase64=file.size<=5*1024*1024 ? encodeBase64(new Uint8Array(buffer)) : null;
+ const imagePayloadSize=images.reduce((total,p)=>total+p.data.length,0);
+ // Keep the complete request below the Edge Function body guard; when too large,
+ // vision falls back to carefully selected image pages rather than failing.
+ if(pdfBase64&&pdfBase64.length+imagePayloadSize>8500000)pdfBase64=null;
  return {mode:"vision",source_text:content.slice(0,16000),page_images:images,
    pdf_base64:pdfBase64,page_count:pdf.numPages};
 }
