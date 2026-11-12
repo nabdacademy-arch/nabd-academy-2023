@@ -19,7 +19,7 @@ create table if not exists public.nabd_research_papers (
   title text not null check (char_length(btrim(title)) between 3 and 240),
   abstract text not null check (char_length(btrim(abstract)) between 10 and 12000),
   author_name text check (author_name is null or char_length(btrim(author_name)) between 2 and 160),
-  pdf_path text not null unique check (pdf_path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\\.pdf$'),
+  pdf_path text not null unique check (pdf_path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\.pdf$'),
   status text not null default 'published' check (status in ('published','archived')),
   published_by uuid not null references auth.users(id) on delete restrict,
   published_at timestamptz not null default now(),
@@ -71,7 +71,7 @@ create policy "Only authorized research staff may upload PDF"
  on storage.objects for insert to authenticated
  with check (bucket_id='nabd-research-pdfs'
    and split_part(name,'/',1)=(select auth.uid())::text
-   and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\\.pdf$'
+   and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\.pdf$'
    and exists (select 1 from public.nabd_research_publishers rp
      where rp.user_id=(select auth.uid()) and rp.active=true));
 create policy "Research staff can remove their own PDFs"
