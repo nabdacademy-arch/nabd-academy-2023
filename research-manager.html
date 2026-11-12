@@ -40,7 +40,7 @@
      <div class="sch-field"><label for="res-abstract">2. ملخص البحث *</label><textarea id="res-abstract" minlength="10" maxlength="12000" required placeholder="أهداف البحث، المنهجية، النتائج وأهم الاستنتاجات..."></textarea></div>
      <div class="sch-field"><label for="res-author">3. اسم الباحث أو الباحثين (اختياري)</label><input id="res-author" maxlength="160" placeholder="يمكن تركه فارغًا"></div>
      <div class="sch-field"><label for="res-pdf">4. رفع البحث بصيغة PDF *</label><input id="res-pdf" type="file" accept=".pdf,application/pdf" aria-describedby="res-pdf-hint">
-      <small id="res-pdf-hint">PDF فقط · الحد الأقصى 15 ميغابايت. عند تعديل بحث، اترك هذا الحقل فارغًا للإبقاء على الملف الحالي.</small></div>
+      <small id="res-pdf-hint">PDF فقط · الحد الأقصى 15 ميغابايت. عند تعديل بحث، اترك هذا الحقل فارغًا للإبقاء على الملف الحالي.</small><small id="res-pdf-details" aria-live="polite" role="status" hidden></small></div>
      <div class="sch-form-actions"><button id="res-submit" type="submit" class="sch-btn sch-btn--gold">نشر البحث الآن</button><button id="res-cancel-edit" type="button" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><a class="sch-btn sch-btn--muted" href="research-news.html" target="_blank" rel="noopener noreferrer">عرض الأبحاث المنشورة</a></div>
    </form><p id="res-publish-status" class="sch-alert" role="status" aria-live="polite" hidden></p>
  </section>
@@ -51,5 +51,5 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/config.js?v=12"></script>
 <script src="assets/js/supabase-client.js?v=12"></script>
-<script src="assets/js/research-center.js?v=1"></script>
+<script src="assets/js/research-center.js?v=2"></script>
 </body></html>
