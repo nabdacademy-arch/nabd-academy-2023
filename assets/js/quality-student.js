@@ -118,8 +118,12 @@ async function submit(auto=false){
    return;
  }
  if(timer){clearInterval(timer);timer=null}
- $("ql-student-form").hidden=true;
- message("ql-paper-status","تم تسليم إجاباتك بنجاح. بانتظار التصحيح البشري من إدارة الأكاديمية.","success");
+ $("ql-student-paper").hidden=true;
+ $("ql-student-dashboard").hidden=false;
+ exam=null;questions=[];autoRequested=false;
+ b.disabled=false;$("ql-student-form").hidden=false;
+ await load();
+ message("ql-student-status","تم تسليم إجاباتك بنجاح. يمكنك متابعة حالة التصحيح البشري من قائمة الامتحانات.","success");
 }
 function tick(){
  if(!exam)return;
