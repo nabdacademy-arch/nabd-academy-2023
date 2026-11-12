@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#071b2d">
+<title>Open Doors Exam Coach | NABD Academy</title>
+<style>
+:root{color-scheme:dark;--bg:#061923;--pane:#0c2a3b;--pane2:#10384a;--edge:#32576a;--text:#edf8fc;--muted:#b2cad4;--mint:#57e0c3;--gold:#f5cb7b;--red:#ffb9b3;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 18% 0%,#144154 0,transparent 39%),var(--bg);color:var(--text);font:15px/1.7 system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:var(--mint)}a:hover{text-decoration:underline}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.shell{max-width:1110px;margin:auto;padding:24px 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-bottom:1px solid var(--edge);padding-bottom:19px}
+.eyebrow{text-transform:uppercase;color:var(--mint);letter-spacing:.12em;font-size:11px;font-weight:850}.top h1{font-size:clamp(25px,3.7vw,42px);line-height:1.2;margin:5px 0}.muted{color:var(--muted)}.small{font-size:12px}.top p{margin:0}.actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+.btn,.link{min-height:43px;border:1px solid #658da0;border-radius:12px;background:#193b4e;color:#fff;text-decoration:none;padding:10px 16px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn.primary{background:linear-gradient(135deg,#53e1c5,#2baea7);border:0;color:#062c31}.btn.gold{background:linear-gradient(135deg,#f6d58e,#c99c4e);border:0;color:#132b35}
+.btn:disabled{opacity:.48;cursor:not-allowed}.btn.ghost{background:transparent}
+.panel{border:1px solid var(--edge);border-radius:20px;background:linear-gradient(150deg,#103344,#082634);padding:22px;margin-top:20px;box-shadow:0 18px 45px #0002}
+.panel h2{font-size:21px;margin:0 0 8px}.panel h3{margin:0 0 8px;font-size:17px}.hero{border-color:#647359;background:radial-gradient(circle at 88% 12%,#1b4853,#0b2b3b 70%)}
+.notice{padding:12px 14px;border-radius:11px;background:#294552;border:1px solid #506875;color:#ddedf3;margin:13px 0}.notice.error{background:#552b32;border-color:#99686a;color:#ffe5e1}.notice.ok{background:#164b45;border-color:#498979;color:#cefff2}
+label{display:block;font-weight:700;margin:10px 0 5px}input,select,textarea{width:100%;border:1px solid #5b7e8e;border-radius:12px;padding:12px 13px;background:#082636;color:#fff;min-height:44px}
+textarea{min-height:120px;resize:vertical}input::placeholder,textarea::placeholder{color:#abc4ca}input[type=checkbox],input[type=radio]{width:18px;height:18px;min-height:0;accent-color:#42c5b3}
+.formrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.auth{max-width:560px;margin:24px auto}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}.tab{border:1px solid #456b7c;color:#c5dfe7;background:#102d3d;padding:10px 16px;border-radius:12px;font-weight:800}
+.tab.active{color:#07313a;border-color:var(--mint);background:var(--mint)}
+.statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.stat{border-radius:13px;padding:16px;background:#123849;border:1px solid #315364}.stat b{font-size:27px;display:block;color:var(--gold)}.stat span{font-size:12px;color:#c4dce4}
+.question{font-size:clamp(17px,2.3vw,23px);font-weight:750;line-height:1.6;white-space:pre-wrap;direction:ltr;text-align:left}
+.examhead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;border:1px solid #587184;border-radius:999px;padding:3px 11px;color:#d7e9f3;font-size:12px}
+.track{height:8px;background:#25485b;border-radius:50px;overflow:hidden;margin-top:14px}.track>div{height:100%;width:0;background:linear-gradient(90deg,#38bea9,#f0c679);transition:width .2s}
+.option{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #42667a;border-radius:13px;margin-top:10px;background:#113243;cursor:pointer;direction:ltr;text-align:left}
+.option:hover{border-color:#74b8b4}.option.selected{border-color:var(--mint);background:#153f47}.option b{color:var(--gold)}
+.answer{background:#103d42;border:1px solid #3c8b83;border-radius:13px;padding:15px;margin-top:15px}
+.solution{white-space:pre-wrap;line-height:1.9}.stack{display:grid;gap:9px}.item{padding:15px;border:1px solid #416276;border-radius:13px;background:#0b2e40}
+.item h3{font-size:15px;margin:0 0 5px}.item p{margin:3px 0;font-size:13px}.sourcebar{display:flex;gap:10px;justify-content:space-between;align-items:start;flex-wrap:wrap}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tag{color:#f2d5a2;font-size:12px}
+[hidden],.hidden{display:none!important}
+footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-size:12px;color:var(--muted)}
+@media(max-width:720px){.formrow,.statgrid,.two{grid-template-columns:1fr 1fr}.shell{padding:14px 12px 50px}.panel{padding:15px;border-radius:15px}}
+@media(max-width:440px){.formrow,.statgrid,.two{grid-template-columns:1fr}.btn{width:100%}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+<div><div class="eyebrow">NABD ACADEMY / FOUNDER-ONLY STUDY STUDIO</div><h1>🇷🇺 Open Doors <span style="color:var(--gold)">Exam Coach</span></h1><p class="muted" id="subtitle">بوابة مستقلة للتدريب على الكيمياء والأحياء والطب والذكاء الاصطناعي</p></div>
+<div class="actions"><a class="link" href="nabd-ai-executive.html">↩ مركز الذكاء</a><button class="btn ghost" type="button" id="langBtn">English / عربي</button><button class="btn ghost" id="logoutBtn" hidden>خروج</button></div>
+</header>
+<section class="panel hero">
+<h2 id="heroTitle">مدربك الشخصي للمنحة الروسية</h2>
+<p class="muted" id="heroText">196 سؤالًا أصليًا، 50 مصدرًا بحثيًا، 16 نمطًا لوضع الأسئلة، اختبارات توقيت ومراجعة للأخطاء. الأسئلة والنتائج في قاعدة بيانات محمية ولا تُرسل إلى المتصفح إلا بعد تحقق حساب المؤسس.</p>
+<div class="notice" id="publicNote">هذه أسئلة تدريبية من إعدادنا، وليست امتحانات رسمية مسرّبة. النماذج الرسمية متاحة عبر روابط مصادرها.</div>
+</section>
+<section id="authView" class="panel auth">
+<h2 id="authTitle">🔐 دخول المدير فقط</h2>
+<p class="muted" id="authHint">استخدم حساب المدير الأساسي المسجل في الأكاديمية. لا توجد كلمة مرور ثابتة داخل GitHub.</p>
+<form id="loginForm">
+<label id="emailLabel" for="emailInput">البريد الإلكتروني</label><input id="emailInput" type="email" autocomplete="username" required>
+<label id="passLabel" for="passInput">كلمة المرور</label><input id="passInput" type="password" autocomplete="current-password" required>
+<div style="margin-top:16px"><button id="loginBtn" type="submit" class="btn primary">دخول آمن</button></div>
+</form>
+<p id="loginStatus" role="status" class="muted"></p>
+</section>
+<section id="appView" hidden>
+<div class="statgrid" id="miniStats">
+<div class="stat"><b id="kQuestions">—</b><span>أسئلة التدريب</span></div>
+<div class="stat"><b id="kSources">—</b><span>المراجع</span></div>
+<div class="stat"><b id="kAnswered">—</b><span>محاولات مسجلة</span></div>
+<div class="stat"><b id="kRate">—</b><span>معدل الإجابة الصحيحة</span></div>
+</div>
+<div class="tabs" role="tablist">
+<button type="button" class="tab active" data-tab="trainer">🎯 المدرب والاختبارات</button>
+<button type="button" class="tab" data-tab="stats">📈 تقدمي</button>
+<button type="button" class="tab" data-tab="sources">📚 الأرشيف والمصادر</button>
+<button type="button" class="tab" data-tab="patterns">🧠 عقلية واضع الأسئلة</button>
+</div>
+<section id="trainer" class="panel">
+<div id="examSetup">
+<h2>ابدأ جولة جديدة</h2>
+<p class="muted">اختر المجال والمستوى ثم نوع التدريب. يتم سحب الأسئلة من قاعدة البيانات الخاصة.</p>
+<div class="formrow">
+<div><label for="subjectSel">التخصص</label><select id="subjectSel"><option value="all">كل التخصصات</option><option value="chemistry">الكيمياء</option><option value="computer_ai">الحاسوب والذكاء الاصطناعي</option><option value="medicine">الطب البشري</option><option value="biology">الأحياء</option></select></div>
+<div><label for="difficultySel">المستوى</label><select id="difficultySel"><option value="all">جميع المستويات</option><option value="basic">أساسي</option><option value="intermediate">متوسط</option><option value="advanced">متقدم</option><option value="oral">شفهي</option></select></div>
+<div><label for="modeSel">نوع التدريب</label><select id="modeSel"><option value="practice">تدريب سريع — 10 أسئلة</option><option value="intensive">مراجعة مكثفة — 25 سؤالًا</option><option value="mock">محاكاة — 46 سؤالًا / 180 دقيقة</option><option value="weak">مراجعة نقاط الضعف</option></select></div>
+</div>
+<div class="actions" style="margin-top:17px"><button type="button" class="btn gold" id="startBtn">ابدأ التدريب</button><button class="btn ghost" type="button" id="exportBtn">تصدير بنك الأسئلة الخاص CSV</button></div>
+<p class="small muted">المحاكاة تدريب تقريبي مستلهم من نماذج Open Doors ولا تطابق بالضرورة توزيع الامتحان الفعلي.</p>
+</div>
+<div id="examStage" hidden>
+<div class="examhead"><div><span class="pill" id="position">1 / 10</span> <span class="pill" id="meta">أساسي</span></div><strong id="timer" style="color:var(--gold)">—</strong></div>
+<div class="track"><div id="progressBar"></div></div>
+<p class="small muted" id="topic">—</p>
+<div id="prompt" class="question"></div>
+<div id="options" class="stack"></div>
+<div id="writtenBox" hidden><label for="writtenInput">اكتب خطوات الحل أو إجابتك، ثم قارِنها بالنموذج</label><textarea id="writtenInput" placeholder="Your answer / Steps"></textarea></div>
+<div id="feedback" class="answer" hidden aria-live="polite"><strong id="feedbackTitle"></strong><p class="solution" id="feedbackText"></p><div id="selfMark" class="actions" hidden><button class="btn primary" id="selfRight">أتقنت الإجابة</button><button class="btn ghost" id="selfWrong">تحتاج مراجعة</button></div></div>
+<div class="actions" style="margin-top:18px"><button id="checkBtn" class="btn primary" type="button">تحقق من الإجابة</button><button id="skipBtn" class="btn ghost" type="button">تخطي</button><button id="nextBtn" class="btn gold" type="button" hidden>التالي ←</button><button id="stopBtn" class="btn ghost" type="button">إنهاء الجولة</button></div>
+<p id="saveStatus" class="small muted"></p>
+</div>
+<div id="examDone" hidden><h2>اكتملت الجولة! 🎉</h2><p id="doneSummary"></p><div class="actions"><button type="button" class="btn primary" id="restartBtn">جولة جديدة</button><button class="btn ghost" type="button" id="reviewStatsBtn">تحليل التقدم</button></div></div>
+</section>
+<section id="stats" class="panel" hidden><h2>📈 تحليل أدائك</h2><p class="muted">تقدير مبني على إجاباتك السابقة، وليس تنبؤًا بنتيجة الامتحان.</p><div id="statItems" class="stack"></div></section>
+<section id="sources" class="panel" hidden><h2>📚 الأرشيف والمصادر البحثية</h2><p class="muted">50 مرجعًا وروابط نماذج رسمية ومصادر موازية مع تصنيف موثوقيتها. لا تُعد المصادر الموازية امتحانات Open Doors.</p><div class="formrow"><div><label for="sourceFilter">المجال</label><select id="sourceFilter"><option value="all">جميع المصادر</option><option value="كيمياء">كيمياء</option><option value="حاسوب">الحاسوب</option><option value="طب">الطب</option><option value="أحياء">أحياء</option></select></div></div><div id="sourceItems" class="stack" style="margin-top:12px"></div></section>
+<section id="patterns" class="panel" hidden><h2>🧠 أنماط التفكير والتصحيح</h2><p class="muted">16 استنتاجًا تعليميًا من نماذج منشورة، وليست معلومات داخلية للجنة الامتحان.</p><div id="patternItems" class="stack"></div></section>
+</section>
+<footer>© NABD Academy for Medical Sciences · Open Doors Research Coach · Founder-only database access · No official affiliation with Open Doors. المعلومات التعليمية للتدريب فقط.</footer>
+</main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const db=createClient('https://zsmmmljgguycrvyrmakl.supabase.co','sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const $=id=>document.getElementById(id);
+const tracks={chemistry:'الكيمياء',computer_ai:'الحاسوب والذكاء الاصطناعي',medicine:'الطب البشري',biology:'الأحياء'};
+let state={questions:[],sources:[],patterns:[],attempts:[],deck:[],index:0,round:[],mode:'practice',seconds:0,interval:null,locked:false,complete:false,lang:'ar'};
+function message(id,value){$(id).textContent=value}
+function safeUrl(v){try{let u=new URL(v);return ['https:','http:'].includes(u.protocol)?u.href:null}catch{return null}}
+function node(tag,className,txt){let n=document.createElement(tag);if(className)n.className=className;if(txt!==undefined)n.textContent=txt;return n}
+function clear(el){el.replaceChildren()}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function labelDifficulty(x){return {basic:'أساسي',intermediate:'متوسط',advanced:'متقدم',oral:'شفهي'}[x]||x}
+function lastPerformance(id){let h=state.attempts.filter(x=>x.question_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));return h.length?!!h[0].is_correct:null}
+function calcStats(){message('kQuestions',state.questions.length);message('kSources',state.sources.length);message('kAnswered',state.attempts.length);const judged=state.attempts.filter(x=>x.is_correct!==null);message('kRate',judged.length?Math.round(judged.filter(x=>x.is_correct).length/judged.length*100)+'%':'—')}
+async function signOut(){stopTimer();await db.auth.signOut();$('appView').hidden=true;$('authView').hidden=false;$('logoutBtn').hidden=true;message('loginStatus','')}
+async function loadPortal(){
+ message('loginStatus','جارٍ التحقق من الصلاحية...');
+ const u=await db.auth.getUser();
+ if(u.error||!u.data?.user){$('authView').hidden=false;$('appView').hidden=true;message('loginStatus','سجل الدخول للمتابعة.');return}
+ const q=await db.from('open_doors_questions').select('id,subject,topic,difficulty,kind,question,options,answers,explanation,rubric,points,origin,source_note').order('id');
+ if(q.error){message('loginStatus','تعذر قراءة بيانات التدريب: '+q.error.message);return}
+ if(!q.data?.length){message('loginStatus','هذا الحساب ليس مخوّلًا. ادخل بحساب المدير الأساسي.');$('appView').hidden=true;$('authView').hidden=false;return}
+ const [s,p,a]=await Promise.all([
+  db.from('open_doors_sources').select('*').order('id'),
+  db.from('open_doors_patterns').select('*').order('id'),
+  db.from('open_doors_attempts').select('question_id,response,is_correct,awarded_points,mode,created_at').order('created_at',{ascending:false}).limit(1000)
+ ]);
+ state.questions=q.data;state.sources=s.data||[];state.patterns=p.data||[];state.attempts=a.data||[];
+ $('authView').hidden=true;$('appView').hidden=false;$('logoutBtn').hidden=false;calcStats();renderStats();renderSources();renderPatterns();
+}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;message('loginStatus','جارٍ تسجيل الدخول...');const res=await db.auth.signInWithPassword({email:$('emailInput').value.trim(),password:$('passInput').value});$('passInput').value='';$('loginBtn').disabled=false;if(res.error){message('loginStatus','تعذر الدخول: '+res.error.message);return}await loadPortal()});
+$('logoutBtn').onclick=signOut;
+for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>selectTab(b.dataset.tab);
+function selectTab(tab){for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active',b.dataset.tab===tab);for(const k of ['trainer','stats','sources','patterns'])$(k).hidden=k!==tab;if(tab==='stats')renderStats()}
+$('sourceFilter').addEventListener('change',renderSources);
+function renderSources(){const x=$('sourceItems');clear(x);const f=$('sourceFilter').value;const sources=state.sources.filter(s=>f==='all'||(s.subject||'').includes(f));if(!sources.length){x.append(node('p','muted','لا توجد نتائج لهذا المرشح'));return}for(const s of sources){const card=node('article','item');const bar=node('div','sourcebar');bar.append(node('h3','',s.name));const u=safeUrl(s.url);if(u){const a=node('a','', 'فتح المصدر ↗');a.href=u;a.target='_blank';a.rel='noopener noreferrer';bar.append(a)}card.append(bar,node('p','tag',(s.source_year||'')+' · '+(s.subject||'')+' · '+(s.status||'')),node('p','muted',(s.source_group||'')+' · '+(s.note||'')));x.append(card)}}
+function renderPatterns(){let x=$('patternItems');clear(x);for(const p of state.patterns){const card=node('article','item');card.append(node('h3','',p.subject+' · '+p.kind),node('p','',p.method),node('p','muted','طريقة البناء: '+p.construction),node('p','muted','تدرج الصعوبة: '+p.difficulty_rule),node('p','tag','تصحيح مقترح: '+p.rubric));x.append(card)}}
+function renderStats(){let x=$('statItems');clear(x);for(const key of Object.keys(tracks)){const list=state.attempts.filter(a=>state.questions.find(q=>q.id===a.question_id)?.subject===key);const correct=list.filter(a=>a.is_correct).length;let card=node('div','item');card.append(node('h3','',tracks[key]),node('p','muted',list.length+' محاولات · '+(list.length?Math.round(100*correct/list.length)+'% إجابات صحيحة':'لم تبدأ بعد')));const weak=state.questions.filter(q=>q.subject===key&&lastPerformance(q.id)===false).length;card.append(node('p','tag','أسئلة للمراجعة: '+weak));x.append(card)}}
+function selectDeck(){
+ const subject=$('subjectSel').value,difficulty=$('difficultySel').value,mode=$('modeSel').value;
+ let list=state.questions.filter(q=>(subject==='all'||q.subject===subject)&&(difficulty==='all'||q.difficulty===difficulty));
+ if(mode==='weak'){const weak=list.filter(q=>lastPerformance(q.id)===false);list=weak.length?weak:list.sort((a,b)=>(state.attempts.filter(x=>x.question_id===a.id).length-state.attempts.filter(x=>x.question_id===b.id).length))}
+ const n=mode==='mock'?46:mode==='intensive'?25:10;
+ return {deck:shuffle(list).slice(0,n),mode}
+}
+function stopTimer(){if(state.interval){clearInterval(state.interval);state.interval=null}}
+function startTimer(){stopTimer();if(state.mode!=='mock'){message('timer','بدون توقيت');return}state.seconds=180*60;paintTimer();state.interval=setInterval(()=>{state.seconds--;paintTimer();if(state.seconds<=0){stopTimer();finishRound()}},1000)}
+function paintTimer(){const m=Math.floor(state.seconds/60),s=state.seconds%60;message('timer','⏱ '+m+':'+String(s).padStart(2,'0'))}
+function startExam(){const result=selectDeck();if(!result.deck.length){alert('لا توجد أسئلة بهذه الخيارات. جرّب مستوى أو مجالًا مختلفًا.');return}
+ state.deck=result.deck;state.mode=result.mode;state.index=0;state.round=[];state.locked=false;state.complete=false;
+ $('examSetup').hidden=true;$('examStage').hidden=false;$('examDone').hidden=true;startTimer();renderQuestion();
+}
+function renderQuestion(){
+ const q=state.deck[state.index];if(!q){finishRound();return}
+ state.locked=false;message('saveStatus','');
+ message('position',(state.index+1)+' / '+state.deck.length);
+ message('meta',tracks[q.subject]+' · '+labelDifficulty(q.difficulty)+' · '+q.points+' نقطة');
+ message('topic','موضوع السؤال: '+q.topic+' | '+q.id);message('prompt',q.question);
+ $('progressBar').style.width=(100*state.index/state.deck.length)+'%';
+ const opts=$('options');clear(opts);$('writtenBox').hidden=!['oral','written'].includes(q.kind);$('writtenInput').value='';
+ if(!$('writtenBox').hidden){opts.append(node('p','muted','تدريب تفصيلي/شفهي: اكتب الفكرة ثم قارن إجابتك بالحل المقترح. التصحيح هنا ذاتي.'))}
+ else (q.options||[]).forEach((o,i)=>{let label=node('label','option');let input=document.createElement('input');input.type=q.kind==='multi'?'checkbox':'radio';input.name='userAnswer';input.value='ABCD'[i];input.addEventListener('change',()=>{if(q.kind==='single')document.querySelectorAll('.option').forEach(el=>el.classList.remove('selected'));label.classList.toggle('selected',input.checked)});label.append(input,node('b','',('ABCD'[i]||'?')+'.'),node('span','',o));opts.append(label)});
+ $('feedback').hidden=true;$('selfMark').hidden=true;$('checkBtn').hidden=false;$('skipBtn').hidden=false;$('nextBtn').hidden=true;
+}
+async function saveAttempt(q,response,ok,score){let item={question_id:q.id,response:String(response||''),is_correct:ok,awarded_points:score,mode:state.mode};state.round.push(item);state.attempts.unshift({...item,created_at:new Date().toISOString()});calcStats();const r=await db.from('open_doors_attempts').insert(item);if(r.error)message('saveStatus','تعذر حفظ المحاولة في السجل: '+r.error.message);else message('saveStatus','حُفظت المحاولة في سجل التقدم الخاص بك.')}
+function showFeedback(title,body){$('feedback').hidden=false;message('feedbackTitle',title);message('feedbackText',body);$('checkBtn').hidden=true;$('skipBtn').hidden=true;$('nextBtn').hidden=false;state.locked=true}
+$('checkBtn').onclick=async()=>{
+ if(state.locked)return;const q=state.deck[state.index];
+ if(q.kind==='written'||q.kind==='oral'){
+  showFeedback('الإجابة النموذجية الإرشادية','السؤال: '+q.question+'\n\n'+q.explanation+'\n\nسلم تقييم مقترح: '+(q.rubric||'الدقة العلمية والتفسير والمثال.'));
+  $('selfMark').hidden=false;$('nextBtn').disabled=true;return;
+ }
+ const chosen=[...document.querySelectorAll('[name="userAnswer"]:checked')].map(n=>n.value).sort();
+ if(!chosen.length){message('saveStatus','اختر إجابة واحدة على الأقل قبل التصحيح.');return}
+ const correct=[...(q.answers||[])].sort();const ok=chosen.join(',')===correct.join(',');
+ const answerText=correct.map(k=>k+': '+(q.options||[])[Math.max(0,'ABCD'.indexOf(k))]).join(' | ');
+ showFeedback(ok?'✅ إجابة صحيحة':'❌ تحتاج مراجعة','الإجابة: '+answerText+'\n\nالتفسير: '+q.explanation);
+ await saveAttempt(q,chosen.join(','),ok,ok?q.points:0);
+};
+for(const [id,ok] of [['selfRight',true],['selfWrong',false]])$(id).onclick=async()=>{if(!$('nextBtn').disabled)return;const q=state.deck[state.index];$('nextBtn').disabled=false;$('selfMark').hidden=true;await saveAttempt(q,$('writtenInput').value,ok,ok?q.points:0)};
+$('skipBtn').onclick=async()=>{const q=state.deck[state.index];if(state.locked)return;showFeedback('تم تخطي السؤال','الإجابة أو العناصر المطلوبة: '+((q.answers||[]).join(', ')||'راجع الشرح')+'\n'+q.explanation);await saveAttempt(q,'[skipped]',false,0)};
+$('nextBtn').onclick=()=>{if($('nextBtn').disabled)return;state.index++;renderQuestion()};
+$('stopBtn').onclick=()=>finishRound();
+function finishRound(){stopTimer();state.complete=true;$('examStage').hidden=true;$('examDone').hidden=false;const count=state.round.length,ok=state.round.filter(x=>x.is_correct).length,earned=state.round.reduce((a,x)=>a+Number(x.awarded_points),0);message('doneSummary','حللت '+count+' سؤالًا؛ إجابات صحيحة '+ok+'، مجموع النقاط '+earned+'. افتح قسم تقدمي لمراجعة نقاط الضعف.');renderStats();calcStats()}
+function resetExam(){stopTimer();$('examSetup').hidden=false;$('examStage').hidden=true;$('examDone').hidden=true}
+$('startBtn').onclick=startExam;$('restartBtn').onclick=resetExam;$('reviewStatsBtn').onclick=()=>selectTab('stats');
+$('exportBtn').onclick=()=>{if(!state.questions.length)return;const keys=['id','subject','topic','difficulty','kind','question','options','answers','explanation','rubric','points','origin','source_note'];const quote=v=>'"'+String(v===undefined?'':typeof v==='object'?JSON.stringify(v):v).replaceAll('"','""')+'"';const rows=[keys.join(','),...state.questions.map(q=>keys.map(k=>quote(q[k])).join(','))];let blob=new Blob(['\uFEFF',rows.join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='NABD_OpenDoors_Private_Bank.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('langBtn').onclick=()=>{state.lang=state.lang==='ar'?'en':'ar';document.documentElement.lang=state.lang;document.documentElement.dir=state.lang==='ar'?'rtl':'ltr';message('subtitle',state.lang==='ar'?'بوابة مستقلة للتدريب على الكيمياء والأحياء والطب والذكاء الاصطناعي':'Private preparation workspace for Chemistry, Biology, Medicine and Computer Science / AI');message('heroTitle',state.lang==='ar'?'مدربك الشخصي للمنحة الروسية':'Your private Russian scholarship exam coach')};
+await loadPortal();
+</script>
+</body>
+</html>
