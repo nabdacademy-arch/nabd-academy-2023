@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#061f30">
 <title>بوابة الباحث الداخلي | أكاديمية نبض للعلوم الطبية</title>
 <link rel="stylesheet" href="assets/css/scholarship-center.css?v=1">
-<link rel="stylesheet" href="assets/css/research-center.css?v=2">
+<link rel="stylesheet" href="assets/css/research-center.css?v=3">
 </head>
 <body class="sch-center nabd-research" data-research-manager>
 <div class="sch-container">
@@ -39,8 +39,18 @@
      <div class="sch-field"><label for="res-title">1. عنوان البحث *</label><input id="res-title" required minlength="3" maxlength="240" placeholder="اكتب العنوان العلمي الكامل للبحث"></div>
      <div class="sch-field"><label for="res-abstract">2. ملخص البحث *</label><textarea id="res-abstract" minlength="10" maxlength="12000" required placeholder="أهداف البحث، المنهجية، النتائج وأهم الاستنتاجات..."></textarea></div>
      <div class="sch-field"><label for="res-author">3. اسم الباحث أو الباحثين (اختياري)</label><input id="res-author" maxlength="160" placeholder="يمكن تركه فارغًا"></div>
-     <div class="sch-field"><label for="res-pdf">4. رفع البحث بصيغة PDF *</label><input id="res-pdf" type="file" accept=".pdf,application/pdf" aria-describedby="res-pdf-hint">
-      <small id="res-pdf-hint">PDF فقط · الحد الأقصى 15 ميغابايت. عند تعديل بحث، اترك هذا الحقل فارغًا للإبقاء على الملف الحالي.</small><small id="res-pdf-details" aria-live="polite" role="status" hidden></small></div>
+     <div class="sch-field"><span class="res-pdf-label">4. اختيار ملف البحث PDF *</span>
+      <div class="res-dropzone" id="res-dropzone">
+        <label for="res-pdf" class="res-pick-label">📄 اختر البحث من هاتفك أو أي تطبيق ملفات أو تخزين سحابي</label>
+        <input id="res-pdf" type="file" aria-describedby="res-pdf-hint res-pdf-details">
+        <p class="res-drop-hint">يمكن أيضًا إسقاط الملف هنا من الكمبيوتر. اختر من أي مصدر يتيحه متصفحك؛ لا حاجة لنقله إلى التنزيلات.</p>
+      </div>
+      <small id="res-pdf-hint">المحتوى يجب أن يكون PDF صالحًا، حتى لو غيّر التطبيق اسمه أو نوعه. الحد الأقصى 50 ميغابايت. عند تعديل بحث، يمكنك إبقاء الملف الحالي دون رفعه مجددًا.</small>
+      <small id="res-pdf-details" aria-live="polite" role="status" hidden></small>
+      <div id="res-upload-progress-wrap" class="res-upload-progress" role="status" aria-live="polite" hidden>
+        <progress id="res-upload-progress" max="100" value="0"></progress>
+        <span id="res-upload-progress-text">جارٍ رفع الملف…</span>
+      </div></div>
      <div class="sch-form-actions"><button id="res-submit" type="submit" class="sch-btn sch-btn--gold">نشر البحث الآن</button><button id="res-cancel-edit" type="button" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><a class="sch-btn sch-btn--muted" href="research-news.html" target="_blank" rel="noopener noreferrer">عرض الأبحاث المنشورة</a></div>
    </form><p id="res-publish-status" class="sch-alert" role="status" aria-live="polite" hidden></p>
  </section>
@@ -51,5 +61,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/config.js?v=12"></script>
 <script src="assets/js/supabase-client.js?v=12"></script>
-<script src="assets/js/research-center.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+<script src="assets/js/research-pdf-uploader.js?v=3"></script>
+<script src="assets/js/research-center.js?v=3"></script>
 </body></html>
