@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#061f30">
+<title>بوابة الباحث الداخلي | أكاديمية نبض للعلوم الطبية</title>
+<link rel="stylesheet" href="assets/css/scholarship-center.css?v=1">
+<link rel="stylesheet" href="assets/css/research-center.css?v=1">
+</head>
+<body class="sch-center nabd-research" data-research-manager>
+<div class="sch-container">
+<header class="sch-header">
+  <a class="sch-brand" href="index.html">أكاديمية نبض للعلوم الطبية <span>INTERNAL RESEARCH · PUBLISHER PORTAL</span></a>
+  <nav class="sch-header-links"><a href="index.html">الرئيسية</a><a href="research-news.html">أخبار الأبحاث</a><a href="nabd-global-research.html">شبكة البحوث</a></nav>
+</header>
+<main>
+<div class="sch-hero"><span class="sch-eyebrow">NABD · RESEARCH OFFICE</span><h1>بوابة الباحث الداخلي</h1>
+<p>نظام خاص بالباحثين المعتمدين لنشر أوراقهم العلمية على موقع أكاديمية نبض. لا تظهر المسودات أو الحسابات غير المخوّلة للعامة.</p></div>
+<section class="sch-panel" id="res-login-panel" aria-labelledby="res-login-heading">
+<h2 id="res-login-heading">تسجيل دخول الباحث المصرّح له</h2>
+<p class="sch-subtitle">تحتاج إلى حساب معتمد من إدارة الأكاديمية. إدخال بريد وكلمة مرور صحيحين وحده لا يمنح صلاحية النشر.</p>
+<form id="res-login-form" class="sch-form">
+ <div class="sch-field"><label for="res-email">البريد الإلكتروني</label><input id="res-email" type="email" autocomplete="username" placeholder="researcher@example.com" required></div>
+ <div class="sch-field"><label for="res-password">كلمة المرور</label><input id="res-password" type="password" autocomplete="current-password" required></div>
+ <div class="sch-form-actions"><button id="res-login-button" type="submit" class="sch-btn sch-btn--gold">دخول بوابة الباحث</button><button id="res-reset-password" type="button" class="sch-btn sch-btn--muted">نسيت كلمة المرور؟</button></div>
+</form><p id="res-auth-status" class="sch-alert" aria-live="polite" role="status" hidden></p>
+</section>
+<section class="sch-panel" id="res-new-password-panel" hidden>
+<h2>تعيين كلمة مرور جديدة</h2>
+<form id="res-new-password-form" class="sch-form"><div class="sch-field"><label for="res-new-password-value">كلمة المرور الجديدة (12 حرفًا على الأقل)</label><input id="res-new-password-value" type="password" minlength="12" autocomplete="new-password" required></div><button class="sch-btn sch-btn--gold" type="submit">تحديث كلمة المرور</button></form>
+<p id="res-new-password-status" class="sch-alert" role="status" hidden></p>
+</section>
+<div id="res-dashboard" hidden>
+ <section class="sch-panel">
+   <div class="res-toolbar"><div><span class="sch-eyebrow">AUTHORIZED RESEARCH PUBLISHER</span><h2>لوحة نشر الأبحاث العلمية</h2><small id="res-current-email"></small></div><button type="button" id="res-logout" class="sch-btn sch-btn--muted">تسجيل الخروج</button></div>
+   <p class="sch-subtitle">عند النشر ستظهر الورقة تلقائيًا في قسم «أخبار البحوث» بالصفحة الرئيسية، وفي صفحة الأبحاث العامة. لا تنشر بيانات أو أبحاثًا دون إذن مؤلفيها.</p>
+   <form id="res-publish-form" class="sch-form">
+     <input id="res-edit-id" type="hidden">
+     <div class="sch-field"><label for="res-title">1. عنوان البحث *</label><input id="res-title" required minlength="3" maxlength="240" placeholder="اكتب العنوان العلمي الكامل للبحث"></div>
+     <div class="sch-field"><label for="res-abstract">2. ملخص البحث *</label><textarea id="res-abstract" minlength="10" maxlength="12000" required placeholder="أهداف البحث، المنهجية، النتائج وأهم الاستنتاجات..."></textarea></div>
+     <div class="sch-field"><label for="res-author">3. اسم الباحث أو الباحثين (اختياري)</label><input id="res-author" maxlength="160" placeholder="يمكن تركه فارغًا"></div>
+     <div class="sch-field"><label for="res-pdf">4. رفع البحث بصيغة PDF *</label><input id="res-pdf" type="file" accept=".pdf,application/pdf" aria-describedby="res-pdf-hint">
+      <small id="res-pdf-hint">PDF فقط · الحد الأقصى 15 ميغابايت. عند تعديل بحث، اترك هذا الحقل فارغًا للإبقاء على الملف الحالي.</small></div>
+     <div class="sch-form-actions"><button id="res-submit" type="submit" class="sch-btn sch-btn--gold">نشر البحث الآن</button><button id="res-cancel-edit" type="button" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><a class="sch-btn sch-btn--muted" href="research-news.html" target="_blank" rel="noopener noreferrer">عرض الأبحاث المنشورة</a></div>
+   </form><p id="res-publish-status" class="sch-alert" role="status" aria-live="polite" hidden></p>
+ </section>
+ <section class="sch-panel"><h2>إدارة أبحاثي المنشورة</h2><p class="sch-subtitle">عدّل بيانات البحث أو ملف PDF، أو أرشفه، أو أعد نشره.</p><div id="res-managed-posts" class="sch-list" aria-live="polite"></div></section>
+</div>
+</main></div>
+<footer class="sch-footer">بوابة داخلية لأكاديمية نبض للعلوم الطبية · وصول محدود للباحثين المعتمدين</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js?v=12"></script>
+<script src="assets/js/supabase-client.js?v=12"></script>
+<script src="assets/js/research-center.js?v=1"></script>
+</body></html>
