@@ -126,23 +126,82 @@ async function loadCourses(){
  const sel=$("ql-course");sel.replaceChildren(new Option("جميع طلاب الأكاديمية",""));
  (data||[]).forEach(c=>sel.append(new Option(c.title_ar||c.title_en||"مقرر",c.id)));
 }
+// Scanned PDFs are first-class inputs. Text PDFs use the fast route; image PDFs
+// use native PDF vision (Gemini) or sampled page images (Groq vision fallback).
+function encodeBase64(bytes){
+ const parts=[];
+ for(let i=0;i<bytes.length;i+=16384){
+   const block=bytes.subarray(i,i+16384);
+   let str="";
+   for(let j=0;j<block.length;j++)str+=String.fromCharCode(block[j]);
+   parts.push(str);
+ }
+ return btoa(parts.join(""));
+}
+async function renderPageAsJpeg(page){
+ let scale=Math.min(1.65,1400/Math.max(page.view[2],page.view[3]));
+ scale=Math.max(.75,scale);
+ const viewport=page.getViewport({scale});
+ const canvas=document.createElement("canvas");
+ canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+ const ctx=canvas.getContext("2d",{alpha:false});
+ if(!ctx)throw Error("لا يدعم هذا المتصفح معالجة صفحات PDF المصوّرة.");
+ ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
+ await page.render({canvasContext:ctx,viewport}).promise;
+ let url=canvas.toDataURL("image/jpeg",.72);
+ // Stay under the vision provider's per-image payload limit.
+ if(url.length>460000){
+   const resized=document.createElement("canvas");const ratio=Math.sqrt(460000/url.length);
+   resized.width=Math.max(650,Math.floor(canvas.width*ratio));
+   resized.height=Math.max(650,Math.floor(canvas.height*ratio));
+   const cx=resized.getContext("2d",{alpha:false});
+   cx.fillStyle="#ffffff";cx.fillRect(0,0,resized.width,resized.height);
+   cx.drawImage(canvas,0,0,resized.width,resized.height);
+   url=resized.toDataURL("image/jpeg",.58);
+ }
+ canvas.width=0;canvas.height=0;
+ if(url.length>550000)throw Error("تعذّر ضغط إحدى صفحات PDF بما يكفي؛ جرّب ملفًا أقل دقة.");
+ return url.slice(url.indexOf(",")+1);
+}
 async function extractPDF(file){
  if(!file||file.size<100||file.size>15728640||!/\.pdf$/i.test(file.name))throw Error("يرجى اختيار PDF حجمه لا يتجاوز 15 ميغابايت.");
  if(await file.slice(0,5).text()!=="%PDF-")throw Error("الملف ليس PDF صالحًا.");
  const pdfjs=await import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs");
  pdfjs.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
- const documentPDF=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
- const chunks=[],maxPages=Math.min(documentPDF.numPages,60);
+ const buffer=await file.arrayBuffer();
+ const pdf=await pdfjs.getDocument({data:new Uint8Array(buffer.slice(0)),isEvalSupported:false}).promise;
+ const chunks=[],pagesWithText=[];
+ const maxPages=Math.min(pdf.numPages,60);
+ let chars=0;
  for(let p=1;p<=maxPages;p++){
-   const page=await documentPDF.getPage(p);
-   const text=await page.getTextContent();
-   const line=text.items.map(i=>typeof i.str==="string"?i.str:"").join(" ").trim();
-   if(line)chunks.push("صفحة "+p+": "+line);
-   if(chunks.join("\n").length>31000)break;
+   const page=await pdf.getPage(p),items=await page.getTextContent();
+   const line=items.items.map(i=>typeof i.str==="string"?i.str:"").join(" ").trim();
+   if(line.length>=55)pagesWithText.push(p);
+   if(line&&chars<32000){const segment=("صفحة "+p+": "+line+"\n").slice(0,32000-chars);
+     chunks.push(segment);chars+=segment.length;}
  }
- const content=chunks.join("\n").slice(0,32000);
- if(content.length<200)throw Error("تعذر استخراج نص كافٍ من PDF؛ استخدم ملفًا نصيًا قابلًا للنسخ وليس صفحات مصوّرة.");
- return content;
+ const content=chunks.join("").slice(0,32000);
+ // Also detects mixed PDFs where most material is scanned but an introduction
+ // or decorative page contains enough selectable text to fool basic detection.
+ const scanned=content.length<200 || pagesWithText.length<Math.ceil(maxPages*.50);
+ if(!scanned)return {mode:"text",text:content,page_count:pdf.numPages};
+ status("ql-generate-status","تعرّفت على PDF مصوّر. جارٍ تجهيز صور الصفحات لقراءتها بالذكاء الاصطناعي…");
+ // Up to nine evenly spread pages for the Groq vision fallback. Gemini receives
+ // the full PDF (<=5 MB), not just these samples.
+ const samples=Math.min(maxPages,9),numbers=[];
+ for(let i=0;i<samples;i++){
+   const p=samples===1?1:Math.min(maxPages,1+Math.round(i*(maxPages-1)/(samples-1)));
+   if(!numbers.includes(p))numbers.push(p);
+ }
+ const images=[];
+ for(const p of numbers){
+   status("ql-generate-status","PDF مصوّر: تجهيز الصفحة "+p+" من "+pdf.numPages+"…");
+   const page=await pdf.getPage(p);
+   images.push({page:p,mime_type:"image/jpeg",data:await renderPageAsJpeg(page)});
+ }
+ const pdfBase64=file.size<=5*1024*1024 ? encodeBase64(new Uint8Array(buffer)) : null;
+ return {mode:"vision",source_text:content.slice(0,16000),page_images:images,
+   pdf_base64:pdfBase64,page_count:pdf.numPages};
 }
 $("ql-generate").addEventListener("click",async()=>{
  if(!director)return;
@@ -153,13 +212,23 @@ $("ql-generate").addEventListener("click",async()=>{
  if(!types.length||!Number.isInteger(count)||count<1||count>30)return status("ql-generate-status","اختر نوعًا واحدًا على الأقل، وعددًا بين 1 و30.","error");
  const b=$("ql-generate");b.disabled=true;status("ql-generate-status","جارٍ قراءة PDF واستخراج نص المحاضرة…");
  try{
-   const text=await extractPDF(file);
-   status("ql-generate-status","تم استخراج المحاضرة. يجري توليد الأسئلة وفق الأنواع والعدد المحدّدين…");
-   const {data,error}=await client.functions.invoke("nabd-quality-generate",{body:{title,source_text:text,types,count,language:$("ql-language").value}});
-   if(error||!data?.ok||!Array.isArray(data.questions))throw Error(data?.message||"تعذر الاتصال بخدمة توليد الأسئلة. تأكد من تفعيل مزود الذكاء الاصطناعي.");
+   const extracted=await extractPDF(file);
+   status("ql-generate-status",extracted.mode==="vision"?
+      "الملف مصوّر. يجري تحليل الصفحات بصريًا واستنباط الأسئلة من محتواها…":
+      "تم استخراج نص المحاضرة. يجري توليد الأسئلة المطلوبة…");
+   const body={title,types,count,language:$("ql-language").value,
+     source_text:extracted.mode==="text"?extracted.text:extracted.source_text||"",
+     page_count:extracted.page_count};
+   if(extracted.mode==="vision"){body.page_images=extracted.page_images;body.pdf_base64=extracted.pdf_base64;}
+   const {data,error}=await client.functions.invoke("nabd-quality-generate",{body});
+   if(error||!data?.ok||!Array.isArray(data.questions))
+     throw Error(data?.message||"تعذر توليد الأسئلة. تحقق من إعداد مزوّد الرؤية بالذكاء الاصطناعي واتصال الإنترنت.");
    if(questions.length && !window.confirm("يوجد بنك أسئلة غير محفوظ. هل تريد استبداله بالأسئلة الجديدة؟"))return;
    questions=data.questions;renderEditor();
-   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا بنجاح. راجع المحتوى والمفاتيح ثم احفظ مسودة الامتحان.","success");
+   const coverage=data.source_mode==="sampled_images"?
+      " جرى تحليل صفحات ممثّلة من الملف؛ لم تُحلَّل كل صفحاته، فراجع تغطية المحاضرة.":
+      " راجع دقة الأسئلة ومفاتيحها مقارنة بالمحاضرة.";
+   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا من "+(extracted.mode==="vision"?"الصفحات المصوّرة":"نص المحاضرة")+"."+coverage,"success");
    $("ql-preview").scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){status("ql-generate-status",e.message||"تعذر إنشاء الأسئلة من هذا الملف.","error")}
  finally{b.disabled=false;}
