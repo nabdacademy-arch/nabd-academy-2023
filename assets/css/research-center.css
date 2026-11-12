@@ -23,3 +23,6 @@
 .neo-site #neo-programs .neo-program--research-publisher{border-color:#8dcfc0}
 .neo-site #neo-programs .neo-program--research-publisher .neo-program-label{color:#117b77}
 @media(max-width:650px){.nabd-research .res-toolbar{align-items:flex-start}.nabd-research .sch-form-actions>*{width:100%}}
+
+.nabd-research #res-pdf-details{display:block;margin-top:9px;color:#a7e8db;font-size:.84rem;line-height:1.7;overflow-wrap:anywhere}
+.nabd-research #res-pdf-details[data-invalid="true"]{color:#ffc9ba}
