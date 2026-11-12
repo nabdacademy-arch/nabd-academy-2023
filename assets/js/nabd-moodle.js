@@ -26,7 +26,6 @@ function dateStr(value,withTime=false){
    withTime?{dateStyle:"medium",timeStyle:"short"}:{dateStyle:"medium"}).format(new Date(value));}
  catch{return "—"}
 }
-}
 function applyLanguage(l){
  state.language=l==="en"?"en":"ar";
  document.documentElement.lang=state.language;
