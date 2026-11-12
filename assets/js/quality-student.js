@@ -16,6 +16,14 @@ async function auth(){
  student=user;$("ql-student-locked").hidden=true;$("ql-student-dashboard").hidden=false;
  $("ql-student-history").hidden=false;
  await load();
+ // Deep link from the authenticated NABD Moodle dashboard. A student can open
+ // only an exam returned by the server's approved-and-current RPC.
+ const requested=new URLSearchParams(window.location.search).get("exam");
+ if(requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested)
+   && !attempted.has(requested)){
+   const active=await client.rpc("nabd_quality_active_exams");
+   if(!active.error && (active.data||[]).some(x=>x.id===requested))await openPaper(requested);
+ }
 }
 function renderHistory(rows,error){
  const list=$("ql-history-list");list.replaceChildren();
