@@ -14,15 +14,32 @@ async function auth(){
  const {data:role}=await client.from("profiles").select("role").eq("id",user.id).maybeSingle();
  if(role?.role!=="student"){$("ql-student-locked").hidden=false;$("ql-student-locked").querySelector("p").textContent="هذا القسم مخصّص لحسابات الطلاب المسجلين في الأكاديمية.";return}
  student=user;$("ql-student-locked").hidden=true;$("ql-student-dashboard").hidden=false;
+ $("ql-student-history").hidden=false;
  await load();
+}
+function renderHistory(rows,error){
+ const list=$("ql-history-list");list.replaceChildren();
+ if(error){list.append(el("p","ql-empty","تعذر تحميل نتائج الامتحانات السابقة."));return;}
+ if(!(rows||[]).length){list.append(el("p","ql-empty","لم تسلّم أي امتحان بعد."));return;}
+ rows.forEach(item=>{
+   const card=el("article","ql-list-item");
+   card.append(el("h3","",item.title));
+   card.append(el("p","ql-muted","تاريخ التسليم: "+date(item.submitted_at)));
+   card.append(el("span","ql-tag"+(item.human_score===null?"":" ql-tag-green"),
+     item.human_score===null?"بانتظار التصحيح البشري":"تم التصحيح: "+item.human_score+" / 100"));
+   if(item.grade_notes)card.append(el("p","ql-muted","ملاحظات المصحح: "+item.grade_notes));
+   list.append(card);
+ });
 }
 async function load(){
  if(!student||!client)return;
  message("ql-student-status","جارٍ تحميل الامتحانات…");
- const [examsResult,submitted]=await Promise.all([
+ const [examsResult,submitted,history]=await Promise.all([
   client.rpc("nabd_quality_active_exams"),
-  client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at").eq("student_id",student.id).limit(200)
+  client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at").eq("student_id",student.id).limit(200),
+  client.rpc("nabd_quality_student_history")
  ]);
+ renderHistory(history.data,history.error);
  if(examsResult.error)return message("ql-student-status","تعذّر تحميل الامتحانات حاليًا. حاول لاحقًا.","error");
  attempted=new Map((submitted.data||[]).map(a=>[a.exam_id,a]));
  const list=$("ql-student-list");list.replaceChildren();
