@@ -22,10 +22,10 @@
      const list=create("div","","nqf-list");
      active.slice(0,3).forEach(item=>{
        const link=create("a",item.title+" · حتى "+new Intl.DateTimeFormat("ar-PS",{timeStyle:"short"}).format(new Date(item.closes_at)),"nqf-item");
-       link.href="student-exams.html";list.append(link);
+       link.href=host.dataset.qualityDestination||"student-exams.html";list.append(link);
      });
      const open=create("a","افتح مركز امتحانات الطلاب ←","nqf-link");
-     open.href="student-exams.html";
+     open.href=host.dataset.qualityDestination||"student-exams.html";
      host.replaceChildren(headline,intro,list,open);
    });
  }
