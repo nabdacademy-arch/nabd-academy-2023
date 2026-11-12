@@ -42,6 +42,16 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
 @media(max-width:720px){.formrow,.statgrid,.two{grid-template-columns:1fr 1fr}.shell{padding:14px 12px 50px}.panel{padding:15px;border-radius:15px}}
 @media(max-width:440px){.formrow,.statgrid,.two{grid-template-columns:1fr}.btn{width:100%}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* Optional machine translation: English stays the primary exam text. */
+.translation-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:13px 0 10px}
+.translation-btn{border:1px solid #4dd1bc;background:#153e4c;color:#e6fff9;min-height:40px;padding:9px 15px;border-radius:12px;font-weight:750}
+.translation-btn:hover{background:#205163}.translation-btn:disabled{opacity:.55;cursor:progress}
+.arabic-translation{margin:12px 0 16px;padding:13px 15px;background:rgba(49,126,120,.15);border:1px solid #488a87;border-radius:12px;white-space:pre-wrap;color:#f5fcff;line-height:1.85}
+.option{flex-wrap:wrap}
+.option .arabic-option{display:block;flex-basis:100%;direction:rtl;text-align:right;padding:4px 28px 0 4px;color:#b7f7e3;line-height:1.7;font-size:14px}
+.option .arabic-option[hidden]{display:none}
+.translate-status{font-size:12px;color:#b2cad4;min-height:17px}
 </style>
 </head>
 <body>
@@ -94,10 +104,13 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
 <div class="examhead"><div><span class="pill" id="position">1 / 10</span> <span class="pill" id="meta">أساسي</span></div><strong id="timer" style="color:var(--gold)">—</strong></div>
 <div class="track"><div id="progressBar"></div></div>
 <p class="small muted" id="topic">—</p>
-<div id="prompt" class="question"></div>
+<div class="translation-tools"><strong class="small muted">Question &amp; options · English</strong><button class="translation-btn" type="button" id="translateBtn" aria-pressed="false" aria-label="Show or hide Arabic translation of the question and its answers">🌐 ترجمة عربية</button></div>
+<div id="translateStatus" class="translate-status" role="status" aria-live="polite"></div>
+<div id="prompt" class="question" lang="en" dir="ltr"></div>
+<div id="promptTranslation" class="arabic-translation" lang="ar" dir="rtl" hidden></div>
 <div id="options" class="stack"></div>
 <div id="writtenBox" hidden><label for="writtenInput">اكتب خطوات الحل أو إجابتك، ثم قارِنها بالنموذج</label><textarea id="writtenInput" placeholder="Your answer / Steps"></textarea></div>
-<div id="feedback" class="answer" hidden aria-live="polite"><strong id="feedbackTitle"></strong><p class="solution" id="feedbackText"></p><div id="selfMark" class="actions" hidden><button class="btn primary" id="selfRight">أتقنت الإجابة</button><button class="btn ghost" id="selfWrong">تحتاج مراجعة</button></div></div>
+<div id="feedback" class="answer" hidden aria-live="polite"><strong id="feedbackTitle"></strong><p class="solution" id="feedbackText"></p><div id="feedbackTranslation" class="arabic-translation" lang="ar" dir="rtl" hidden></div><div id="selfMark" class="actions" hidden><button class="btn primary" id="selfRight">أتقنت الإجابة</button><button class="btn ghost" id="selfWrong">تحتاج مراجعة</button></div></div>
 <div class="actions" style="margin-top:18px"><button id="checkBtn" class="btn primary" type="button">تحقق من الإجابة</button><button id="skipBtn" class="btn ghost" type="button">تخطي</button><button id="nextBtn" class="btn gold" type="button" hidden>التالي ←</button><button id="stopBtn" class="btn ghost" type="button">إنهاء الجولة</button></div>
 <p id="saveStatus" class="small muted"></p>
 </div>
@@ -114,7 +127,7 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const db=createClient('https://zsmmmljgguycrvyrmakl.supabase.co','sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const $=id=>document.getElementById(id);
 const tracks={chemistry:'الكيمياء',computer_ai:'الحاسوب والذكاء الاصطناعي',medicine:'الطب البشري',biology:'الأحياء'};
-let state={questions:[],sources:[],patterns:[],attempts:[],deck:[],index:0,round:[],mode:'practice',seconds:0,interval:null,locked:false,complete:false,lang:'ar'};
+let state={questions:[],sources:[],patterns:[],attempts:[],deck:[],index:0,round:[],mode:'practice',seconds:0,interval:null,locked:false,complete:false,lang:'ar',translations:new Map(),translationVisible:false,translationRequestToken:0};
 function message(id,value){$(id).textContent=value}
 function safeUrl(v){try{let u=new URL(v);return ['https:','http:'].includes(u.protocol)?u.href:null}catch{return null}}
 function node(tag,className,txt){let n=document.createElement(tag);if(className)n.className=className;if(txt!==undefined)n.textContent=txt;return n}
@@ -163,6 +176,14 @@ function startExam(){const result=selectDeck();if(!result.deck.length){alert('ل
 }
 function renderQuestion(){
  const q=state.deck[state.index];if(!q){finishRound();return}
+ state.translationVisible=false;
+ state.translationRequestToken++;
+ $('translateBtn').disabled=false;
+ $('translateBtn').textContent='🌐 ترجمة عربية';
+ $('translateBtn').setAttribute('aria-pressed','false');
+ message('translateStatus','');
+ $('promptTranslation').hidden=true;
+ $('feedbackTranslation').hidden=true;
  state.locked=false;message('saveStatus','');
  message('position',(state.index+1)+' / '+state.deck.length);
  message('meta',tracks[q.subject]+' · '+labelDifficulty(q.difficulty)+' · '+q.points+' نقطة');
@@ -170,11 +191,66 @@ function renderQuestion(){
  $('progressBar').style.width=(100*state.index/state.deck.length)+'%';
  const opts=$('options');clear(opts);$('writtenBox').hidden=!['oral','written'].includes(q.kind);$('writtenInput').value='';
  if(!$('writtenBox').hidden){opts.append(node('p','muted','تدريب تفصيلي/شفهي: اكتب الفكرة ثم قارن إجابتك بالحل المقترح. التصحيح هنا ذاتي.'))}
- else (q.options||[]).forEach((o,i)=>{let label=node('label','option');let input=document.createElement('input');input.type=q.kind==='multi'?'checkbox':'radio';input.name='userAnswer';input.value='ABCD'[i];input.addEventListener('change',()=>{if(q.kind==='single')document.querySelectorAll('.option').forEach(el=>el.classList.remove('selected'));label.classList.toggle('selected',input.checked)});label.append(input,node('b','',('ABCD'[i]||'?')+'.'),node('span','',o));opts.append(label)});
+ else (q.options||[]).forEach((o,i)=>{let label=node('label','option');let input=document.createElement('input');input.type=q.kind==='multi'?'checkbox':'radio';input.name='userAnswer';input.value='ABCD'[i];input.addEventListener('change',()=>{if(q.kind==='single')document.querySelectorAll('.option').forEach(el=>el.classList.remove('selected'));label.classList.toggle('selected',input.checked)});{const arabic=node('span','arabic-option','');arabic.lang='ar';arabic.dir='rtl';arabic.hidden=true;label.append(input,node('b','',('ABCD'[i]||'?')+'.'),node('span','',o),arabic)}opts.append(label)});
  $('feedback').hidden=true;$('selfMark').hidden=true;$('checkBtn').hidden=false;$('skipBtn').hidden=false;$('nextBtn').hidden=true;
 }
 async function saveAttempt(q,response,ok,score){let item={question_id:q.id,response:String(response||''),is_correct:ok,awarded_points:score,mode:state.mode};state.round.push(item);state.attempts.unshift({...item,created_at:new Date().toISOString()});calcStats();const r=await db.from('open_doors_attempts').insert(item);if(r.error)message('saveStatus','تعذر حفظ المحاولة في السجل: '+r.error.message);else message('saveStatus','حُفظت المحاولة في سجل التقدم الخاص بك.')}
-function showFeedback(title,body){$('feedback').hidden=false;message('feedbackTitle',title);message('feedbackText',body);$('checkBtn').hidden=true;$('skipBtn').hidden=true;$('nextBtn').hidden=false;state.locked=true}
+function showFeedback(title,body){$('feedback').hidden=false;message('feedbackTitle',title);message('feedbackText',body);$('checkBtn').hidden=true;$('skipBtn').hidden=true;$('nextBtn').hidden=false;state.locked=true;renderOptionalTranslation()}
+
+function renderOptionalTranslation(){
+ const q=state.deck[state.index];
+ const t=q?state.translations.get(q.id):null;
+ const shown=Boolean(q && t && state.translationVisible);
+ const prompt=$('promptTranslation');
+ prompt.hidden=!shown;
+ prompt.textContent=shown?t.question_ar:'';
+ document.querySelectorAll('.arabic-option').forEach((span,i)=>{
+  span.hidden=!shown;
+  span.textContent=shown?(t.options_ar[i]||''):'';
+ });
+ const feedback=$('feedbackTranslation');
+ const feedbackReady=shown && !$('feedback').hidden;
+ feedback.hidden=!feedbackReady;
+ feedback.textContent=feedbackReady?('شرح الإجابة بالعربية:\n'+(t.explanation_ar||'')+
+  (t.rubric_ar?'\n\nمعايير التقييم:\n'+t.rubric_ar:'')):'';
+ $('translateBtn').textContent=shown?'🌐 إخفاء الترجمة العربية':'🌐 ترجمة عربية';
+ $('translateBtn').setAttribute('aria-pressed',String(shown));
+}
+$('translateBtn').addEventListener('click',async()=>{
+ const q=state.deck[state.index];
+ if(!q)return;
+ const cached=state.translations.get(q.id);
+ if(cached){state.translationVisible=!state.translationVisible;renderOptionalTranslation();return}
+ const token=state.translationRequestToken;
+ $('translateBtn').disabled=true;
+ message('translateStatus','جارٍ ترجمة هذا السؤال وخياراته وشرحه إلى العربية...');
+ try{
+  const result=await db.functions.invoke('open-doors-translate',{body:{question_id:q.id}});
+  if(result.error||!result.data?.ok||!result.data?.translation){
+   const code=result.data?.code||result.error?.message||'TRANSLATION_UNAVAILABLE';
+   if(state.deck[state.index]?.id===q.id && state.translationRequestToken===token){
+    message('translateStatus','تعذرت الترجمة الآن ('+code+'). يمكنك إعادة المحاولة، وتستمر الأسئلة الإنجليزية بالعمل.');
+   }
+   return;
+  }
+  const translated=result.data.translation;
+  if(!Array.isArray(translated.options_ar)||translated.options_ar.length!==(q.options||[]).length||
+     typeof translated.question_ar!=='string'||typeof translated.explanation_ar!=='string'){
+    if(state.deck[state.index]?.id===q.id)message('translateStatus','الترجمة غير مكتملة. حاول مجددًا.');
+    return;
+  }
+  state.translations.set(q.id,translated);
+  if(state.deck[state.index]?.id===q.id && state.translationRequestToken===token){
+   state.translationVisible=true;
+   renderOptionalTranslation();
+   message('translateStatus','ترجمة عربية مساعدة؛ يُرجى الرجوع إلى النص الإنجليزي عند اختلاف المصطلحات.');
+  }
+ }catch(e){
+  if(state.deck[state.index]?.id===q.id)message('translateStatus','تعذر الاتصال بخدمة الترجمة. جرّب مرة أخرى.');
+ }finally{
+  if(state.deck[state.index]?.id===q.id && state.translationRequestToken===token)$('translateBtn').disabled=false;
+ }
+});
 $('checkBtn').onclick=async()=>{
  if(state.locked)return;const q=state.deck[state.index];
  if(q.kind==='written'||q.kind==='oral'){
