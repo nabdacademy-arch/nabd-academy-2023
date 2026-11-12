@@ -1,0 +1,9 @@
+/* Authenticated exam feed inside student account pages. */
+.nabd-quality-feed{max-width:1130px;margin:22px auto;padding:22px;border:1px solid #70d4c9;border-radius:16px;background:linear-gradient(145deg,#0a3244,#0b4250);color:#f2f9fb;box-shadow:0 14px 40px #061b2c18;font:500 15px/1.7 Tahoma,Arial,sans-serif}
+.nabd-quality-feed .nqf-title{display:block;font-size:1.18rem;color:#b1f6e7}
+.nabd-quality-feed .nqf-copy{color:#d0e9ea;margin:6px 0 12px}
+.nabd-quality-feed .nqf-list{display:grid;gap:8px;margin:12px 0}
+.nabd-quality-feed .nqf-item{display:block;color:#fff;background:#ffffff18;border-radius:9px;padding:8px 12px;text-decoration:none}
+.nabd-quality-feed .nqf-item:hover{background:#ffffff25}
+.nabd-quality-feed .nqf-link{display:inline-flex;align-items:center;border:1px solid #70d4c9;background:#adf0e2;color:#092b38;border-radius:10px;padding:8px 16px;text-decoration:none;font-weight:900}
+@media(max-width:600px){.nabd-quality-feed{margin:14px;padding:16px}}
