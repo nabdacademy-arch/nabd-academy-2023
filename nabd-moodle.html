@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061e2c"><meta name="description" content="مودل نبض: بوابة الطالب الأكاديمية للدورات الخمس، الامتحانات المعتمدة، ونتائج التصحيح البشري.">
+<title>مودل نبض | بوابة الطالب الأكاديمية</title>
+<link rel="stylesheet" href="assets/css/nabd-moodle.css?v=1">
+</head>
+<body class="mdl-body" data-moodle-root>
+<a class="mdl-skip" href="#mdl-main">تجاوز إلى المحتوى</a>
+<header class="mdl-header">
+  <a class="mdl-brand" href="index.html" aria-label="أكاديمية نبض الرئيسية">
+    <span class="mdl-brand-mark">N<span>✦</span></span>
+    <span class="mdl-brand-copy"><strong>أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY · LEARNING MANAGEMENT</small></span>
+  </a>
+  <nav class="mdl-toplinks" aria-label="التنقل الرئيسي">
+    <a href="portal.html" data-ar="حساب الطالب" data-en="Student Account">حساب الطالب</a>
+    <a href="student-exams.html" data-ar="الامتحانات" data-en="Examinations">الامتحانات</a>
+    <a href="learning/" data-ar="مساحة التعلم" data-en="Learning Space">مساحة التعلم</a>
+    <button type="button" id="mdl-language" class="mdl-lang" aria-label="Change language">EN</button>
+  </nav>
+</header>
+<div class="mdl-layout">
+<aside class="mdl-sidebar" aria-label="قائمة نظام التعلم">
+  <div class="mdl-sidebar-label">NABD MOODLE</div>
+  <strong class="mdl-sidebar-title" data-ar="مساحتي الأكاديمية" data-en="My academic space">مساحتي الأكاديمية</strong>
+  <nav class="mdl-side-nav">
+    <a href="#mdl-overview" class="mdl-side-item"><span>◫</span><span data-ar="لوحة الطالب" data-en="My dashboard">لوحة الطالب</span></a>
+    <a href="#mdl-exams-section" class="mdl-side-item"><span>✎</span><span data-ar="الامتحانات الآن" data-en="Live exams">الامتحانات الآن</span></a>
+    <a href="#mdl-courses-section" class="mdl-side-item"><span>▤</span><span data-ar="الدورات المتاحة" data-en="Available courses">الدورات المتاحة</span></a>
+    <a href="#mdl-grades-section" class="mdl-side-item"><span>▥</span><span data-ar="درجاتي ونتائجي" data-en="My grades">درجاتي ونتائجي</span></a>
+  </nav>
+  <div class="mdl-sidebar-bottom"><span class="mdl-status-dot"></span><span data-ar="التقييم الأكاديمي بإشراف بشري" data-en="Human-reviewed assessment">التقييم الأكاديمي بإشراف بشري</span></div>
+</aside>
+<main class="mdl-main" id="mdl-main">
+<section class="mdl-auth-panel" id="mdl-login" aria-labelledby="mdl-login-heading">
+  <div class="mdl-panel-kicker">AUTHORIZED STUDENT ACCESS</div>
+  <h1 id="mdl-login-heading" data-ar="مرحبًا بك في مودل نبض" data-en="Welcome to NABD Moodle">مرحبًا بك في مودل نبض</h1>
+  <p data-ar="سجّل الدخول بحساب الطالب الحالي في الأكاديمية لتظهر بياناتك ودوراتك وامتحاناتك ونتائجك الشخصية." data-en="Use your existing academy student account to view your profile, courses, exams and personal grades.">سجّل الدخول بحساب الطالب الحالي في الأكاديمية لتظهر بياناتك ودوراتك وامتحاناتك ونتائجك الشخصية.</p>
+  <form id="mdl-login-form" class="mdl-login-form">
+    <label><span data-ar="البريد الإلكتروني" data-en="Email address">البريد الإلكتروني</span><input id="mdl-email" type="email" autocomplete="username" required placeholder="student@example.com"></label>
+    <label><span data-ar="كلمة المرور" data-en="Password">كلمة المرور</span><input id="mdl-password" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="mdl-primary" id="mdl-sign-in" data-ar="دخول مساحة الطالب" data-en="Sign in to my dashboard">دخول مساحة الطالب</button>
+  </form>
+  <p class="mdl-alert" id="mdl-login-message" role="status" hidden></p>
+  <a class="mdl-secondary-link" href="portal.html" data-ar="ليس لديك حساب؟ افتح بوابة الطالب" data-en="Need an account? Open the student portal">ليس لديك حساب؟ افتح بوابة الطالب</a>
+</section>
+<section id="mdl-denied" class="mdl-auth-panel" hidden>
+  <h2 data-ar="هذه المساحة مخصّصة للطلاب" data-en="Student access only">هذه المساحة مخصّصة للطلاب</h2>
+  <p data-ar="تم تسجيل الدخول، لكن دور هذا الحساب ليس طالبًا. افتح حساب طالب معتمدًا للوصول إلى الدورات والامتحانات." data-en="You are signed in, but this account is not a student account. Use your registered student account.">تم تسجيل الدخول، لكن دور هذا الحساب ليس طالبًا. افتح حساب طالب معتمدًا للوصول إلى الدورات والامتحانات.</p>
+  <button class="mdl-outline" id="mdl-change-account" type="button" data-ar="تغيير الحساب" data-en="Switch account">تغيير الحساب</button>
+</section>
+<div id="mdl-app" hidden>
+  <section id="mdl-overview" class="mdl-welcome">
+    <div class="mdl-overline"><span class="mdl-live"></span> NABD ACADEMIC EXPERIENCE · STUDENT PORTAL</div>
+    <div class="mdl-profile-row">
+      <div class="mdl-profile-copy">
+        <p class="mdl-greeting" data-ar="لوحتك الأكاديمية الشخصية" data-en="Your personal academic dashboard">لوحتك الأكاديمية الشخصية</p>
+        <h1 id="mdl-student-name">—</h1>
+        <p id="mdl-student-email" class="mdl-email" dir="ltr">—</p>
+        <p class="mdl-welcome-note" data-ar="تعلّم، اختبر معرفتك، وتابع نتائجك — في مكان واحد داخل أكاديمية نبض للعلوم الطبية." data-en="Learn, take assessments and follow your results in one connected academy space.">تعلّم، اختبر معرفتك، وتابع نتائجك — في مكان واحد داخل أكاديمية نبض للعلوم الطبية.</p>
+      </div>
+      <div class="mdl-profile-actions">
+        <div class="mdl-avatar" id="mdl-avatar" aria-hidden="true">N</div>
+        <button class="mdl-logout" id="mdl-sign-out" type="button" data-ar="تسجيل الخروج" data-en="Sign out">تسجيل الخروج</button>
+      </div>
+    </div>
+  </section>
+  <div class="mdl-metrics">
+    <article class="mdl-metric"><span class="mdl-metric-icon">✎</span><strong id="mdl-live-count">—</strong><span data-ar="امتحانات مفتوحة الآن" data-en="Active exams now">امتحانات مفتوحة الآن</span></article>
+    <article class="mdl-metric"><span class="mdl-metric-icon">▤</span><strong id="mdl-enrolled-count">—</strong><span data-ar="دورات مسجّل بها" data-en="Enrolled courses">دورات مسجّل بها</span></article>
+    <article class="mdl-metric"><span class="mdl-metric-icon">✓</span><strong id="mdl-graded-count">—</strong><span data-ar="نتائج مصحّحة بشريًا" data-en="Human-graded results">نتائج مصحّحة بشريًا</span></article>
+    <article class="mdl-metric"><span class="mdl-metric-icon">◷</span><strong id="mdl-pending-count">—</strong><span data-ar="بانتظار التصحيح" data-en="Awaiting grading">بانتظار التصحيح</span></article>
+  </div>
+  <p id="mdl-load-message" class="mdl-alert" hidden role="status"></p>
+  <section class="mdl-section" id="mdl-exams-section" aria-labelledby="mdl-exams-title">
+    <div class="mdl-section-head"><div><span class="mdl-section-no">01 / LIVE ASSESSMENTS</span><h2 id="mdl-exams-title" data-ar="الامتحانات المتاحة الآن" data-en="Exams available now">الامتحانات المتاحة الآن</h2><p data-ar="لا يظهر هنا إلا ما اعتمده المدير العام وما زال ضمن وقت النشر." data-en="Only director-approved exams within their active time window are shown.">لا يظهر هنا إلا ما اعتمده المدير العام وما زال ضمن وقت النشر.</p></div><button id="mdl-refresh" type="button" class="mdl-refresh" data-ar="تحديث" data-en="Refresh">تحديث</button></div>
+    <div id="mdl-exams" class="mdl-exam-grid" aria-live="polite"><p class="mdl-empty">جارٍ تحميل الامتحانات…</p></div>
+  </section>
+  <section class="mdl-section" id="mdl-courses-section" aria-labelledby="mdl-courses-title">
+    <div class="mdl-section-head"><div><span class="mdl-section-no">02 / ACADEMY COURSES</span><h2 id="mdl-courses-title" data-ar="الدورات التعليمية المتاحة" data-en="Available academy courses">الدورات التعليمية المتاحة</h2><p data-ar="خمس دورات طبية فعلية من قاعدة بيانات الأكاديمية. يمكنك التسجيل فيها مباشرة بحسابك." data-en="Five real medical courses from the academy catalog. Enroll directly using your student account.">خمس دورات طبية فعلية من قاعدة بيانات الأكاديمية. يمكنك التسجيل فيها مباشرة بحسابك.</p></div><span id="mdl-course-total" class="mdl-count-pill">—</span></div>
+    <div id="mdl-courses" class="mdl-course-grid" aria-live="polite"><p class="mdl-empty">جارٍ تحميل الدورات…</p></div>
+    <p class="mdl-alert" id="mdl-course-message" role="status" hidden></p>
+  </section>
+  <section class="mdl-section" id="mdl-grades-section" aria-labelledby="mdl-grades-title">
+    <div class="mdl-section-head"><div><span class="mdl-section-no">03 / HUMAN-GRADED RESULTS</span><h2 id="mdl-grades-title" data-ar="درجاتي ونتائجي" data-en="My grades and results">درجاتي ونتائجي</h2><p data-ar="تظهر نتائج امتحاناتك هنا بعد أن يراجعها المصحّح ويسجّل الدرجة. لن تُحسب درجات تلقائية." data-en="Your exam results appear here only after a human reviewer records your grade. No automated marks.">تظهر نتائج امتحاناتك هنا بعد أن يراجعها المصحّح ويسجّل الدرجة. لن تُحسب درجات تلقائية.</p></div></div>
+    <div class="mdl-grade-table-wrap"><table class="mdl-grade-table"><thead><tr><th data-ar="الامتحان" data-en="Examination">الامتحان</th><th data-ar="تاريخ التسليم" data-en="Submitted">تاريخ التسليم</th><th data-ar="الدرجة" data-en="Grade">الدرجة</th><th data-ar="الحالة" data-en="Status">الحالة</th></tr></thead><tbody id="mdl-grade-rows"><tr><td colspan="4">جارٍ تحميل سجل الدرجات…</td></tr></tbody></table></div>
+    <div id="mdl-grade-notes" class="mdl-feedback" aria-live="polite"></div>
+  </section>
+</div>
+</main></div>
+<footer class="mdl-footer"><strong>NABD ACADEMY OF MEDICAL SCIENCES</strong><span data-ar="مودل نبض هو نظام تعليمي خاص بالأكاديمية، وليس تثبيتًا لمنصة Moodle الرسمية. جميع الدرجات تخضع للتصحيح البشري." data-en="NABD Moodle is the academy's own learning portal, not an installation of the official Moodle software. Grades are reviewed by humans.">مودل نبض هو نظام تعليمي خاص بالأكاديمية، وليس تثبيتًا لمنصة Moodle الرسمية. جميع الدرجات تخضع للتصحيح البشري.</span></footer>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="assets/js/config.js?v=12"></script>
+<script defer src="assets/js/supabase-client.js?v=12"></script>
+<script defer src="assets/js/nabd-moodle.js?v=1"></script>
+</body></html>
