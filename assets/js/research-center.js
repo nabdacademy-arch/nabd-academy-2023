@@ -188,6 +188,7 @@
   });
   function resetEditor() {
     editor.reset();
+    showSelectedPdfDetails();
     $("res-edit-id").value = "";
     $("res-pdf").required = true;
     $("res-submit").textContent = "نشر البحث الآن";
@@ -199,6 +200,7 @@
     $("res-abstract").value = item.abstract;
     $("res-author").value = item.author_name || "";
     $("res-pdf").value = "";
+    showSelectedPdfDetails();
     $("res-pdf").required = false;
     $("res-submit").textContent = "حفظ تعديلات البحث";
     $("res-cancel-edit").hidden = false;
@@ -247,17 +249,88 @@
       actions.append(edit,archive);row.append(info,actions);ownList.append(row);
     });
   }
+  const MAX_RESEARCH_PDF_BYTES = 15 * 1024 * 1024;
+  function readablePdfSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes < 0) return "حجم غير معروف";
+    if (bytes < 1024) return bytes + " بايت";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " كيلوبايت";
+    return (bytes / (1024 * 1024)).toFixed(2) + " ميغابايت";
+  }
+  const pdfInput = $("res-pdf");
+  const pdfDetails = $("res-pdf-details");
+  function showSelectedPdfDetails() {
+    if (!pdfDetails || !pdfInput) return;
+    const file = pdfInput.files?.[0];
+    pdfDetails.hidden = !file;
+    pdfDetails.dataset.invalid = "false";
+    if (!file) { pdfDetails.textContent = ""; return; }
+    const size = readablePdfSize(file.size);
+    const tooLarge = file.size > MAX_RESEARCH_PDF_BYTES;
+    const empty = file.size === 0;
+    pdfDetails.dataset.invalid = String(tooLarge || empty);
+    pdfDetails.textContent = "الملف المحدد: " + file.name + " — الحجم الذي قرأه المتصفح: " + size +
+      (tooLarge ? " (يتجاوز الحد المسموح: 15 ميغابايت)" :
+       empty ? " (لم يتمكن المتصفح من قراءة محتوى الملف؛ احفظه في التنزيلات واختره مجددًا)" :
+       " (ضمن الحد المسموح إذا كان ملف PDF صالحًا)");
+  }
+  pdfInput?.addEventListener("change", showSelectedPdfDetails);
   async function uploadPdf(file) {
     if (!file) throw new Error("يرجى اختيار ملف PDF أولًا.");
-    if (file.size < 5 || file.size > 15728640) throw new Error("حجم الملف يجب أن يكون أقل من 15 ميغابايت.");
-    if (!/\.pdf$/i.test(file.name)) throw new Error("يرجى رفع ملف PDF فقط.");
-    const header = await file.slice(0,5).text();
-    if (header !== "%PDF-") throw new Error("الملف المحدد ليس PDF صالحًا.");
+    if (!/\.pdf$/i.test(file.name || "")) {
+      throw new Error("نوع الملف غير مدعوم. اختر ملفًا ينتهي اسمه بامتداد PDF.");
+    }
+    let uploadBody = file;
+    let bytes = file.size;
+    // Some Android file providers report a zero-size virtual document. Try
+    // reading it once before reporting an unavailable/empty file.
+    if (bytes === 0) {
+      try {
+        const raw = await file.arrayBuffer();
+        if (raw.byteLength > 0) {
+          uploadBody = new Blob([raw], {type:"application/pdf"});
+          bytes = raw.byteLength;
+        }
+      } catch (_) { /* Give an actionable zero-byte message below. */ }
+    }
+    if (!Number.isFinite(bytes) || bytes === 0) {
+      throw new Error("المتصفح قرأ الملف بحجم 0 بايت، وليس بسبب حد 15 ميغابايت. نزّل ملف PDF إلى مجلد التنزيلات على الهاتف ثم اختره من مدير الملفات. إذا استمرت المشكلة جرّب متصفح Chrome.");
+    }
+    if (bytes > MAX_RESEARCH_PDF_BYTES) {
+      throw new Error("حجم الملف الفعلي " + readablePdfSize(bytes) +
+        "، وهو أكبر من الحد المسموح 15 ميغابايت. يمكن ضغط PDF ثم إعادة رفعه.");
+    }
+    if (bytes < 5) {
+      throw new Error("الملف غير مكتمل: حجمه " + readablePdfSize(bytes) +
+        "، ولا يحتوي على ترويسة PDF صحيحة. أعد تنزيل النسخة الأصلية.");
+    }
+    let magic;
+    try {
+      magic = new Uint8Array(await uploadBody.slice(0,5).arrayBuffer());
+    } catch (_) {
+      throw new Error("تعذرت قراءة ملف PDF من مصدره على الهاتف. احفظه في التنزيلات، ثم اختره مجددًا.");
+    }
+    if (magic.length !== 5 || magic[0] !== 37 || magic[1] !== 80 ||
+        magic[2] !== 68 || magic[3] !== 70 || magic[4] !== 45) {
+      throw new Error("الملف المختار لا يحتوي على محتوى PDF صالح، رغم امتداده. جرّب فتحه أولًا على الهاتف ثم أعد تنزيل الملف الأصلي.");
+    }
     const path = user.id + "/" + crypto.randomUUID() + ".pdf";
-    const {error} = await client.storage.from(bucket).upload(path,file,{
+    const {error} = await client.storage.from(bucket).upload(path,uploadBody,{
       contentType:"application/pdf",cacheControl:"3600",upsert:false
     });
-    if (error) throw new Error("تعذر رفع ملف PDF. تأكد من الاتصال والصلاحيات وحد الحجم.");
+    if (error) {
+      const code = String(error.statusCode ?? error.status ?? "");
+      const detail = String(error.message || "");
+      if (code === "413" || /payload too large|file size|exceeded.*limit/i.test(detail))
+        throw new Error("رفض خادم التخزين الملف بسبب الحجم. الحجم الذي قرأه المتصفح: " +
+          readablePdfSize(bytes) + ". حد الأكاديمية 15 ميغابايت.");
+      if (code === "401" || code === "403" || /row.level.security|not.authorized|permission/i.test(detail))
+        throw new Error("رفض خادم التخزين صلاحية الرفع. سجّل الخروج ثم ادخل بحساب الباحث المعتمد وحاول مجددًا.");
+      if (/mime|content.type|invalid.*file.type/i.test(detail))
+        throw new Error("رفض الخادم صيغة الملف. تأكد أنه PDF أصلي وغير تالف.");
+      throw new Error("تعذر رفع PDF إلى الخادم. الحجم: " + readablePdfSize(bytes) +
+        (code ? "، رمز الخطأ: " + code : "") +
+        ". تحقق من الاتصال أو جرّب رفعه من Chrome.");
+    }
     return path;
   }
   editor?.addEventListener("submit",async e => {
