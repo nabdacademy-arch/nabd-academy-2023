@@ -11,19 +11,21 @@ type Question={id:string;type:string;prompt?:string;answer_key?:any;options?:str
 type Entry={id:string;run_id:string;title:string;questions:Question[];answers:Record<string,unknown>};
 type Subjective={id:string;number:number;type:string;prompt:string;reference:string;rubric:string;source_excerpt:string;student_answer:string};
 function objective(q:Question,answer:unknown){
- const incorrect=(reference:string)=>({fraction:0,confidence:1,method:"answer_key",feedback:(answer===null||answer===undefined||answer===""?"لم يقدم الطالب إجابة. ":"الإجابة غير صحيحة. ")+reference});
- const correct=()=>({fraction:1,confidence:1,method:"answer_key",feedback:"إجابة صحيحة."});
+ const english=!/[\u0600-\u06FF]/u.test(String(q.prompt||""));
+ const tr=(ar:string,en:string)=>english?en:ar;
+ const incorrect=(reference:string)=>({fraction:0,confidence:1,method:"answer_key",feedback:(answer===null||answer===undefined||answer===""?tr("لم يقدم الطالب إجابة. ","No answer submitted. "):tr("الإجابة غير صحيحة. ","Incorrect answer. "))+reference});
+ const correct=()=>({fraction:1,confidence:1,method:"answer_key",feedback:tr("إجابة صحيحة.","Correct answer.")});
  if(q.type==="mcq"){
   const key=q.answer_key;
   if(!Array.isArray(q.options)||q.options.length<2||!Number.isInteger(key)||key<0||key>=q.options.length)return null;
   const a=(answer===null||answer===undefined||answer===""||typeof answer==="boolean")?NaN:(typeof answer==="number"?answer:Number(answer));
-  return Number.isInteger(a)&&a===key?correct():incorrect("الصحيح: "+String.fromCharCode(65+key)+" - "+q.options[key]);
+  return Number.isInteger(a)&&a===key?correct():incorrect(tr("الصحيح: ","Correct: ")+String.fromCharCode(65+key)+" - "+q.options[key]);
  }
  if(q.type==="true_false"){
   const key=q.answer_key;
   if(typeof key!=="boolean")return null;
   const a=answer===true||answer==="true"?true:answer===false||answer==="false"?false:null;
-  return a===key?correct():incorrect("الصحيح: "+(key?"True / صحيح":"False / خطأ"));
+  return a===key?correct():incorrect(tr("الصحيح: ","Correct: ")+(key?tr("صحيح (True)","True"):tr("خطأ (False)","False")));
  }
  if(q.type==="matching"){
   const key=q.answer_key,opts=q.right_items;
@@ -31,8 +33,8 @@ function objective(q:Question,answer:unknown){
    key.some((k:unknown)=>!Number.isInteger(k)||k<0||k>=opts.length))return null;
   const a=Array.isArray(answer)?answer:[];
   let count=0;const misses:string[]=[];
-  key.forEach((k:number,i:number)=>{if(Number.isInteger(a[i])&&a[i]===k)count++;else misses.push("العنصر "+(i+1)+": "+opts[k])});
-  return {fraction:count/key.length,confidence:1,method:"answer_key",feedback:misses.length?"التوصيل الصحيح: "+misses.join("؛ "):"مطابقة صحيحة."};
+  key.forEach((k:number,i:number)=>{if(Number.isInteger(a[i])&&a[i]===k)count++;else misses.push(tr("العنصر ","Item ")+(i+1)+": "+opts[k])});
+  return {fraction:count/key.length,confidence:1,method:"answer_key",feedback:misses.length?tr("التوصيل الصحيح: ","Correct matches: ")+misses.join("; "):tr("مطابقة صحيحة.","Correct matching.")};
  }
  return null;
 }
@@ -78,21 +80,23 @@ async function grade(entry:Entry){
  if(!Array.isArray(entry.questions)||entry.questions.length<1||entry.questions.length>40)throw Error("INVALID_EXAM");
  if(!entry.answers||typeof entry.answers!=="object"||Array.isArray(entry.answers))throw Error("INVALID_SUBMISSION");
  const rows:any[]=[],needs:Subjective[]=[];
+ const english=entry.questions.filter(q=>!/[\u0600-\u06FF]/u.test(String(q.prompt||""))).length>=entry.questions.length/2;
+ const tr=(ar:string,en:string)=>english?en:ar;
  for(let i=0;i<entry.questions.length;i++){
   const q=entry.questions[i],ans=entry.answers[q.id];
   if(typeof q.id!=="string"||!["mcq","true_false","matching","fill_blank","essay"].includes(q.type))throw Error("INVALID_QUESTION");
   const matched=objective(q,ans);
   if(matched){rows.push({id:q.id,number:i+1,type:q.type,...matched});continue}
   if(["mcq","true_false","matching"].includes(q.type)){
-   rows.push({id:q.id,number:i+1,type:q.type,fraction:null,confidence:0,method:"missing_key",feedback:"مفتاح الإجابة غير مكتمل؛ يلزم تصحيح بشري."});continue
+   rows.push({id:q.id,number:i+1,type:q.type,fraction:null,confidence:0,method:"missing_key",feedback:tr("مفتاح الإجابة غير مكتمل؛ يلزم تصحيح بشري.","The approved answer key is incomplete; human review required.")});continue
   }
   if(typeof q.answer_key!=="string"||!q.answer_key.trim()){
-   rows.push({id:q.id,number:i+1,type:q.type,fraction:null,confidence:0,method:"missing_key",feedback:"لا تتوفر إجابة نموذجية."});continue
+   rows.push({id:q.id,number:i+1,type:q.type,fraction:null,confidence:0,method:"missing_key",feedback:tr("لا تتوفر إجابة نموذجية.","No approved reference answer is available.")});continue
   }
   const student=typeof ans==="string"?ans.trim():"";
-  if(!student){rows.push({id:q.id,number:i+1,type:q.type,fraction:0,confidence:1,method:"unanswered",feedback:"لم يقدم الطالب إجابة."});continue}
+  if(!student){rows.push({id:q.id,number:i+1,type:q.type,fraction:0,confidence:1,method:"unanswered",feedback:tr("لم يقدم الطالب إجابة.","No answer submitted.")});continue}
   if(q.type==="fill_blank"&&normal(student)===normal(q.answer_key)){
-   rows.push({id:q.id,number:i+1,type:q.type,fraction:1,confidence:1,method:"normalized_match",feedback:"إجابة صحيحة."});continue
+   rows.push({id:q.id,number:i+1,type:q.type,fraction:1,confidence:1,method:"normalized_match",feedback:tr("إجابة صحيحة.","Correct answer.")});continue
   }
   needs.push({id:q.id,number:i+1,type:q.type,prompt:String(q.prompt||"").slice(0,1000),
    reference:q.answer_key.slice(0,1200),rubric:String(q.rubric||"").slice(0,800),
@@ -102,7 +106,7 @@ async function grade(entry:Entry){
  for(let i=0;i<needs.length;i++){
   const item=needs[i],g=evalResult?.grades?.[i];
   if(!g||g.confidence<0.65)rows.push({id:item.id,number:item.number,type:item.type,
-    fraction:null,confidence:g?.confidence||0,method:"needs_human_review",feedback:"تعذّر الجزم بصحة الإجابة؛ يلزم تقييم بشري."});
+    fraction:null,confidence:g?.confidence||0,method:"needs_human_review",feedback:tr("تعذّر الجزم بصحة الإجابة؛ يلزم تقييم بشري.","Confidence is insufficient; human assessment required.")});
   else rows.push({id:item.id,number:item.number,type:item.type,fraction:g.fraction,
     confidence:g.confidence,method:"ai_rubric",feedback:g.feedback.slice(0,500)});
  }
@@ -112,9 +116,12 @@ async function grade(entry:Entry){
  const total=rows.reduce((s,x)=>s+(typeof x.fraction==="number"?x.fraction:0),0);
  const score=complete?Math.max(0,Math.min(100,Math.round(total*10000/rows.length)/100)):null;
  const intro=complete?
-   "تقييم آلي أولي: "+score+"/100. "+(needs.length?"الإجابات الدلالية والمقالية تتطلب اعتمادًا بشريًا نهائيًا.":"الأسئلة الموضوعية صُححت وفق مفتاح الإجابة."):
-   "تقييم آلي غير مكتمل: لم تُعرض درجة للطالب بسبب إجابات تتطلب مراجعة بشرية.";
- const notes=[intro,...rows.filter(x=>x.fraction===null||x.fraction<0.999).map(x=>"السؤال "+x.number+": "+x.feedback)].join("\n").slice(0,6000);
+   tr("تقييم آلي أولي: ","Preliminary AI assessment: ")+score+"/100. "+
+    (needs.length?tr("الإجابات الدلالية والمقالية تتطلب اعتمادًا بشريًا نهائيًا.","Open-ended answers require final human review."):
+      tr("الأسئلة الموضوعية صُححت وفق مفتاح الإجابة.","Objective questions were graded against the approved key.")):
+   tr("تقييم آلي غير مكتمل: لم تُعرض درجة للطالب بسبب إجابات تتطلب مراجعة بشرية.",
+      "Incomplete AI assessment: no overall score was issued because some answers need human review.");
+ const notes=[intro,...rows.filter(x=>x.fraction===null||x.fraction<0.999).map(x=>tr("السؤال ","Question ")+x.number+": "+x.feedback)].join("\n").slice(0,6000);
  return {score,notes,breakdown:rows,review:!complete||needs.length>0,model:evalResult?.model||"answer_key"};
 }
 Deno.serve(async req=>{
