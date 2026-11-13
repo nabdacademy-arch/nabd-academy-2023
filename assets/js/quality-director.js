@@ -78,7 +78,9 @@ function renderEditor(){
  });
 }
 function resetBuilder(){
+ const preferredLanguage=$("ql-language").value;
  $("ql-config").reset();$("ql-count").value="10";$("ql-duration").value="60";
+ $("ql-language").value=preferredLanguage;
  $("ql-file-label").textContent="لم يتم اختيار ملف بعد";
  questions=[];editingId=null;editingSourcePath=null;editingSourceFilename="";
  $("ql-save-draft").textContent="حفظ الامتحان كمسودة";
@@ -116,6 +118,21 @@ $("ql-pdf").addEventListener("change",()=>{
  $("ql-file-label").textContent=f?f.name+" · "+(f.size/1048576).toFixed(2)+" MB":"لم يتم اختيار ملف بعد";
 });
 $("ql-new").addEventListener("click",resetBuilder);
+$("ql-language").addEventListener("change",()=>{
+ if(questions.length){
+   status("ql-generate-status","تغيير اللغة لا يترجم الأسئلة الموجودة تلقائيًا. اضغط «توليد الأسئلة من PDF» لتوليد نسخة كاملة باللغة المختارة.");
+ }
+});
+function generatedLanguageMatches(items,lang){
+ const arabic=/[\u0600-\u06FF]/u;
+ return items.every(q=>{
+   const texts=[q.prompt,q.source_excerpt,q.rubric,q.answer_key,
+     ...(q.options||[]),...(q.left_items||[]),...(q.right_items||[])]
+     .filter(x=>typeof x==="string"&&x.length);
+   return lang==="en"?texts.every(x=>!arabic.test(x)):
+     arabic.test(q.prompt||"");
+ });
+}
 $("ql-add-question").addEventListener("click",()=>{
  questions.push(freshQuestion($("ql-manual-type").value));renderEditor();
  $("ql-preview").scrollIntoView({behavior:"smooth"});
@@ -215,6 +232,7 @@ async function extractPDF(file){
 $("ql-generate").addEventListener("click",async()=>{
  if(!director)return;
  const file=$("ql-pdf").files[0],title=$("ql-title").value.trim();
+ const chosenLanguage=$("ql-language").value;
  const count=Number($("ql-count").value),types=Array.from($("ql-config").querySelectorAll(".ql-types input:checked")).map(x=>x.value);
  if(!file)return status("ql-generate-status","ارفع المحاضرة بصيغة PDF أولًا.","error");
  if(title.length<3)return status("ql-generate-status","اكتب عنوان الامتحان أولًا.","error");
@@ -225,7 +243,7 @@ $("ql-generate").addEventListener("click",async()=>{
    status("ql-generate-status",extracted.mode==="vision"?
       "الملف مصوّر. يجري تحليل الصفحات بصريًا واستنباط الأسئلة من محتواها…":
       "تم استخراج نص المحاضرة. يجري توليد الأسئلة المطلوبة…");
-   const body={title,types,count,language:$("ql-language").value,
+   const body={title,types,count,language:chosenLanguage,
      source_text:extracted.mode==="text"?extracted.text:extracted.source_text||"",
      page_count:extracted.page_count};
    if(extracted.mode==="vision"){body.page_images=extracted.page_images;body.pdf_base64=extracted.pdf_base64;}
@@ -244,18 +262,25 @@ $("ql-generate").addEventListener("click",async()=>{
        AI_PROVIDER_UNAVAILABLE:"خدمة الذكاء الاصطناعي مشغولة مؤقتًا. حاول مجددًا بعد قليل.",
        AUTH_EXPIRED:"انتهت جلسة تسجيل الدخول. سجل الدخول مجددًا.",
        DIRECTOR_ONLY:"هذا الحساب غير مخوّل بتوليد أسئلة الامتحانات.",
-       INVALID_PDF_IMAGES:"حدث خطأ في تجهيز صفحات PDF. جرّب ملفًا آخر."
+       INVALID_PDF_IMAGES:"حدث خطأ في تجهيز صفحات PDF. جرّب ملفًا آخر.",
+       AI_LANGUAGE_MISMATCH:"لم تلتزم خدمة التوليد بلغة الامتحان المختارة. يرجى إعادة المحاولة."
      };
      throw Error(detail?.message||messages[code]||(network?
        "يبدو أن اتصال الإنترنت انقطع أثناء التوليد.":
        "تعذّر توليد الأسئلة. تحقق من اتصال الإنترنت أو حاول تقليل عدد الأسئلة."));
+   }
+   if($("ql-language").value!==chosenLanguage){
+     throw Error("تغيّرت لغة الامتحان أثناء توليد الأسئلة. أعد التوليد باللغة التي تريدها.");
+   }
+   if(data.language!==chosenLanguage||!generatedLanguageMatches(data.questions,chosenLanguage)){
+     throw Error("تم رفض النتيجة لأن لغة الأسئلة لا تطابق اللغة المختارة. حاول التوليد مجددًا.");
    }
    if(questions.length && !window.confirm("يوجد بنك أسئلة غير محفوظ. هل تريد استبداله بالأسئلة الجديدة؟"))return;
    questions=data.questions;renderEditor();
    const coverage=data.source_mode==="sampled_images"?
       " جرى تحليل صفحات ممثّلة من الملف؛ لم تُحلَّل كل صفحاته، فراجع تغطية المحاضرة.":
       " راجع دقة الأسئلة ومفاتيحها مقارنة بالمحاضرة.";
-   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا من "+(extracted.mode==="vision"?"الصفحات المصوّرة":"نص المحاضرة")+"."+coverage,"success");
+   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا باللغة "+(chosenLanguage==="en"?"الإنجليزية":"العربية")+" من "+(extracted.mode==="vision"?"الصفحات المصوّرة":"نص المحاضرة")+"."+coverage,"success");
    $("ql-preview").scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){status("ql-generate-status",e.message||"تعذر إنشاء الأسئلة من هذا الملف.","error")}
  finally{b.disabled=false;}
@@ -383,7 +408,13 @@ function editExam(x){
  editingId=x.id;editingSourcePath=x.source_path;editingSourceFilename=x.source_filename;
  $("ql-title").value=x.title;$("ql-duration").value=x.duration_minutes;$("ql-course").value=x.course_id||"";
  $("ql-pdf").value="";$("ql-file-label").textContent=x.source_filename?"المحاضرة الحالية: "+x.source_filename+" (يمكن اختيار بديل)":"لم يُرفع PDF";
- questions=structuredClone(x.questions||[]);renderEditor();
+ questions=structuredClone(x.questions||[]);
+ if(questions.length){
+   const arabic=/[\u0600-\u06FF]/u;
+   const arCount=questions.filter(q=>arabic.test(q.prompt||"")).length;
+   $("ql-language").value=arCount>=questions.length/2?"ar":"en";
+ }
+ renderEditor();
  $("ql-save-draft").textContent="حفظ تعديلات المسودة";
  status("ql-save-status","أنت تعدّل مسودة. تغييراتك لا تُنشر إلا بعد موافقتك.");
  $("ql-builder").scrollIntoView({behavior:"smooth",block:"start"});
