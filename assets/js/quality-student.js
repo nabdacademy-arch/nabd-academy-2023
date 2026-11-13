@@ -11,7 +11,7 @@ function setPaperLanguage(language){
  paper.lang=paperLang;paper.dir=paperLang==="en"?"ltr":"rtl";
  $("ql-paper-note").textContent=tr("الوقت المتبقي حتى إغلاق الامتحان على الخادم",
    "Time remaining until this exam closes on the server");
- $("ql-submit-answers").textContent=tr("تسليم الإجابات للتصحيح البشري","Submit answers for human grading");
+ $("ql-submit-answers").textContent=tr("تسليم الإجابات للتقييم","Submit answers for assessment");
  $("ql-exit-paper").textContent=tr("العودة للقائمة","Return to exam list");
 }
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n}
@@ -186,7 +186,7 @@ async function submit(auto=false){
  exam=null;questions=[];autoRequested=false;
  b.disabled=false;$("ql-student-form").hidden=false;
  await load();
- message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة حالة التصحيح البشري من قائمة الامتحانات.",
+ message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة التقييم الآلي الأولي والنتيجة المعتمدة من قائمة الامتحانات.",
  "Answers submitted successfully. You can review your grading status in the exam list."),"success");
 }
 function tick(){

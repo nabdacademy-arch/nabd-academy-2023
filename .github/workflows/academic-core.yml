@@ -13,7 +13,6 @@ on:
       - 'tests/academic-core-*.cjs'
       - '.github/workflows/academic-core.yml'
   push:
-    branches: [main]
     paths:
       - 'academy.html'
       - 'nabd-campus.html'

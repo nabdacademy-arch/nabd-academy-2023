@@ -16,9 +16,9 @@ async function main(){
    const page=await context.newPage();
    await page.goto(base+"/academy.html",{waitUntil:"domcontentloaded"});
    await page.locator("#nc-route-grid .ncore-card").first().waitFor();
-   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),13,"Academy shows 13 actual service routes");
+   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),15,"Academy shows all 15 current service routes");
    await page.locator("#nc-route-role").selectOption("student");
-   const studentCount=await page.locator("#nc-route-grid .ncore-card").count();assert.ok(studentCount>=4&&studentCount<13,"Student filter works");
+   const studentCount=await page.locator("#nc-route-grid .ncore-card").count();assert.ok(studentCount>=4&&studentCount<15,"Student filter works");
    await page.locator("#nc-route-query").fill("Skill Passport");
    assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),1,"Search matches English service title in RTL page");
    await page.locator("#nc-route-query").fill("");
@@ -49,7 +49,7 @@ async function main(){
    assert.match(await page.locator("#nc-quiz-question").innerText(),/PICO/);
    await page.goto(base+"/nabd-campus.html",{waitUntil:"domcontentloaded"});
    await page.locator("#nc-route-grid .ncore-card").first().waitFor();
-   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),13,"Digital campus has connected route finder");
+   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),15,"Digital campus has all 15 connected routes");
    await context.close();
   }
   console.log("Academic Core browser acceptance passed: pathways, filtering, route planning, lecture export, bilingual switching, knowledge quiz and campus on 390px/1440px.");
