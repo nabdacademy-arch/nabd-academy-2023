@@ -98,8 +98,73 @@ async function authenticate(){
  }
  director=user;$("ql-login-panel").hidden=true;$("ql-workspace").hidden=false;
  $("ql-director-email").textContent=user.email||"";
- await Promise.all([loadCourses(),loadExams()]);
+ await Promise.all([loadCourses(),loadExams(),loadGraderStatus()]);
 }
+// Persistent server-side AI grading agent. Only the logged-in director may toggle it.
+let graderEnabled=false,graderBusy=false;
+function graderButtons(){
+ $("ql-bot-start").disabled=graderBusy||graderEnabled;
+ $("ql-bot-stop").disabled=graderBusy||!graderEnabled;
+ $("ql-bot-run").disabled=graderBusy||!graderEnabled;
+ $("ql-bot-refresh").disabled=graderBusy;
+}
+async function loadGraderStatus(){
+ if(!director)return;
+ const {data,error}=await client.rpc("nabd_gradebot_status");
+ if(error||!data){
+   status("ql-bot-status","تعذّر قراءة حالة بوت التصحيح. تحقق من اتصال قاعدة البيانات.","error");
+   return;
+ }
+ graderEnabled=Boolean(data.enabled);
+ const state=$("ql-bot-state");
+ state.textContent=graderEnabled?"يعمل تلقائيًا":"متوقف";
+ state.className="ql-tag"+(graderEnabled?" ql-tag-green":"");
+ const last=data.last_run?isoDate(data.last_run):"لم يبدأ بعد";
+ $("ql-bot-summary").textContent=
+   "بانتظار التصحيح الآلي: "+(data.pending||0)+
+   " · تتطلب مراجعة: "+(data.needs_review||0)+
+   " · مرات التصحيح: "+(data.total_graded||0)+
+   " · آخر تشغيل: "+last;
+ if(data.last_error)status("ql-bot-status","آخر مشكلة تشغيل: "+String(data.last_error).slice(0,200),"error");
+ graderButtons();
+}
+async function setGrader(enabled){
+ if(!director||graderBusy)return;
+ if(enabled&&!window.confirm("تشغيل بوت التصحيح الذكي؟ سيصحح جميع الإجابات المعلّقة تدريجيًا، ويعرض درجات أولية وملاحظات للطلاب. ستظل درجات الأسئلة المقالية قابلة لمراجعتك واعتمادك."))return;
+ if(!enabled&&!window.confirm("إيقاف بوت التصحيح؟ سيتوقف التقييم الآلي الجديد على الخادم، وستبقى النتائج المحفوظة كما هي."))return;
+ graderBusy=true;graderButtons();
+ status("ql-bot-status",enabled?"جارٍ تشغيل بوت التصحيح على الخادم…":"جارٍ إيقاف بوت التصحيح…");
+ try{
+   const {data,error}=await client.rpc("nabd_gradebot_toggle",{p_enabled:enabled});
+   if(error||data?.enabled!==enabled)throw Error(error?.message||"لم يؤكد الخادم تحديث حالة البوت.");
+   graderEnabled=enabled;
+   await loadGraderStatus();
+   status("ql-bot-status",enabled?"تم تشغيل البوت على الخادم؛ سيصحح الإجابات المعلّقة تلقائيًا كل دقيقة.":"تم إيقاف البوت. لن تُعتمد نتائج آلية جديدة حتى تعيد تشغيله.","success");
+   if(enabled)await runGraderNow(true);
+ }catch(e){status("ql-bot-status","تعذّر تغيير حالة البوت: "+String(e?.message||e).slice(0,190),"error");}
+ finally{graderBusy=false;graderButtons();}
+}
+async function runGraderNow(fromStart=false){
+ if(!director||!graderEnabled||(!fromStart&&graderBusy))return;
+ if(!fromStart){graderBusy=true;graderButtons();}
+ status("ql-bot-status","جارٍ فحص طابور الإجابات وتصحيح الدفعة الأولى…");
+ try{
+   const {data,error}=await client.functions.invoke("nabd-quality-autograde",{body:{action:"run"}});
+   let details=data;
+   if(error?.context?.clone){try{details=await error.context.clone().json()}catch{}}
+   if(error||!details?.ok)throw Error(details?.error||error?.message||"لم يستجب خادم التصحيح.");
+   status("ql-bot-status",details.enabled?
+     "اكتمل فحص الدفعة: "+details.graded+" درجة أولية، "+details.review+" تتطلب مراجعة، "+details.errors+" أخطاء. يتابع البوت بقية الإجابات تلقائيًا.":
+     "البوت متوقف. لم يتم إجراء أي تصحيح.","success");
+   await Promise.all([loadExams(),loadGraderStatus()]);
+ }catch(e){status("ql-bot-status","تعذّر تصحيح الدفعة: "+String(e?.message||e).slice(0,190),"error");}
+ finally{if(!fromStart){graderBusy=false;graderButtons();}}
+}
+$("ql-bot-start").addEventListener("click",()=>setGrader(true));
+$("ql-bot-stop").addEventListener("click",()=>setGrader(false));
+$("ql-bot-run").addEventListener("click",()=>runGraderNow());
+$("ql-bot-refresh").addEventListener("click",loadGraderStatus);
+graderButtons();
 $("ql-login-form").addEventListener("submit",async e=>{
  e.preventDefault();if(!client)return;
  const email=$("ql-email").value.trim(),password=$("ql-password").value;
@@ -473,7 +538,7 @@ async function showGrading(exam){
  $("ql-grading").hidden=false;$("ql-grading-title").textContent="التصحيح البشري · "+exam.title;
  $("ql-submissions").replaceChildren(el("p","ql-muted","جارٍ جلب إجابات الطلاب…"));
  const {data,error}=await client.from("nabd_quality_submissions")
-  .select("id,student_id,answers,submitted_at,human_score,grade_notes,graded_at")
+  .select("id,student_id,answers,submitted_at,human_score,grade_notes,graded_at,ai_score,ai_notes,ai_status,ai_review_required,ai_graded_at")
   .eq("exam_id",exam.id).order("submitted_at",{ascending:false}).limit(250);
  if(error)return status("ql-grade-status","تعذر تحميل الإجابات.","error");
  const list=data||[];$("ql-submissions").replaceChildren();
@@ -484,7 +549,17 @@ async function showGrading(exam){
  list.forEach(a=>{
    const wrap=el("article","ql-grade");
    wrap.append(el("h3","",(names.get(a.student_id)||a.student_id)+" · "+isoDate(a.submitted_at)));
-   wrap.append(el("p","ql-muted",a.human_score===null?"بانتظار التصحيح البشري":"الدرجة المسجلة: "+a.human_score+" / 100"));
+   const summary=a.human_score!==null?"الدرجة البشرية المعتمدة: "+a.human_score+" / 100":
+     a.ai_score!==null&&a.ai_score!==undefined?"الدرجة الآلية الأولية: "+a.ai_score+" / 100"+(a.ai_review_required?" — تحتاج مراجعة بشرية":""):
+     a.ai_status==="needs_review"?"تعذّر حساب درجة آلية مؤكدة؛ يلزم تصحيح بشري.":
+     a.ai_status==="processing"?"البوت يصحح هذه الإجابة الآن…":"بانتظار التصحيح";
+   wrap.append(el("p","ql-muted",summary));
+   if(a.ai_notes){
+     const note=el("details","ql-muted");
+     note.append(el("summary","","ملاحظات بوت التصحيح ومواطن الأخطاء"));
+     note.append(el("p","",a.ai_notes));
+     wrap.append(note);
+   }
    const answer=el("div","ql-grade-answers");
    (exam.questions||[]).forEach((q,i)=>{
      const detail=el("div","ql-question-source",(i+1)+". "+q.prompt);
@@ -497,10 +572,11 @@ async function showGrading(exam){
    });
    wrap.append(answer);
    const grade=el("div","ql-two");
-   const score=field("الدرجة من 100",a.human_score===null?"":String(a.human_score),()=>{});
+   const score=field("الدرجة البشرية المعتمدة من 100",
+     a.human_score!==null?String(a.human_score):a.ai_score!==null&&a.ai_score!==undefined?String(a.ai_score):"",()=>{});
    const input=score.querySelector("input");input.type="number";input.min="0";input.max="100";input.step="0.5";
-   const notes=field("ملاحظات المصحّح (اختياري)",a.grade_notes||"",()=>{},"textarea");grade.append(score,notes);
-   wrap.append(grade,btn("حفظ التصحيح البشري",async()=>{
+   const notes=field("ملاحظات المصحّح (اختياري)",a.grade_notes||a.ai_notes||"",()=>{},"textarea");grade.append(score,notes);
+   wrap.append(grade,btn("اعتماد أو تعديل التصحيح يدويًا",async()=>{
      const n=Number(input.value);
      if(input.value===""||!Number.isFinite(n)||n<0||n>100)return status("ql-grade-status","أدخل درجة صحيحة بين 0 و100.","error");
      const {error:err}=await client.from("nabd_quality_submissions")
@@ -515,7 +591,7 @@ async function showGrading(exam){
  $("ql-grading").scrollIntoView({behavior:"smooth",block:"start"});
 }
 $("ql-close-grading").addEventListener("click",()=>{$("ql-grading").hidden=true;});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden && director)loadExams()});
-setInterval(()=>{if(director&&!document.hidden)loadExams()},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden && director){loadExams();loadGraderStatus();}});
+setInterval(()=>{if(director&&!document.hidden){loadExams();loadGraderStatus();}},60000);
 renderEditor();authenticate();
 })();
