@@ -3,7 +3,17 @@
 "use strict";
 if(!document.querySelector("[data-quality-student]"))return;
 const $=id=>document.getElementById(id),client=window.nabdSupabase;
-let student=null,exam=null,questions=[],timer=null,attempted=new Map(),submitting=false,autoRequested=false;
+let student=null,exam=null,questions=[],timer=null,attempted=new Map(),submitting=false,autoRequested=false,paperLang="ar";
+const tr=(ar,en)=>paperLang==="en"?en:ar;
+function setPaperLanguage(language){
+ paperLang=language==="en"?"en":"ar";
+ const paper=document.getElementById("ql-student-paper");
+ paper.lang=paperLang;paper.dir=paperLang==="en"?"ltr":"rtl";
+ $("ql-paper-note").textContent=tr("الوقت المتبقي حتى إغلاق الامتحان على الخادم",
+   "Time remaining until this exam closes on the server");
+ $("ql-submit-answers").textContent=tr("تسليم الإجابات للتصحيح البشري","Submit answers for human grading");
+ $("ql-exit-paper").textContent=tr("العودة للقائمة","Return to exam list");
+}
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n}
 function message(id,txt,kind){const n=$(id);n.hidden=!txt;n.textContent=txt||"";n.className="ql-status"+(kind?" "+kind:"")}
 const date=x=>{try{return new Intl.DateTimeFormat("ar-PS",{dateStyle:"medium",timeStyle:"short"}).format(new Date(x))}catch{return ""}};
@@ -76,6 +86,8 @@ async function openPaper(id){
  const {data,error}=await client.rpc("nabd_quality_student_questions",{p_exam:id});
  if(error||!data||!Array.isArray(data.questions))return message("ql-student-status","لم يعد هذا الامتحان متاحًا؛ ربما انتهت مدة النشر.","error");
  exam=data;questions=data.questions;autoRequested=false;
+ const arabic=/[\u0600-\u06FF]/u;
+ setPaperLanguage(questions.some(q=>arabic.test(q.prompt||""))?"ar":"en");
  $("ql-paper-title").textContent=data.title;
  $("ql-paper-questions").replaceChildren();
  questions.forEach((q,i)=>{
@@ -83,7 +95,7 @@ async function openPaper(id){
    card.append(head);
    const id=String(q.id);
    if(q.type==="mcq"||q.type==="true_false"){
-     const options=q.type==="true_false"?["صحيح","خطأ"]:(Array.isArray(q.options)?q.options:[]);
+     const options=q.type==="true_false"?[tr("صحيح","True"),tr("خطأ","False")]:(Array.isArray(q.options)?q.options:[]);
      const group=el("div","ql-choices");
      options.forEach((option,j)=>{
        const label=el("label","ql-inline"),input=el("input");
@@ -95,16 +107,16 @@ async function openPaper(id){
      (q.left_items||[]).forEach((left,i)=>{
        const label=el("label","",(i+1)+". "+left);
        const select=el("select");select.dataset.question=id;select.dataset.matchIndex=String(i);
-       const empty=el("option","","اختر المطابقة");empty.value="";select.append(empty);
+       const empty=el("option","",tr("اختر المطابقة","Select a match"));empty.value="";select.append(empty);
        (q.right_items||[]).forEach((right,j)=>{const opt=el("option","",(j+1)+". "+right);opt.value=String(j);select.append(opt);});
        label.append(select);card.append(label);
      });
    } else if(q.type==="essay"){
-     const area=el("textarea");area.name="q_"+id;area.rows=6;area.maxLength=8000;area.placeholder="اكتب إجابتك المقالية هنا…";
-     const label=el("label","","الإجابة");label.append(area);card.append(label);
+     const area=el("textarea");area.name="q_"+id;area.rows=6;area.maxLength=8000;area.placeholder=tr("اكتب إجابتك المقالية هنا…","Write your essay answer here…");
+     const label=el("label","",tr("الإجابة","Answer"));label.append(area);card.append(label);
    } else {
-     const input=el("input");input.type="text";input.name="q_"+id;input.maxLength=700;input.placeholder="أكمل الفراغ هنا";
-     const label=el("label","","الإجابة");label.append(input);card.append(label);
+     const input=el("input");input.type="text";input.name="q_"+id;input.maxLength=700;input.placeholder=tr("أكمل الفراغ هنا","Complete the blank here");
+     const label=el("label","",tr("الإجابة","Answer"));label.append(input);card.append(label);
    }
    $("ql-paper-questions").append(card);
  });
@@ -130,16 +142,20 @@ function captureAnswers(){
 }
 async function submit(auto=false){
  if(!student||!exam||submitting)return;
- if(!auto&&!window.confirm("هل تريد تسليم إجاباتك الآن؟ هذه محاولة واحدة ولا يمكن تعديل الإجابات بعد التسليم."))return;
+ if(!auto&&!window.confirm(tr("هل تريد تسليم إجاباتك الآن؟ هذه محاولة واحدة ولا يمكن تعديل الإجابات بعد التسليم.",
+ "Submit your answers now? You have one attempt and cannot change submitted answers.")))return;
  submitting=true;const b=$("ql-submit-answers");b.disabled=true;
- message("ql-paper-status",auto?"اقترب وقت الإغلاق، جارٍ محاولة التسليم تلقائيًا…":"جارٍ تسجيل الإجابات في النظام…");
+ message("ql-paper-status",auto?
+ tr("اقترب وقت الإغلاق، جارٍ محاولة التسليم تلقائيًا…","Exam closing soon, submitting automatically…"):
+ tr("جارٍ تسجيل الإجابات في النظام…","Submitting your answers…"));
  const answers=captureAnswers();
  const {data,error}=await client.from("nabd_quality_submissions")
    .insert({exam_id:exam.id,student_id:student.id,answers}).select("id,submitted_at").maybeSingle();
  submitting=false;
  if(error||!data){
    b.disabled=false;
-   message("ql-paper-status","تعذر التسليم. قد يكون وقت الامتحان قد انتهى، أو ربما سبق التسليم. تحقق من اتصالك ثم حدّث الصفحة.","error");
+   message("ql-paper-status",tr("تعذر التسليم. قد يكون وقت الامتحان قد انتهى، أو ربما سبق التسليم. تحقق من اتصالك ثم حدّث الصفحة.",
+ "Submission failed. The exam may have closed or you may have already submitted. Check your connection and refresh."),"error");
    return;
  }
  if(timer){clearInterval(timer);timer=null}
@@ -148,7 +164,8 @@ async function submit(auto=false){
  exam=null;questions=[];autoRequested=false;
  b.disabled=false;$("ql-student-form").hidden=false;
  await load();
- message("ql-student-status","تم تسليم إجاباتك بنجاح. يمكنك متابعة حالة التصحيح البشري من قائمة الامتحانات.","success");
+ message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة حالة التصحيح البشري من قائمة الامتحانات.",
+ "Answers submitted successfully. You can review your grading status in the exam list."),"success");
 }
 function tick(){
  if(!exam)return;
@@ -156,7 +173,8 @@ function tick(){
  if(ms<=0){
    $("ql-timer").textContent="00:00";$("ql-timer").classList.add("alert");
    $("ql-submit-answers").disabled=true;
-   message("ql-paper-status","انتهت فترة الامتحان المحددة من الإدارة. لن يقبل الخادم تسليمًا جديدًا.","error");
+   message("ql-paper-status",tr("انتهت فترة الامتحان المحددة من الإدارة. لن يقبل الخادم تسليمًا جديدًا.",
+ "This exam has closed. The server will no longer accept new answers."),"error");
    if(timer){clearInterval(timer);timer=null}
    return;
  }
@@ -170,7 +188,8 @@ function tick(){
 }
 $("ql-student-form").addEventListener("submit",e=>{e.preventDefault();submit(false)});
 $("ql-exit-paper").addEventListener("click",()=>{
- if(!window.confirm("العودة لقائمة الامتحانات دون تسليم؟ لن تُحفظ الإجابات غير المرسلة."))return;
+ if(!window.confirm(tr("العودة لقائمة الامتحانات دون تسليم؟ لن تُحفظ الإجابات غير المرسلة.",
+ "Return to exam list without submitting? Unsaved answers will be lost.")))return;
  if(timer){clearInterval(timer);timer=null}
  exam=null;questions=[];$("ql-student-form").hidden=false;
  $("ql-student-paper").hidden=true;$("ql-student-dashboard").hidden=false;load();
