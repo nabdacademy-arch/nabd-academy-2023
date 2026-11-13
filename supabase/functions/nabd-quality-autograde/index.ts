@@ -16,7 +16,7 @@ function objective(q:Question,answer:unknown){
  if(q.type==="mcq"){
   const key=q.answer_key;
   if(!Array.isArray(q.options)||q.options.length<2||!Number.isInteger(key)||key<0||key>=q.options.length)return null;
-  const a=typeof answer==="number"?answer:Number(answer);
+  const a=(answer===null||answer===undefined||answer===""||typeof answer==="boolean")?NaN:(typeof answer==="number"?answer:Number(answer));
   return Number.isInteger(a)&&a===key?correct():incorrect("الصحيح: "+String.fromCharCode(65+key)+" - "+q.options[key]);
  }
  if(q.type==="true_false"){
