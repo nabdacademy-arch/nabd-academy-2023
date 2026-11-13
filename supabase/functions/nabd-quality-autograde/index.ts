@@ -114,15 +114,22 @@ async function grade(entry:Entry){
  if(rows.length!==entry.questions.length)throw Error("GRADE_INCOMPLETE");
  const complete=rows.every(x=>typeof x.fraction==="number");
  const total=rows.reduce((s,x)=>s+(typeof x.fraction==="number"?x.fraction:0),0);
- const score=complete?Math.max(0,Math.min(100,Math.round(total*10000/rows.length)/100)):null;
+ // One mark per question, independent of the number or type of questions.
+ // Objective matches score 0 or 1, matching/essays can earn fractions of 1.
+ const maximum=entry.questions.length;
+ const score=complete?Math.max(0,Math.min(maximum,Math.round(total*100)/100)):null;
  const intro=complete?
-   tr("تقييم آلي أولي: ","Preliminary AI assessment: ")+score+"/100. "+
+   tr("تقييم آلي أولي: ","Preliminary AI assessment: ")+score+"/"+maximum+". "+
     (needs.length?tr("الإجابات الدلالية والمقالية تتطلب اعتمادًا بشريًا نهائيًا.","Open-ended answers require final human review."):
       tr("الأسئلة الموضوعية صُححت وفق مفتاح الإجابة.","Objective questions were graded against the approved key.")):
    tr("تقييم آلي غير مكتمل: لم تُعرض درجة للطالب بسبب إجابات تتطلب مراجعة بشرية.",
       "Incomplete AI assessment: no overall score was issued because some answers need human review.");
- const notes=[intro,...rows.filter(x=>x.fraction===null||x.fraction<0.999).map(x=>tr("السؤال ","Question ")+x.number+": "+x.feedback)].join("\n").slice(0,6000);
- return {score,notes,breakdown:rows,review:!complete||needs.length>0,model:evalResult?.model||"answer_key"};
+ const notes=[intro,...rows.filter(x=>x.fraction===null||x.fraction<0.999).map(x=>
+   tr("السؤال ","Question ")+x.number+" ("+
+    (x.fraction===null?"?":String(Math.round(x.fraction*100)/100))+"/1): "+x.feedback
+ )].join("\n").slice(0,6000);
+ const breakdown=rows.map(x=>({...x,earned_points:x.fraction,maximum_points:1}));
+ return {score,notes,breakdown,review:!complete||needs.length>0,model:evalResult?.model||"answer_key"};
 }
 Deno.serve(async req=>{
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
