@@ -336,6 +336,52 @@ async function countPending(){
  const {data}=await client.from("nabd_quality_submissions").select("id,human_score").in("exam_id",liveIds).limit(1500);
  $("ql-pending-count").textContent=(data||[]).filter(x=>x.human_score===null).length;
 }
+// Deliberate deletion only. Never delete an active published exam or any
+// exam that has student submissions. Retain source files if another exam uses them.
+async function deleteExam(x,trigger){
+ if(!director)return;
+ if(x.status==="published" && new Date(x.closes_at)>new Date()){
+   status("ql-list-status","لا يمكن حذف امتحان منشور ونشط. أغلقه أولًا من قسم التحكم، ثم حاول مجددًا.","error");
+   return;
+ }
+ trigger.disabled=true;
+ try{
+   const {count,error:countError}=await client.from("nabd_quality_submissions")
+     .select("id",{count:"exact",head:true}).eq("exam_id",x.id);
+   if(countError)throw Error("تعذّر التحقق من إجابات الطلاب؛ لم يُحذف الامتحان.");
+   if(count>0)throw Error("لا يمكن حذف هذا الامتحان لوجود إجابات طلاب محفوظة. ستبقى النتائج والتسليمات محمية.");
+   const label="«"+x.title+"»";
+   if(!window.confirm("هل تريد حذف الامتحان "+label+" نهائيًا؟ ستُحذف أسئلته وإعداداته ولا يمكن استعادتها."))return;
+   if(!window.confirm("تأكيد أخير: حذف "+label+" بشكل نهائي؟"))return;
+   status("ql-list-status","جارٍ حذف الامتحان والتحقق من نجاح العملية…");
+   // Scope deletion to this director, the selected row, and its current state.
+   // A concurrent publication or edit must not cause the wrong exam to be deleted.
+   const {data:deleted,error}=await client.from("nabd_quality_exams")
+     .delete().eq("id",x.id).eq("created_by",director.id)
+     .eq("status",x.status).select("id").maybeSingle();
+   if(error){
+     if(error.code==="23503")throw Error("لا يمكن حذف الامتحان بسبب وجود تسليمات مرتبطة به.");
+     throw Error("فشل حذف الامتحان: "+String(error.message||"خطأ في الخادم").slice(0,190));
+   }
+   if(deleted?.id!==x.id)throw Error("لم يُحذف الامتحان؛ ربما تغيّرت حالته. حدّث القائمة وحاول مجددًا.");
+   if(editingId===x.id)resetBuilder();
+   let fileNotice="";
+   if(x.source_path){
+     const {data:references,error:referenceError}=await client.from("nabd_quality_exams")
+       .select("id").eq("source_path",x.source_path).limit(1);
+     if(referenceError){
+       fileNotice=" تعذّر التأكد من استخدام ملف المحاضرة، لذا احتُفظ به احتياطيًا.";
+     }else if(!references?.length){
+       const {error:storageError}=await client.storage.from(bucket).remove([x.source_path]);
+       if(storageError)fileNotice=" حُذف الامتحان، لكن تعذّر تنظيف ملف PDF المرتبط.";
+     }
+   }
+   await loadExams();
+   status("ql-list-status","تم حذف الامتحان "+label+" بنجاح."+fileNotice,"success");
+ }catch(e){
+   status("ql-list-status",String(e?.message||"تعذّر حذف الامتحان."),"error");
+ }finally{trigger.disabled=false;}
+}
 function renderExams(){
  const list=$("ql-exam-list");list.replaceChildren();
  if(!exams.length){list.append(el("p","ql-empty","لم تنشئ امتحانات بعد. ارفع محاضرة وابدأ أول مسودة."));return;}
@@ -401,6 +447,10 @@ function renderExams(){
        if(error)status("ql-list-status","تعذر الإغلاق.","error");else{status("ql-list-status","أُغلق الامتحان.","success");await loadExams();}
      },"danger"));
    }
+   // Consistent deletion control for draft, closed and expired examinations.
+   // Active examinations remain protected until the director closes them.
+   const remove=btn("حذف الامتحان",()=>deleteExam(x,remove),"danger");
+   actions.append(remove);
    card.append(actions);list.append(card);
  });
 }
