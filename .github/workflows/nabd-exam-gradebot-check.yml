@@ -3,8 +3,16 @@ on:
   push:
     paths:
       - 'assets/js/quality-director.js'
+      - 'tests/nabd-gradebot-behavior.cjs'
       - 'assets/js/quality-student.js'
       - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - '.github/workflows/nabd-exam-gradebot-check.yml'
+  pull_request:
+    paths:
+      - 'assets/js/quality-director.js'
+      - 'assets/js/quality-student.js'
+      - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - 'tests/nabd-gradebot-behavior.cjs'
       - '.github/workflows/nabd-exam-gradebot-check.yml'
   workflow_dispatch:
 jobs:
@@ -23,3 +31,7 @@ jobs:
           node --check assets/js/quality-student.js
       - name: Parse Edge Function TypeScript
         run: npx --yes esbuild@0.25.10 supabase/functions/nabd-quality-autograde/index.ts --format=esm --outfile=/tmp/nabd-gradebot-compiled.js
+      - name: Isolated 20-question grading behavior tests
+        run: |
+          npm install --no-save esbuild@0.25.10
+          node tests/nabd-gradebot-behavior.cjs
