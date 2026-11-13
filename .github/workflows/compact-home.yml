@@ -5,12 +5,28 @@ on:
       - 'index.html'
       - 'academy-full.html'
       - 'tests/compact-home-integrity.test.mjs'
+      - 'tests/nabd-portals-exam-consistency.test.mjs'
+      - 'student-exams.html'
+      - 'quality-exams.html'
+      - 'assets/js/quality-director.js'
+      - 'assets/js/quality-student.js'
+      - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - 'supabase/migrations/20261112_nabd_quality_exams.sql'
+      - 'supabase/migrations/20261113_nabd_exam_marks_per_question.sql'
       - '.github/workflows/compact-home.yml'
   pull_request:
     paths:
       - 'index.html'
       - 'academy-full.html'
       - 'tests/compact-home-integrity.test.mjs'
+      - 'tests/nabd-portals-exam-consistency.test.mjs'
+      - 'student-exams.html'
+      - 'quality-exams.html'
+      - 'assets/js/quality-director.js'
+      - 'assets/js/quality-student.js'
+      - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - 'supabase/migrations/20261112_nabd_quality_exams.sql'
+      - 'supabase/migrations/20261113_nabd_exam_marks_per_question.sql'
       - '.github/workflows/compact-home.yml'
   workflow_dispatch:
 jobs:
@@ -23,3 +39,6 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/compact-home-integrity.test.mjs
+      - run: node tests/nabd-portals-exam-consistency.test.mjs
+      - run: node --check assets/js/quality-director.js
+      - run: node --check assets/js/quality-student.js
