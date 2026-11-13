@@ -82,61 +82,77 @@ async function providerCall(source:string,requested:Type[],lang:string,title:str
  const order=needsVision?["gemini","groq"]:["groq","gemini"];
  const routes=order.filter(name=>!!env(name==="gemini"?"GEMINI_API_KEY":"GROQ_API_KEY"));
  if(!routes.length)throw Error("AI_PROVIDER_NOT_CONFIGURED");
- const pageSample=media?.page_images?.length?Array.from({length:Math.min(media.page_images.length,3)},
-   (_,i)=>media.page_images[(batchIndex*3+i)%media.page_images.length]):[];
+ // Keep vision requests small: large multi-page PDF + 3 large JPEGs caused
+ // Gemini 503 and Groq 413 in the live director portal on 2026-11-13.
+ const images=media?.page_images||[];
+ const sample=images.length?Array.from({length:Math.min(2,images.length)},
+   (_,i)=>images[(batchIndex*2+i)%images.length]):[];
+ const pdfEligible=!!(media?.pdf_base64 && media.page_count<=5);
  const payload=JSON.stringify({title,language:lang,question_types_in_order:requested,
    source_text:source,scanned_pdf:needsVision,page_count:media?.page_count,
-   sampled_page_numbers:pageSample.map(p=>p.page),
-   directive:needsVision?"Read visually from the PDF pages or supplied page images. Base questions on the visible lecture, not generic knowledge.":"Use only supplied lecture text."});
+   sampled_page_numbers:sample.map(p=>p.page),
+   directive:needsVision?"Read visually from the supplied lecture pages. Do not invent facts absent from them.":"Use only the supplied lecture text."});
+ const failures=new Set<number>();
  for(const provider of routes){
-   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),needsVision?50000:28000);
+   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),needsVision?48000:28000);
    try{
-     let response:Response,raw="";
      if(provider==="gemini"){
-       const parts:any[]=[];
-       if(media?.pdf_base64)parts.push({inline_data:{mime_type:"application/pdf",data:media.pdf_base64}});
-       else if(needsVision)for(const p of pageSample)parts.push({inline_data:{mime_type:p.mime_type,data:p.data}});
-       parts.push({text:payload});
-       const modelNames=needsVision?["gemini-3.8-flash","gemini-2.5-flash"]:["gemini-2.5-flash"];
-       for(const model of modelNames){
-         response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{
+       // 2.5 Flash can return 404 for newer API keys, so use current stable models.
+       for(const model of ["gemini-3.8-flash","gemini-3.6-flash","gemini-3.5-flash-lite"]){
+         const parts:any[]=[];
+         if(pdfEligible)parts.push({inline_data:{mime_type:"application/pdf",data:media!.pdf_base64}});
+         else if(needsVision)for(const p of sample)parts.push({inline_data:{mime_type:p.mime_type,data:p.data}});
+         parts.push({text:payload});
+         const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{
            method:"POST",signal:ctrl.signal,
            headers:{"x-goog-api-key":env("GEMINI_API_KEY"),"Content-Type":"application/json"},
            body:JSON.stringify({systemInstruction:{parts:[{text:SYSTEM}]},
              contents:[{parts}],generationConfig:{temperature:.15,maxOutputTokens:7000,responseMimeType:"application/json"}})});
-         if(response.ok){
-           const data=await response.json();
-           raw=(data?.candidates?.[0]?.content?.parts||[]).map((p:{text?:string})=>p.text||"").join("");
-           const questions=normalized(rawJson(String(raw)),requested);
-           if(questions)return {questions,provider:"gemini",source_mode:media?.pdf_base64?"full_pdf":needsVision?"sampled_images":"text"};
-           console.warn("NABD quality vision invalid Gemini format",{model});
-         } else console.warn("NABD quality vision Gemini status",{model,status:response.status});
+         if(!response.ok){
+           failures.add(response.status);
+           console.warn("NABD quality Gemini request rejected",{model,status:response.status});
+           continue;
+         }
+         const data=await response.json();
+         const raw=(data?.candidates?.[0]?.content?.parts||[]).map((p:{text?:string})=>p.text||"").join("");
+         const questions=normalized(rawJson(String(raw)),requested);
+         if(questions)return {questions,provider:"gemini",source_mode:pdfEligible?"full_pdf":needsVision?"sampled_images":"text"};
+         console.warn("NABD quality Gemini question format invalid",{model});
        }
      }else{
-       const content:any=needsVision?
-         [{type:"text",text:SYSTEM+"\n"+payload},
-           ...pageSample.map(p=>({type:"image_url",image_url:{url:"data:image/jpeg;base64,"+p.data}}))]:
-         payload;
-       const models=needsVision?["qwen/qwen3.8-27b","qwen/qwen3.6-27b"]:["openai/gpt-oss-120b"];
-       for(const model of models){
-         response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+       // Groq's vision model accepts image data, but oversized multi-image
+       // bodies produce HTTP 413. Send a single compressed page per batch.
+       const content:any=needsVision?[
+         {type:"text",text:payload},
+         ...sample.slice(0,1).map(p=>({type:"image_url",image_url:{url:"data:image/jpeg;base64,"+p.data}}))
+       ]:payload;
+       for(const model of (needsVision?["qwen/qwen3.8-27b"]:["openai/gpt-oss-120b"])){
+         const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
            method:"POST",signal:ctrl.signal,
            headers:{"Authorization":"Bearer "+env("GROQ_API_KEY"),"Content-Type":"application/json"},
            body:JSON.stringify({model,temperature:.15,max_completion_tokens:7000,
+             response_format:{type:"json_object"},
              messages:[{role:"system",content:SYSTEM},{role:"user",content}]})});
-         if(response.ok){
-           const data=await response.json();
-           raw=String(data?.choices?.[0]?.message?.content||"");
-           const questions=normalized(rawJson(raw),requested);
-           if(questions)return {questions,provider:"groq",source_mode:needsVision?"sampled_images":"text"};
-           console.warn("NABD quality vision invalid Groq format",{model});
-         }else console.warn("NABD quality vision Groq status",{model,status:response.status});
+         if(!response.ok){
+           failures.add(response.status);
+           console.warn("NABD quality Groq request rejected",{model,status:response.status});
+           continue;
+         }
+         const data=await response.json();
+         const raw=String(data?.choices?.[0]?.message?.content||"");
+         const questions=normalized(rawJson(raw),requested);
+         if(questions)return {questions,provider:"groq",source_mode:needsVision?"sampled_images":"text"};
+         console.warn("NABD quality Groq question format invalid",{model});
        }
      }
-   }catch(e){console.warn("NABD quality generation provider failed",{provider,kind:(e as Error).name});}
+   }catch(e){console.warn("NABD quality provider request failed",{provider,kind:(e as Error).name});}
    finally{clearTimeout(timer);}
  }
- throw new Error("GENERATION_FAILED");
+ if(failures.has(413))throw Error("VISION_REQUEST_TOO_LARGE");
+ if(failures.has(429))throw Error("AI_RATE_LIMITED");
+ if(failures.has(401)||failures.has(403))throw Error("AI_PROVIDER_AUTH_FAILED");
+ if(failures.has(503)||failures.has(502))throw Error("AI_PROVIDER_UNAVAILABLE");
+ throw Error("GENERATION_FAILED");
 }
 Deno.serve(async req=>{
  if(req.headers.get("Origin") && req.headers.get("Origin")!==ORIGIN)return res({error:"ORIGIN_FORBIDDEN"},403);
@@ -199,8 +215,15 @@ Deno.serve(async req=>{
    return res({ok:true,questions:all,count:all.length,provider:Array.from(providers).join(","),source_mode:sourceMode});
  }catch(e){
    const code=(e as Error).message;
-   return res({error:code==="AI_PROVIDER_NOT_CONFIGURED"?code:"GENERATION_FAILED",
-      message:code==="AI_PROVIDER_NOT_CONFIGURED"?"No AI provider configured for NABD exam generation.":
-      "AI could not produce valid source-grounded questions. Try a shorter text or fewer questions."},503);
+   const userMessages:Record<string,string>={
+     AI_PROVIDER_NOT_CONFIGURED:"لم يتم إعداد مفتاح مزوّد الذكاء الاصطناعي على الخادم.",
+     VISION_REQUEST_TOO_LARGE:"صور المحاضرة كبيرة على مزوّد الذكاء الاصطناعي. جرّب ملف PDF أصغر أو أقل صفحات.",
+     AI_RATE_LIMITED:"بلغ مزوّد الذكاء الاصطناعي حد الاستخدام مؤقتًا. أعد المحاولة لاحقًا.",
+     AI_PROVIDER_AUTH_FAILED:"مفتاح مزوّد الذكاء الاصطناعي غير مقبول؛ يحتاج مسؤول الخدمة إلى تحديثه.",
+     AI_PROVIDER_UNAVAILABLE:"خدمة الذكاء الاصطناعي مشغولة أو غير متاحة حاليًا. أعد المحاولة لاحقًا.",
+     GENERATION_FAILED:"لم يتمكن مزوّد الذكاء الاصطناعي من إنشاء أسئلة صالحة. جرّب عددًا أقل من الأسئلة."
+   };
+   const safeCode=Object.hasOwn(userMessages,code)?code:"GENERATION_FAILED";
+   return res({error:safeCode,message:userMessages[safeCode]},503);
  }
 });
