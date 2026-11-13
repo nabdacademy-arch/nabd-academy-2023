@@ -331,11 +331,42 @@ function renderExams(){
      const publish=btn("✓ اعتماد ونشر الآن",async()=>{
        if(!window.confirm("اعتماد ونشر الامتحان «"+x.title+"» الآن لمدة "+x.duration_minutes+" دقيقة؟ سيتمكن طلاب الأكاديمية من دخوله فورًا ولا يمكن التراجع عن تسليماتهم."))return;
        publish.disabled=true;
-       const {data,error}=await client.rpc("nabd_quality_publish_exam",{p_exam:x.id});
-       publish.disabled=false;
-       if(error||!data?.length){status("ql-list-status","تعذر اعتماد الامتحان. تأكد من وجود أسئلة وصلاحية المدير.","error");return;}
-       status("ql-list-status","نُشر الامتحان الآن، وسيغلق تلقائيًا عند "+isoDate(data[0].closes_at)+".","success");
-       await loadExams();
+       status("ql-list-status","جارٍ طلب الاعتماد والتحقق من حالة الامتحان…");
+       try{
+         // A successful HTTP response can be lost if the connection drops.
+         // Verify the record before reporting failure or issuing another publish.
+         const {data,error}=await client.rpc("nabd_quality_publish_exam",{p_exam:x.id});
+         const returned=Array.isArray(data)?data[0]:data;
+         if(!error && returned?.closes_at){
+           status("ql-list-status","نُشر الامتحان الآن، وسيغلق تلقائيًا عند "+isoDate(returned.closes_at)+".","success");
+           await loadExams();
+           return;
+         }
+         const {data:current,error:readError}=await client.from("nabd_quality_exams")
+           .select("status,opens_at,closes_at").eq("id",x.id).maybeSingle();
+         if(!readError && current?.status==="published"){
+           status("ql-list-status","تم تأكيد النشر بنجاح، ويغلق الامتحان عند "+isoDate(current.closes_at)+".","success");
+           await loadExams();
+           return;
+         }
+         const code=String(error?.code||"");
+         const raw=String(error?.message||"");
+         const friendly={
+           PGRST202:"خدمة قاعدة البيانات لم تُحدّث تعريف دالة النشر. أعد تحديث الصفحة ثم المحاولة.",
+           PGRST301:"انتهت جلسة الدخول؛ سجّل الدخول مجددًا.",
+           "42501":"لا توجد صلاحية كافية لتنفيذ اعتماد الامتحان.",
+           "23514":"بيانات المسودة لم تستوفِ شروط نشر الامتحان."
+         };
+         const msg=friendly[code]||
+           (/EXAM_NOT_READY_OR_NOT_FOUND/.test(raw)?"لم تُعثر على مسودة جاهزة للنشر لهذا الحساب.":
+           /DIRECTOR_ONLY/.test(raw)?"يجب الدخول بحساب مدير الامتحانات المخوّل.":
+           /Failed to fetch|NetworkError/i.test(raw)?"تعذر الاتصال بالخادم؛ راجع اتصال الإنترنت وحاول من جديد.":
+           (raw ? "تعذر النشر: "+raw.slice(0,220) : "تعذر النشر: لم تُرجع قاعدة البيانات نتيجة اعتماد."));
+         console.warn("NABD exam publishing error",{code,message:raw,details:error?.details,hint:error?.hint});
+         status("ql-list-status",msg+(code?" (رمز "+code+")":""),"error");
+       }catch(err){
+         status("ql-list-status","تعذر الاتصال أثناء النشر: "+String(err?.message||err).slice(0,180),"error");
+       }finally{publish.disabled=false;}
      });publish.classList.add("ql-tag-green");actions.append(publish);
    } else {
      actions.append(btn("عرض إجابات الطلاب",()=>showGrading(x)));
