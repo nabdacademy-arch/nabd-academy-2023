@@ -5,12 +5,16 @@ on:
       - 'assets/css/nabd-gateway-system.css'
       - 'assets/js/nabd-gateway-system.js'
       - 'tests/gateway-browser-smoke.cjs'
+      - 'tests/home-portal-browser.cjs'
+      - 'index.html'
       - '.github/workflows/gateway-browser-check.yml'
   pull_request:
     paths:
       - 'assets/css/nabd-gateway-system.css'
       - 'assets/js/nabd-gateway-system.js'
       - 'tests/gateway-browser-smoke.cjs'
+      - 'tests/home-portal-browser.cjs'
+      - 'index.html'
       - '.github/workflows/gateway-browser-check.yml'
   workflow_dispatch:
 jobs:
@@ -31,6 +35,7 @@ jobs:
           python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/nabd-local-http.log 2>&1 &
           sleep 2
           node tests/gateway-browser-smoke.cjs
+          node tests/home-portal-browser.cjs
       - name: Save responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4
