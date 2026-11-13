@@ -186,7 +186,7 @@ async function submit(auto=false){
  exam=null;questions=[];autoRequested=false;
  b.disabled=false;$("ql-student-form").hidden=false;
  await load();
- message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة حالة التصحيح البشري من قائمة الامتحانات.",
+ message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة التقييم الآلي الأولي والنتيجة المعتمدة من قائمة الامتحانات.",
  "Answers submitted successfully. You can review your grading status in the exam list."),"success");
 }
 function tick(){
