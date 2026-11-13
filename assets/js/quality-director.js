@@ -535,10 +535,12 @@ function editExam(x){
  $("ql-builder").scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function showGrading(exam){
- $("ql-grading").hidden=false;$("ql-grading-title").textContent="التصحيح البشري · "+exam.title;
+ const totalMarks=(exam.questions||[]).length;
+ $("ql-grading").hidden=false;
+ $("ql-grading-title").textContent="تصحيح "+exam.title+" · الدرجة الكاملة "+totalMarks+" (علامة لكل سؤال)";
  $("ql-submissions").replaceChildren(el("p","ql-muted","جارٍ جلب إجابات الطلاب…"));
  const {data,error}=await client.from("nabd_quality_submissions")
-  .select("id,student_id,answers,submitted_at,human_score,grade_notes,graded_at,ai_score,ai_notes,ai_status,ai_review_required,ai_graded_at")
+  .select("id,student_id,answers,submitted_at,human_score,grade_notes,graded_at,ai_score,ai_notes,ai_status,ai_review_required,ai_graded_at,ai_breakdown")
   .eq("exam_id",exam.id).order("submitted_at",{ascending:false}).limit(250);
  if(error)return status("ql-grade-status","تعذر تحميل الإجابات.","error");
  const list=data||[];$("ql-submissions").replaceChildren();
@@ -549,8 +551,8 @@ async function showGrading(exam){
  list.forEach(a=>{
    const wrap=el("article","ql-grade");
    wrap.append(el("h3","",(names.get(a.student_id)||a.student_id)+" · "+isoDate(a.submitted_at)));
-   const summary=a.human_score!==null?"الدرجة البشرية المعتمدة: "+a.human_score+" / 100":
-     a.ai_score!==null&&a.ai_score!==undefined?"الدرجة الآلية الأولية: "+a.ai_score+" / 100"+(a.ai_review_required?" — تحتاج مراجعة بشرية":""):
+   const summary=a.human_score!==null?"الدرجة البشرية المعتمدة: "+a.human_score+" / "+totalMarks:
+     a.ai_score!==null&&a.ai_score!==undefined?"الدرجة الآلية الأولية: "+a.ai_score+" / "+totalMarks+(a.ai_review_required?" — تحتاج مراجعة بشرية":""):
      a.ai_status==="needs_review"?"تعذّر حساب درجة آلية مؤكدة؛ يلزم تصحيح بشري.":
      a.ai_status==="processing"?"البوت يصحح هذه الإجابة الآن…":"بانتظار التصحيح";
    wrap.append(el("p","ql-muted",summary));
@@ -561,8 +563,17 @@ async function showGrading(exam){
      wrap.append(note);
    }
    const answer=el("div","ql-grade-answers");
+   const aiById=new Map((Array.isArray(a.ai_breakdown)?a.ai_breakdown:[])
+     .filter(part=>part&&typeof part.id==="string").map(part=>[part.id,part]));
    (exam.questions||[]).forEach((q,i)=>{
      const detail=el("div","ql-question-source",(i+1)+". "+q.prompt);
+     const autoPart=aiById.get(q.id);
+     if(autoPart){
+       const earned=typeof autoPart.fraction==="number"?
+         String(Math.round(autoPart.fraction*100)/100):"تحتاج مراجعة";
+       detail.append(el("p","ql-muted","علامة السؤال: "+earned+
+         (typeof autoPart.fraction==="number"?" / 1":"")));
+     }
      const ans=a.answers?.[q.id];
      let val=Array.isArray(ans)?ans.map((v,j)=>"عنصر "+(j+1)+": "+(Number(v)+1)).join("، "):ans;
      if(q.type==="mcq" && Number.isInteger(Number(ans)))val="الخيار "+String.fromCharCode(65+Number(ans));
@@ -572,17 +583,20 @@ async function showGrading(exam){
    });
    wrap.append(answer);
    const grade=el("div","ql-two");
-   const score=field("الدرجة البشرية المعتمدة من 100",
+   const score=field("الدرجة البشرية المعتمدة من "+totalMarks+" — علامة واحدة لكل سؤال",
      a.human_score!==null?String(a.human_score):a.ai_score!==null&&a.ai_score!==undefined?String(a.ai_score):"",()=>{});
-   const input=score.querySelector("input");input.type="number";input.min="0";input.max="100";input.step="0.5";
+   const input=score.querySelector("input");input.type="number";input.min="0";input.max=String(totalMarks);input.step="0.01";
    const notes=field("ملاحظات المصحّح (اختياري)",a.grade_notes||a.ai_notes||"",()=>{},"textarea");grade.append(score,notes);
    wrap.append(grade,btn("اعتماد أو تعديل التصحيح يدويًا",async()=>{
      const n=Number(input.value);
-     if(input.value===""||!Number.isFinite(n)||n<0||n>100)return status("ql-grade-status","أدخل درجة صحيحة بين 0 و100.","error");
+     if(input.value===""||!Number.isFinite(n)||n<0||n>totalMarks)
+       return status("ql-grade-status","أدخل درجة صحيحة بين 0 و"+totalMarks+" (عدد أسئلة الامتحان).","error");
      const {error:err}=await client.from("nabd_quality_submissions")
        .update({human_score:n,grade_notes:notes.querySelector("textarea").value.trim()||null,
         graded_at:new Date().toISOString(),graded_by:director.id}).eq("id",a.id);
-     if(err)return status("ql-grade-status","تعذر حفظ التصحيح.","error");
+     if(err)return status("ql-grade-status",
+       /SCORE_EXCEEDS_QUESTION_COUNT/.test(err.message||"")?
+         "لا يجوز أن تزيد الدرجة عن "+totalMarks+" علامة.":"تعذر حفظ التصحيح: "+(err.message||"خطأ غير معروف"),"error");
      status("ql-grade-status","تم تسجيل تصحيح الطالب بنجاح.","success");
      await showGrading(exam);await countPending();
    }));
