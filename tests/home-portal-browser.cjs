@@ -8,7 +8,7 @@ const fs=require("node:fs");
  let failures=[];
  for(const [name,width,height] of cases){
   const page=await browser.newPage({viewport:{width,height},locale:"ar-PS",reducedMotion:"reduce"});
-  await page.route(/https?:\\/\\/(?!127\\.0\\.0\\.1:8123)/,r=>r.abort());
+  await page.route(/https?:\/\/(?!127\.0\.0\.1:8123)/,r=>r.abort());
   try{
    await page.goto("http://127.0.0.1:8123/index.html",{waitUntil:"domcontentloaded",timeout:20000});
    await page.locator("#nabdNeoHome").waitFor({state:"visible"});
