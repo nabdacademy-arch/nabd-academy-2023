@@ -104,7 +104,7 @@ async function authenticate(){
 let graderEnabled=false,graderBusy=false;
 function graderButtons(){
  $("ql-bot-start").disabled=graderBusy||graderEnabled;
- $("ql-bot-stop").disabled=graderBusy||!graderEnabled;
+ $("ql-bot-stop").disabled=!graderEnabled;
  $("ql-bot-run").disabled=graderBusy||!graderEnabled;
  $("ql-bot-refresh").disabled=graderBusy;
 }
@@ -129,7 +129,7 @@ async function loadGraderStatus(){
  graderButtons();
 }
 async function setGrader(enabled){
- if(!director||graderBusy)return;
+ if(!director||(graderBusy&&enabled))return;
  if(enabled&&!window.confirm("تشغيل بوت التصحيح الذكي؟ سيصحح جميع الإجابات المعلّقة تدريجيًا، ويعرض درجات أولية وملاحظات للطلاب. ستظل درجات الأسئلة المقالية قابلة لمراجعتك واعتمادك."))return;
  if(!enabled&&!window.confirm("إيقاف بوت التصحيح؟ سيتوقف التقييم الآلي الجديد على الخادم، وستبقى النتائج المحفوظة كما هي."))return;
  graderBusy=true;graderButtons();
