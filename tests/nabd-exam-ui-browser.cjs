@@ -5,6 +5,7 @@ const base="http://127.0.0.1:8123/";
 const examId="11111111-1111-4111-8111-111111111111";
 
 function mockClient(role){
+ const examId="11111111-1111-4111-8111-111111111111";
  const state={role,enabled:false,submissions:[],questions:Array.from({length:20},(_,i)=>({
    id:"q-"+i,prompt:"Test question "+(i+1),type:"mcq",options:["Correct","Wrong"]
  }))};
