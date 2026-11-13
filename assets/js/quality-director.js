@@ -139,28 +139,33 @@ function encodeBase64(bytes){
  return btoa(parts.join(""));
 }
 async function renderPageAsJpeg(page){
- let scale=Math.min(1.65,1400/Math.max(page.view[2],page.view[3]));
- scale=Math.max(.75,scale);
- const viewport=page.getViewport({scale});
- const canvas=document.createElement("canvas");
+ // Keep image uploads small enough for low-bandwidth networks and Groq Vision.
+ const base=page.getViewport({scale:1});
+ const scale=Math.min(1.5,1100/Math.max(base.width,base.height));
+ const viewport=page.getViewport({scale:Math.max(.8,scale)});
+ let canvas=document.createElement("canvas");
  canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
  const ctx=canvas.getContext("2d",{alpha:false});
  if(!ctx)throw Error("لا يدعم هذا المتصفح معالجة صفحات PDF المصوّرة.");
  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
  await page.render({canvasContext:ctx,viewport}).promise;
- let url=canvas.toDataURL("image/jpeg",.72);
- // Stay under the vision provider's per-image payload limit.
- if(url.length>460000){
-   const resized=document.createElement("canvas");const ratio=Math.sqrt(460000/url.length);
-   resized.width=Math.max(650,Math.floor(canvas.width*ratio));
-   resized.height=Math.max(650,Math.floor(canvas.height*ratio));
-   const cx=resized.getContext("2d",{alpha:false});
-   cx.fillStyle="#ffffff";cx.fillRect(0,0,resized.width,resized.height);
-   cx.drawImage(canvas,0,0,resized.width,resized.height);
-   url=resized.toDataURL("image/jpeg",.58);
+ let url="";
+ for(let attempt=0;attempt<5;attempt++){
+   url=canvas.toDataURL("image/jpeg",Math.max(.4,.69-attempt*.06));
+   if(url.length<=210000)break;
+   const factor=Math.max(.65,Math.min(.87,Math.sqrt(200000/url.length)));
+   const smaller=document.createElement("canvas");
+   smaller.width=Math.max(480,Math.floor(canvas.width*factor));
+   smaller.height=Math.max(480,Math.floor(canvas.height*factor));
+   if(smaller.width===canvas.width&&smaller.height===canvas.height)break;
+   const cx=smaller.getContext("2d",{alpha:false});
+   if(!cx)break;
+   cx.fillStyle="#ffffff";cx.fillRect(0,0,smaller.width,smaller.height);
+   cx.drawImage(canvas,0,0,smaller.width,smaller.height);
+   canvas.width=0;canvas.height=0;canvas=smaller;
  }
  canvas.width=0;canvas.height=0;
- if(url.length>550000)throw Error("تعذّر ضغط إحدى صفحات PDF بما يكفي؛ جرّب ملفًا أقل دقة.");
+ if(url.length>280000)throw Error("تعذّر ضغط صورة المحاضرة. جرّب PDF أقل دقة.");
  return url.slice(url.indexOf(",")+1);
 }
 async function extractPDF(file){
@@ -199,7 +204,7 @@ async function extractPDF(file){
    const page=await pdf.getPage(p);
    images.push({page:p,mime_type:"image/jpeg",data:await renderPageAsJpeg(page)});
  }
- let pdfBase64=file.size<=5*1024*1024 ? encodeBase64(new Uint8Array(buffer)) : null;
+ let pdfBase64=(file.size<=5*1024*1024 && pdf.numPages<=5) ? encodeBase64(new Uint8Array(buffer)) : null;
  const imagePayloadSize=images.reduce((total,p)=>total+p.data.length,0);
  // Keep the complete request below the Edge Function body guard; when too large,
  // vision falls back to carefully selected image pages rather than failing.
@@ -225,8 +230,26 @@ $("ql-generate").addEventListener("click",async()=>{
      page_count:extracted.page_count};
    if(extracted.mode==="vision"){body.page_images=extracted.page_images;body.pdf_base64=extracted.pdf_base64;}
    const {data,error}=await client.functions.invoke("nabd-quality-generate",{body});
-   if(error||!data?.ok||!Array.isArray(data.questions))
-     throw Error(data?.message||"تعذر توليد الأسئلة. تحقق من إعداد مزوّد الرؤية بالذكاء الاصطناعي واتصال الإنترنت.");
+   if(error||!data?.ok||!Array.isArray(data.questions)){
+     let detail=data;
+     if(error?.context && typeof error.context.json==="function"){
+       try{detail=await error.context.clone().json();}catch{}
+     }
+     const code=detail?.error,network=!navigator.onLine;
+     const messages={
+       AI_PROVIDER_NOT_CONFIGURED:"مفاتيح الذكاء الاصطناعي غير مُعَدّة في الخادم.",
+       AI_PROVIDER_AUTH_FAILED:"مفتاح خدمة الذكاء الاصطناعي غير مقبول؛ يحتاج إلى تحديث.",
+       AI_RATE_LIMITED:"وصل مزود الذكاء الاصطناعي لحد الاستخدام. أعد المحاولة لاحقًا.",
+       VISION_REQUEST_TOO_LARGE:"الصور المرسلة كبيرة جدًا. جرّب ملفًا أقصر أو أقل دقة.",
+       AI_PROVIDER_UNAVAILABLE:"خدمة الذكاء الاصطناعي مشغولة مؤقتًا. حاول مجددًا بعد قليل.",
+       AUTH_EXPIRED:"انتهت جلسة تسجيل الدخول. سجل الدخول مجددًا.",
+       DIRECTOR_ONLY:"هذا الحساب غير مخوّل بتوليد أسئلة الامتحانات.",
+       INVALID_PDF_IMAGES:"حدث خطأ في تجهيز صفحات PDF. جرّب ملفًا آخر."
+     };
+     throw Error(detail?.message||messages[code]||(network?
+       "يبدو أن اتصال الإنترنت انقطع أثناء التوليد.":
+       "تعذّر توليد الأسئلة. تحقق من اتصال الإنترنت أو حاول تقليل عدد الأسئلة."));
+   }
    if(questions.length && !window.confirm("يوجد بنك أسئلة غير محفوظ. هل تريد استبداله بالأسئلة الجديدة؟"))return;
    questions=data.questions;renderEditor();
    const coverage=data.source_mode==="sampled_images"?
