@@ -43,9 +43,20 @@ function renderHistory(rows,error){
    const card=el("article","ql-list-item");
    card.append(el("h3","",item.title));
    card.append(el("p","ql-muted","تاريخ التسليم: "+date(item.submitted_at)));
-   card.append(el("span","ql-tag"+(item.human_score===null?"":" ql-tag-green"),
-     item.human_score===null?"بانتظار التصحيح البشري":"تم التصحيح: "+item.human_score+" / 100"));
-   if(item.grade_notes)card.append(el("p","ql-muted","ملاحظات المصحح: "+item.grade_notes));
+   const final=item.human_score!==null&&item.human_score!==undefined;
+   const hasAI=item.ai_score!==null&&item.ai_score!==undefined;
+   const message=final?"الدرجة البشرية المعتمدة: "+item.human_score+" / 100":
+     hasAI?"درجة آلية أولية: "+item.ai_score+" / 100"+(item.ai_review_required?" (بانتظار اعتماد بشري)":""):
+     item.ai_status==="needs_review"?"تحتاج مراجعة بشرية":
+     item.ai_status==="processing"?"التصحيح الآلي جارٍ…":"بانتظار التصحيح";
+   card.append(el("span","ql-tag"+(final?" ql-tag-green":""),message));
+   if(final&&item.grade_notes)card.append(el("p","ql-muted","ملاحظات المصحح: "+item.grade_notes));
+   else if(item.ai_notes){
+     const details=el("details","ql-muted");
+     details.append(el("summary","","ملاحظات التقييم الآلي والأسئلة التي تحتاج إلى مراجعة"));
+     details.append(el("p","",item.ai_notes));
+     card.append(details);
+   }
    list.append(card);
  });
 }
@@ -54,10 +65,11 @@ async function load(){
  message("ql-student-status","جارٍ تحميل الامتحانات…");
  const [examsResult,submitted,history]=await Promise.all([
   client.rpc("nabd_quality_active_exams"),
-  client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at").eq("student_id",student.id).limit(200),
+  client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at,ai_score,ai_notes,ai_review_required,ai_status").eq("student_id",student.id).limit(200),
   client.rpc("nabd_quality_student_history")
  ]);
- renderHistory(history.data,history.error);
+ const aiByExam=new Map((submitted.data||[]).map(row=>[row.exam_id,row]));
+ renderHistory((history.data||[]).map(row=>({...row,...(aiByExam.get(row.exam_id)||{})})),history.error||submitted.error);
  if(examsResult.error)return message("ql-student-status","تعذّر تحميل الامتحانات حاليًا. حاول لاحقًا.","error");
  attempted=new Map((submitted.data||[]).map(a=>[a.exam_id,a]));
  const list=$("ql-student-list");list.replaceChildren();
@@ -73,7 +85,12 @@ async function load(){
    card.append(meta);
    const prior=attempted.get(item.id),button=el("button","ql-button",prior?"تم تسليم الإجابات": "بدء الامتحان");
    button.disabled=Boolean(prior);
-   if(prior)card.append(el("p","ql-muted",prior.human_score===null?"بانتظار التصحيح البشري":"الدرجة: "+prior.human_score+" / 100"));
+   if(prior){
+     const resultText=prior.human_score!==null?"الدرجة المعتمدة: "+prior.human_score+" / 100":
+       prior.ai_score!==null&&prior.ai_score!==undefined?"درجة آلية أولية: "+prior.ai_score+" / 100":
+       "بانتظار التصحيح";
+     card.append(el("p","ql-muted",resultText));
+   }
    button.addEventListener("click",()=>openPaper(item.id));
    const actions=el("div","ql-list-actions");actions.append(button);card.append(actions);list.append(card);
  }
