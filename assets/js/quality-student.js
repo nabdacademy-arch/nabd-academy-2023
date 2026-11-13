@@ -45,8 +45,10 @@ function renderHistory(rows,error){
    card.append(el("p","ql-muted","تاريخ التسليم: "+date(item.submitted_at)));
    const final=item.human_score!==null&&item.human_score!==undefined;
    const hasAI=item.ai_score!==null&&item.ai_score!==undefined;
-   const message=final?"الدرجة البشرية المعتمدة: "+item.human_score+" / 100":
-     hasAI?"درجة آلية أولية: "+item.ai_score+" / 100"+(item.ai_review_required?" (بانتظار اعتماد بشري)":""):
+   const maximum=Number(item.question_count)||0;
+   const totalLabel=maximum?String(maximum):"عدد الأسئلة";
+   const message=final?"الدرجة البشرية المعتمدة: "+item.human_score+" / "+totalLabel:
+     hasAI?"درجة آلية أولية: "+item.ai_score+" / "+totalLabel+(item.ai_review_required?" (بانتظار اعتماد بشري)":""):
      item.ai_status==="needs_review"?"تحتاج مراجعة بشرية":
      item.ai_status==="processing"?"التصحيح الآلي جارٍ…":"بانتظار التصحيح";
    card.append(el("span","ql-tag"+(final?" ql-tag-green":""),message));
@@ -66,12 +68,14 @@ async function load(){
  const [examsResult,submitted,history]=await Promise.all([
   client.rpc("nabd_quality_active_exams"),
   client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at,ai_score,ai_notes,ai_review_required,ai_status").eq("student_id",student.id).limit(200),
-  client.rpc("nabd_quality_student_history")
+  client.rpc("nabd_quality_student_history_v2")
  ]);
  const aiByExam=new Map((submitted.data||[]).map(row=>[row.exam_id,row]));
+ const totalsByExam=new Map((history.data||[]).map(row=>[row.exam_id,row.question_count]));
  renderHistory((history.data||[]).map(row=>({...row,...(aiByExam.get(row.exam_id)||{})})),history.error||submitted.error);
  if(examsResult.error)return message("ql-student-status","تعذّر تحميل الامتحانات حاليًا. حاول لاحقًا.","error");
- attempted=new Map((submitted.data||[]).map(a=>[a.exam_id,a]));
+ attempted=new Map((submitted.data||[]).map(a=>[a.exam_id,
+   {...a,question_count:totalsByExam.get(a.exam_id)||null}]));
  const list=$("ql-student-list");list.replaceChildren();
  const active=examsResult.data||[];
  if(!active.length){list.append(el("p","ql-empty","لا توجد امتحانات مفتوحة الآن. ستظهر هنا تلقائيًا بعد موافقة مدير الأكاديمية على النشر."));message("ql-student-status","");return}
@@ -86,8 +90,9 @@ async function load(){
    const prior=attempted.get(item.id),button=el("button","ql-button",prior?"تم تسليم الإجابات": "بدء الامتحان");
    button.disabled=Boolean(prior);
    if(prior){
-     const resultText=prior.human_score!==null?"الدرجة المعتمدة: "+prior.human_score+" / 100":
-       prior.ai_score!==null&&prior.ai_score!==undefined?"درجة آلية أولية: "+prior.ai_score+" / 100":
+     const maximum=prior.question_count||item.question_count;
+     const resultText=prior.human_score!==null?"الدرجة المعتمدة: "+prior.human_score+" / "+maximum:
+       prior.ai_score!==null&&prior.ai_score!==undefined?"درجة آلية أولية: "+prior.ai_score+" / "+maximum:
        "بانتظار التصحيح";
      card.append(el("p","ql-muted",resultText));
    }
