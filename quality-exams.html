@@ -16,6 +16,19 @@
 <div id="ql-workspace" hidden>
 <div class="ql-quickbar"><div><span class="ql-tag ql-tag-green">صلاحية المدير مؤكدة</span><span id="ql-director-email" class="ql-small"></span></div><button class="ql-button ql-button-outline" type="button" id="ql-logout">تسجيل الخروج</button></div>
 <div class="ql-stats" aria-label="ملخص الامتحانات"><div><span>المسودات</span><strong id="ql-draft-count">—</strong></div><div><span>الامتحانات النشطة</span><strong id="ql-active-count">—</strong></div><div><span>بانتظار التصحيح</span><strong id="ql-pending-count">—</strong></div></div>
+
+<section class="ql-panel" id="ql-grading-bot" aria-label="بوت التصحيح الذكي">
+ <div class="ql-panel-header"><div><span class="ql-kicker">NABD · AI ASSESSMENT AGENT</span><h2>بوت التصحيح الذكي</h2><p class="ql-muted">يصحّح أسئلة الاختيار والصح والخطأ والتوصيل وفق مفاتيح الإجابة، ويقيّم الإجابات المقالية والمصطلحات باستخدام نموذج ذكاء اصطناعي ومعايير التصحيح. الدرجة الآلية أولية، ويمكن اعتمادها أو تعديلها يدويًا.</p></div><span class="ql-tag" id="ql-bot-state">متوقف</span></div>
+ <div class="ql-actions">
+  <button class="ql-button" type="button" id="ql-bot-start">✦ تشغيل بوت التصحيح</button>
+  <button class="ql-button ql-button-outline" type="button" id="ql-bot-stop" disabled>إيقاف البوت</button>
+  <button class="ql-button ql-button-secondary" type="button" id="ql-bot-run" disabled>تصحيح الإجابات المعلّقة الآن</button>
+  <button class="ql-button ql-button-outline" type="button" id="ql-bot-refresh">تحديث الحالة</button>
+ </div>
+ <p id="ql-bot-summary" class="ql-muted">جارٍ التحقق من حالة البوت…</p>
+ <p id="ql-bot-status" class="ql-status" role="status" hidden></p>
+ <p class="ql-muted ql-note">عند التشغيل يُعالَج طابور الإجابات على الخادم دوريًا، حتى عند إغلاق الصفحة. عند الإيقاف يتوقف التصحيح الجديد. الإجابات غير المؤكدة تُحال للمراجعة البشرية، ولا تُستبدل أي درجة بشرية معتمدة.</p>
+</section>
 <section class="ql-panel" id="ql-builder">
 <div class="ql-panel-header"><div><span class="ql-kicker">01 / SOURCE & CONFIGURATION</span><h2>من ملف المحاضرة إلى نموذج الامتحان</h2></div><span class="ql-step">1 / 3</span></div>
 <form id="ql-config" class="ql-form" autocomplete="off">
@@ -40,5 +53,5 @@
 <section class="ql-panel" id="ql-grading" hidden><div class="ql-panel-header"><div><span class="ql-kicker">HUMAN EVALUATION</span><h2 id="ql-grading-title">إجابات الطلاب والتصحيح البشري</h2></div><button class="ql-button ql-button-outline" id="ql-close-grading" type="button">إغلاق</button></div><div id="ql-submissions"></div><p class="ql-status" id="ql-grade-status" hidden role="status"></p></section>
 </div>
 </main><footer class="ql-footer">NABD ACADEMY · EXAMINATIONS & QUALITY ASSURANCE <span>المدير العام يراجع ويعتمد، والتقييم النهائي بشري.</span></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=8"></script>
 </body></html>
