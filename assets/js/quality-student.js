@@ -107,6 +107,10 @@ async function openPaper(id){
  message("ql-student-status","جارٍ فتح نموذج الامتحان المعتمد…");
  const {data,error}=await client.rpc("nabd_quality_student_questions",{p_exam:id});
  if(error||!data||!Array.isArray(data.questions))return message("ql-student-status","لم يعد هذا الامتحان متاحًا؛ ربما انتهت مدة النشر.","error");
+ // Monitoring is transparent. The browser can report attention changes, not
+ // prove that a screen was captured. Students can decline to begin the paper.
+ const {data:monitoring}=await client.rpc("nabd_quality_proctor_student_state",{p_exam:id});
+ if(monitoring?.enabled && !window.confirm("هذا الامتحان يخضع لمراقبة إشارات المتصفح (مغادرة التبويب وفقدان التركيز وبعض اختصارات النسخ/الطباعة/التصوير). لا تستخدم الأكاديمية الكاميرا أو تسجيل الشاشة لهذا الغرض. قد تُراجع الإشارات إداريًا ولا تثبت الغش وحدها، وتُحذف بعد 30 يومًا. هل تريد بدء الامتحان؟"))return;
  exam=data;questions=data.questions;autoRequested=false;
  const arabic=/[\u0600-\u06FF]/u;
  setPaperLanguage(questions.some(q=>arabic.test(q.prompt||""))?"ar":"en");
@@ -143,6 +147,7 @@ async function openPaper(id){
    $("ql-paper-questions").append(card);
  });
  $("ql-student-paper").hidden=false;$("ql-student-dashboard").hidden=true;message("ql-paper-status","");
+ document.dispatchEvent(new CustomEvent("nabd:exam-open",{detail:{examId:exam.id}}));
  if(timer)clearInterval(timer);
  timer=setInterval(tick,1000);tick();$("ql-student-paper").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -181,6 +186,7 @@ async function submit(auto=false){
    return;
  }
  if(timer){clearInterval(timer);timer=null}
+ document.dispatchEvent(new CustomEvent("nabd:exam-end"));
  $("ql-student-paper").hidden=true;
  $("ql-student-dashboard").hidden=false;
  exam=null;questions=[];autoRequested=false;
@@ -194,6 +200,7 @@ function tick(){
  const ms=Date.parse(exam.closes_at)-Date.now();
  if(ms<=0){
    $("ql-timer").textContent="00:00";$("ql-timer").classList.add("alert");
+   document.dispatchEvent(new CustomEvent("nabd:exam-end"));
    $("ql-submit-answers").disabled=true;
    message("ql-paper-status",tr("انتهت فترة الامتحان المحددة من الإدارة. لن يقبل الخادم تسليمًا جديدًا.",
  "This exam has closed. The server will no longer accept new answers."),"error");
@@ -213,6 +220,7 @@ $("ql-exit-paper").addEventListener("click",()=>{
  if(!window.confirm(tr("العودة لقائمة الامتحانات دون تسليم؟ لن تُحفظ الإجابات غير المرسلة.",
  "Return to exam list without submitting? Unsaved answers will be lost.")))return;
  if(timer){clearInterval(timer);timer=null}
+ document.dispatchEvent(new CustomEvent("nabd:exam-end"));
  exam=null;questions=[];$("ql-student-form").hidden=false;
  $("ql-student-paper").hidden=true;$("ql-student-dashboard").hidden=false;load();
 });
