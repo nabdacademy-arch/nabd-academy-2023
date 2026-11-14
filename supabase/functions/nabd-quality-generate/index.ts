@@ -194,21 +194,24 @@ async function repairGeneratedLanguage(questions:any[],lang:string):Promise<any[
 }
 type ImagePage={page:number;mime_type:"image/jpeg";data:string};
 type InputMedia={pdf_base64:string|null;page_images:ImagePage[];page_count:number};
+// Ordered, authenticated server-side routing. Only OpenRouter's free router is
+// ever selected; do NOT silently fall back to paid models on the third route.
+// Groq and Gemini use the academy's EXISTING credentials, so their billing tier
+// remains controlled by their respective account settings.
 async function providerCall(source:string,requested:Type[],lang:string,title:string,media:InputMedia|null,batchIndex:number){
  const needsVision=!!media;
- const order=needsVision?["gemini","groq"]:["groq","gemini"];
- const routes=order.filter(name=>!!env(name==="gemini"?"GEMINI_API_KEY":"GROQ_API_KEY"));
+ const order=needsVision?["gemini","groq","openrouter"]:["groq","gemini","openrouter"];
+ const keys:Record<string,string>={groq:"GROQ_API_KEY",gemini:"GEMINI_API_KEY",openrouter:"OPENROUTER_API_KEY"};
+ const routes=order.filter(name=>Boolean(env(keys[name])));
  if(!routes.length)throw Error("AI_PROVIDER_NOT_CONFIGURED");
- // Keep vision requests small: large multi-page PDF + 3 large JPEGs caused
- // Gemini 503 and Groq 413 in the live director portal on 2026-11-13.
  const images=media?.page_images||[];
  const sample=images.length?Array.from({length:Math.min(2,images.length)},
    (_,i)=>images[(batchIndex*2+i)%images.length]):[];
- const pdfEligible=!!(media?.pdf_base64 && media.page_count<=5);
+ const pdfEligible=Boolean(media?.pdf_base64 && media.page_count<=5);
  const languageRule=lang==="en"?
    "MANDATORY: Write the entire assessment in ENGLISH, even when the source PDF, course title, or lecture is in Arabic. Translate every generated question prompt, answer option, matching item, explanatory answer, rubric and evidence note into natural, accurate English. Do not output a single Arabic-script letter in ANY question field. Medical terminology may stay in its established English form. Do not translate the JSON property names. Do not copy original-language excerpts.":
-   "MANDATORY: Write the entire assessment in ARABIC, even when the source PDF, course title, or lecture is in English. All question prompts, explanatory answers, rubric, supporting evidence notes, and answer choices should be written in clear Arabic. When required for scientific accuracy, retain standard English/Latin medical terms only in parentheses beside the Arabic explanation. Do not write full English sentences. Do not translate JSON property names.";
- const systemPrompt=SYSTEM+"\\n"+languageRule;
+   "MANDATORY: Write the entire assessment in ARABIC, even when the source PDF, course title, or lecture is in English. All question prompts, explanatory answers, rubric, supporting evidence notes, and answer choices should be written in clear Arabic. When required for scientific accuracy, retain standard English/Latin medical terms only in parentheses beside the Arabic explanation. Do not write full English sentences. Do not translate the JSON property names.";
+ const systemPrompt=SYSTEM+"\n"+languageRule;
  const payload=JSON.stringify({title,language:lang,language_name:lang==="en"?"English":"Arabic",
    question_types_in_order:requested,source_text:source,scanned_pdf:needsVision,
    page_count:media?.page_count,sampled_page_numbers:sample.map(p=>p.page),
@@ -217,80 +220,120 @@ async function providerCall(source:string,requested:Type[],lang:string,title:str
       " regardless of the original document language. No invented facts."});
  const failures=new Set<number>();
  let languageFailures=0;
+ // No blind long retries on a 429: switch to another already-configured provider.
  for(const provider of routes){
    const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),needsVision?48000:28000);
    try{
      if(provider==="gemini"){
-       // 2.5 Flash can return 404 for newer API keys, so use current stable models.
-       for(const model of ["gemini-3.8-flash","gemini-3.6-flash","gemini-3.5-flash-lite"]){
+       // Flash-Lite is well suited to document extraction and is available on
+       // a free tier, subject to the current API project limits and eligibility.
+       for(const model of ["gemini-3.5-flash-lite","gemini-3.8-flash","gemini-2.5-flash-lite"]){
          const parts:any[]=[];
          if(pdfEligible)parts.push({inline_data:{mime_type:"application/pdf",data:media!.pdf_base64}});
-         else if(needsVision)for(const p of sample)parts.push({inline_data:{mime_type:p.mime_type,data:p.data}});
+         else if(needsVision)for(const p of sample)
+           parts.push({inline_data:{mime_type:p.mime_type,data:p.data}});
          parts.push({text:payload});
          const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent",{
            method:"POST",signal:ctrl.signal,
            headers:{"x-goog-api-key":env("GEMINI_API_KEY"),"Content-Type":"application/json"},
            body:JSON.stringify({systemInstruction:{parts:[{text:systemPrompt}]},
-             contents:[{parts}],generationConfig:{temperature:.15,maxOutputTokens:7000,responseMimeType:"application/json"}})});
+             contents:[{parts}],generationConfig:{temperature:.15,maxOutputTokens:6500,responseMimeType:"application/json"}})});
          if(!response.ok){
            failures.add(response.status);
-           console.warn("NABD quality Gemini request rejected",{model,status:response.status});
+           console.warn("NABD generation Gemini unavailable",{model,status:response.status});
+           if(response.status===401||response.status===403)break;
            continue;
          }
          const data=await response.json();
-         const raw=(data?.candidates?.[0]?.content?.parts||[]).map((p:{text?:string})=>p.text||"").join("");
+         const raw=(data?.candidates?.[0]?.content?.parts||[])
+           .map((p:{text?:string})=>p.text||"").join("");
          const questions=normalized(rawJson(String(raw)),requested,lang);
          if(questions){
-           if(languageMatches(questions,lang))return {questions,provider:"gemini",source_mode:pdfEligible?"full_pdf":needsVision?"sampled_images":"text"};
+           if(languageMatches(questions,lang))
+             return {questions,provider:"gemini:"+model,source_mode:pdfEligible?"full_pdf":needsVision?"sampled_images":"text"};
            const fixed=await repairGeneratedLanguage(questions,lang);
-           if(fixed)return {questions:fixed,provider:"gemini",source_mode:pdfEligible?"full_pdf":needsVision?"sampled_images":"text"};
+           if(fixed)return {questions:fixed,provider:"gemini:"+model,
+             source_mode:pdfEligible?"full_pdf":needsVision?"sampled_images":"text"};
            languageFailures++;
-           console.warn("NABD quality Gemini answer language mismatch",{model,lang});
            continue;
          }
-         console.warn("NABD quality Gemini question format invalid",{model});
+         console.warn("NABD generation invalid format",{provider,model});
        }
-     }else{
-       // Groq's vision model accepts image data, but oversized multi-image
-       // bodies produce HTTP 413. Send a single compressed page per batch.
+     }else if(provider==="groq"){
+       // Scanned PDFs send compressed page imagery; never claim all pages were read.
        const content:any=needsVision?[
          {type:"text",text:payload},
          ...sample.slice(0,1).map(p=>({type:"image_url",image_url:{url:"data:image/jpeg;base64,"+p.data}}))
        ]:payload;
-       for(const model of (needsVision?["qwen/qwen3.8-27b"]:["openai/gpt-oss-120b"])){
+       const models=needsVision?["qwen/qwen3.8-27b"]:["openai/gpt-oss-20b","openai/gpt-oss-120b"];
+       for(const model of models){
          const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
            method:"POST",signal:ctrl.signal,
            headers:{"Authorization":"Bearer "+env("GROQ_API_KEY"),"Content-Type":"application/json"},
-           body:JSON.stringify({model,temperature:.15,max_completion_tokens:7000,
+           body:JSON.stringify({model,temperature:.15,max_completion_tokens:6500,
              response_format:{type:"json_object"},
              messages:[{role:"system",content:systemPrompt},{role:"user",content}]})});
          if(!response.ok){
            failures.add(response.status);
-           console.warn("NABD quality Groq request rejected",{model,status:response.status});
+           console.warn("NABD generation Groq unavailable",{model,status:response.status});
+           if(response.status===401||response.status===403)break;
            continue;
          }
          const data=await response.json();
          const raw=String(data?.choices?.[0]?.message?.content||"");
          const questions=normalized(rawJson(raw),requested,lang);
          if(questions){
-           if(languageMatches(questions,lang))return {questions,provider:"groq",source_mode:needsVision?"sampled_images":"text"};
+           if(languageMatches(questions,lang))
+             return {questions,provider:"groq:"+model,source_mode:needsVision?"sampled_images":"text"};
            const fixed=await repairGeneratedLanguage(questions,lang);
-           if(fixed)return {questions:fixed,provider:"groq",source_mode:needsVision?"sampled_images":"text"};
+           if(fixed)return {questions:fixed,provider:"groq:"+model,
+             source_mode:needsVision?"sampled_images":"text"};
            languageFailures++;
-           console.warn("NABD quality Groq answer language mismatch",{model,lang});
            continue;
          }
-         console.warn("NABD quality Groq question format invalid",{model});
+         console.warn("NABD generation invalid format",{provider,model});
        }
+     }else if(provider==="openrouter"){
+       // A THIRD independent provider, optionally enabled by OPENROUTER_API_KEY.
+       // "openrouter/free" can only route to currently free models.
+       const content:any=needsVision?[
+         {type:"text",text:payload},
+         ...sample.slice(0,1).map(p=>({type:"image_url",image_url:{url:"data:image/jpeg;base64,"+p.data}}))
+       ]:payload;
+       const response=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+         method:"POST",signal:ctrl.signal,
+         headers:{"Authorization":"Bearer "+env("OPENROUTER_API_KEY"),
+           "Content-Type":"application/json",
+           "HTTP-Referer":ORIGIN,"X-Title":"NABD Academy Examinations"},
+         body:JSON.stringify({model:"openrouter/free",temperature:.15,max_tokens:6500,
+           messages:[{role:"system",content:systemPrompt},{role:"user",content}]})
+       });
+       if(!response.ok){
+         failures.add(response.status);
+         console.warn("NABD generation free-router unavailable",{status:response.status});
+         continue;
+       }
+       const data=await response.json();
+       const raw=String(data?.choices?.[0]?.message?.content||"");
+       const questions=normalized(rawJson(raw),requested,lang);
+       if(questions){
+         if(languageMatches(questions,lang))
+           return {questions,provider:"openrouter:free",source_mode:needsVision?"sampled_images":"text"};
+         const fixed=await repairGeneratedLanguage(questions,lang);
+         if(fixed)return {questions:fixed,provider:"openrouter:free",
+           source_mode:needsVision?"sampled_images":"text"};
+         languageFailures++;
+       }else console.warn("NABD generation free-router response invalid");
      }
-   }catch(e){console.warn("NABD quality provider request failed",{provider,kind:(e as Error).name});}
-   finally{clearTimeout(timer);}
+   }catch(e){
+     console.warn("NABD generation provider failed",{provider,kind:(e as Error).name});
+   }finally{clearTimeout(timer);}
  }
  if(languageFailures>0)throw Error("AI_LANGUAGE_MISMATCH");
- if(failures.has(413))throw Error("VISION_REQUEST_TOO_LARGE");
  if(failures.has(429))throw Error("AI_RATE_LIMITED");
  if(failures.has(401)||failures.has(403))throw Error("AI_PROVIDER_AUTH_FAILED");
  if(failures.has(503)||failures.has(502))throw Error("AI_PROVIDER_UNAVAILABLE");
+ if(failures.has(413))throw Error("VISION_REQUEST_TOO_LARGE");
  throw Error("GENERATION_FAILED");
 }
 Deno.serve(async req=>{
