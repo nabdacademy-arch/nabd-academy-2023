@@ -1,0 +1,40 @@
+name: NABD Exam Proctor Integrity
+on:
+  push:
+    paths:
+      - 'quality-exams.html'
+      - 'student-exams.html'
+      - 'assets/js/quality-proctor-director.js'
+      - 'assets/js/quality-proctor-student.js'
+      - 'assets/js/quality-student.js'
+      - 'supabase/migrations/20261115_nabd_quality_exam_proctor.sql'
+      - 'tests/nabd-exam-proctor.test.mjs'
+      - '.github/workflows/nabd-exam-proctor-check.yml'
+  pull_request:
+    paths:
+      - 'quality-exams.html'
+      - 'student-exams.html'
+      - 'assets/js/quality-proctor-director.js'
+      - 'assets/js/quality-proctor-student.js'
+      - 'assets/js/quality-student.js'
+      - 'supabase/migrations/20261115_nabd_quality_exam_proctor.sql'
+      - 'tests/nabd-exam-proctor.test.mjs'
+      - '.github/workflows/nabd-exam-proctor-check.yml'
+  workflow_dispatch:
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check all proctor JavaScript syntax
+        run: |
+          node --check assets/js/quality-proctor-director.js
+          node --check assets/js/quality-proctor-student.js
+          node --check assets/js/quality-student.js
+      - name: Verify authorization, audit and UI wiring
+        run: node tests/nabd-exam-proctor.test.mjs

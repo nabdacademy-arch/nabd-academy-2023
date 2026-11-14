@@ -43,3 +43,49 @@
 - The completed draft uses the existing exam table, 1 mark per question, human publication approval, student portal and grade-bot. A PDF original is stored in the existing private director-only PDF bucket when the draft is saved; **non-PDF originals are processed but are not stored**, only the file name and parsed questions. Never upload patient-identifiable data.
 - Limitations: Rich typography, embedded diagrams, mathematical layout, complex tables, handwriting and poorly scanned material may not be reproduced as visually identical content. Check every imported question. For illustrations that materially affect a question, use an editable textual version or postpone publishing until the source can be represented faithfully.
 - Production function was deployed with `verify_jwt=true`. A live director-authenticated document-to-student test still requires the director's signed-in browser session; CI covers syntax and isolated importer validation without publishing an exam.
+
+
+## 2026-11-15 — Exam browser-signal monitor
+
+A new director-only card **مراقب الامتحانات الذكي** has been added to the existing
+\`quality-exams.html\`. It is independent of the AI grading bot.
+
+**Director workflow**: choose a previously published exam; when its examination
+window is actually open, press **تشغيل المراقب**. Press **إيقاف المراقب** to disable
+it for that one exam. The state lives in Supabase, so it does not depend on
+keeping the director's browser open. The card shows a recent log (up to 150
+events), the student's profile name, full account UUID (there is no separate
+student number in \`profiles\`), event type and server timestamp. The director
+can refresh the log; only the exam director may use these APIs.
+
+**Student workflow**: proctoring is disclosed before exam start and a status
+notice is displayed inside the exam paper. The student sees a confirmation
+before opening an exam when monitoring is already enabled. The student page
+polls the server every 15 seconds to reflect live director toggles; monitoring
+ends on successful submission, voluntary exit or exam expiry.
+
+**Events** (browser-native best effort):
+- \`tab_hidden\`: document became hidden, e.g. tab switch, minimizing, phone app switch or lock.
+- \`window_blur\`: exam window lost focus while remaining visible.
+- \`printscreen_key\`: PrintScreen key event was delivered to the page, **not proof that a screenshot occurred**.
+- \`print_shortcut\`: browser received a Ctrl/Command+P shortcut.
+- \`copy_attempt\`: browser's \`copy\` event inside the exam.
+
+A normal browser **cannot reliably detect OS screenshots, photo capture from
+a second device, or actual cybersecurity intrusion**. No webcam, microphone,
+desktop recording, invasive tracking, or background monitoring is performed.
+Signals can have innocent causes (calls, disconnection, accessibility tools)
+and are NEVER automatic grade penalties or a finding of cheating.
+
+**Security and privacy**: dedicated private Supabase tables are RLS-enabled
+and not granted to clients. SECURITY DEFINER RPCs verify director ownership
+or the signed-in student role; the server takes \`auth.uid()\` for student
+identity and \`now()\` for timestamps. Students cannot read another student's
+events or forge the target user ID through the API. Invalid signals are
+rejected; repeated signals are throttled and capped. A pg_cron job deletes
+events older than 30 days. Data is not transferred to an external AI model.
+
+**Rollout verification**: PostgreSQL migration applied to production, schema
+and RPCs checked, repository tests validate syntax and integrations. No real
+student exam or screenshot attempt has been used as an end-to-end test. The
+system observes client-reported browser events and is not tamper-proof.
