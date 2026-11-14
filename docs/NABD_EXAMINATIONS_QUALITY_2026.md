@@ -33,3 +33,13 @@
 4. Save as a draft; confirm it is **absent** from `student-exams.html`.
 5. For live release only, click `اعتماد ونشر الآن`; check a real student account can open the quiz.
 6. Have a consenting test student submit; inspect human grading; after time expires verify the server refuses late submissions.
+
+## 2026-11-15 — Import a prepared examination unchanged (director only)
+
+- The director's `quality-exams.html` page now has a second, **independent** action: **رفع امتحان جاهز وتحويله إلى امتحان إلكتروني**. The lecture-to-question generator remains intact.
+- Accepted files: PDF (including scanned exams), DOCX, TXT, JPG, PNG, up to 15 MB. DOCX is extracted client-side using Mammoth's plain-text mode; text PDFs are read with PDF.js. For scanned PDFs, every page is sent for vision, never a sample; scans over 10 pages are rejected with instructions to split. All PDFs over 20 pages and text over 50,000 characters are rejected rather than silently truncated.
+- The new authenticated Supabase Edge Function `nabd-quality-import` checks the signed-in user's ID against `nabd_exam_owner`. It **transcribes existing** questions and options with instructions forbidding new content, translations, or guesses. The result is nevertheless AI-assisted and **requires visual comparison to the original**.
+- The director reviews and edits questions and their answer keys in the existing editor. When a document lacks an explicit key, imported MCQ, true/false, matching and fill-in-the-blank answers remain missing until the director supplies them; saving is blocked for those unanswered objective keys. Multiple-choice questions with 2–6 alternatives retain their original number of options.
+- The completed draft uses the existing exam table, 1 mark per question, human publication approval, student portal and grade-bot. A PDF original is stored in the existing private director-only PDF bucket when the draft is saved; **non-PDF originals are processed but are not stored**, only the file name and parsed questions. Never upload patient-identifiable data.
+- Limitations: Rich typography, embedded diagrams, mathematical layout, complex tables, handwriting and poorly scanned material may not be reproduced as visually identical content. Check every imported question. For illustrations that materially affect a question, use an editable textual version or postpone publishing until the source can be represented faithfully.
+- Production function was deployed with `verify_jwt=true`. A live director-authenticated document-to-student test still requires the director's signed-in browser session; CI covers syntax and isolated importer validation without publishing an exam.
