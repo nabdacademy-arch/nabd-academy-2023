@@ -21,7 +21,8 @@ assert.match(js,/importedFile=file/);
 assert.match(js,/if\(pdf\.numPages>10\)throw Error/,"Never sample only some scanned pages");
 assert.match(js,/if\(q\.type==="mcq"&&\(!Number\.isInteger\(q\.answer_key\)/,
   "Missing answer keys must block save");
-assert.match(js,/q\.answer_key===null\?null:/,"Don't assume the first option is correct");
+assert.match(js,/select\.value=Number\.isInteger\(q\.answer_key\)\?String\(q\.answer_key\):""/,
+  "Don't assume the first option is correct");
 assert.match(js,/sourcePath=uploaded\|\|\(importedFile\?null:editingSourcePath\)/,
   "Non-PDF imports should not retain previous source PDF");
 assert.match(student,/Array\.isArray\(q\.options\)\?q\.options:/,
