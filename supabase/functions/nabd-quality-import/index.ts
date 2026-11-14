@@ -82,16 +82,21 @@ If a question cannot be read reliably or is an unsupported type, describe it in 
 Do not silently omit questions. If there are more than 40 questions or you cannot include ALL readable questions, return {"questions":[],"warnings":["File exceeds 40 questions or is incomplete"]}.
 A blank/missing answer key is fine; the director will supply it during review. Output JSON, nothing else.`;
 type Page={page:number;mime_type:"image/jpeg";data:string};
+// Transcription is deliberately separate from question generation: it must
+// preserve the original paper and NEVER fabricate missing questions/keys.
 async function modelExtract(text:string,images:Page[],title:string) {
   const visual=images.length>0;
-  const providers=visual?["gemini"]:["groq","gemini"];
+  const order=visual?["gemini","groq","openrouter"]:["groq","gemini","openrouter"];
+  const keys:Record<string,string>={gemini:"GEMINI_API_KEY",groq:"GROQ_API_KEY",openrouter:"OPENROUTER_API_KEY"};
+  const routes=order.filter(name=>Boolean(env(keys[name])));
+  if(!routes.length)throw Error("AI_PROVIDER_NOT_CONFIGURED");
   const failures=new Set<number>();
-  for(const provider of providers){
-    if(!env(provider==="gemini"?"GEMINI_API_KEY":"GROQ_API_KEY"))continue;
-    if(provider==="gemini"){
-      for(const model of ["gemini-2.5-flash","gemini-3.6-flash","gemini-3.5-flash-lite"]){
-        const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),60000);
-        try{
+  // Each request gets at most one model routing attempt from OpenRouter Free.
+  for(const provider of routes){
+    const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),60000);
+    try{
+      if(provider==="gemini"){
+        for(const model of ["gemini-3.5-flash-lite","gemini-3.8-flash","gemini-2.5-flash-lite"]){
           const parts:any[]=[];
           images.forEach(p=>parts.push({inline_data:{mime_type:"image/jpeg",data:p.data}}));
           parts.push({text:JSON.stringify({title,source_text:text,full_page_count:images.length,
@@ -100,40 +105,76 @@ async function modelExtract(text:string,images:Page[],title:string) {
             method:"POST",signal:ctrl.signal,
             headers:{"x-goog-api-key":env("GEMINI_API_KEY"),"Content-Type":"application/json"},
             body:JSON.stringify({systemInstruction:{parts:[{text:INSTRUCTIONS}]},
-              contents:[{parts}],generationConfig:{temperature:0,responseMimeType:"application/json",maxOutputTokens:13000}})
+              contents:[{parts}],generationConfig:{temperature:0,responseMimeType:"application/json",maxOutputTokens:12500}})
           });
-          if(!response.ok){failures.add(response.status);continue;}
+          if(!response.ok){failures.add(response.status);
+            console.warn("NABD exam import Gemini unavailable",{model,status:response.status});
+            if(response.status===401||response.status===403)break;
+            continue;
+          }
           const json=await response.json();
           const raw=(json?.candidates?.[0]?.content?.parts||[]).map((p:any)=>p.text||"").join("");
           const parsed=parseJson(raw);
           if(Array.isArray(parsed?.questions)&&parsed.questions.length===0)throw Error("NO_VALID_QUESTIONS");
-          return {...normalize(parsed),provider:"gemini"};
-        }catch(e){if((e as Error).message==="NO_VALID_QUESTIONS")throw e;}
-        finally{clearTimeout(timer);}
-      }
-    }else{
-      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),40000);
-      try{
-        const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+          try{return {...normalize(parsed),provider:"gemini:"+model};}
+          catch(error){console.warn("NABD exam import Gemini JSON invalid",{model,reason:(error as Error).message});}
+        }
+      }else if(provider==="groq"){
+        // A vision model may be used for a ONE-PAGE scanned original only.
+        // Multi-page scanned papers must be read in full, not silently sampled.
+        if(visual&&images.length!==1)continue;
+        const content:any=visual?[
+          {type:"text",text:JSON.stringify({title,source_text:text})},
+          {type:"image_url",image_url:{url:"data:image/jpeg;base64,"+images[0].data}}
+        ]:JSON.stringify({title,source_text:text});
+        const models=visual?["qwen/qwen3.8-27b"]:["openai/gpt-oss-20b","openai/gpt-oss-120b"];
+        for(const model of models){
+          const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+            method:"POST",signal:ctrl.signal,
+            headers:{"Authorization":"Bearer "+env("GROQ_API_KEY"),"Content-Type":"application/json"},
+            body:JSON.stringify({model,temperature:0,max_completion_tokens:12500,
+              response_format:{type:"json_object"},messages:[
+                {role:"system",content:INSTRUCTIONS},{role:"user",content}]})
+          });
+          if(!response.ok){failures.add(response.status);
+            console.warn("NABD exam import Groq unavailable",{model,status:response.status});
+            if(response.status===401||response.status===403)break;
+            continue;
+          }
+          const json=await response.json();
+          const raw=String(json?.choices?.[0]?.message?.content||"");
+          const parsed=parseJson(raw);
+          if(Array.isArray(parsed?.questions)&&parsed.questions.length===0)throw Error("NO_VALID_QUESTIONS");
+          try{return {...normalize(parsed),provider:"groq:"+model};}
+          catch(error){console.warn("NABD exam import Groq JSON invalid",{model,reason:(error as Error).message});}
+        }
+      }else if(provider==="openrouter"){
+        const content:any=visual?[
+          {type:"text",text:JSON.stringify({title,source_text:text,full_page_count:images.length,
+            instruction:"All supplied pages belong to the same original exam. Read ALL of them."})},
+          ...images.map(p=>({type:"image_url",image_url:{url:"data:image/jpeg;base64,"+p.data}}))
+        ]:JSON.stringify({title,source_text:text});
+        const response=await fetch("https://openrouter.ai/api/v1/chat/completions",{
           method:"POST",signal:ctrl.signal,
-          headers:{"Authorization":"Bearer "+env("GROQ_API_KEY"),"Content-Type":"application/json"},
-          body:JSON.stringify({model:"openai/gpt-oss-120b",temperature:0,max_completion_tokens:13000,
-            response_format:{type:"json_object"},messages:[
-              {role:"system",content:INSTRUCTIONS},
-              {role:"user",content:JSON.stringify({title,source_text:text})}]})
+          headers:{"Authorization":"Bearer "+env("OPENROUTER_API_KEY"),
+            "Content-Type":"application/json","HTTP-Referer":ORIGIN,"X-Title":"NABD Academy Examinations"},
+          body:JSON.stringify({model:"openrouter/free",temperature:0,max_tokens:12500,
+            messages:[{role:"system",content:INSTRUCTIONS},{role:"user",content}]})
         });
-        if(!response.ok){failures.add(response.status);continue;}
+        if(!response.ok){failures.add(response.status);
+          console.warn("NABD exam import OpenRouter Free unavailable",{status:response.status});continue;}
         const json=await response.json();
         const raw=String(json?.choices?.[0]?.message?.content||"");
         const parsed=parseJson(raw);
         if(Array.isArray(parsed?.questions)&&parsed.questions.length===0)throw Error("NO_VALID_QUESTIONS");
-        return {...normalize(parsed),provider:"groq"};
-      }catch(e){if((e as Error).message==="NO_VALID_QUESTIONS")throw e;}
-      finally{clearTimeout(timer);}
-    }
+        try{return {...normalize(parsed),provider:"openrouter:free"};}
+        catch(error){console.warn("NABD exam import Free router JSON invalid",{reason:(error as Error).message});}
+      }
+    }catch(error){
+      if((error as Error).message==="NO_VALID_QUESTIONS")throw error;
+      console.warn("NABD exam import provider request failed",{provider,kind:(error as Error).name});
+    }finally{clearTimeout(timer);}
   }
-  if(!env("GEMINI_API_KEY")&&!env("GROQ_API_KEY"))throw Error("AI_PROVIDER_NOT_CONFIGURED");
-  if(visual&&!env("GEMINI_API_KEY"))throw Error("VISION_UNAVAILABLE");
   if(failures.has(429))throw Error("AI_RATE_LIMITED");
   if(failures.has(413))throw Error("SOURCE_TOO_LARGE");
   throw Error("IMPORT_FAILED");

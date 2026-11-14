@@ -89,3 +89,17 @@ events older than 30 days. Data is not transferred to an external AI model.
 and RPCs checked, repository tests validate syntax and integrations. No real
 student exam or screenshot attempt has been used as an end-to-end test. The
 system observes client-reported browser events and is not tamper-proof.
+
+## 2026-11-15 — multi-free-provider failover for AI exams
+
+The director's existing lecture-to-exam generation and ready-paper transcription Edge Functions now attempt several model routes without manual switching:
+
+- **Groq:** `openai/gpt-oss-20b` then `openai/gpt-oss-120b` for text, and `qwen/qwen3.8-27b` for sampled scanned-page images.
+- **Google Gemini:** `gemini-3.5-flash-lite`, `gemini-3.8-flash`, then `gemini-2.5-flash-lite` where the account remains eligible. Gemini 2.5 access is restricted for some newer API projects; a provider may reject it without affecting the others.
+- **OpenRouter Free (optional third-party reserve):** exclusively `openrouter/free`. The provider routes this alias among zero-cost models but enforces free request limits (typically 50 requests/day and 20/minute without paid credits); model availability and multimodal support can change. This integration does **not** work until a director adds a personal `OPENROUTER_API_KEY` server-side to the NABD Supabase Edge Function secrets. Generate a key via <https://openrouter.ai/settings/keys>, then set it in the Supabase project's **Edge Function Secrets** section; **never** place the key in GitHub or website JavaScript.
+
+The code automatically switches to the next configured provider if a model returns a quota, network, authentication, or malformed-output failure. It does not hide exhausted quotas, retry indefinitely, invoke paid OpenRouter models, or publish without director approval. Source data may be sent to the selected AI provider for processing; do not upload confidential student/patient data. On Gemini Free, user-submitted data may be used to improve Google's products per its terms.
+
+This change adds resilience, **not unlimited inference**. Existing Groq and Gemini API project billing tiers remain governed by the academy's provider-account settings. For strict $0 spending, verify the original Groq/Gemini keys are tied to free-only, no-billing accounts. OpenRouter route is exclusively free, but its key must still be installed. All outputs remain subject to the existing format, source and language checks; a failed AI call cannot silently create exam questions.
+
+Verification: CI tests mock exhausted upstream providers and confirm correct fall-through to `openrouter/free` without any paid-model choice or fabricated answer keys. A live end-to-end PDF test requires the director to sign in and upload their own document. No live student exams are modified.

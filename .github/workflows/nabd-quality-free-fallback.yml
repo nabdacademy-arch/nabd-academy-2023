@@ -1,0 +1,33 @@
+name: NABD Quality Multi-Free AI Fallback Checks
+on:
+  push:
+    paths:
+      - 'supabase/functions/nabd-quality-generate/index.ts'
+      - 'supabase/functions/nabd-quality-import/index.ts'
+      - 'tests/nabd-quality-free-fallback.cjs'
+      - '.github/workflows/nabd-quality-free-fallback.yml'
+  pull_request:
+    paths:
+      - 'supabase/functions/nabd-quality-generate/index.ts'
+      - 'supabase/functions/nabd-quality-import/index.ts'
+      - 'tests/nabd-quality-free-fallback.cjs'
+      - '.github/workflows/nabd-quality-free-fallback.yml'
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated TypeScript transformer
+        run: npm install --no-save esbuild@0.25.10
+      - name: Parse generation and import Edge Functions
+        run: |
+          npx --no-install esbuild supabase/functions/nabd-quality-generate/index.ts --format=esm --outfile=/tmp/quality-gen.js
+          npx --no-install esbuild supabase/functions/nabd-quality-import/index.ts --format=esm --outfile=/tmp/quality-import.js
+      - name: Test free-provider failover and strict source fidelity
+        run: node tests/nabd-quality-free-fallback.cjs

@@ -333,7 +333,7 @@ $("ql-generate").addEventListener("click",async()=>{
      const messages={
        AI_PROVIDER_NOT_CONFIGURED:"مفاتيح الذكاء الاصطناعي غير مُعَدّة في الخادم.",
        AI_PROVIDER_AUTH_FAILED:"مفتاح خدمة الذكاء الاصطناعي غير مقبول؛ يحتاج إلى تحديث.",
-       AI_RATE_LIMITED:"وصل مزود الذكاء الاصطناعي لحد الاستخدام. أعد المحاولة لاحقًا.",
+       AI_RATE_LIMITED:"جرّب النظام مزوّدي الذكاء المتصلين، لكنهم جميعًا مشغولون أو استُنفدت حصتهم المتاحة حاليًا. يمكنك محاولة ملف أصغر أو تجربة الخدمة لاحقًا.",
        VISION_REQUEST_TOO_LARGE:"الصور المرسلة كبيرة جدًا. جرّب ملفًا أقصر أو أقل دقة.",
        AI_PROVIDER_UNAVAILABLE:"خدمة الذكاء الاصطناعي مشغولة مؤقتًا. حاول مجددًا بعد قليل.",
        AUTH_EXPIRED:"انتهت جلسة تسجيل الدخول. سجل الدخول مجددًا.",
@@ -355,10 +355,14 @@ $("ql-generate").addEventListener("click",async()=>{
    importedFile=null;$("ql-import-file").value="";
    $("ql-import-file-label").textContent="لم يتم اختيار امتحان بعد";
    questions=data.questions;renderEditor();
+   // Display the actual responding model, rather than implying an AI succeeded
+   // when every configured free-tier provider has failed.
+   const servingModel=typeof data.provider==="string"&&data.provider.length<120?
+      " · المزوّد المستخدم: "+data.provider:"";
    const coverage=data.source_mode==="sampled_images"?
       " جرى تحليل صفحات ممثّلة من الملف؛ لم تُحلَّل كل صفحاته، فراجع تغطية المحاضرة.":
       " راجع دقة الأسئلة ومفاتيحها مقارنة بالمحاضرة.";
-   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا باللغة "+(chosenLanguage==="en"?"الإنجليزية":"العربية")+" من "+(extracted.mode==="vision"?"الصفحات المصوّرة":"نص المحاضرة")+"."+coverage,"success");
+   status("ql-generate-status","تم توليد "+questions.length+" سؤالًا باللغة "+(chosenLanguage==="en"?"الإنجليزية":"العربية")+" من "+(extracted.mode==="vision"?"الصفحات المصوّرة":"نص المحاضرة")+"."+coverage+servingModel,"success");
    $("ql-preview").scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){status("ql-generate-status",e.message||"تعذر إنشاء الأسئلة من هذا الملف.","error")}
  finally{b.disabled=false;}
