@@ -5,12 +5,12 @@
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#071b2e">
 <meta name="description" content="بوابة مدير الامتحانات والجودة في أكاديمية نبض للعلوم الطبية">
 <title>بوابة الامتحانات والجودة | أكاديمية نبض للعلوم الطبية</title>
-<link rel="stylesheet" href="assets/css/quality-exams.css?v=1">
+<link rel="stylesheet" href="assets/css/quality-exams.css?v=2">
 </head>
 <body class="ql-site" data-quality-director>
 <header class="ql-top"><a class="ql-logo" href="index.html"><span class="ql-logo-mark">N</span><span>أكاديمية نبض للعلوم الطبية<small>EXAMINATIONS & QUALITY ASSURANCE</small></span></a><nav aria-label="التنقل"><a href="index.html">الرئيسية</a><a href="student-exams.html">امتحانات الطلاب</a><a href="nabd-moodle.html">مودل نبض</a><a href="portal.html">الحساب</a></nav></header>
 <main class="ql-wrap">
-<section class="ql-hero"><span class="ql-kicker"><span class="ql-live-dot"></span> NABD · ACADEMIC ASSESSMENT CONTROL</span><h1>بوابة الامتحانات <em>والجودة</em></h1><p>ارفع محاضرات PDF، وولّد منها أسئلة بمساعدة الذكاء الاصطناعي، ثم راجع الامتحان بنفسك. <strong>لا يُنشر أي امتحان إلا بأمر المدير.</strong></p><div class="ql-badges"><span>مدير الأكاديمية فقط</span><span>اعتماد بشري عند الحاجة</span><span>إغلاق تلقائي بوقت الخادم</span></div></section>
+<section class="ql-hero"><span class="ql-kicker"><span class="ql-live-dot"></span> NABD · ACADEMIC ASSESSMENT CONTROL</span><h1>بوابة الامتحانات <em>والجودة</em></h1><p>ارفع محاضرة لتوليد الأسئلة، أو ارفع امتحانًا جاهزًا لتحويل أسئلته نفسها إلى نموذج إلكتروني، ثم راجعه بنفسك. <strong>لا يُنشر أي امتحان إلا بأمر المدير.</strong></p><div class="ql-badges"><span>مدير الأكاديمية فقط</span><span>اعتماد بشري عند الحاجة</span><span>إغلاق تلقائي بوقت الخادم</span></div></section>
 <section class="ql-panel" id="ql-login-panel"><div class="ql-panel-header"><div><span class="ql-kicker">SECURE ACCESS</span><h2>دخول المدير العام</h2></div><span class="ql-tag">مقيّد</span></div><p class="ql-muted">استخدم حساب المدير الحالي في الأكاديمية؛ لا تُقبل حسابات الطلاب أو المحاضرين في هذه البوابة.</p>
 <form id="ql-login-form" class="ql-form"><div class="ql-two"><label>البريد الإلكتروني<input id="ql-email" required type="email" autocomplete="username" placeholder="director@example.com"></label><label>كلمة المرور<input id="ql-password" required type="password" autocomplete="current-password" placeholder="••••••••••••"></label></div><button class="ql-button" type="submit" id="ql-login-btn">دخول لوحة الامتحانات</button></form><p class="ql-status" id="ql-login-status" hidden role="status"></p></section>
 <div id="ql-workspace" hidden>
@@ -41,8 +41,21 @@
 <p class="ql-muted ql-note">يدعم النظام ملفات PDF النصية والمصوّرة؛ إذا تعذّر استخراج النص، يستخدم الذكاء الاصطناعي البصري لقراءة الصور والجداول واستنباط الأسئلة. قد تُستخدم صفحات ممثّلة فقط في الوضع البديل، وسيظهر تنبيه بذلك. راجع الأسئلة الناتجة دائمًا قبل اعتمادها، ولا ترفع ملفات تحتوي معلومات مرضى أو بيانات سرية.</p>
 </form>
 </section>
+<section class="ql-panel" id="ql-paper-import">
+<div class="ql-panel-header"><div><span class="ql-kicker">01B / UPLOAD READY-MADE PAPER</span>
+<h2>رفع امتحان جاهز وتحويله إلى امتحان إلكتروني</h2>
+<p class="ql-muted">هذا الخيار لا يؤلف أسئلة جديدة. ينقل الأسئلة والخيارات الموجودة في الملف إلى محرر الامتحان مع الحفاظ على ترتيبها ولغتها.</p></div><span class="ql-step">استيراد مباشر</span></div>
+<div class="ql-upload ql-import-upload"><label for="ql-import-file"><span class="ql-upload-icon">⇧</span>
+<strong>اختر ملف الامتحان الأصلي من الهاتف أو الكمبيوتر</strong>
+<span>PDF، Word (DOCX)، TXT، أو صورة JPG/PNG · حتى 15 ميغابايت</span></label>
+<input type="file" id="ql-import-file" accept=".pdf,.docx,.txt,.jpg,.jpeg,.png,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/jpeg,image/png">
+<p id="ql-import-file-label">لم يتم اختيار امتحان بعد</p></div>
+<div class="ql-actions"><button type="button" class="ql-button ql-button-secondary" id="ql-import-exam">⇧ تحويل الامتحان إلى نموذج إلكتروني</button></div>
+<p class="ql-muted ql-note">لا تتم إعادة صياغة الأسئلة أو ترجمتها. قد تحتاج النصوص المصوّرة والجداول لمراجعة دقيقة؛ لا يُنشَر الامتحان تلقائيًا. إذا لم يكن مفتاح الإجابة في الملف، عليك تحديد الإجابات الصحيحة قبل الحفظ. في الملفات الكبيرة جدًا، قسّم الامتحان إلى ملفات أصغر.</p>
+<p id="ql-import-status" class="ql-status" hidden role="status"></p>
+</section>
 <section class="ql-panel" id="ql-preview"><div class="ql-panel-header"><div><span class="ql-kicker">02 / HUMAN REVIEW & EDITOR</span><h2>معاينة الأسئلة وتصحيحها</h2><p class="ql-muted">راجع المصطلحات والإجابات قبل الحفظ. لا تُعرض أي مسودة على الطلاب.</p></div><span id="ql-question-counter" class="ql-step">0 سؤال</span></div>
-<div id="ql-question-editor" class="ql-question-stack"><p class="ql-empty">ارفع ملف PDF واختر «توليد الأسئلة»، أو أضف سؤالًا يدويًا.</p></div>
+<div id="ql-question-editor" class="ql-question-stack"><p class="ql-empty">ارفع محاضرة لتوليد الأسئلة، أو استورد امتحانًا جاهزًا، أو أضف سؤالًا يدويًا.</p></div>
 <div class="ql-toolbar"><label>نوع السؤال الجديد<select id="ql-manual-type"><option value="mcq">اختيار من متعدد</option><option value="true_false">صح أو خطأ</option><option value="essay">مقالي</option><option value="matching">توصيل</option><option value="fill_blank">إكمال الفراغ</option></select></label><button class="ql-button ql-button-outline" id="ql-add-question" type="button">+ إضافة سؤال يدوي</button></div>
 <div class="ql-actions"><button class="ql-button ql-button-secondary" type="button" id="ql-save-draft">حفظ الامتحان كمسودة</button><span class="ql-muted">النشر متاح فقط من بطاقة المسودة بعد الحفظ والموافقة.</span></div>
 <p id="ql-save-status" class="ql-status" hidden role="status"></p>
@@ -53,5 +66,5 @@
 <section class="ql-panel" id="ql-grading" hidden><div class="ql-panel-header"><div><span class="ql-kicker">HUMAN EVALUATION</span><h2 id="ql-grading-title">إجابات الطلاب والتصحيح البشري</h2></div><button class="ql-button ql-button-outline" id="ql-close-grading" type="button">إغلاق</button></div><div id="ql-submissions"></div><p class="ql-status" id="ql-grade-status" hidden role="status"></p></section>
 </div>
 </main><footer class="ql-footer">NABD ACADEMY · EXAMINATIONS & QUALITY ASSURANCE <span>المدير العام يراجع ويعتمد، والتصحيح الآلي أولي مع إتاحة المراجعة البشرية.</span></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=11"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=12"></script>
 </body></html>
