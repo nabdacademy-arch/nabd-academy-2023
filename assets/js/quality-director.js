@@ -7,6 +7,7 @@ const client=window.nabdSupabase;
 const kinds={mcq:"اختيار من متعدد",true_false:"صح أو خطأ",essay:"مقالي",matching:"توصيل ومطابقة",fill_blank:"أكمل الفراغ"};
 const bucket="nabd-quality-lecture-pdfs";
 let director=null,questions=[],exams=[],editingId=null,editingSourcePath=null,editingSourceFilename="",selectedCourse=null;
+let importedFile=null;
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;}
 function status(id,msg,kind){const x=$(id);if(!x)return;x.hidden=!msg;x.textContent=msg||"";x.className="ql-status"+(kind?" "+kind:"");}
 function btn(label,fn,extra=""){const b=el("button","ql-mini "+extra,label);b.type="button";b.addEventListener("click",fn);return b;}
@@ -27,7 +28,12 @@ function validateQuestions(){
  for(const [i,q] of questions.entries()){
    if(ids.has(q.id))throw Error("معرّف سؤال مكرر.");ids.add(q.id);
    if(!kinds[q.type]||typeof q.prompt!=="string"||q.prompt.trim().length<5)throw Error("راجع نص السؤال رقم "+(i+1));
-   if(q.type==="mcq"&&(!Array.isArray(q.options)||q.options.length!==4||q.options.some(v=>!String(v).trim())))throw Error("راجع خيارات السؤال "+(i+1));
+   if(q.type==="mcq"&&(!Array.isArray(q.options)||q.options.length<2||q.options.length>6||q.options.some(v=>!String(v).trim())))throw Error("راجع خيارات السؤال "+(i+1));
+   if(q.type==="mcq"&&(!Number.isInteger(q.answer_key)||q.answer_key<0||q.answer_key>=q.options.length))throw Error("حدد الإجابة الصحيحة للاختيار المتعدد في السؤال "+(i+1));
+   if(q.type==="true_false"&&typeof q.answer_key!=="boolean")throw Error("حدد إجابة صح أو خطأ في السؤال "+(i+1));
+   if(q.type==="fill_blank"&&!(typeof q.answer_key==="string"&&q.answer_key.trim()))throw Error("أدخل مفتاح إجابة إكمال الفراغ في السؤال "+(i+1));
+   if(q.type==="matching"&&(!Array.isArray(q.answer_key)||q.answer_key.length!==q.left_items.length||
+     q.answer_key.some(v=>!Number.isInteger(v)||v<0||v>=q.right_items.length)))throw Error("حدد المطابقة الصحيحة لكل عنصر في السؤال "+(i+1));
    if(q.type==="matching"&&(!Array.isArray(q.left_items)||!Array.isArray(q.right_items)||q.left_items.length<2||q.left_items.length!==q.right_items.length||[...q.left_items,...q.right_items].some(v=>!String(v).trim())))throw Error("راجع عناصر التوصيل في السؤال "+(i+1));
  }
 }
@@ -44,14 +50,16 @@ function renderEditor(){
      q.options.forEach((option,i)=>card.append(field("الخيار "+String.fromCharCode(65+i),option,v=>q.options[i]=v)));
      const label=el("label","","مفتاح التصحيح للمدير فقط");
      const select=el("select");
-     for(let i=0;i<4;i++){const opt=el("option","",String.fromCharCode(65+i));opt.value=String(i);select.append(opt);}
-     select.value=String(q.answer_key??0);
-     select.addEventListener("change",()=>q.answer_key=Number(select.value));label.append(select);card.append(label);
+     const unknown=el("option","","— اختر الإجابة الصحيحة —");unknown.value="";select.append(unknown);
+     for(let i=0;i<q.options.length;i++){const opt=el("option","",String.fromCharCode(65+i));opt.value=String(i);select.append(opt);}
+     select.value=Number.isInteger(q.answer_key)?String(q.answer_key):"";
+     select.addEventListener("change",()=>q.answer_key=select.value===""?null:Number(select.value));label.append(select);card.append(label);
    }else if(q.type==="true_false"){
      const label=el("label","","الجواب الصحيح (خاص بالمدير)");
      const select=el("select");
-     for(const [val,txt] of [["true","صحيح"],["false","خطأ"]]){const opt=el("option","",txt);opt.value=val;select.append(opt);}
-     select.value=String(q.answer_key??true);select.addEventListener("change",()=>q.answer_key=select.value==="true");
+     for(const [val,txt] of [["","— اختر الإجابة الصحيحة —"],["true","صحيح"],["false","خطأ"]]){const opt=el("option","",txt);opt.value=val;select.append(opt);}
+     select.value=typeof q.answer_key==="boolean"?String(q.answer_key):"";
+     select.addEventListener("change",()=>q.answer_key=select.value===""?null:select.value==="true");
      label.append(select);card.append(label);
    }else if(q.type==="matching"){
      card.append(el("p","ql-muted","اربط كل عنصر في العمود الأول برقم الاختيار الصحيح من العمود الثاني. مفاتيح التوصيل تبقى للمدير فقط."));
@@ -64,9 +72,10 @@ function renderEditor(){
      q.left_items.forEach((_,i)=>{
        const label=el("label","","إجابة العنصر "+(i+1));
        const select=el("select");
+       const unknown=el("option","","— اختر —");unknown.value="";select.append(unknown);
        for(let j=0;j<q.right_items.length;j++){const opt=el("option","",String(j+1));opt.value=String(j);select.append(opt);}
-       select.value=String(Array.isArray(q.answer_key)?q.answer_key[i]??i:i);
-       select.addEventListener("change",()=>{if(!Array.isArray(q.answer_key))q.answer_key=[];q.answer_key[i]=Number(select.value)});
+       select.value=Number.isInteger(q.answer_key?.[i])?String(q.answer_key[i]):"";
+       select.addEventListener("change",()=>{if(!Array.isArray(q.answer_key))q.answer_key=q.left_items.map(()=>null);q.answer_key[i]=select.value===""?null:Number(select.value)});
        label.append(select);card.append(label);
      });
    }else{
@@ -82,9 +91,11 @@ function resetBuilder(){
  $("ql-config").reset();$("ql-count").value="10";$("ql-duration").value="60";
  $("ql-language").value=preferredLanguage;
  $("ql-file-label").textContent="لم يتم اختيار ملف بعد";
+ $("ql-import-file").value="";$("ql-import-file-label").textContent="لم يتم اختيار امتحان بعد";
+ importedFile=null;
  questions=[];editingId=null;editingSourcePath=null;editingSourceFilename="";
  $("ql-save-draft").textContent="حفظ الامتحان كمسودة";
- renderEditor();status("ql-save-status","");status("ql-generate-status","");
+ renderEditor();status("ql-save-status","");status("ql-generate-status","");status("ql-import-status","");
 }
 async function authenticate(){
  if(!client){status("ql-login-status","اتصال Supabase غير متاح.","error");return;}
@@ -350,6 +361,153 @@ $("ql-generate").addEventListener("click",async()=>{
  }catch(e){status("ql-generate-status",e.message||"تعذر إنشاء الأسئلة من هذا الملف.","error")}
  finally{b.disabled=false;}
 });
+
+$("ql-import-file").addEventListener("change",()=>{
+ const file=$("ql-import-file").files[0];
+ $("ql-import-file-label").textContent=file?file.name+" · "+(file.size/1048576).toFixed(2)+" MB":"لم يتم اختيار امتحان بعد";
+ status("ql-import-status","");
+});
+async function convertImageToJpeg(file){
+ const url=URL.createObjectURL(file);
+ try{
+   const img=new Image();
+   await new Promise((resolve,reject)=>{
+     img.onload=resolve;img.onerror=()=>reject(Error("تعذّر فتح الصورة."));img.src=url;
+   });
+   const max=1600,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.round(img.naturalWidth*scale);
+   canvas.height=Math.round(img.naturalHeight*scale);
+   const context=canvas.getContext("2d",{alpha:false});
+   if(!context)throw Error("تعذّر تجهيز الصورة.");
+   context.fillStyle="#fff";context.fillRect(0,0,canvas.width,canvas.height);
+   context.drawImage(img,0,0,canvas.width,canvas.height);
+   let data=canvas.toDataURL("image/jpeg",.75).split(",")[1];
+   if(data.length>420000){
+     const smaller=document.createElement("canvas"),ratio=Math.sqrt(390000/data.length);
+     smaller.width=Math.max(360,Math.floor(canvas.width*ratio));
+     smaller.height=Math.max(360,Math.floor(canvas.height*ratio));
+     const cx=smaller.getContext("2d",{alpha:false});
+     if(!cx)throw Error("تعذّر تصغير الصورة.");
+     cx.fillStyle="#fff";cx.fillRect(0,0,smaller.width,smaller.height);
+     cx.drawImage(canvas,0,0,smaller.width,smaller.height);
+     data=smaller.toDataURL("image/jpeg",.62).split(",")[1];
+   }
+   canvas.width=0;canvas.height=0;
+   if(data.length>420000)throw Error("حجم الصورة كبير. استخدم صورة أوضح وأقل دقة.");
+   return data;
+ }finally{URL.revokeObjectURL(url);}
+}
+async function readWordExam(file){
+ if(await file.slice(0,2).text()!=="PK")throw Error("ملف Word غير صالح. استخدم DOCX.");
+ if(!window.mammoth){
+   await new Promise((resolve,reject)=>{
+     const script=document.createElement("script");
+     script.src="https://cdn.jsdelivr.net/npm/mammoth@1.9.1/mammoth.browser.min.js";
+     script.onload=resolve;script.onerror=()=>reject(Error("تعذّر تحميل قارئ Word. تحقق من اتصال الإنترنت."));
+     document.head.append(script);
+   });
+ }
+ if(!window.mammoth)throw Error("قارئ Word غير متاح.");
+ const result=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+ return result.value||"";
+}
+async function readReadyExam(file){
+ if(!file||file.size<50||file.size>15728640)throw Error("اختر امتحانًا صالحًا لا يتجاوز 15 ميغابايت.");
+ const extension=file.name.split(".").pop().toLowerCase();
+ if(!["pdf","docx","txt","jpg","jpeg","png"].includes(extension))
+   throw Error("الصيغ المدعومة: PDF أو DOCX أو TXT أو JPG أو PNG فقط.");
+ if(extension==="txt"){
+   const text=await file.text();
+   if(text.length>50000)throw Error("الامتحان النصي أطول من الحد المدعوم. قسّمه إلى ملفين.");
+   return {source_text:text,page_images:[],page_count:0};
+ }
+ if(extension==="docx"){
+   const text=await readWordExam(file);
+   if(text.length>50000)throw Error("ملف Word طويل جدًا. قسّمه إلى امتحانين.");
+   return {source_text:text,page_images:[],page_count:0};
+ }
+ if(["jpg","jpeg","png"].includes(extension)){
+   if(!file.type.startsWith("image/"))throw Error("الملف المختار ليس صورة صالحة.");
+   return {source_text:"",page_images:[{page:1,mime_type:"image/jpeg",data:await convertImageToJpeg(file)}],page_count:1};
+ }
+ if(await file.slice(0,5).text()!=="%PDF-")throw Error("ملف PDF غير صالح.");
+ const pdfjs=await import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs");
+ pdfjs.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+ const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+ if(pdf.numPages>20)throw Error("هذا الملف أكثر من 20 صفحة. يرجى تقسيم الامتحان إلى ملفات أصغر.");
+ const lines=[];let hasScannedPage=false;
+ for(let i=1;i<=pdf.numPages;i++){
+   status("ql-import-status","جارٍ قراءة الصفحة "+i+" من "+pdf.numPages+"…");
+   const items=(await(await pdf.getPage(i)).getTextContent()).items;
+   let lastY=null,out="";
+   for(const item of items){
+     if(typeof item.str!=="string")continue;
+     const y=item.transform?.[5];
+     if(lastY!==null&&typeof y==="number"&&Math.abs(y-lastY)>3)out+="\n";
+     out+=item.str+(item.hasEOL?"\n":" ");
+     if(typeof y==="number")lastY=y;
+   }
+   if(out.trim().length<30)hasScannedPage=true;
+   lines.push("PAGE "+i+"\n"+out.trim());
+ }
+ const text=lines.join("\n\n");
+ if(text.length>50000)throw Error("نص الامتحان طويل جدًا. قسّمه إلى ملفات أصغر.");
+ if(!hasScannedPage)return {source_text:text,page_images:[],page_count:pdf.numPages};
+ if(pdf.numPages>10)throw Error("الامتحان يحتوي صفحات مصوّرة وأكثر من 10 صفحات؛ قسّمه إلى ملفات أقصر حتى لا تُهمل أي صفحة.");
+ const images=[];
+ for(let i=1;i<=pdf.numPages;i++){
+   status("ql-import-status","جارٍ تجهيز الصفحة المصوّرة "+i+" من "+pdf.numPages+"…");
+   images.push({page:i,mime_type:"image/jpeg",data:await renderPageAsJpeg(await pdf.getPage(i))});
+ }
+ return {source_text:"",page_images:images,page_count:pdf.numPages};
+}
+$("ql-import-exam").addEventListener("click",async()=>{
+ if(!director)return;
+ const file=$("ql-import-file").files[0],button=$("ql-import-exam");
+ if(!file)return status("ql-import-status","اختر ملف الامتحان الجاهز أولًا.","error");
+ if(questions.length&&!window.confirm("يوجد امتحان قيد التحرير. هل تريد استبدال أسئلته بما في الملف الجديد؟"))return;
+ const title=$("ql-title").value.trim()||file.name.replace(/\.[^.]+$/,"").slice(0,220);
+ if(title.length<3)return status("ql-import-status","اكتب عنوان الامتحان أولًا.","error");
+ button.disabled=true;status("ql-import-status","جارٍ استخراج الأسئلة الموجودة دون توليد أسئلة جديدة…");
+ try{
+   const input=await readReadyExam(file);
+   if(input.source_text.length<30&&!input.page_images.length)throw Error("لم أجد نص امتحان قابلًا للقراءة في هذا الملف.");
+   status("ql-import-status","جارٍ تحويل الأسئلة الأصلية وخياراتها إلى حقول إلكترونية، من دون تأليف أسئلة…");
+   const {data,error}=await client.functions.invoke("nabd-quality-import",{
+     body:{title,...input}
+   });
+   if(error||!data?.ok||!Array.isArray(data.questions)){
+     let detail=data;
+     if(error?.context?.json)try{detail=await error.context.clone().json();}catch{}
+     const errors={
+       NO_VALID_QUESTIONS:"لم يتمكن القارئ من تحويل كل الأسئلة بموثوقية؛ راجع وضوح الملف أو قسّمه.",
+       IMPORT_FAILED:"لم يكتمل تحويل الامتحان. جرّب ملفًا أقصر أو أوضح.",
+       SOURCE_TOO_LARGE:"الملف كبير على خدمة القراءة. قسّمه إلى صفحات أقل.",
+       AI_RATE_LIMITED:"وصلت خدمة القراءة إلى الحد المؤقت من الاستخدام.",
+       VISION_UNAVAILABLE:"قراءة الامتحانات المصوّرة غير متاحة على الخادم حاليًا.",
+       AUTH_EXPIRED:"انتهت جلسة الدخول؛ سجل الدخول مجددًا.",
+       DIRECTOR_ONLY:"هذه الميزة مخصّصة للمدير فقط."
+     };
+     throw Error(detail?.message||errors[detail?.error]||"تعذّر تحويل الملف، أو خدمة الاستيراد لم تُنشر بعد.");
+   }
+   if(data.questions.length>40)throw Error("الحد الأعلى 40 سؤالًا. قسّم الامتحان.");
+   questions=data.questions;importedFile=file;
+   $("ql-title").value=title;$("ql-pdf").value="";
+   $("ql-file-label").textContent="لم يتم اختيار محاضرة";
+   renderEditor();
+   const warnings=(data.warnings||[]).map(w=>String(w).slice(0,200));
+   const needKeys=questions.filter(q=>q.answer_key===null||
+     q.type==="matching"&&q.answer_key?.some(v=>v===null)).length;
+   status("ql-import-status","تم استيراد "+questions.length+" سؤالًا من الامتحان الأصلي. "+
+     (needKeys?needKeys+" سؤالًا تحتاج تحديد مفتاح تصحيح. ":"")+
+     "راجع الأسئلة والخيارات مقابل الملف الأصلي قبل الحفظ. "+
+     (warnings.length?"ملاحظات القراءة: "+warnings.join("؛ "):""),"success");
+   $("ql-preview").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(error){status("ql-import-status",String(error?.message||error),"error");}
+ finally{button.disabled=false;}
+});
+
 async function uploadFile(f){
  if(!f)return null;
  if(f.size<100||f.size>15728640||!/\.pdf$/i.test(f.name)||await f.slice(0,5).text()!=="%PDF-")
@@ -367,10 +525,11 @@ $("ql-save-draft").addEventListener("click",async()=>{
  const b=$("ql-save-draft");b.disabled=true;status("ql-save-status","جارٍ حفظ المسودة…");
  let uploaded=null;
  try{
-   const file=$("ql-pdf").files[0];
-   if(file)uploaded=await uploadFile(file);
+   const file=importedFile||$("ql-pdf").files[0];
+   if(file&&/\.pdf$/i.test(file.name))uploaded=await uploadFile(file);
+   const sourcePath=uploaded||(importedFile?null:editingSourcePath)||null;
    const values={title,course_id:course,source_filename:file?.name||editingSourceFilename||"",
-     source_path:uploaded||editingSourcePath||null,questions,duration_minutes:mins,updated_at:new Date().toISOString()};
+     source_path:sourcePath,questions,duration_minutes:mins,updated_at:new Date().toISOString()};
    const result=editingId
      ? await client.from("nabd_quality_exams").update(values).eq("id",editingId).eq("status","draft").select("id").maybeSingle()
      : await client.from("nabd_quality_exams").insert({...values,status:"draft",created_by:director.id}).select("id").maybeSingle();
@@ -378,7 +537,7 @@ $("ql-save-draft").addEventListener("click",async()=>{
    const previousPath=editingSourcePath;
    resetBuilder();
    status("ql-save-status","تم حفظ المسودة. لا تظهر للطلاب حتى تضغط «اعتماد ونشر الآن» من قسم التحكم.","success");
-   if(uploaded&&previousPath&&previousPath!==uploaded)await client.storage.from(bucket).remove([previousPath]);
+   if(previousPath&&previousPath!==sourcePath)await client.storage.from(bucket).remove([previousPath]);
    await loadExams();
  }catch(e){if(uploaded)await client.storage.from(bucket).remove([uploaded]);status("ql-save-status",e.message||"تعذر حفظ المسودة.","error")}
  finally{b.disabled=false}
@@ -522,7 +681,9 @@ function renderExams(){
 function editExam(x){
  editingId=x.id;editingSourcePath=x.source_path;editingSourceFilename=x.source_filename;
  $("ql-title").value=x.title;$("ql-duration").value=x.duration_minutes;$("ql-course").value=x.course_id||"";
- $("ql-pdf").value="";$("ql-file-label").textContent=x.source_filename?"المحاضرة الحالية: "+x.source_filename+" (يمكن اختيار بديل)":"لم يُرفع PDF";
+ $("ql-pdf").value="";$("ql-import-file").value="";importedFile=null;
+ $("ql-import-file-label").textContent="لم يتم اختيار امتحان بعد";
+ $("ql-file-label").textContent=x.source_filename?"الملف الحالي: "+x.source_filename+" (يمكن اختيار بديل)":"لم يُرفع PDF";
  questions=structuredClone(x.questions||[]);
  if(questions.length){
    const arabic=/[\u0600-\u06FF]/u;
