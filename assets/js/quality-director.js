@@ -352,6 +352,8 @@ $("ql-generate").addEventListener("click",async()=>{
      throw Error("تم رفض النتيجة لأن لغة الأسئلة لا تطابق اللغة المختارة. حاول التوليد مجددًا.");
    }
    if(questions.length && !window.confirm("يوجد بنك أسئلة غير محفوظ. هل تريد استبداله بالأسئلة الجديدة؟"))return;
+   importedFile=null;$("ql-import-file").value="";
+   $("ql-import-file-label").textContent="لم يتم اختيار امتحان بعد";
    questions=data.questions;renderEditor();
    const coverage=data.source_mode==="sampled_images"?
       " جرى تحليل صفحات ممثّلة من الملف؛ لم تُحلَّل كل صفحاته، فراجع تغطية المحاضرة.":
