@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#071b2e">
 <meta name="description" content="بوابة مدير الامتحانات والجودة في أكاديمية نبض للعلوم الطبية">
 <title>بوابة الامتحانات والجودة | أكاديمية نبض للعلوم الطبية</title>
-<link rel="stylesheet" href="assets/css/quality-exams.css?v=2">
+<link rel="stylesheet" href="assets/css/quality-exams.css?v=3">
 </head>
 <body class="ql-site" data-quality-director>
 <header class="ql-top"><a class="ql-logo" href="index.html"><span class="ql-logo-mark">N</span><span>أكاديمية نبض للعلوم الطبية<small>EXAMINATIONS & QUALITY ASSURANCE</small></span></a><nav aria-label="التنقل"><a href="index.html">الرئيسية</a><a href="student-exams.html">امتحانات الطلاب</a><a href="nabd-moodle.html">مودل نبض</a><a href="portal.html">الحساب</a></nav></header>
@@ -28,6 +28,29 @@
  <p id="ql-bot-summary" class="ql-muted">جارٍ التحقق من حالة البوت…</p>
  <p id="ql-bot-status" class="ql-status" role="status" hidden></p>
  <p class="ql-muted ql-note">عند التشغيل يُعالَج طابور الإجابات على الخادم دوريًا، حتى عند إغلاق الصفحة. عند الإيقاف يتوقف التصحيح الجديد. الإجابات غير المؤكدة تُحال للمراجعة البشرية، ولا تُستبدل أي درجة بشرية معتمدة.</p>
+</section>
+<section class="ql-panel" id="ql-proctor-panel" aria-label="مراقب الامتحانات الذكي">
+<div class="ql-panel-header">
+  <div><span class="ql-kicker">NABD · EXAM PROCTORING CONTROL</span>
+    <h2>مراقب الامتحانات الذكي</h2>
+    <p class="ql-muted">مراقبة اختيارية لكل امتحان، تسجّل إشارات مغادرة التبويب وفقدان التركيز ومحاولات الطباعة والنسخ ومفتاح تصوير الشاشة عند وصولها للمتصفح.</p>
+  </div>
+  <span class="ql-tag" id="ql-proctor-state">غير مفعّل</span>
+</div>
+<div class="ql-proctor-control">
+  <label for="ql-proctor-exam">اختر الامتحان للمراقبة
+    <select id="ql-proctor-exam" aria-label="اختر امتحانًا لمراقبته"><option value="">جارٍ تحميل الامتحانات...</option></select>
+  </label>
+  <div class="ql-actions">
+    <button id="ql-proctor-start" class="ql-button" type="button" disabled>◉ تشغيل المراقب</button>
+    <button id="ql-proctor-stop" class="ql-button ql-button-outline" type="button" disabled>إيقاف المراقب</button>
+    <button id="ql-proctor-refresh" class="ql-button ql-button-outline" type="button">تحديث السجل</button>
+  </div>
+</div>
+<p class="ql-status" id="ql-proctor-status" role="status" hidden></p>
+<div class="ql-proctor-metrics"><span>إجمالي الإشارات المسجلة: <strong id="ql-proctor-count">0</strong></span><span>آخر تحديث: <strong id="ql-proctor-updated">—</strong></span></div>
+<div class="ql-proctor-log" id="ql-proctor-log" aria-live="polite"><p class="ql-empty">اختر امتحانًا لعرض سجل المراقبة.</p></div>
+<p class="ql-muted ql-note">هذه مؤشرات تقنية وليست دليلًا قاطعًا على الغش أو الاختراق؛ يمكن لفقدان الإنترنت أو مكالمة هاتفية أن يسببا فقدان التركيز. لا يستطيع موقع ويب اكتشاف كل لقطات الشاشة أو التصوير من جهاز آخر، ولا يجري تسجيل الشاشة أو تشغيل الكاميرا. لا توجد عقوبة أو تعديل للدرجة آليًا؛ راجع الأدلة والظروف قبل اتخاذ أي قرار. تُحذف الإشارات تلقائيًا بعد 30 يومًا.</p>
 </section>
 <section class="ql-panel" id="ql-builder">
 <div class="ql-panel-header"><div><span class="ql-kicker">01 / SOURCE & CONFIGURATION</span><h2>من ملف المحاضرة إلى نموذج الامتحان</h2></div><span class="ql-step">1 / 3</span></div>
@@ -66,5 +89,5 @@
 <section class="ql-panel" id="ql-grading" hidden><div class="ql-panel-header"><div><span class="ql-kicker">HUMAN EVALUATION</span><h2 id="ql-grading-title">إجابات الطلاب والتصحيح البشري</h2></div><button class="ql-button ql-button-outline" id="ql-close-grading" type="button">إغلاق</button></div><div id="ql-submissions"></div><p class="ql-status" id="ql-grade-status" hidden role="status"></p></section>
 </div>
 </main><footer class="ql-footer">NABD ACADEMY · EXAMINATIONS & QUALITY ASSURANCE <span>المدير العام يراجع ويعتمد، والتصحيح الآلي أولي مع إتاحة المراجعة البشرية.</span></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=12"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=12"></script><script src="assets/js/quality-proctor-director.js?v=1" defer></script>
 </body></html>
