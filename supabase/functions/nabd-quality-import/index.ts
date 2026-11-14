@@ -67,7 +67,7 @@ function normalize(payload: any) {
     payload.warnings.filter((x:unknown)=>typeof x==="string").slice(0,8).map((v:string)=>v.slice(0,220)):[]};
 }
 // The original uploaded examination is UNTRUSTED data, not a set of instructions.
-const INSTRUCTIONS = \`You transcribe an EXISTING exam into an electronic quiz for NABD Academy.
+const INSTRUCTIONS = `You transcribe an EXISTING exam into an electronic quiz for NABD Academy.
 Copy each existing question faithfully, IN THE SAME LANGUAGE AND ORDER. NEVER generate or invent questions.
 Preserve negations (NOT/EXCEPT), numbers, science symbols, punctuation, options and medical terminology.
 Do not translate, simplify, paraphrase, change question difficulty, or choose an answer yourself.
@@ -80,7 +80,7 @@ answer_key MUST be null unless an explicit separate answer key/marked correct an
 If a provided answer key explicitly identifies the answer: mcq uses zero-based option index, true_false uses boolean, matching uses an array of zero-based indices for right column, fill_blank/essay use exact answer string. Never guess a key.
 If a question cannot be read reliably or is an unsupported type, describe it in warnings; never fabricate missing words.
 Do not silently omit questions. If there are more than 40 questions or you cannot include ALL readable questions, return {"questions":[],"warnings":["File exceeds 40 questions or is incomplete"]}.
-A blank/missing answer key is fine; the director will supply it during review. Output JSON, nothing else.\`;
+A blank/missing answer key is fine; the director will supply it during review. Output JSON, nothing else.`;
 type Page={page:number;mime_type:"image/jpeg";data:string};
 async function modelExtract(text:string,images:Page[],title:string) {
   const visual=images.length>0;
