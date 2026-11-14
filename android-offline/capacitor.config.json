@@ -1,6 +1,6 @@
 {
-  "appId": "org.nabdacademy.opendoors.offline",
-  "appName": "NABD Open Doors Offline",
+  "appId": "org.nabdacademy.opendoors.offline.full",
+  "appName": "NABD Open Doors Full Offline",
   "webDir": "www",
   "android": {
     "allowMixedContent": false
