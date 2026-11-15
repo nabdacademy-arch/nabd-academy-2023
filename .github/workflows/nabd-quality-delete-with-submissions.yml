@@ -1,0 +1,31 @@
+name: NABD Delete Exam With Submissions
+on:
+  push:
+    paths:
+      - 'assets/js/quality-director.js'
+      - 'quality-exams.html'
+      - 'supabase/migrations/20261115_nabd_quality_delete_exam_with_answers.sql'
+      - 'tests/nabd-quality-delete-with-submissions.test.mjs'
+      - '.github/workflows/nabd-quality-delete-with-submissions.yml'
+  pull_request:
+    paths:
+      - 'assets/js/quality-director.js'
+      - 'quality-exams.html'
+      - 'supabase/migrations/20261115_nabd_quality_delete_exam_with_answers.sql'
+      - 'tests/nabd-quality-delete-with-submissions.test.mjs'
+      - '.github/workflows/nabd-quality-delete-with-submissions.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate browser JavaScript
+        run: node --check assets/js/quality-director.js
+      - name: Check confirmed transactional deletion and role boundary
+        run: node tests/nabd-quality-delete-with-submissions.test.mjs

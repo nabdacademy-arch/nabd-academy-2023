@@ -103,3 +103,13 @@ The code automatically switches to the next configured provider if a model retur
 This change adds resilience, **not unlimited inference**. Existing Groq and Gemini API project billing tiers remain governed by the academy's provider-account settings. For strict $0 spending, verify the original Groq/Gemini keys are tied to free-only, no-billing accounts. OpenRouter route is exclusively free, but its key must still be installed. All outputs remain subject to the existing format, source and language checks; a failed AI call cannot silently create exam questions.
 
 Verification: CI tests mock exhausted upstream providers and confirm correct fall-through to `openrouter/free` without any paid-model choice or fabricated answer keys. A live end-to-end PDF test requires the director to sign in and upload their own document. No live student exams are modified.
+
+
+## 2026-11-15 — Director can permanently delete exams with student answers
+
+- The director's Delete Exam control invokes \`nabd_quality_delete_exam(p_exam)\` instead of deleting the parent record directly. The browser no longer blocks deletion just because \`nabd_quality_submissions\` already contains answers.
+- The function requires the actual authorized director \`auth.uid()\` and verifies \`created_by\` ownership of the target exam under a row lock. Unauthenticated users and other students cannot execute it.
+- After **two clear, irreversible-action confirmations**, the selected exam can be removed regardless of status, **even if it is currently open**. This immediately invalidates access to the paper, discards all submission answers, AI/human grades, notes and linked proctoring signals/settings.
+- Deletion of submissions, proctor records and the exam is contained in **one database transaction**. Any error rolls back the entire deletion. Success includes verified exam ID and removed-row totals, and the UI refreshes. Linked private PDF files are cleaned up only after checking that no other exam references the file.
+- This does not automatically delete any existing exam. It is a permanent destructive operation initiated by the director, not a background cleanup. Export any results needed for academic records **before** pressing Delete.
+- The production function was installed on Supabase and checked for EXECUTE rights (authenticated: allowed but checked in the function; anon: denied). Existing exam/answer counts remained unchanged immediately after installation. The actual deletion of a real student-result exam is not exercised as part of automated verification.
