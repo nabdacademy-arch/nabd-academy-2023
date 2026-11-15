@@ -72,7 +72,7 @@ export function createClient(){
   assert.match(await page.locator("#masterPracticeReport").innerText(),/الإجابة العلمية|model|reference/i);
   // Master's official sources and syllabus links are present for the selected track.
   await page.locator('.master-nav [data-view="sources"]').click();
-  assert.ok(await page.locator("#masterSourcesContent a[href*="od.globaluni.ru"]").count()>=6);
+  assert.ok(await page.locator('#masterSourcesContent a[href*="od.globaluni.ru"]').count()>=6);
   await page.locator('.master-nav [data-view="curriculum"]').click();
   assert.ok(await page.locator("#masterCurriculumContent article").count()>=6);
   // Launch 43-question mock plus oral stage; do not wait 3 hours.
