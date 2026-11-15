@@ -318,8 +318,8 @@ function generated(subject,kind,seed){
    const q=.1+.025*(series%27),p=1-q,het=Math.round(2*q*p*1000)/10;
    return result("Hardy–Weinberg carrier estimate","For Hardy–Weinberg recessive allele frequency q="+q.toFixed(3)+", estimate heterozygote proportion 2pq (%).",
     "في توازن هاردي–واينبرغ، q="+q.toFixed(3)+"، احسب نسبة متغايري الزيجوت 2pq.",
-    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%",(q*100).toFixed(1)+"%"],
-    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%",(q*100).toFixed(1)+"%"],[1],
+    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%","100%"],
+    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%","100%"],[1],
     "p=1−q="+p.toFixed(3)+" and 2pq="+het.toFixed(1)+"%.","p=1−q="+p.toFixed(3)+"، و2pq="+het.toFixed(1)+"%.");
   }
   if(family===2){
@@ -355,7 +355,7 @@ function generated(subject,kind,seed){
     "TP="+tp+", FP="+fp.toFixed(0)+", PPV≈"+v.toFixed(1)+"%.","TP="+tp+" وFP="+fp.toFixed(0)+"؛ PPV≈"+v.toFixed(1)+"%.");
   }
   if(family===1){
-   const a=2+(series%15),b=5+(series%10),rr=a/b*10;
+   const a=1+(series%8),b=5+(series%10),rr=a/b*10;
    return result("Cohort relative risk","Exposure group: "+a*10+"/100 cases. Comparator: "+b+"/100 cases. Estimate relative risk.",
     "حالات المعرّضين "+(a*10)+"/100 وغير المعرّضين "+b+"/100، احسب RR.",
     [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),(rr+10).toFixed(1)],null,[1],
