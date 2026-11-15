@@ -9,7 +9,7 @@ const context={};vm.runInNewContext(source,context);
 const bank=context.NABDOpenDoorsMastersBank;
 assert.ok(bank&&bank.version);
 const subjects=["chemistry","biology","medicine"];
-assert.equal(bank.QUESTIONS.length,48,"Master's original curated bank: 8 single +4 multi +3 written +1 oral per field");
+assert.equal(bank.QUESTIONS.length,72,"Master's original curated bank: 10 single +6 multi +5 written +3 oral per field");
 const ids=new Set();
 for(const q of bank.QUESTIONS){
  assert.ok(!ids.has(q.id),"Unique authored ID "+q.id);ids.add(q.id);
