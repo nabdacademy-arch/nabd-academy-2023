@@ -32,10 +32,10 @@ for(const q of bank.QUESTIONS){
  }
 }
 for(const subject of subjects){
- assert.equal(bank.available(subject,"single").length,8);
- assert.equal(bank.available(subject,"multi").length,4);
- assert.equal(bank.available(subject,"written").length,3);
- assert.equal(bank.available(subject,"oral").length,1);
+ assert.equal(bank.available(subject,"single").length,10);
+ assert.equal(bank.available(subject,"multi").length,6);
+ assert.equal(bank.available(subject,"written").length,5);
+ assert.equal(bank.available(subject,"oral").length,3);
  assert.match(bank.SOURCES[subject].page,/\/ma$/);
  assert.match(bank.SOURCES[subject].demo,/\/attachment\/\d+\/download$/);
  assert.match(bank.SOURCES[subject].syllabus,/\/attachment\/\d+\/download$/);
