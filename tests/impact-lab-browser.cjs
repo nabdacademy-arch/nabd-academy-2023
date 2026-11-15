@@ -63,6 +63,7 @@ const fs=require("node:fs");
   assert.match(encrypted.suggestedFilename(),/\.nabdvault$/);
   await page.locator("#vault-archive").setInputFiles(await encrypted.path());
   await page.locator("#v2-vault-inspect").click();
+  await page.locator("#v2-vault-readout").getByText("AES-256-GCM",{exact:false}).waitFor();
   assert.match(await page.locator("#v2-vault-readout").innerText(),/AES-256-GCM/);
   await page.locator("#vault-open-pass").fill("StrongPassphrase_2026_for_trial");
   const [decrypted]=await Promise.all([page.waitForEvent("download"),page.locator('#vault-decrypt button[type="submit"]').click()]);
