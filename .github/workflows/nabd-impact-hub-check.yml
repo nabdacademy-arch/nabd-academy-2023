@@ -1,0 +1,31 @@
+name: NABD World Impact Hub Checks
+on:
+  push:
+    paths:
+      - 'impact-lab/**'
+      - 'index.html'
+      - 'tests/impact-lab.test.cjs'
+      - '.github/workflows/nabd-impact-hub-check.yml'
+  pull_request:
+    paths:
+      - 'impact-lab/**'
+      - 'index.html'
+      - 'tests/impact-lab.test.cjs'
+      - '.github/workflows/nabd-impact-hub-check.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check scripts are valid JavaScript
+        run: |
+          node --check impact-lab/app.js
+          node --check impact-lab/sw.js
+      - name: Run browser-free integration and crypto tests
+        run: node tests/impact-lab.test.cjs

@@ -43,6 +43,16 @@ function mockClient(role){
     return q;
   },
   async rpc(name,args){
+    if(name==="nabd_quality_submit_exam"){
+      if(role!=="student")return {data:null,error:{message:"STUDENT_ONLY"}};
+      const prior=state.submissions.find(s=>s.exam_id===args.p_exam);
+      if(prior)return {data:{ok:true,already_submitted:true,id:prior.id,submitted_at:prior.submitted_at},error:null};
+      const saved={id:"qa-submission",exam_id:args.p_exam,student_id:user.id,answers:args.p_answers,
+        submitted_at:new Date().toISOString(),human_score:null,grade_notes:null,ai_score:null,
+        ai_notes:null,ai_review_required:false,ai_status:"pending"};
+      state.submissions.push(saved);
+      return {data:{ok:true,already_submitted:false,id:saved.id,submitted_at:saved.submitted_at},error:null};
+    }
     if(name==="nabd_gradebot_status")return {data:{enabled:state.enabled,pending:0,needs_review:0,total_graded:0},error:null};
     if(name==="nabd_gradebot_toggle"){
       if(role!=="director")return {error:{message:"DIRECTOR_ONLY"}};

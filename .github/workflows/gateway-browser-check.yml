@@ -10,6 +10,8 @@ on:
       - 'student-exams.html'
       - 'quality-exams.html'
       - 'index.html'
+      - 'impact-lab/**'
+      - 'tests/impact-lab-browser.cjs'
       - '.github/workflows/gateway-browser-check.yml'
   pull_request:
     paths:
@@ -21,6 +23,8 @@ on:
       - 'student-exams.html'
       - 'quality-exams.html'
       - 'index.html'
+      - 'impact-lab/**'
+      - 'tests/impact-lab-browser.cjs'
       - '.github/workflows/gateway-browser-check.yml'
   workflow_dispatch:
 jobs:
@@ -43,6 +47,7 @@ jobs:
           node tests/gateway-browser-smoke.cjs
           node tests/home-portal-browser.cjs
           node tests/nabd-exam-ui-browser.cjs
+          node tests/impact-lab-browser.cjs
       - name: Save responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4
