@@ -46,6 +46,7 @@ function langUI(){
  $("essayAnswer").placeholder=lang==="ar"?"اكتب خطوات الإجابة بالتفصيل، مع المعادلات والتبرير...":"Write your complete step-by-step answer, equations, units and reasoning here...";
  $("essayLangState").textContent=lang==="ar"?"AR + EN":"EN → AR";
  $("essayQuestionAr").hidden=lang!=="ar";
+ $("essayTranslate").setAttribute("aria-expanded",String(lang==="ar"));
  for(const node of document.querySelectorAll("#essayLab [data-essay-ar][data-essay-en]")){
   node.textContent=node.getAttribute(lang==="ar"?"data-essay-ar":"data-essay-en");
  }
@@ -119,8 +120,12 @@ $("essayHeroJump")?.addEventListener("click",()=>{
 });
 document.querySelector('[data-tab="essayLab"]')?.addEventListener("click",loadArchive);
 $("essayImage").addEventListener("change",()=>{
- clearPhoto();
- const file=$("essayImage").files?.[0];if(!file)return;
+ const file=$("essayImage").files?.[0];
+ if(state.photoURL)URL.revokeObjectURL(state.photoURL);
+ state.photoURL=null;state.photo=null;
+ $("essayPreview").hidden=true;$("essayPreview").removeAttribute("src");
+ $("essayPhotoInfo").textContent="";
+ if(!file)return;
  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>4*1024*1024||file.size<200){
   status("الصورة يجب أن تكون JPG/PNG/WebP وأقل من 4 ميغابايت.","Select a JPG/PNG/WebP image under 4 MB.",true);
   $("essayImage").value="";return;
@@ -244,6 +249,11 @@ async function grade(){
    throw Error(code);
   }
   const value=res.data.result;
+  if(value?.readable===false){
+   reportDetails($("essayFeedback"),q,value);
+   status("الخط اليدوي غير واضح بما يكفي للتصحيح. أعد تصوير الورقة أو اكتب إجابتك.","Handwriting could not be read reliably. Retake the photo or type your solution.",true);
+   return;
+  }
   if(!value||!Number.isInteger(value.score)||value.score<0||value.score>10)throw Error("INVALID_GRADE");
   record(q,value,false);
   reportDetails($("essayFeedback"),q,value);
