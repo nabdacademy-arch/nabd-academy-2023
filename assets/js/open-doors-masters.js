@@ -324,6 +324,7 @@ function renderWritten(){
    if(data.result?.readable===false){status.textContent=T("تعذر قراءة الصورة بوضوح؛ أعد تصويرها.","The handwriting could not be read. Retake the photo.");return}
    const r=data.result;if(!r||!Number.isInteger(r.score)||r.score<0||r.score>10)throw Error("INVALID_SCORE");
    written.graded=r;written.self=false;
+   logResult({type:"written-ai",subject:q.subject,earned:r.score,possible:10,method:"provisional-ai"});
    drawWrittenReview(stage,q,r,false);
    status.textContent=T("نتيجة تعليمية تقديرية؛ راجع الحل النموذجي.","Provisional learning result; compare to the model answer.");
   }catch(e){status.textContent=T("تعذر التصحيح الآلي؛ استخدم الحل النموذجي والمراجعة الذاتية.","AI is unavailable; use the model answer and self-review.")+
@@ -377,7 +378,6 @@ function drawWrittenReview(stage,q,result,self){
  button(box,T("تنزيل شرح الإجابة","Download answer review"),()=>downloadText("nabd-masters-written.txt",
   [q.prompt_en,"","Model:",q.model_en,"","Score:",result.score+"/10","",result.reason_en||""].join("\n")),"action");
  stage.append(box);
- if(!self)logResult({type:"written-ai",subject:q.subject,earned:result.score,possible:10,method:"provisional-ai"});
 }
 function drawSelfReview(stage,q){
  let old=stage.querySelector("[data-self]");if(old)old.remove();
