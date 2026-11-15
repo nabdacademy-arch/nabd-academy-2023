@@ -257,66 +257,186 @@ essay("medicine","Critical appraisal","A nonrandomized hospital study reports lo
 oral("medicine","Evidence-based public health","Explain how you would evaluate a community screening program, including benefits, harms, test accuracy, equity and cost-effectiveness.","اشرح كيف تقيّم برنامج فحص مجتمعي من حيث الفوائد والأضرار ودقة الاختبار والعدالة والجدوى الاقتصادية.",["Benefits and target population","Test accuracy","False positives/harms","Equity and feasibility","Cost-effectiveness"]);
 // Generate additional mathematically auditable variations. ID tied to parameter.
 function generated(subject,kind,seed){
- const n=Math.abs(Math.trunc(Number(seed)||0)),id="NABD-MA-G-"+subject+"-"+kind+"-"+n;
- if(kind==="single"){
-  if(subject==="chemistry"){
-   const t=10+5*(n%12),half=t*2;
-   return {id,subject,kind,topic:"Advanced kinetics · generated",
-    prompt_en:"A first-order reaction has half-life "+half+" minutes. Approximately what fraction remains after "+(2*half)+" minutes?",
-    prompt_ar:"تفاعل من الرتبة الأولى نصف عمره "+half+" دقيقة. ما الجزء المتبقي بعد "+(2*half)+" دقيقة؟",
-    options:["1/2","1/4","1/8","3/4"],options_ar:["1/2","1/4","1/8","3/4"],correct:[1],
-    explain_en:"Two half-lives elapse, leaving (1/2)^2=1/4 regardless of initial concentration.",
-    explain_ar:"يمر نصفا عمر فتبقى (1/2)²=1/4 من الكمية الابتدائية.",points:1,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
-  }
-  if(subject==="biology"){
-   const ct=2+(n%4),factor=Math.pow(2,ct);
-   return {id,subject,kind,topic:"qPCR · generated",
-    prompt_en:"Assuming 100% efficiency and a stable reference, treatment has ΔCt "+ct+" cycles LOWER than control. What is the approximate fold increase?",
-    prompt_ar:"بافتراض كفاءة تضخيم 100% وثبات المرجع، ΔCt في المعالجة أقل بمقدار "+ct+" دورات من الضبط. ما الزيادة النسبية؟",
-    options:[factor/2+"-fold",factor+"-fold",factor*2+"-fold","no change"],
-    options_ar:[factor/2+" ضعف",factor+" ضعف",factor*2+" ضعف","لا تغير"],correct:[1],
-    explain_en:"ΔΔCt=−"+ct+" so 2^(−ΔΔCt)=2^"+ct+"="+factor+"-fold.",
-    explain_ar:"ΔΔCt=−"+ct+"، إذن التغير النسبي 2^"+ct+"="+factor+" ضعف.",points:1,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
-  }
-  const cases=20*(1+n%7),population=1000,sens=.8,spec=.9;
-  const tp=cases*sens,fp=(population-cases)*(1-spec),val=Math.round(1000*tp/(tp+fp))/10;
-  return {id,subject,kind,topic:"Predictive value · generated",
-   prompt_en:"Of 1,000 persons, "+cases+" have a condition. Sensitivity is 80%, specificity is 90%. Estimate PPV.",
-   prompt_ar:"من 1000 شخص هناك "+cases+" حالة. الحساسية 80% والنوعية 90%. احسب PPV تقريبًا.",
-   options:[Math.max(0,val-7).toFixed(1)+"%",val.toFixed(1)+"%",Math.min(99,val+8).toFixed(1)+"%","80%"],
-   options_ar:[Math.max(0,val-7).toFixed(1)+"%",val.toFixed(1)+"%",Math.min(99,val+8).toFixed(1)+"%","80%"],correct:[1],
-   explain_en:"TP="+tp+", FP="+fp.toFixed(0)+". PPV=TP/(TP+FP)≈"+val.toFixed(1)+"%.",
-   explain_ar:"TP="+tp+" وFP="+fp.toFixed(0)+"؛ PPV≈"+val.toFixed(1)+"%.",points:1,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
+ const n=Math.abs(Math.trunc(Number(seed)||0)),id="NABD-MA-G-"+subject+"-"+kind+"-"+n,series=Math.floor(n/5),family=n%5;
+ function result(topic,en,ar,options,optionAr,correct,explainEn,explainAr){
+  if(new Set(options).size!==4)throw Error("GENERATED_OPTIONS_NOT_DISTINCT");
+  return Object.freeze({id,subject,kind,topic,prompt_en:en,prompt_ar:ar,options,options_ar:optionAr||options,correct,
+   explain_en:explainEn,explain_ar:explainAr,points:kind==="single"?1:3,
+   origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page});
  }
- if(kind==="multi"){
-  if(subject==="chemistry"){
-   const temp=300+20*(n%8),h=10+(n%6)*5;
-   return {id,subject,kind,topic:"Thermodynamics · generated",
-    prompt_en:"A hypothetical reaction has ΔH="+h+" kJ/mol and ΔS=+0.1 kJ/(mol·K), at T="+temp+" K. Select all correct statements.",
-    prompt_ar:"تفاعل ΔH="+h+" كيلوجول/مول وΔS=+0.1 كيلوجول/(مول·كلفن) عند T="+temp+" K. اختر الصحيح.",
-    options:["ΔG = "+(h-.1*temp).toFixed(1)+" kJ/mol","ΔG=ΔH−TΔS","Increasing T lowers ΔG when ΔS>0","A catalyst changes ΔG° at fixed temperature"],
-    options_ar:["ΔG="+(h-.1*temp).toFixed(1)+" كيلوجول/مول","ΔG=ΔH−TΔS","ارتفاع T يخفض ΔG عند ΔS>0","المحفز يغير ΔG° عند حرارة ثابتة"],correct:[0,1,2],
-    explain_en:"Compute ΔG="+h+"−"+temp+"×0.1="+(h-.1*temp).toFixed(1)+" kJ/mol. Catalysts do not change thermodynamic ΔG°.",
-    explain_ar:"ΔG="+h+"−"+temp+"×0.1="+(h-.1*temp).toFixed(1)+" كيلوجول/مول. المحفز لا يغير ΔG°.",points:3,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
+ if(kind==="single"&&subject==="chemistry"){
+  if(family===0){
+   const half=10+5*(series%50);
+   return result("First-order half life","A first-order reaction has a half-life of "+half+" minutes. What fraction remains after "+(2*half)+" minutes?",
+    "تفاعل من الرتبة الأولى نصف عمره "+half+" دقيقة، ما الجزء المتبقي بعد "+(2*half)+" دقيقة؟",
+    ["1/2","1/4","1/8","3/4"],null,[1],
+    "Two half-lives leave (1/2)^2=1/4.","بعد نصفَي عمر يبقى (1/2)²=1/4.");
   }
-  if(subject==="biology"){
-   const q=[.2,.3,.4,.5][n%4],p=1-q;
-   return {id,subject,kind,topic:"Population genetics · generated",
-    prompt_en:"For a Hardy–Weinberg population with recessive allele frequency q="+q.toFixed(1)+", select all valid claims.",
-    prompt_ar:"في جماعة هاردي–واينبرغ تواتر الأليل المتنحي q="+q.toFixed(1)+"، اختر جميع النتائج الصحيحة.",
-    options:["p="+p.toFixed(1),"q²="+(q*q*100).toFixed(0)+"%","2pq="+(2*q*p*100).toFixed(0)+"%","All people are heterozygous"],
-    options_ar:["p="+p.toFixed(1),"q²="+(q*q*100).toFixed(0)+"%","2pq="+(2*q*p*100).toFixed(0)+"%","كل الأفراد متغايرو الزيجوت"],correct:[0,1,2],
-    explain_en:"p=1−q="+p.toFixed(1)+", q²="+(q*q).toFixed(2)+", and 2pq="+(2*q*p).toFixed(2)+".",
-    explain_ar:"p=1−q="+p.toFixed(1)+"، وq²="+(q*q).toFixed(2)+"، و2pq="+(2*q*p).toFixed(2)+".",points:3,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
+  if(family===1){
+   const h=30+5*(series%20),t=290+10*(series%20),ent=.1;
+   const g=h-t*ent;
+   return result("Gibbs energy calculation","For ΔH="+h+" kJ/mol and ΔS=+100 J/(mol·K), estimate ΔG at T="+t+" K.",
+    "ΔH="+h+" كيلوجول/مول وΔS=+100 جول/(مول·كلفن). احسب ΔG عند "+t+" كلفن.",
+    [(g-10).toFixed(1)+" kJ/mol",g.toFixed(1)+" kJ/mol",(g+10).toFixed(1)+" kJ/mol",(h+t*.1).toFixed(1)+" kJ/mol"],
+    [(g-10).toFixed(1)+" كيلوجول/مول",g.toFixed(1)+" كيلوجول/مول",(g+10).toFixed(1)+" كيلوجول/مول",(h+t*.1).toFixed(1)+" كيلوجول/مول"],
+    [1],"ΔG=ΔH−TΔS="+h+"−"+t+"×0.1="+g.toFixed(1)+" kJ/mol.",
+    "ΔG=ΔH−TΔS="+h+"−"+t+"×0.1="+g.toFixed(1)+" كيلوجول/مول.");
   }
-  const total=1000,caseCount=10*(2+n%7),rate=caseCount/total;
-  return {id,subject,kind,topic:"Epidemiology · generated",
-   prompt_en:"In a defined cohort of "+total+" people, "+caseCount+" new cases occur in a fixed period. Select all correct methodological statements.",
-   prompt_ar:"في جماعة من "+total+" شخص ظهرت "+caseCount+" حالات جديدة خلال مدة ثابتة. اختر النتائج المنهجية الصحيحة.",
-   options:["Cumulative incidence is "+(100*rate).toFixed(1)+"%","A valid denominator is essential","Duration of follow-up must be stated","This result alone proves a causal exposure"],
-   options_ar:["الحدوث التراكمي "+(100*rate).toFixed(1)+"%","يجب تحديد المقام بدقة","يلزم ذكر مدة المتابعة","النتيجة تثبت سببًا تعرضيًا وحدها"],correct:[0,1,2],
-   explain_en:"Cumulative incidence="+caseCount+"/"+total+"="+(100*rate).toFixed(1)+"%. Incidence alone does not establish causality.",
-   explain_ar:"الحدوث التراكمي="+caseCount+"/"+total+"="+(100*rate).toFixed(1)+"%. الحدوث وحده لا يثبت السببية.",points:3,origin:"NABD_MASTER_GENERATED",source:SOURCES[subject].page};
+  if(family===2){
+   const eps=1000+250*(series%40),c=.002,path=1,abs=eps*c;
+   return result("Beer–Lambert absorbance","At ε="+eps+" L mol⁻¹ cm⁻¹, path length 1 cm and concentration 0.002 mol/L, calculate absorbance A.",
+    "عند ε="+eps+" لتر مول⁻¹ سم⁻¹ وطول المسار 1 سم والتركيز 0.002 مول/لتر، احسب الامتصاصية A.",
+    [(abs/2).toFixed(2),abs.toFixed(2),(abs*2).toFixed(2),(abs+1).toFixed(2)],null,[1],
+    "Beer–Lambert A=εbc="+eps+"×1×0.002="+abs.toFixed(2)+".",
+    "قانون بير–لامبرت A=εbc="+eps+"×1×0.002="+abs.toFixed(2)+".");
+  }
+  if(family===3){
+   const e0=.5+.05*(series%8),elec=1+(series%2),logQ=1+(series%4),e=e0-.0592/elec*logQ;
+   return result("Nernst equation","At 25°C E°="+e0.toFixed(3)+" V, n="+elec+" electrons and Q=10^"+logQ+". Estimate E by E=E°−(0.0592/n)log₁₀Q.",
+    "عند 25°م الجهد القياسي E°="+e0.toFixed(3)+" فولت، وn="+elec+" وQ=10^"+logQ+"، احسب E بعلاقة نرنست.",
+    [(e-.1).toFixed(3)+" V",e.toFixed(3)+" V",(e+.1).toFixed(3)+" V",(e0+.0592/elec*logQ).toFixed(3)+" V"],
+    [(e-.1).toFixed(3)+" فولت",e.toFixed(3)+" فولت",(e+.1).toFixed(3)+" فولت",(e0+.0592/elec*logQ).toFixed(3)+" فولت"],[1],
+    "E="+e0.toFixed(3)+"−0.0592/"+elec+"×"+logQ+"≈"+e.toFixed(3)+" V.",
+    "E="+e0.toFixed(3)+"−0.0592/"+elec+"×"+logQ+"≈"+e.toFixed(3)+" فولت.");
+  }
+  const half=15+5*(series%30),k=.693/half;
+  return result("Rate constant","Calculate first-order rate constant k from t½="+half+" min (k=ln2/t½).",
+   "احسب ثابت سرعة تفاعل من الرتبة الأولى إذا كان نصف العمر "+half+" دقيقة.",[(k/2).toFixed(4)+" min⁻¹",k.toFixed(4)+" min⁻¹",(k*2).toFixed(4)+" min⁻¹",(k+0.1).toFixed(4)+" min⁻¹"],
+   [(k/2).toFixed(4)+" دقيقة⁻¹",k.toFixed(4)+" دقيقة⁻¹",(k*2).toFixed(4)+" دقيقة⁻¹",(k+0.1).toFixed(4)+" دقيقة⁻¹"],[1],
+   "k=0.693/"+half+"≈"+k.toFixed(4)+" min⁻¹.","k=0.693/"+half+"≈"+k.toFixed(4)+" دقيقة⁻¹.");
+ }
+ if(kind==="single"&&subject==="biology"){
+  if(family===0){
+   const ct=1+(series%9),fold=2**ct;
+   return result("qPCR fold change","Assuming 100% efficiency and stable reference, ΔCt is "+ct+" cycles LOWER than control. Approximate normalized fold increase.",
+    "بافتراض كفاءة 100% وثبات المرجع، انخفض ΔCt بمقدار "+ct+" دورة عن الضبط. ما الزيادة النسبية؟",
+    [fold/2+"-fold",fold+"-fold",fold*2+"-fold","no change"],[fold/2+" ضعف",fold+" ضعف",fold*2+" ضعف","لا تغير"],[1],
+    "ΔΔCt=−"+ct+" so expression fold change is 2^"+ct+"="+fold+".",
+    "ΔΔCt=−"+ct+"، إذن التغير 2^"+ct+"="+fold+" ضعف.");
+  }
+  if(family===1){
+   const q=.1+.025*(series%27),p=1-q,het=Math.round(2*q*p*1000)/10;
+   return result("Hardy–Weinberg carrier estimate","For Hardy–Weinberg recessive allele frequency q="+q.toFixed(3)+", estimate heterozygote proportion 2pq (%).",
+    "في توازن هاردي–واينبرغ، q="+q.toFixed(3)+"، احسب نسبة متغايري الزيجوت 2pq.",
+    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%",(q*100).toFixed(1)+"%"],
+    [(het/2).toFixed(1)+"%",het.toFixed(1)+"%",(het+10).toFixed(1)+"%",(q*100).toFixed(1)+"%"],[1],
+    "p=1−q="+p.toFixed(3)+" and 2pq="+het.toFixed(1)+"%.","p=1−q="+p.toFixed(3)+"، و2pq="+het.toFixed(1)+"%.");
+  }
+  if(family===2){
+   const reads=2+(series%30),length=100,genome=1;
+   const coverage=reads*100;
+   return result("Sequencing coverage","A sample has "+reads+" million reads of length 100 bp for a 1-million-bp genome. Approximate mean coverage assuming uniform mapping.",
+    "عينة تحوي "+reads+" مليون قراءة بطول 100 زوج قاعدة لجينوم طوله مليون زوج قاعدة، ما عمق التغطية المتوقع بافتراض التوزيع المنتظم؟",
+    [coverage/2+"×",coverage+"×",coverage*2+"×",reads+"×"],null,[1],
+    "Coverage≈reads×read length/genome length="+reads+"×100="+coverage+"×.",
+    "التغطية≈عدد القراءات×الطول/طول الجينوم="+reads+"×100="+coverage+"×.");
+  }
+  if(family===3){
+   const mu=.1+.025*(series%25),dt=.693/mu;
+   return result("Exponential microbial growth","For specific growth rate μ="+mu.toFixed(3)+" h⁻¹, estimate doubling time using t_d=ln2/μ.",
+    "إذا كان معدل النمو النوعي μ="+mu.toFixed(3)+" ساعة⁻¹، احسب زمن تضاعف الخلايا t_d=ln2/μ.",
+    [(dt/2).toFixed(2)+" h",dt.toFixed(2)+" h",(dt*2).toFixed(2)+" h",(dt+5).toFixed(2)+" h"],
+    [(dt/2).toFixed(2)+" ساعة",dt.toFixed(2)+" ساعة",(dt*2).toFixed(2)+" ساعة",(dt+5).toFixed(2)+" ساعة"],[1],
+    "t_d=0.693/"+mu.toFixed(3)+"="+dt.toFixed(2)+" h.","زمن التضاعف=0.693/"+mu.toFixed(3)+"="+dt.toFixed(2)+" ساعة.");
+  }
+  const total=200+10*(series%30),mutant=20+2*(series%30),v=Math.round(mutant/total*1000)/10;
+  return result("Variant allele fraction","A sequencing experiment finds "+mutant+" reads with a variant out of "+total+" adequately filtered reads. Estimate observed variant fraction.",
+   "تجربة تسلسل فيها "+mutant+" قراءة تحمل متغيرًا من "+total+" قراءة بعد الفلترة. احسب النسبة المرصودة.",
+   [(v/2).toFixed(1)+"%",v.toFixed(1)+"%",(v+10).toFixed(1)+"%","100%"],null,[1],
+   "Variant allele fraction = variant reads / total reads = "+mutant+"/"+total+" ≈ "+v.toFixed(1)+"%.",
+   "تواتر المتغير="+mutant+"/"+total+"≈"+v.toFixed(1)+"%.");
+ }
+ if(kind==="single"&&subject==="medicine"){
+  if(family===0){
+   const cases=10*(2+series%30),tp=cases*.8,fp=(1000-cases)*.1,v=Math.round(1000*tp/(tp+fp))/10;
+   return result("Screening PPV","Of 1,000 people "+cases+" have disease. Test sensitivity is 80%, specificity 90%. Estimate PPV.",
+    "من 1000 شخص هناك "+cases+" مصابًا. الحساسية 80% والنوعية 90%. احسب PPV.",
+    [(v-7).toFixed(1)+"%",v.toFixed(1)+"%",(v+8).toFixed(1)+"%","80.0%"],null,[1],
+    "TP="+tp+", FP="+fp.toFixed(0)+", PPV≈"+v.toFixed(1)+"%.","TP="+tp+" وFP="+fp.toFixed(0)+"؛ PPV≈"+v.toFixed(1)+"%.");
+  }
+  if(family===1){
+   const a=2+(series%15),b=5+(series%10),rr=a/b*10;
+   return result("Cohort relative risk","Exposure group: "+a*10+"/100 cases. Comparator: "+b+"/100 cases. Estimate relative risk.",
+    "حالات المعرّضين "+(a*10)+"/100 وغير المعرّضين "+b+"/100، احسب RR.",
+    [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),(rr+10).toFixed(1)],null,[1],
+    "RR=("+(a*10)+"/100)/("+b+"/100)="+rr.toFixed(1)+".","RR=("+a*10+"/100)/("+b+"/100)="+rr.toFixed(1)+".");
+  }
+  if(family===2){
+   const cost=1000*(1+series%20),qaly=.05+.05*(series%8),icer=cost/qaly;
+   return result("Cost-effectiveness","Incremental intervention cost is $"+cost+" and gain is "+qaly.toFixed(2)+" QALYs. Estimate ICER.",
+    "تكلفة تدخل إضافية "+cost+" دولار ومكسب "+qaly.toFixed(2)+" QALY. احسب ICER.",
+    ["$"+Math.round(icer/2)+"/QALY","$"+Math.round(icer)+"/QALY","$"+Math.round(icer*2)+"/QALY","$"+cost+"/QALY"],null,[1],
+    "ICER=cost/QALY="+cost+"/"+qaly.toFixed(2)+"≈$"+Math.round(icer)+"/QALY.",
+    "ICER=التكلفة/QALY="+cost+"/"+qaly.toFixed(2)+"≈"+Math.round(icer)+" دولار/QALY.");
+  }
+  if(family===3){
+   const tp=40+2*(series%30),fn=10+2*(series%15),sen=Math.round(1000*tp/(tp+fn))/10;
+   return result("Test sensitivity","A diagnostic evaluation has TP="+tp+" and FN="+fn+". Approximate sensitivity.",
+    "في تقييم تشخيصي TP="+tp+" وFN="+fn+"؛ احسب الحساسية.",
+    [(sen-9).toFixed(1)+"%",sen.toFixed(1)+"%",(sen+7).toFixed(1)+"%","100%"],null,[1],
+    "Sensitivity=TP/(TP+FN)="+tp+"/"+(tp+fn)+"≈"+sen.toFixed(1)+"%.",
+    "الحساسية=TP/(TP+FN)="+tp+"/"+(tp+fn)+"≈"+sen.toFixed(1)+"%.");
+  }
+  const arr=.05+.005*(series%20),nnt=Math.ceil(1/arr);
+  return result("Number needed to treat","An intervention achieves absolute risk reduction ARR="+(arr*100).toFixed(1)+"%. Find NNT (round up).",
+   "خفض تدخل ما الخطر المطلق ARR بمقدار "+(arr*100).toFixed(1)+"%. احسب NNT مع التقريب للأعلى.",
+   [String(nnt-2),String(nnt),String(nnt+2),String(Math.round(100/arr))],null,[1],
+   "NNT=ceil(1/ARR)=ceil(1/"+arr.toFixed(3)+")="+nnt+".",
+   "NNT=تقريب(1/ARR) للأعلى= "+nnt+".");
+ }
+ if(kind==="multi"&&subject==="chemistry"){
+  if(family%2===0){
+   const temp=310+10*(series%25),h=20+5*(series%20),g=h-.1*temp;
+   return result("Thermodynamics and consistency","Given ΔH="+h+" kJ/mol, ΔS=+0.1 kJ/(mol·K), T="+temp+" K. Select all valid statements.",
+    "مع ΔH="+h+" وΔS=+0.1 وT="+temp+" كلفن، اختر جميع العبارات الصحيحة.",
+    ["ΔG="+g.toFixed(1)+" kJ/mol","ΔG=ΔH−TΔS","Higher temperature decreases ΔG for positive ΔS","A catalyst changes ΔG° at fixed temperature"],
+    ["ΔG="+g.toFixed(1)+" كيلوجول/مول","ΔG=ΔH−TΔS","زيادة الحرارة تخفض ΔG عند ΔS موجبة","المحفز يغير ΔG° عند الحرارة نفسها"],[0,1,2],
+    "ΔG="+h+"−0.1×"+temp+"="+g.toFixed(1)+". Catalyst cannot change thermodynamic ΔG°.",
+    "ΔG="+h+"−0.1×"+temp+"="+g.toFixed(1)+"؛ المحفز لا يغير ΔG°.");
+  }
+  const pka=3+series%6,ratio=10**(1+series%2),ph=pka+Math.log10(ratio);
+  return result("Henderson–Hasselbalch validation","Acid buffer pKa="+pka+" and [A−]/[HA]="+ratio+". Select all correct statements.",
+   "منظم حمضي pKa="+pka+" ونسبة [A−]/[HA]="+ratio+". اختر الصحيح.",
+   ["pH="+ph.toFixed(1),"pH=pKa+log([A−]/[HA])","Higher base/acid ratio raises pH","Catalyst directly sets buffer pH"],
+   ["pH="+ph.toFixed(1),"pH=pKa+log([A−]/[HA])","زيادة القاعدة/الحمض ترفع pH","المحفز يحدد pH مباشرةً"],[0,1,2],
+   "pH="+pka+"+log("+ratio+")="+ph.toFixed(1)+".",
+   "pH="+pka+"+log("+ratio+")="+ph.toFixed(1)+".");
+ }
+ if(kind==="multi"&&subject==="biology"){
+  if(family%2===0){
+   const q=.1+.05*(series%14),p=1-q;
+   return result("Hardy–Weinberg consistency","For recessive allele frequency q="+q.toFixed(2)+" under ideal assumptions, select valid statements.",
+    "في نموذج هاردي–واينبرغ المثالي q="+q.toFixed(2)+"، اختر الصحيح.",
+    ["p="+p.toFixed(2),"q²="+(q*q*100).toFixed(2)+"%","2pq="+(2*q*p*100).toFixed(2)+"%","Every individual must be heterozygous"],
+    ["p="+p.toFixed(2),"q²="+(q*q*100).toFixed(2)+"%","2pq="+(2*q*p*100).toFixed(2)+"%","كل الأفراد متغايرو الزيجوت"],[0,1,2],
+    "p=1−q; expected genotype proportions are p²,2pq,q², not 100% heterozygotes.",
+    "p=1−q؛ النسب المتوقعة p² و2pq وq²، وليس كل الأفراد متغايرين.");
+  }
+  const ct=1+(series%9),fold=2**ct;
+  return result("qPCR data interpretation","Treatment ΔCt is "+ct+" cycles lower than reference under equal efficiencies. Select valid conclusions.",
+   "ΔCt للمعالجة أقل بمقدار "+ct+" دورات عند كفاءة متساوية، اختر النتائج الصحيحة.",
+   ["ΔΔCt=−"+ct,"Normalized fold change="+fold+"×","A stable reference gene is assumed","The result proves causality without experimental controls"],
+   ["ΔΔCt=−"+ct,"التغير النسبي="+fold+" ضعف","يشترط ثبات الجين المرجعي","تثبت النتيجة السببية دون ضوابط"],[0,1,2],
+   "ΔΔCt=−"+ct+"; 2^(−ΔΔCt)="+fold+"-fold, subject to efficiency/reference assumptions.",
+   "ΔΔCt=−"+ct+"، والتغير 2^"+ct+"="+fold+" ضعف مع افتراضات مناسبة.");
+ }
+ if(kind==="multi"&&subject==="medicine"){
+  if(family%2===0){
+   const cases=10*(2+series%21),rate=cases/1000;
+   return result("Cumulative incidence method","There are "+cases+" new cases in a defined group of 1,000 over a stated period. Select valid statements.",
+    "ظهر "+cases+" حالة جديدة بين 1000 شخص خلال فترة محددة، اختر الصحيح.",
+    ["Cumulative incidence="+(100*rate).toFixed(1)+"%","A denominator and time window are necessary","Loss to follow-up may bias estimates","Incidence alone proves causality"],
+    ["الحدوث التراكمي="+(100*rate).toFixed(1)+"%","يلزم مقام وفترة زمنية","فقدان المتابعة قد يسبب انحيازًا","الحدوث وحده يثبت السببية"],[0,1,2],
+    "Risk="+cases+"/1000="+(100*rate).toFixed(1)+"%; causal inference needs additional controls.",
+    "الخطر="+cases+"/1000="+(100*rate).toFixed(1)+"%، ولا يثبت السببية وحده.");
+  }
+  const exposed=10+5*(series%14),unexp=5+5*(series%8),rr=exposed/unexp;
+  return result("Comparative risk study","Exposed risk is "+exposed+"%, unexposed risk "+unexp+"%. Select valid statements.",
+   "خطر المعرّضين "+exposed+"% وغير المعرّضين "+unexp+"%. اختر الصحيح.",
+   ["RR="+rr.toFixed(2),"Risk difference="+(exposed-unexp)+" percentage points","Confounding may still distort the comparison","These risks alone establish a randomized causal effect"],
+   ["RR="+rr.toFixed(2),"فرق الخطر="+(exposed-unexp)+" نقطة مئوية","قد يربك متغير ثالث المقارنة","تثبت الأرقام تأثيرًا سببيًا عشوائيًا"],[0,1,2],
+   "RR="+exposed+"/"+unexp+"="+rr.toFixed(2)+", risk difference="+(exposed-unexp)+" points. Association alone is not proof of causation.",
+   "RR="+rr.toFixed(2)+" وفرق الخطر="+(exposed-unexp)+" نقطة. الارتباط لا يكفي للسببية.");
  }
  if(kind==="written"){
   const base=all.filter(x=>x.subject===subject&&x.kind==="written");
