@@ -38,7 +38,8 @@ export function createClient(){
   // Subject cards change the master's track, not the bachelor's question bank.
   await page.locator('#masterSubjectCards [data-subject="biology"]').click();
   await page.locator('.master-nav [data-view="single"]').click();
-  await page.locator("#masterPracticeCount").selectOption("5");
+  console.log("DEBUG_AFTER_SINGLE",page.url(),"count",await page.locator("#masterPracticeCount").count(),"body", (await page.locator("body").innerText()).slice(0,420));
+  await page.locator("#masterPracticeCount").selectOption("5",{timeout:6000});
   await page.locator("#masterPracticeStart").click();
   await page.locator("#masterPracticeQuestion").waitFor({state:"visible"});
   assert.equal(await page.locator("#masterPracticeQuestion input[type=radio]").count(),4);
