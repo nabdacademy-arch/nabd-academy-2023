@@ -124,8 +124,7 @@ function generated(subject,kind,seed){
  }
  if(kind==="single"&&subject==="biology"){
   const fraction=[0.09,0.16,0.25,0.36][n%4],q=Math.sqrt(fraction),het=Math.round(2*q*(1-q)*100);
-  const opts=[het-9,het,het+9,Math.round(q*100)].map(x=>x+"%");
-  if(new Set(opts).size<4)return Q.find(x=>x.id==="nabd-choice-bi-s4");
+  const opts=[het-9,het,het+9,het+17].map(x=>x+"%");
   return make(subject,kind,"gen-bi-s-"+n,"Hardy–Weinberg / generated",
    "In an ideal Hardy–Weinberg population, recessive phenotype frequency q²="+Math.round(fraction*100)+"%. Approximate the heterozygote frequency (2pq).",
    "في جماعة مثالية تخضع لهاردي–واينبرغ، تكرار الصفة المتنحية q²="+Math.round(fraction*100)+"%، ما النسبة التقريبية لمتغايري الزيجوت 2pq؟",
