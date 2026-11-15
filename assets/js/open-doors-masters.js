@@ -130,7 +130,13 @@ function setLanguage(lang){
  state.lang=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==="en"?"ltr":"rtl";
  for(const x of document.querySelectorAll("[data-ar][data-en]")){
   const value=x.getAttribute(lang==="en"?"data-en":"data-ar");
-  if(x.tagName==="H1")x.innerHTML=value;else x.textContent=value;
+  if(x.tagName==="H1")x.innerHTML=value;
+  else if(x.querySelector("input,select,textarea,button,a")){
+   // Preserve nested form controls and links when switching language.
+   const t=Array.from(x.childNodes).find(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim());
+   if(t)t.textContent=value+" ";
+   else x.prepend(document.createTextNode(value+" "));
+  }else x.textContent=value;
  }
  $("masterLanguage").textContent=lang==="en"?"العربية 🌐":"English 🌐";
  renderDashboard();renderCurriculum();renderSources();renderProgress();
