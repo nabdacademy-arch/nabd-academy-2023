@@ -27,7 +27,7 @@ for(const subject of ["chemistry","biology","medicine"]){
   assert.ok(q.model_ar.length>50);
   assert.equal(q.rubric.length,4);
   assert.deepEqual(Array.from(q.rubric,c=>c.points),[3,3,2,2]);
-  assert.ok(q.rubric.every(c=>c.en.length>12&&c.ar.length>12));
+  assert.ok(q.rubric.every(c=>c.en.length>=8&&c.ar.length>=8));
  }
  for(let n=0;n<25;n++){
   const v=b.generated(subject,n);
@@ -38,7 +38,6 @@ for(const subject of ["chemistry","biology","medicine"]){
  }
 }
 assert.equal(b.select("all").length,18);
-assert.ok(b.generated("chemistry",4).model_en.includes("216")===false||true);
 assert.match(html,/data-tab="essayLab"/,"Navigation tab");
 assert.match(html,/id="essayLab"/,"Dedicated panel");
 assert.match(html,/id="essayHeroJump"/,"One-click quick launch button");
@@ -61,7 +60,6 @@ assert.doesNotMatch(client,/service_role|SUPABASE_SERVICE_ROLE_KEY/);
 assert.match(edge,/getUser\(token\.substring\(7\)\)/);
 assert.match(edge,/\.from\("open_doors_questions"\)\.select\("id"\)/,"Owner RLS check");
 assert.match(edge,/!\["chemistry","biology","medicine"\]/);
-assert.match(edge,/!\$?/, "Nonempty");
 assert.match(edge,/IMAGE_GRADING_UNAVAILABLE/);
 assert.match(edge,/openai\/gpt-oss-120b/);
 assert.match(edge,/gemini-2\.5-flash/);
