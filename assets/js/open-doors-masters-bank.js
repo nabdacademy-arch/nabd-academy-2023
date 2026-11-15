@@ -255,6 +255,118 @@ essay("medicine","Critical appraisal","A nonrandomized hospital study reports lo
  "قد تتداخل الاتجاهات الزمنية وتغير شدة الحالات وانحياز الاختيار وتبدل القياس وتدخلات متزامنة. يمكن استخدام تجربة عشوائية عنقودية أو سلسلة زمنية متقطعة مع مقارنة وضبط المؤشرات.",
  [["Identify confounding and case-mix issues","مربكات وشدة الحالات"],["Identify temporal/selection/measurement biases","انحيازات الزمن والاختيار والقياس"],["Propose stronger evaluation design","اقتراح تصميم أقوى"],["Specify practical controls and limitations","ضوابط وحدود التفسير"]]);
 oral("medicine","Evidence-based public health","Explain how you would evaluate a community screening program, including benefits, harms, test accuracy, equity and cost-effectiveness.","اشرح كيف تقيّم برنامج فحص مجتمعي من حيث الفوائد والأضرار ودقة الاختبار والعدالة والجدوى الاقتصادية.",["Benefits and target population","Test accuracy","False positives/harms","Equity and feasibility","Cost-effectiveness"]);
+// Further independently written Master's questions in each academic area.
+single("chemistry","Internal standards","What is the primary purpose of an internal standard in quantitative instrumental analysis?",
+ "ما الهدف الأساسي من استخدام معيار داخلي في تحليل كمي بجهاز تحليلي؟",
+ ["Correct instrumental variation and preparation effects","Automatically identify every impurity","Replace all calibration curves","Prove zero measurement uncertainty"],
+ ["تصحيح تباين الجهاز والتحضير","تحديد كل الشوائب تلقائيًا","الاستغناء عن المعايرة تمامًا","إثبات انعدام عدم اليقين"],0,
+ "يمكن للمعيار الداخلي تعويض تغيرات الاستجابة وحجم التحضير عندما يستخدم بصورة صحيحة.","An internal standard can correct signal fluctuation and sample-preparation variation.");
+single("chemistry","Diffusion and transport","According to Fick's first law J=−D dc/dx, the negative sign means diffusion is:",
+ "وفق قانون فيك الأول J=−D dc/dx، ما معنى الإشارة السالبة؟",
+ ["Toward higher concentration","Down the concentration gradient","Unrelated to concentration","Always opposite to temperature change"],
+ ["نحو تركيز أعلى","نحو اتجاه انخفاض التركيز","لا علاقة له بالتركيز","بعكس تغير الحرارة دائمًا"],1,
+ "يشير السالب إلى انتقال المادة نحو انخفاض التركيز عند الانتشار الاعتيادي.","The negative sign points flux down the concentration gradient.");
+multi("chemistry","Thermal analysis and phase transitions","Which techniques or observations aid investigation of thermal behavior of materials?",
+ "أي تقنيات أو ملاحظات تساعد في تحليل السلوك الحراري للمواد؟",
+ ["DSC can detect heat-flow changes near transitions","TGA can track mass changes with temperature","Dilatometry may reveal thermal expansion","A single material color measurement fully determines heat capacity"],
+ ["يكشف DSC تغيرات تدفق الحرارة قرب التحولات","يتتبع TGA تغير الكتلة مع الحرارة","قد يقيس التمدد الحراري تغير الأبعاد","قياس اللون وحده يحدد السعة الحرارية كاملةً"],[0,1,2],
+ "يمكن تكامل DSC وTGA والتمدد الحراري؛ اللون وحده لا يحدد الخواص الحرارية.","DSC, TGA and dilatometry provide complementary thermal information.");
+multi("chemistry","Organic reaction selectivity","Which factors can influence substitution mechanism or stereochemical outcome?",
+ "أي عوامل قد تؤثر في آلية الاستبدال العضوي أو ناتجه الفراغي؟",
+ ["Substrate structure","Solvent properties","Nucleophile strength and concentration","Every substrate necessarily gives the same mechanism"],
+ ["بنية الركيزة","خواص المذيب","قوة النيوكليوفيل وتركيزه","كل الركائز تتبع آلية واحدة حتمًا"],[0,1,2],
+ "الركيزة والمذيب والنيوكليوفيل تسهم في ترجيح مسارات SN1 وSN2 وانتقائية النتيجة.","Substrate, solvent and nucleophile influence SN1/SN2 pathways and stereochemistry.");
+essay("chemistry","Quantitative redox analysis","A 2.00 g solid sample is digested and diluted to 250.0 mL. A 25.0 mL aliquot requires 12.0 mL of 0.0200 M dichromate to oxidize all Fe²⁺. Given 1 mol Cr₂O₇²⁻ reacts with 6 mol Fe²⁺ and M(Fe)=55.85 g/mol, calculate mass percent Fe and discuss two error sources.",
+ "حُللت عينة صلبة 2.00 غ وخففت إلى 250.0 مل. احتاجت عينة فرعية 25.0 مل إلى 12.0 مل من ثنائي كرومات 0.0200 مول/لتر لأكسدة Fe²⁺، والنسبة 1:6 وM(Fe)=55.85. احسب النسبة المئوية للحديد واذكر مصدري خطأ.",
+ "n(Cr₂O₇²⁻)=0.0120 L×0.0200=0.000240 mol. Fe²⁺ in aliquot =6×0.000240=0.001440 mol. Total sample Fe moles=0.001440×(250/25)=0.01440 mol; mass=0.01440×55.85=0.80424 g; percentage=0.80424/2.00×100=40.21%. Possible errors include incomplete sample dissolution, imperfect standardization or endpoint detection, and interference by other reductants.",
+ "مولات ثنائي الكرومات 0.000240، ومولات Fe²⁺ بالجزء 0.001440، وبالعينة كاملة 0.01440 مول؛ الكتلة 0.80424 غ ونسبة الحديد 40.21%. قد تؤثر عدم اكتمال الإذابة أو أخطاء المعايرة ونقطة النهاية والمواد المتداخلة.",
+ [["Convert titrant concentration and volume to moles","حساب مولات المعاير"],["Apply 1:6 stoichiometry and aliquot dilution","نسبة 1:6 وعامل التخفيف"],["Calculate 40.21% iron","حساب نسبة الحديد"],["Identify two analytical error sources","ذكر مصدرين للخطأ"]]);
+essay("chemistry","Crystal diffraction analysis","A crystalline sample shows a strong XRD peak at 2θ=30° using X-rays of wavelength λ=0.154 nm. Calculate lattice-plane spacing from Bragg's law with n=1. Explain why a single diffraction peak cannot uniquely identify an unknown phase.",
+ "عينة بلورية لها قمة XRD عند 2θ=30° وطول موجة λ=0.154 نانومتر. احسب المسافة بين المستويات بقانون براغ n=1، ولماذا لا تكفي قمة واحدة لتحديد الطور؟",
+ "Bragg's law is nλ=2d sinθ. Here θ=15° and d=0.154/(2 sin15°)≈0.2975 nm. One peak represents a single spacing and may be shared by multiple structures. Indexing multiple peaks, comparing reference patterns, and considering preferred orientation/impurities is necessary for a robust phase identification.",
+ "قانون براغ nλ=2d sinθ؛ θ=15° فنحصل على d=0.154/(2sin15°)≈0.2975 نانومتر. قمة واحدة قد تتشابه بين أطوار عديدة، لذا نحتاج قممًا متعددة ومرجعًا بلوريًا وفحص الشوائب.",
+ [["Identify θ as half of 2θ","تمييز θ عن 2θ"],["Apply Bragg equation correctly","تطبيق قانون براغ"],["Calculate d≈0.2975 nm","استخراج المسافة"],["Explain phase identification limitation","تفسير قصور قمة واحدة"]]);
+oral("chemistry","Materials research design","Present an experimental plan to compare the corrosion resistance of two alloys, including controlled conditions, electrochemical measures and reproducibility.",
+ "قدم خطة تجريبية لمقارنة مقاومة سبيكتين للتآكل، مع الظروف المضبوطة والقياسات الكهروكيميائية والتكرار.",
+ ["Controlled alloys and environment","Corrosion measurement","Electrochemical method","Replication and uncertainty","Interpretation and limitations"]);
+oral("chemistry","Environmental analytical validation","Explain how you would design a calibration and quality-control protocol for measuring an environmental contaminant near its detection limit.",
+ "اشرح تصميم بروتوكول معايرة وضبط جودة لملوث بيئي قرب حد الكشف.",
+ ["Calibration","Blanks","Detection/quantification limit","Matrix effects and recovery","Uncertainty and reporting"]);
+
+single("biology","Multiple-testing control","Which approach is widely used to control the false discovery rate in genome-wide testing?",
+ "ما الإجراء الشائع لضبط معدل الاكتشافات الكاذبة في الاختبارات الجينومية الواسعة؟",
+ ["Benjamini–Hochberg procedure","Ignoring the number of tested genes","Choosing the smallest p-value only","Using no biological replicates"],
+ ["طريقة Benjamini–Hochberg","تجاهل عدد الجينات المختبرة","اختيار أصغر p فقط","عدم استعمال تكرارات بيولوجية"],0,
+ "تُستخدم طريقة Benjamini–Hochberg لضبط FDR عبر قيم p المتعددة.","Benjamini–Hochberg can control the expected false discovery rate across many tests.");
+single("biology","Recombinant DNA validation","After cloning a gene into a plasmid, which measurement most directly verifies its intended sequence?",
+ "بعد استنساخ جين في بلازميد، أي فحص يؤكد تسلسله المقصود مباشرةً؟",
+ ["DNA sequencing","Cell color alone","Incubator temperature","OD600 alone"],
+ ["تسلسل DNA","لون الخلية وحده","حرارة الحاضنة","OD600 وحده"],0,
+ "يؤكد تسلسل DNA تطابق المقطع المستنسخ مع التسلسل المستهدف.","Direct DNA sequencing verifies the insert's nucleotide identity.");
+multi("biology","Flow cytometry quality controls","Which measures strengthen a multicolor flow cytometry experiment?",
+ "أي الضوابط تعزز صحة تجربة قياس تدفق خلوي متعددة الألوان؟",
+ ["Spectral compensation controls","Gating strategy defined consistently","Viability staining when appropriate","Ignoring fluorescence spillover"],
+ ["ضوابط تعويض التداخل الطيفي","استراتيجية بوابات موحدة","صبغ الحيوية عند الحاجة","تجاهل تداخل الفلورة"],[0,1,2],
+ "تساعد المعايرة والتعويض والبوابات وضبط الخلايا الميتة في تحليل أدق.","Compensation, prespecified gating and viability checks improve interpretability.");
+multi("biology","Cell-culture experiments","Which are legitimate sources of unwanted bias in cell-culture research?",
+ "أي العوامل قد تسبب تحيزًا غير مرغوب في تجارب زراعة الخلايا؟",
+ ["Unequal cell-passage number","Mycoplasma contamination","Unrecorded media changes","Independent biological replicates inherently cause bias"],
+ ["اختلاف عدد مرات تمرير الخلايا","التلوث بالميكوبلازما","تغيير الأوساط دون توثيق","المكررات البيولوجية المستقلة تسبب تحيزًا حتميًا"],[0,1,2],
+ "قد يغير التلوث والمرور المتكرر والظروف غير الموثقة نتائج الخلايا.","Passage number, contamination and undocumented medium changes can confound results.");
+essay("biology","Sequencing coverage and limits","A sequencing run yields 4 million high-quality paired-end reads, each 150 bp long. For a 3-million-bp reference genome, estimate mean depth assuming each pair contributes 300 distinct bases. Discuss two reasons observed local depth may differ.",
+ "أنتجت تجربة تسلسل 4 ملايين زوج قراءة جيدة، طول كل قراءة 150 قاعدة. لجينوم مرجعي طوله 3 ملايين قاعدة، احسب العمق المتوسط بافتراض 300 قاعدة مستقلة لكل زوج، واشرح سببين لتباين العمق المحلي.",
+ "Total bases=4,000,000 read pairs×(2×150)=1.2×10⁹ bases. Mean coverage=1.2×10⁹/(3×10⁶)=400×. Local coverage may differ because of GC bias, mapping ambiguity in repeats, filtering, duplication, or library/preparation variation. The estimate assumes all contributing bases map independently and uniformly.",
+ "إجمالي القواعد =4 ملايين زوج×300=1.2 مليار قاعدة. العمق المتوقع=1.2 مليار/3 ملايين=400×. قد يتفاوت موضعيًا بسبب انحياز GC والمناطق المتكررة والتكرارات التقنية والترشيح.",
+ [["Count paired-end sequenced bases correctly","حساب القواعد في الأزواج"],["Compute 400× average coverage","حساب العمق 400×"],["Explain at least two coverage biases","شرح مصدري انحياز"],["State independence/uniformity assumption","ذكر فرضيات التوزيع"]]);
+essay("biology","Chemostat growth analysis","An ideal chemostat of volume 2.0 L receives fresh medium at 0.40 L/h. Under steady-state growth without washout, calculate the dilution rate and specific growth rate and explain what happens if dilution exceeds the maximum sustainable growth rate.",
+ "مفاعل chemostat مثالي حجمه 2.0 لتر ويتلقى وسطًا جديدًا بمعدل 0.40 لتر/ساعة. احسب معدل التخفيف والنمو النوعي عند الاستقرار دون غسل، وفسر تجاوز التخفيف أقصى نمو ممكن.",
+ "Dilution rate D=F/V=0.40/2.0=0.20 h⁻¹. At ideal steady state before washout, μ=D=0.20 h⁻¹. If D is greater than the achievable μ under growth conditions, biomass is removed faster than it reproduces and washout can occur. Steady-state assumptions, substrate limitation and mixing must be stated.",
+ "معدل التخفيف D=0.40/2=0.20 ساعة⁻¹ وعند الاستقرار μ=D=0.20 ساعة⁻¹. إذا تجاوز التخفيف النمو الممكن تنخفض الكتلة الحيوية وقد يحدث washout.",
+ [["Compute D=F/V","حساب D من التدفق والحجم"],["State μ=D at steady state","العلاقة μ=D"],["Explain washout at excessive D","تفسير غسل الخلايا"],["Discuss ideal model assumptions","ذكر فرضيات نموذج المفاعل"]]);
+oral("biology","Bioprocess design","Explain how to scale up a fermentation process while controlling oxygen transfer, contamination and product quality.",
+ "اشرح توسيع عملية تخمير حيوي مع ضبط نقل الأكسجين والتلوث وجودة المنتج.",
+ ["Process goal and scale","Oxygen mass transfer","Contamination controls","Product quality","Measurement and reproducibility"]);
+oral("biology","CRISPR experiment appraisal","Critically assess a proposed gene-editing experiment, including target confirmation, off-target risk, control groups and independent replication.",
+ "قيّم تجربة تحرير جيني مقترحة نقديًا مع تأكيد الهدف وآثار خارج الهدف والضوابط والتكرار المستقل.",
+ ["Target hypothesis","On-target validation","Off-target assessment","Appropriate controls","Replication and ethics"]);
+
+single("medicine","Absolute risk reduction","If a randomized intervention lowers event risk from 20% to 12%, the absolute risk reduction is:",
+ "إذا خفّض تدخل عشوائي خطر الحدث من 20% إلى 12%، فما فرق الخطر المطلق ARR؟",
+ ["8 percentage points","32 percentage points","40%","0.8 percentage points"],
+ ["8 نقاط مئوية","32 نقطة مئوية","40%","0.8 نقطة مئوية"],0,
+ "ARR=20%−12%=8 نقاط مئوية.","Absolute risk reduction=0.20−0.12=0.08, or 8 percentage points.");
+single("medicine","Survival analysis","A hazard ratio in a time-to-event study most directly compares:",
+ "في تحليل البقاء، بماذا تقارن نسبة المخاطر اللحظية HR؟",
+ ["Instantaneous event rates under model assumptions","Only lifetime prevalence","Always identical absolute risks","Average blood pressure"],
+ ["معدلات حدوث الحدث اللحظية وفق افتراضات النموذج","الانتشار طوال الحياة فقط","أخطار مطلقة متطابقة دائمًا","متوسط ضغط الدم"],0,
+ "يقارن HR المعدلات اللحظية للحدث ويعتمد تفسيره على فرضيات النموذج.","A hazard ratio compares instantaneous hazards conditional on relevant model assumptions.");
+multi("medicine","Randomized trial validity","Which practices can reduce important biases in an intervention trial?",
+ "أي إجراءات تقلل تحيزات مهمة في تجربة تدخل؟",
+ ["Concealed allocation","Prespecified outcomes","Intention-to-treat analysis where appropriate","Selecting only participants with favorable outcomes after randomization"],
+ ["إخفاء تخصيص المجموعات","تحديد النتائج مسبقًا","تحليل نية العلاج عند الملاءمة","اختيار أصحاب النتائج الجيدة بعد التخصيص"],[0,1,2],
+ "تدعم العشوائية المضبوطة وإخفاء التخصيص والتحليل المحدد مسبقًا التقييم المنصف.","Allocation concealment, predefined outcomes and intention-to-treat approaches reduce avoidable bias.");
+multi("medicine","Cluster randomized evaluations","Which are relevant when analyzing a cluster-randomized public-health trial?",
+ "أي عوامل مهمة في تحليل تجربة صحة عامة عشوائية عنقودية؟",
+ ["Intracluster correlation","Cluster-level allocation","Design effects on required sample size","Treating all observations as independent without justification"],
+ ["الارتباط داخل العنقود","التوزيع على مستوى المجموعات","تأثير التصميم على حجم العينة","افتراض استقلال جميع البيانات بلا مبرر"],[0,1,2],
+ "الاعتماد داخل العناقيد يغير تقدير التباين والحجم المطلوب.","Clustering affects dependence, uncertainty and sample-size design.");
+essay("medicine","Diagnostic study interpretation","In a fictional diagnostic study, 100 patients truly have a condition and 900 do not. The test has 80 true positives and 810 true negatives. Calculate sensitivity, specificity, false positives, false negatives and PPV.",
+ "في دراسة تشخيصية افتراضية يوجد 100 مصاب و900 غير مصاب. كشف الاختبار 80 إيجابية حقيقية و810 سلبية حقيقية. احسب الحساسية والنوعية والإيجابيات والسلبية الكاذبة وPPV.",
+ "TP=80, FN=100−80=20; TN=810, FP=900−810=90. Sensitivity=80/100=80%; specificity=810/900=90%; PPV=80/(80+90)=47.06%. A relatively modest PPV illustrates the importance of prevalence even when sensitivity/specificity seem high.",
+ "TP=80 وFN=20؛ TN=810 وFP=90. الحساسية 80% والنوعية 90% وPPV=80/170≈47.06%. يتأثر PPV بانتشار المرض.",
+ [["Construct correct 2×2 counts","ترتيب أعداد الجدول"],["Compute sensitivity and specificity","حساب الحساسية والنوعية"],["Compute PPV≈47.06%","حساب القيمة التنبؤية"],["Interpret results and prevalence dependence","تفسير النتائج والانتشار"]]);
+essay("medicine","Outbreak investigation metrics","During a fictional outbreak investigation, 60 of 200 exposed individuals and 30 of 300 unexposed individuals become ill. Compute attack rates, relative risk, attributable risk difference and discuss causal limitations.",
+ "في تحقيق وبائي افتراضي مرض 60 من 200 معرّض و30 من 300 غير معرّض. احسب معدلات الهجوم وRR وفرق الخطر وحدود الاستدلال السببي.",
+ "Exposed attack rate=60/200=30%; unexposed=30/300=10%. RR=0.30/0.10=3.0. Risk difference=0.20=20 percentage points. Confounding, selection and misclassification may distort the association, so causation requires additional evidence.",
+ "معدل الهجوم للمعرّضين 30% ولغير المعرّضين 10%؛ RR=3 وفرق الخطر=20 نقطة مئوية. قد تؤثر العوامل المربكة وانحياز اختيار الحالات وتصنيفها.",
+ [["Compute attack rates with denominators","حساب معدلَي الهجوم"],["Calculate RR=3","حساب الخطر النسبي"],["Compute risk difference=20 points","حساب فرق الخطر"],["Address confounding and misclassification","مناقشة حدود السببية"]]);
+oral("medicine","Study design appraisal","Compare a randomized controlled trial and an observational cohort for evaluation of a health intervention, including strengths, bias and ethics.",
+ "قارن بين تجربة عشوائية مضبوطة ودراسة أترابية رصدية لتقييم تدخل صحي من حيث القوة والتحيز والأخلاقيات.",
+ ["Research question","Randomization vs exposure","Bias and confounding","Feasibility and ethics","Interpretation"]);
+oral("medicine","Public-health outbreak surveillance","Describe how you would organize a surveillance dashboard for a novel outbreak while protecting privacy and communicating uncertainty.",
+ "صف تنظيم لوحة ترصد وبائي لتفشٍ جديد مع حماية الخصوصية وإبلاغ عدم اليقين.",
+ ["Case definition","Timely reporting","Rates and denominators","Privacy","Uncertainty communication"]);
+
 // Generate additional mathematically auditable variations. ID tied to parameter.
 function generated(subject,kind,seed){
  const n=Math.abs(Math.trunc(Number(seed)||0)),id="NABD-MA-G-"+subject+"-"+kind+"-"+n,series=Math.floor(n/5),family=n%5;
