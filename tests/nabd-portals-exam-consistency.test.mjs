@@ -44,9 +44,22 @@ assert.match(grade,/maximum_points:1/,"Each question has one possible point");
 assert.match(director,/input\.max=String\(totalMarks\)/,"Manual grade maximum equals question count");
 assert.match(student,/nabd_quality_student_history_v2/,"Student result history has question counts");
 assert.match(marksSQL,/SCORE_EXCEEDS_QUESTION_COUNT/,"Database enforces maximum");
-assert.match(director,/if\(count>0\)throw Error\(/,"Guard against deleting student attempts");
-assert.match(examSQL,/references public\.nabd_quality_exams\(id\) on delete restrict/,"DB forbids deleting exams with results");
-assert.match(director,/\.eq\("created_by",director\.id\)/,"Delete is scoped to the director");
-assert.match(director,/\.eq\("status",x\.status\)/,"Delete detects changed publication state");
+const deleteSQL=read("supabase/migrations/20261115_nabd_quality_delete_exam_with_answers.sql");
+assert.match(examSQL,/references public\.nabd_quality_exams\(id\) on delete restrict/,
+  "Original FK requires related submissions to be removed before exam deletion");
+assert.match(director,/rpc\("nabd_quality_delete_exam",\{p_exam:x\.id\}\)/,
+  "Director deletion uses transactional server RPC");
+assert.match(director,/window\.confirm\(first\)/,"First irreversible-action warning");
+assert.match(director,/window\.confirm\("تأكيد نهائي للحذف الكامل:/,"Second confirmation");
+assert.match(deleteSQL,/from public\.nabd_exam_owner o where o\.user_id=v_uid/,
+  "Server requires explicit director authorization");
+assert.match(deleteSQL,/where e\.id=p_exam and e\.created_by=v_uid/,
+  "Server scopes deletion to director-owned exam");
+assert.match(deleteSQL,/delete from public\.nabd_quality_submissions s/,
+  "Child submissions are deleted inside the transaction");
+assert.match(deleteSQL,/delete from public\.nabd_quality_exams e/,
+  "Parent exam deletion occurs only after related submissions");
+assert.match(deleteSQL,/revoke all on function public\.nabd_quality_delete_exam\(uuid\) from public, anon, authenticated/,
+  "RPC has no anonymous privileges");
 
-console.log("NABD homepage, student portal links, grading notices, score limits and deletion safeguards: OK");
+console.log("NABD homepage, student portal links, grading notices, score limits and transactional deletion safeguards: OK");
