@@ -1,0 +1,33 @@
+name: NABD Open Doors Single and Multiple Choice Trainer
+on:
+  push:
+    paths:
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-choice*.js'
+      - 'assets/css/open-doors-choice.css'
+      - 'tests/open-doors-choice.test.cjs'
+      - '.github/workflows/open-doors-choice-check.yml'
+  pull_request:
+    paths:
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-choice*.js'
+      - 'assets/css/open-doors-choice.css'
+      - 'tests/open-doors-choice.test.cjs'
+      - '.github/workflows/open-doors-choice-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript
+        run: |
+          node --check assets/js/open-doors-choice-bank.js
+          node --check assets/js/open-doors-choice.js
+      - name: Verify question banks, translations, grading and UI wiring
+        run: node tests/open-doors-choice.test.cjs
