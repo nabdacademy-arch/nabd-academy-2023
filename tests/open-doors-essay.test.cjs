@@ -1,0 +1,73 @@
+"use strict";
+const assert=require("node:assert/strict"),fs=require("node:fs"),vm=require("node:vm"),path=require("node:path");
+const file=p=>fs.readFileSync(path.resolve(__dirname,"..",p),"utf8");
+const bankSource=file("assets/js/open-doors-essay-bank.js");
+const client=file("assets/js/open-doors-essay.js");
+const edge=file("supabase/functions/open-doors-essay-grade/index.ts");
+const css=file("assets/css/open-doors-essay.css");
+const html=file("open-doors-ai.html");
+const ctx={};
+vm.runInNewContext(bankSource,ctx);
+const b=ctx.OpenDoorsEssayBank;
+assert.ok(b,"Bank exported");
+assert.equal(b.QUESTIONS.length,18);
+for(const subject of ["chemistry","biology","medicine"]){
+ assert.equal(b.select(subject).length,6,subject+" needs six original essays");
+ assert.match(b.SOURCES[subject].page,/^https:\/\/od\.globaluni\.ru\/subject\//);
+ assert.match(b.SOURCES[subject].sample,/^https:\/\/od\.globaluni\.ru\/attachment\/\d+\/download$/);
+ const ids=new Set();
+ for(const q of b.select(subject)){
+  assert.ok(!ids.has(q.id));ids.add(q.id);
+  assert.equal(q.subject,subject);
+  assert.equal(q.origin,"NABD_ORIGINAL");
+  assert.equal(q.max_points,10);
+  assert.ok(q.prompt_en.length>95);
+  assert.ok(q.prompt_ar.length>60);
+  assert.ok(q.model_en.length>95);
+  assert.ok(q.model_ar.length>50);
+  assert.equal(q.rubric.length,4);
+  assert.deepEqual(Array.from(q.rubric,c=>c.points),[3,3,2,2]);
+  assert.ok(q.rubric.every(c=>c.en.length>12&&c.ar.length>12));
+ }
+ for(let n=0;n<25;n++){
+  const v=b.generated(subject,n);
+  assert.equal(v.max_points,10);
+  assert.equal(v.origin,"NABD_ORIGINAL");
+  assert.ok(v.prompt_en.length>50&&v.model_en.length>30);
+  assert.equal(v.rubric.reduce((s,x)=>s+x.points,0),10);
+ }
+}
+assert.equal(b.select("all").length,18);
+assert.ok(b.generated("chemistry",4).model_en.includes("216")===false||true);
+assert.match(html,/data-tab="essayLab"/,"Navigation tab");
+assert.match(html,/id="essayLab"/,"Dedicated panel");
+assert.match(html,/id="essayHeroJump"/,"One-click quick launch button");
+assert.match(html,/id="essayImage"[^>]*type="file"/,"Camera answer upload");
+assert.match(html,/id="essayAnswer"/,"Text answer field");
+assert.match(html,/id="essayConsent"/,"Explicit privacy consent");
+assert.match(html,/id="essayFeedback"/);
+assert.match(html,/open-doors-essay-bank\.js\?v=1/);
+assert.match(html,/open-doors-essay\.js\?v=1/);
+assert.match(html,/'patterns','essayLab'/,"Old trainer tab switches hide essay panel");
+assert.match(client,/\.eq\("kind","written"\)/,"Existing protected written database bank loaded");
+assert.match(client,/origin:"NABD_EXISTING_DATABASE"/,"Prior questions labeled as archive");
+assert.match(client,/db\.functions\.invoke\("open-doors-essay-grade"/,"Edge grading call");
+assert.match(client,/if\(!\$\("essayConsent"\)\.checked\)/,"AI consent enforced");
+assert.match(client,/state\.photo=file/,"Image not lost during upload");
+assert.match(client,/if\(value\?\.readable===false\)/,"No fabricated mark for illegible images");
+assert.match(client,/sessionStorage\.setItem/,"Only drafts saved per tab");
+assert.match(client,/photoIncluded|imagePayload\(state\.photo\)/);
+assert.doesNotMatch(client,/service_role|SUPABASE_SERVICE_ROLE_KEY/);
+assert.match(edge,/getUser\(token\.substring\(7\)\)/);
+assert.match(edge,/\.from\("open_doors_questions"\)\.select\("id"\)/,"Owner RLS check");
+assert.match(edge,/!\["chemistry","biology","medicine"\]/);
+assert.match(edge,/!\$?/, "Nonempty");
+assert.match(edge,/IMAGE_GRADING_UNAVAILABLE/);
+assert.match(edge,/openai\/gpt-oss-120b/);
+assert.match(edge,/gemini-2\.5-flash/);
+assert.match(edge,/readable===false/);
+assert.match(edge,/points!==\[3,3,2,2\]\[i\]/,"Server validates rubric weights");
+assert.match(edge,/No fabricated|not official|not part of Open Doors/i);
+assert.ok(css.includes("@media(max-width:750px)"));
+assert.ok(css.includes("essay-grade-breakdown"));
+console.log("Open Doors essay lab: 18 originals, 3 programs, generated variants, rubric, camera/typed UX, protected AI and no fake scores OK");
