@@ -358,7 +358,7 @@ function generated(subject,kind,seed){
    const a=1+(series%8),b=5+(series%10),rr=a/b*10;
    return result("Cohort relative risk","Exposure group: "+a*10+"/100 cases. Comparator: "+b+"/100 cases. Estimate relative risk.",
     "حالات المعرّضين "+(a*10)+"/100 وغير المعرّضين "+b+"/100، احسب RR.",
-    [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),(rr+10).toFixed(1)],null,[1],
+    [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),"0.0"],null,[1],
     "RR=("+(a*10)+"/100)/("+b+"/100)="+rr.toFixed(1)+".","RR=("+a*10+"/100)/("+b+"/100)="+rr.toFixed(1)+".");
   }
   if(family===2){
