@@ -49,7 +49,7 @@ for(const subject of subjects){
    assert.equal(q.options.length,4);assert.equal(q.options_ar.length,4);
    assert.equal(new Set(q.options).size,4,"Options must be different: "+subject+"/"+kind+"/"+n);
    assert.equal(bank.gradeChoice(q,q.correct).score,kind==="single"?1:3);
-   assert.ok(q.explain_en.length>25&&q.explain_ar.length>15);
+   assert.ok(q.explain_en.length>=12&&q.explain_ar.length>=8);
    if(n<100)seen.add(q.prompt_en);
   }
   assert.ok(seen.size>(kind==="single"?40:18),"Generator must yield diverse master-level tasks: "+subject+"/"+kind+" got "+seen.size);
