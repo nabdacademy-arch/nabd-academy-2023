@@ -81,8 +81,8 @@ export function createClient(){
   await page.locator("#masterExamWorkspace").waitFor({state:"visible"});
   assert.equal(await page.locator("#masterExamNavigator button").count(),43);
   assert.match(await page.locator("#masterExamClock").innerText(),/174|175/);
-  await page.locator("#masterExamReset").click();
   page.once("dialog",dialog=>dialog.accept());
+  await page.locator("#masterExamReset").click();
   // Refresh via control after dialog returns.
   await page.locator("#masterLanguage").click();
   assert.equal(await page.locator("html").getAttribute("lang"),"en");
