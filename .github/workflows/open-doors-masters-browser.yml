@@ -1,0 +1,47 @@
+name: NABD Open Doors Masters Browser
+on:
+  push:
+    paths:
+      - 'open-doors-masters.html'
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-masters*.js'
+      - 'assets/css/open-doors-masters.css'
+      - 'tests/open-doors-masters-browser.cjs'
+      - '.github/workflows/open-doors-masters-browser.yml'
+  pull_request:
+    paths:
+      - 'open-doors-masters.html'
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-masters*.js'
+      - 'assets/css/open-doors-masters.css'
+      - 'tests/open-doors-masters-browser.cjs'
+      - '.github/workflows/open-doors-masters-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Test real Master's UI in desktop and mobile browser
+        run: |
+          node --check tests/open-doors-masters-browser.cjs
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/nabd-masters.log 2>&1 &
+          sleep 2
+          node tests/open-doors-masters-browser.cjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nabd-masters-desktop-mobile
+          path: masters-browser-results/
+          retention-days: 7
