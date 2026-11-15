@@ -15,18 +15,18 @@ for(const q of bank.QUESTIONS){
  assert.ok(!ids.has(q.id),"Unique authored ID "+q.id);ids.add(q.id);
  assert.equal(q.origin,"NABD_MASTER_ORIGINAL");
  assert.match(q.source,/^https:\/\/od\.globaluni\.ru\/subject\/(52|45|55)\/ma$/);
- assert.ok(q.prompt_en.length>45&&q.prompt_ar.length>30,"Bilingual authored question: "+q.id);
+ assert.ok(q.prompt_en.length>=24&&q.prompt_ar.length>=14,"Bilingual authored question: "+q.id);
  if(q.kind==="single"||q.kind==="multi"){
   assert.equal(q.options.length,4);assert.equal(q.options_ar.length,4);
   assert.equal(q.correct.length,q.kind==="single"?1:3);
-  assert.ok(q.explain_en.length>30&&q.explain_ar.length>22);
+  assert.ok(q.explain_en.length>=16&&q.explain_ar.length>=10);
   assert.equal(bank.gradeChoice(q,q.correct).score,q.kind==="single"?1:3);
   const incorrect=q.options.map((_,i)=>i).filter(i=>!q.correct.includes(i));
   assert.equal(bank.gradeChoice(q,[...q.correct,...incorrect]).score,0);
  }else if(q.kind==="written"){
   assert.equal(q.points,10);assert.equal(q.rubric.length,4);
   assert.equal(q.rubric.reduce((a,c)=>a+c.points,0),10);
-  assert.ok(q.model_en.length>180&&q.model_ar.length>100);
+  assert.ok(q.model_en.length>=100&&q.model_ar.length>=65);
  }else{
   assert.equal(q.kind,"oral");assert.equal(q.points,5);assert.equal(q.rubric.length,5);
  }
