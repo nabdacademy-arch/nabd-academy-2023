@@ -5,12 +5,14 @@ on:
       - 'impact-lab/**'
       - 'index.html'
       - 'tests/impact-lab.test.cjs'
+      - 'tests/impact-lab-v2.test.cjs'
       - '.github/workflows/nabd-impact-hub-check.yml'
   pull_request:
     paths:
       - 'impact-lab/**'
       - 'index.html'
       - 'tests/impact-lab.test.cjs'
+      - 'tests/impact-lab-v2.test.cjs'
       - '.github/workflows/nabd-impact-hub-check.yml'
   workflow_dispatch:
 jobs:
@@ -27,5 +29,9 @@ jobs:
         run: |
           node --check impact-lab/app.js
           node --check impact-lab/sw.js
+          node --check impact-lab/tech-v2-core.js
+          node --check impact-lab/tech-v2.js
       - name: Run browser-free integration and crypto tests
-        run: node tests/impact-lab.test.cjs
+        run: |
+          node tests/impact-lab.test.cjs
+          node tests/impact-lab-v2.test.cjs

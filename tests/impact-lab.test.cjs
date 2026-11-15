@@ -20,11 +20,11 @@ for(const name of modules){
 }
 assert.match(home,/href="impact-lab\/"/,"One-click homepage entry point");
 assert.match(html,/app\.js\?v=1/);
-assert.match(html,/app\.css\?v=1/);
+assert.match(html,/app\.css\?v=2/);
 assert.match(css,/focus-visible/,"Keyboard-visible focus");
 assert.match(css,/prefers-reduced-motion/,"Reduced-motion support");
 assert.match(css,/@media\(max-width:580px\)/,"Mobile layout");
-assert.match(sw,/nabd-impact-v1/);
+assert.match(sw,/nabd-impact-v2/);
 assert.match(sw,/url\.pathname\.includes\("\/impact-lab\/"\)/,"Cache scope only to this folder");
 assert.ok(!/\bfetch\s*\(/.test(js),"User-generated content is not transmitted to backend");
 assert.match(js,/textContent=String\(content\)/,"User input inserted using textContent");
