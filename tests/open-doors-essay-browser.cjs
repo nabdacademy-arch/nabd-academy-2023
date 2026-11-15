@@ -2,7 +2,7 @@
 const {chromium}=require("playwright");
 const fs=require("node:fs");
 const assert=require("node:assert/strict");
-const fakeModule=String.raw\`
+const fakeModule=String.raw`
 const MOCK_QUESTION={id:"TEST-001",subject:"chemistry",topic:"Stoichiometry",difficulty:"advanced",
  kind:"written",question:"Explain how to calculate water mass from 2 mol oxygen.",
  explanation:"4 mol water is 72 g.",rubric:"Balanced equation, steps, units",origin:"authored",
@@ -53,7 +53,7 @@ export function createClient(){
   }}
  }
 }
-\`;
+`;
 (async()=>{
  fs.mkdirSync("essay-browser-results",{recursive:true});
  const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
