@@ -74,7 +74,7 @@ $("essayAnswer").addEventListener("input",()=>{
 function clearPhoto(){
  if(state.photoURL)URL.revokeObjectURL(state.photoURL);
  state.photoURL=null;state.photo=null;
- $("essayImage").value="";$("essayPreview").hidden=true;$("essayPreview").removeAttribute("src");
+ $("essayImage").value="";$("essayCamera").value="";$("essayPreview").hidden=true;$("essayPreview").removeAttribute("src");
  $("essayPhotoInfo").textContent="";
 }
 function resetFeedback(){
@@ -119,8 +119,10 @@ $("essayHeroJump")?.addEventListener("click",()=>{
  loadArchive();
 });
 document.querySelector('[data-tab="essayLab"]')?.addEventListener("click",loadArchive);
-$("essayImage").addEventListener("change",()=>{
- const file=$("essayImage").files?.[0];
+function selectEssayPhoto(input){
+ const file=input.files?.[0];
+ if(input===$("essayImage"))$("essayCamera").value="";
+ else $("essayImage").value="";
  if(state.photoURL)URL.revokeObjectURL(state.photoURL);
  state.photoURL=null;state.photo=null;
  $("essayPreview").hidden=true;$("essayPreview").removeAttribute("src");
@@ -128,13 +130,15 @@ $("essayImage").addEventListener("change",()=>{
  if(!file)return;
  if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>4*1024*1024||file.size<200){
   status("الصورة يجب أن تكون JPG/PNG/WebP وأقل من 4 ميغابايت.","Select a JPG/PNG/WebP image under 4 MB.",true);
-  $("essayImage").value="";return;
+  $("essayImage").value="";$("essayCamera").value="";return;
  }
  state.photo=file;state.photoURL=URL.createObjectURL(file);
  $("essayPreview").src=state.photoURL;$("essayPreview").hidden=false;
  $("essayPhotoInfo").textContent=file.name+" · "+Math.ceil(file.size/1024)+" KB";
  status("يمكنك تعديل الإجابة المكتوبة وإضافة الصورة معًا. ستُرسل الصورة للمزوّد عند الموافقة فقط.","You may combine typed work with the photo; it is sent only when you consent.");
-});
+}
+$("essayImage").addEventListener("change",()=>selectEssayPhoto($("essayImage")));
+$("essayCamera").addEventListener("change",()=>selectEssayPhoto($("essayCamera")));
 /* Important: image may contain handwriting. Resize locally but preserve sufficient resolution for inspection. */
 async function imagePayload(file){
  if(!file)return null;
@@ -164,6 +168,10 @@ function reportDetails(root,q,data,self=false){
   paragraph(root,(self?ar("درجة التقييم الذاتي: ","Self-assessment: "):ar("درجة مؤقتة بالذكاء الاصطناعي: ","Provisional AI score: "))+score+"/10","essay-score");
   paragraph(root,self?ar("اخترت بنفسك النقاط المنجزة؛ هذه ليست علامة تصحيح آلي.","You marked the criteria yourself; this is not an AI score."):
    ar("الدرجة تقديرية؛ قد يخطئ الذكاء الاصطناعي في قراءة الخط أو تقييم حل صحيح بصياغة مختلفة.","AI scoring is provisional. Handwriting recognition and scientific grading can be incorrect."),"essay-helper");
+ }
+ if(data?.recognized_text&&state.photo){
+  paragraph(root,ar("النص الذي قرأه الذكاء الاصطناعي من الصورة (راجعه قبل الوثوق بالدرجة):","AI transcription of the handwritten photo (verify it before trusting the mark):"),"essay-kicker");
+  paragraph(root,String(data.recognized_text).slice(0,3000),"essay-solution");
  }
  if(Array.isArray(data?.criteria)){
   const grid=elem("div",undefined,"essay-grade-breakdown");
@@ -198,7 +206,7 @@ function downloadFeedback(q,data,self){
  "Original NABD practice. Not an official Open Doors mark.","","Question:",q.prompt_en,"", "Your answer:",
  $("essayAnswer").value.slice(0,6500),state.photo?"[Image was attached; not embedded in report]":"",
  "","Provisional score: "+(data?.score??"unavailable")+"/10","Grading mode: "+(self?"self-review":"AI-provisional"),
- "Feedback:",data?.reason_en||data?.reason_ar||"","Model answer:",q.model_en,"",q.model_ar].join("\n");
+ "Feedback:",data?.reason_en||data?.reason_ar||"","AI handwriting transcript:",data?.recognized_text||"(no image transcript)","Model answer:",q.model_en,"",q.model_ar].join("\n");
  const blob=new Blob([content],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=elem("a");
  a.href=url;a.download="nabd-open-doors-essay-"+q.id.replace(/[^a-zA-Z0-9_-]/g,"-")+".txt";
  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),12000);
