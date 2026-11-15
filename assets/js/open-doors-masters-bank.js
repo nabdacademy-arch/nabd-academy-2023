@@ -7,7 +7,7 @@ const SUBJECTS=Object.freeze({
  chemistry:Object.freeze({en:"Chemistry and Materials Science",ar:"الكيمياء وعلوم المواد",date:"2026-11-28",
  page:"https://od.globaluni.ru/subject/52/ma",sample:"https://od.globaluni.ru/attachment/4096947/download",
  program:"https://od.globaluni.ru/attachment/4096949/download",
- degrees:["04.04.01 Chemistry","04.04.02 Chemistry, physics and mechanics of materials","18.04.01 Chemical engineering","22.04.01 Materials science"],
+ degrees:["04.04.01 Chemistry","04.04.02 Chemistry, physics and mechanics of materials","18.04.01 Chemical Engineering","18.04.02 Energy and Resource Saving Processes in Chemical Engineering, Petrochemistry and Biotechnology","22.04.01 Materials Science and Engineering"],
  fields:[
  ["Physical chemistry, thermodynamics and kinetics","الكيمياء الفيزيائية والديناميكا والحركية","Chemical potential, Gibbs energy, electrochemistry, reaction kinetics and equilibria"],
  ["Analytical chemistry and spectroscopy","الكيمياء التحليلية والتحليل الطيفي","Calibration, acid-base and complexometric titration, chromatography, uncertainty"],
@@ -417,7 +417,7 @@ function generated(subject,kind,seed){
    return qGenerated(subject,kind,n,"Pharmacokinetics",
     "After "+h+" elimination half-lives, approximately what percent of a first-order drug remains?",
     "بعد "+h+" أنصاف عمر للتخلص من دواء ذي حركية مرتبة أولى، كم النسبة المئوية المتبقية؟",
-    [(ans/2).toFixed(2)+"%",ans.toFixed(2)+"%",(ans*2).toFixed(2)+"%",(100-ans).toFixed(2)+"%"],[1],
+    [(ans/2).toFixed(2)+"%",ans.toFixed(2)+"%",(ans*2).toFixed(2)+"%",(ans+17).toFixed(2)+"%"],[1],
     "Remaining=100×(1/2)^"+h+" = "+ans.toFixed(2)+"%.");
   }
   const r0=2+Math.floor(n/3)%9,ans=(100*(1-1/r0)).toFixed(1);
