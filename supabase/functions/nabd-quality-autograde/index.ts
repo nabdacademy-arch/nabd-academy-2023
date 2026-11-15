@@ -42,7 +42,11 @@ const RULES="You are a rigorous medical-education examiner. Evaluate student ans
 async function evaluate(items:Subjective[]){
  if(!items.length)return {grades:[],model:"deterministic"};
  const request=JSON.stringify({questions:items});
- const providers=[...(env("GROQ_API_KEY")?[{type:"groq",model:"openai/gpt-oss-120b"}]:[]),...(env("GEMINI_API_KEY")?[{type:"gemini",model:"gemini-3.6-flash"}]:[])];
+ const providers=[
+  ...(env("GROQ_API_KEY")?[{type:"groq",model:"openai/gpt-oss-20b"},{type:"groq",model:"openai/gpt-oss-120b"}]:[]),
+  ...(env("GEMINI_API_KEY")?[{type:"gemini",model:"gemini-2.5-flash-lite"}]:[]),
+  ...(env("OPENROUTER_API_KEY")?[{type:"openrouter",model:"openrouter/free"}]:[])
+ ];
  for(const provider of providers){
   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),22000);
   try{
@@ -54,13 +58,25 @@ async function evaluate(items:Subjective[]){
        messages:[{role:"system",content:RULES},{role:"user",content:request}]})});
     if(!r.ok){console.warn("NABD grade Groq rejected",{status:r.status});continue}
     const j=await r.json();raw=String(j?.choices?.[0]?.message?.content||"");
-   }else{
+   }else if(provider.type==="gemini"){
     r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+provider.model+":generateContent",{
       method:"POST",signal:ctrl.signal,headers:{"x-goog-api-key":env("GEMINI_API_KEY"),"Content-Type":"application/json"},
       body:JSON.stringify({systemInstruction:{parts:[{text:RULES}]},contents:[{parts:[{text:request}]}],
        generationConfig:{temperature:0,maxOutputTokens:5000,responseMimeType:"application/json"}})});
     if(!r.ok){console.warn("NABD grade Gemini rejected",{status:r.status});continue}
     const j=await r.json();raw=(j?.candidates?.[0]?.content?.parts||[]).map((x:{text?:string})=>x.text||"").join("");
+   }else{
+    // Third-party fallback is strictly OpenRouter Free; never route to paid models.
+    r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+      method:"POST",signal:ctrl.signal,
+      headers:{"Authorization":"Bearer "+env("OPENROUTER_API_KEY"),
+        "Content-Type":"application/json","HTTP-Referer":ORIGIN,
+        "X-Title":"NABD Academy Exam Grading"},
+      body:JSON.stringify({model:"openrouter/free",temperature:0,max_tokens:5000,
+       messages:[{role:"system",content:RULES},{role:"user",content:request}]})
+    });
+    if(!r.ok){console.warn("NABD grade free-router rejected",{status:r.status});continue}
+    const j=await r.json();raw=String(j?.choices?.[0]?.message?.content||"");
    }
    const data=parse(raw),list=data?.grades;
    if(!Array.isArray(list)||list.length!==items.length)continue;
