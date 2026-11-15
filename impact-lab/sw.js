@@ -16,7 +16,10 @@ self.addEventListener("fetch",event=>{
  if(!url.pathname.includes("/impact-lab/"))return;
  event.respondWith(
   fetch(req).then(response=>{
-   if(response.ok&&response.type==="basic")caches.open(VERSION).then(cache=>cache.put(req,response.clone()));
+   if(response.ok&&response.type==="basic"){
+    const toCache=response.clone();
+    caches.open(VERSION).then(cache=>cache.put(req,toCache)).catch(()=>{});
+   }
    return response;
   }).catch(()=>caches.match(req).then(cached=>cached||caches.match("./index.html")))
  );
