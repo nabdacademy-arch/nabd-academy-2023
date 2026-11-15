@@ -33,3 +33,13 @@ jobs:
           node --check assets/js/open-doors-essay.js
       - name: Run essay bank, UI and authorization tests
         run: node tests/open-doors-essay.test.cjs
+
+  check-edge-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check founder-only essay grading function
+        run: deno check supabase/functions/open-doors-essay-grade/index.ts
