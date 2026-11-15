@@ -56,6 +56,8 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
 #curriculumContent{max-width:100%;}#curriculumContent .card{background:#103344;border:1px solid #365c6d;border-radius:18px;padding:18px;margin:14px 0}#curriculumContent .part{padding:12px;border-bottom:1px solid #315568}#curriculumContent .en{direction:ltr;text-align:left}#curriculumContent .ar{direction:rtl;text-align:right}#curriculumContent .quiz{background:#17424c;border-radius:12px;padding:15px;margin-top:14px}#curriculumContent #nav{display:flex;gap:8px;flex-wrap:wrap}#curriculumContent #nav a{padding:4px 7px}#curriculumContent .card{scroll-margin-top:16px}
 #intensivePrep{margin-top:20px;border-top:2px solid #4ab9b1;padding-top:16px}#intensivePrep .prep-controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}#intensivePrep .prep-card{border:1px solid #426b76;border-radius:14px;padding:15px;margin:12px 0;background:#123744}#intensivePrep .prep-question{background:#173d49;padding:12px;border-radius:12px;margin:12px 0}#intensivePrep .prep-question label{display:block;margin:8px 0}#intensivePrep .prep-explain{white-space:pre-wrap;border-inline-start:3px solid #59b8a8;padding:9px}#intensivePrep .prep-english{direction:ltr;text-align:left}#intensivePrep .prep-arabic{direction:rtl;text-align:right}#intensivePrep button{cursor:pointer}#intensivePrep .prep-pill{border:1px solid #7aa7b3;border-radius:9px;padding:6px 10px}#intensivePrep .prep-progress{font-weight:700}</style>
 <link rel="stylesheet" href="assets/css/open-doors-essay.css?v=1">
+<link rel="stylesheet" href="assets/css/open-doors-choice.css?v=1">
+<script defer src="assets/js/open-doors-choice-bank.js?v=1"></script>
 <script defer src="assets/js/open-doors-essay-bank.js?v=1"></script>
 </head>
 <body>
@@ -91,11 +93,18 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
 <button type="button" class="tab" data-tab="curriculum">📖 موسوعة Open Doors الطبية</button><button type="button" class="tab" data-tab="smartFocus">🎯 خطة الدراسة الذكية</button><button type="button" class="tab" data-tab="realExam">🧪 الامتحان الفعلي</button>
 <button type="button" class="tab" data-tab="stats">📈 تقدمي</button>
 <button type="button" class="tab" data-tab="sources">📚 الأرشيف والمصادر</button>
-<button type="button" class="tab" data-tab="patterns">🧠 عقلية واضع الأسئلة</button><button type="button" class="tab" data-tab="essayLab" style="border-color:#f5cb7b;color:#f9e7b7;font-weight:900">✍️ المقالي فقط · Written Essay</button>
+<button type="button" class="tab" data-tab="patterns">🧠 عقلية واضع الأسئلة</button><button type="button" class="tab" data-tab="essayLab" style="border-color:#f5cb7b;color:#f9e7b7;font-weight:900">✍️ المقالي فقط · Written Essay</button><button type="button" class="tab" data-tab="choiceSingle" style="border-color:#7aebd4;color:#c7ffed;font-weight:900">🔘 اختيار إجابة واحدة · Single</button><button type="button" class="tab" data-tab="choiceMulti" style="border-color:#f2cf91;color:#fff0c8;font-weight:900">☑️ أكثر من إجابة · Multiple</button>
 </div>
 <section id="trainer" class="panel">
 <div style="margin:0 0 18px;padding:16px;border:1px solid #42b8aa;border-radius:14px;background:#153e48"><h2 style="margin:0 0 8px">🧪 محاكي امتحان Open Doors الفعلي</h2><p style="margin:0 0 12px">44 مهمة تدريبية · 175 دقيقة مكتوب + 5 دقائق شفوي · نتيجة تقديرية من 100</p><button type="button" class="btn" id="realExamQuickStart" style="width:100%;font-weight:800;font-size:17px;padding:14px">🚀 دخول الامتحان الفعلي الآن</button></div>
-<div class="essay-shortcuts"><strong>✍️ تدريب مستقل على الجزء المقالي فقط</strong><p class="small" style="margin:7px 0">كيمياء · أحياء · طب — كتابة الإجابة أو تصوير ورقة الحل، مع تقدير بالذكاء الاصطناعي وشرح تفصيلي للأخطاء. تدريب خارج جلسة Open Doors الرسمية.</p><button type="button" id="essayHeroJump">✍️ افتح مدرب الأسئلة المقالية الآن ←</button></div><div id="examSetup">
+<div class="choice-launcher" aria-label="Open Doors multiple choice exam preparation">
+ <strong>🧠 مدرب Open Doors · اختيار واحد أو عدة إجابات</strong>
+ <p>كيمياء · أحياء · طب بشري | أسئلة عشوائية من بنك نبض مع المصادر الرسمية، وترجمة ودرجة وشرح فور الإجابة.</p>
+ <div class="choice-launcher-buttons">
+  <button type="button" class="choice-btn primary" id="choiceSingleQuick">🔘 اختيار إجابة واحدة | Single Answer</button>
+  <button type="button" class="choice-btn gold" id="choiceMultiQuick">☑️ اختيار أكثر من إجابة | Multiple Answers</button>
+ </div>
+</div><div class="essay-shortcuts"><strong>✍️ تدريب مستقل على الجزء المقالي فقط</strong><p class="small" style="margin:7px 0">كيمياء · أحياء · طب — كتابة الإجابة أو تصوير ورقة الحل، مع تقدير بالذكاء الاصطناعي وشرح تفصيلي للأخطاء. تدريب خارج جلسة Open Doors الرسمية.</p><button type="button" id="essayHeroJump">✍️ افتح مدرب الأسئلة المقالية الآن ←</button></div><div id="examSetup">
 <h2>ابدأ جولة جديدة</h2>
 <p class="muted">اختر المجال والمستوى ثم نوع التدريب. يتم سحب الأسئلة من قاعدة البيانات الخاصة.</p>
 <div class="formrow">
@@ -128,7 +137,79 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
 <section id="stats" class="panel" hidden><h2>📈 تحليل أدائك</h2><p class="muted">تقدير مبني على إجاباتك السابقة، وليس تنبؤًا بنتيجة الامتحان.</p><div id="statItems" class="stack"></div></section>
 <section id="sources" class="panel" hidden><h2>📚 الأرشيف والمصادر البحثية</h2><p class="muted">50 مرجعًا وروابط نماذج رسمية ومصادر موازية مع تصنيف موثوقيتها. لا تُعد المصادر الموازية امتحانات Open Doors.</p><div class="formrow"><div><label for="sourceFilter">المجال</label><select id="sourceFilter"><option value="all">جميع المصادر</option><option value="كيمياء">كيمياء</option><option value="حاسوب">الحاسوب</option><option value="طب">الطب</option><option value="أحياء">أحياء</option></select></div></div><div id="sourceItems" class="stack" style="margin-top:12px"></div></section>
 <section id="patterns" class="panel" hidden><h2>🧠 أنماط التفكير والتصحيح</h2><p class="muted">16 استنتاجًا تعليميًا من نماذج منشورة، وليست معلومات داخلية للجنة الامتحان.</p><div id="patternItems" class="stack"></div></section>
-<section id="essayLab" class="panel" hidden aria-labelledby="essayHeading">
+<section id="choiceSingle" class="panel" hidden aria-label="🔘 اختيار إجابة واحدة | Single Answer">
+ <div class="choice-intro"><span class="choice-emphasis">NABD OPEN DOORS · BACHELOR SECOND ROUND</span>
+  <h2>🔘 اختيار إجابة واحدة | Single Answer</h2><p>تدريب على الأسئلة الأساسية ذات الخيار الصحيح الواحد، مع تصحيح فوري من علامة واحدة، وترجمة عربية للسؤال والخيارات، وشرح سبب الحل.</p></div>
+ <p class="notice">هذه أسئلة تدريبية مؤلفة من أكاديمية نبض أو مأخوذة من بنكها الداخلي؛ روابط المصادر الرسمية تُبيّن نمط الامتحان، ولا تعني أن الأسئلة هنا نُقلت من اختبار حقيقي. تصحيح الاختيارات آلي بمفتاح الإجابة وليس تقييماً بشرياً أو نتيجة رسمية.</p>
+ <div class="choice-settings">
+  <label for="choiceSingleSubject">Subject / التخصص
+   <select id="choiceSingleSubject"><option value="chemistry">Chemistry · الكيمياء</option><option value="biology">Biology · الأحياء</option><option value="medicine">Clinical Medicine · الطب</option><option value="all">Mixed · جميع التخصصات</option></select></label>
+  <label for="choiceSingleSource">Question bank / نوع البنك
+   <select id="choiceSingleSource"><option value="mixed">Both original + archive · المختلط</option>
+    <option value="archive">Existing NABD database · البنك السابق</option><option value="new">New bilingual NABD · بنك جديد مترجم</option>
+    <option value="generated">Generated numbered variants · مسائل مولَّدة</option></select></label>
+  <label for="choiceSingleCount">Number of tasks / عدد الأسئلة
+   <select id="choiceSingleCount"><option value="5">5 questions / 5 أسئلة</option><option value="10" selected>10 questions / 10 أسئلة</option>
+    <option value="20">20 questions / 20 سؤالًا</option><option value="all">All available / جميع المتاح</option></select></label>
+ </div>
+ <div class="choice-actions"><button type="button" id="choiceSingleStart" class="choice-btn primary">🚀 Start randomized practice · ابدأ تدريبًا عشوائيًا</button>
+ <button type="button" id="choiceSingleTranslate" class="choice-btn choice-toggle" aria-pressed="false">🌐 Show Arabic · إظهار الترجمة</button></div>
+ <div id="choiceSingleSources" class="choice-sourcebox" aria-label="Official subject references"></div>
+ <div id="choiceSinglePanel" hidden>
+  <div class="choice-progress"><span id="choiceSingleNo">1/10</span><div class="choice-progress-meter" aria-hidden="true"><div id="choiceSingleMeter"></div></div><strong id="choiceSingleFormat"></strong></div>
+  <div class="choice-card">
+   <div class="choice-head"><span id="choiceSingleMeta"></span></div>
+   <div id="choiceSinglePrompt" class="choice-prompt-en" lang="en" dir="ltr"></div>
+   <div id="choiceSinglePromptArabic" class="choice-prompt-ar" lang="ar" dir="rtl" hidden></div>
+   <p class="choice-instructions">🔘 Select ONE correct option / اختر خيارًا واحدًا</p>
+   <div id="choiceSingleOptions" class="choice-options" role="group" aria-label="Answer choices"></div>
+   <div class="choice-actions">
+    <button type="button" id="choiceSingleCheck" class="choice-btn gold">✅ Check & explain · صحح واعرض الشرح</button>
+    <button type="button" id="choiceSingleNext" class="choice-btn primary" hidden>Next question · السؤال التالي</button>
+   </div>
+  </div>
+  <div id="choiceSingleResult" class="choice-grade" hidden aria-live="polite"></div>
+ </div>
+ <div id="choiceSingleSummary" class="choice-summary" hidden></div>
+ <p id="choiceSingleStatus" class="choice-status" role="status" aria-live="polite"></p>
+ <p class="choice-legend">طريقة تصحيح نبض: 1/1 للإجابة الصحيحة، وصفر لغير ذلك.</p>
+ </section><section id="choiceMulti" class="panel" hidden aria-label="☑️ اختيار أكثر من إجابة | Multiple Answers">
+ <div class="choice-intro"><span class="choice-emphasis">NABD OPEN DOORS · BACHELOR SECOND ROUND</span>
+  <h2>☑️ اختيار أكثر من إجابة | Multiple Answers</h2><p>تدريب على الأسئلة المتوسطة التي تتطلب تحديد كل الإجابات الصحيحة، مع تصحيح فوري من 3 علامات تدريبية، وبيان الإجابات الصحيحة والخاطئة والناقصة.</p></div>
+ <p class="notice">هذه أسئلة تدريبية مؤلفة من أكاديمية نبض أو مأخوذة من بنكها الداخلي؛ روابط المصادر الرسمية تُبيّن نمط الامتحان، ولا تعني أن الأسئلة هنا نُقلت من اختبار حقيقي. تصحيح الاختيارات آلي بمفتاح الإجابة وليس تقييماً بشرياً أو نتيجة رسمية.</p>
+ <div class="choice-settings">
+  <label for="choiceMultiSubject">Subject / التخصص
+   <select id="choiceMultiSubject"><option value="chemistry">Chemistry · الكيمياء</option><option value="biology">Biology · الأحياء</option><option value="medicine">Clinical Medicine · الطب</option><option value="all">Mixed · جميع التخصصات</option></select></label>
+  <label for="choiceMultiSource">Question bank / نوع البنك
+   <select id="choiceMultiSource"><option value="mixed">Both original + archive · المختلط</option>
+    <option value="archive">Existing NABD database · البنك السابق</option><option value="new">New bilingual NABD · بنك جديد مترجم</option>
+    <option value="generated">Generated numbered variants · مسائل مولَّدة</option></select></label>
+  <label for="choiceMultiCount">Number of tasks / عدد الأسئلة
+   <select id="choiceMultiCount"><option value="5">5 questions / 5 أسئلة</option><option value="10" selected>10 questions / 10 أسئلة</option>
+    <option value="20">20 questions / 20 سؤالًا</option><option value="all">All available / جميع المتاح</option></select></label>
+ </div>
+ <div class="choice-actions"><button type="button" id="choiceMultiStart" class="choice-btn primary">🚀 Start randomized practice · ابدأ تدريبًا عشوائيًا</button>
+ <button type="button" id="choiceMultiTranslate" class="choice-btn choice-toggle" aria-pressed="false">🌐 Show Arabic · إظهار الترجمة</button></div>
+ <div id="choiceMultiSources" class="choice-sourcebox" aria-label="Official subject references"></div>
+ <div id="choiceMultiPanel" hidden>
+  <div class="choice-progress"><span id="choiceMultiNo">1/10</span><div class="choice-progress-meter" aria-hidden="true"><div id="choiceMultiMeter"></div></div><strong id="choiceMultiFormat"></strong></div>
+  <div class="choice-card">
+   <div class="choice-head"><span id="choiceMultiMeta"></span></div>
+   <div id="choiceMultiPrompt" class="choice-prompt-en" lang="en" dir="ltr"></div>
+   <div id="choiceMultiPromptArabic" class="choice-prompt-ar" lang="ar" dir="rtl" hidden></div>
+   <p class="choice-instructions">☑️ Select ALL correct options / اختر كل الإجابات الصحيحة</p>
+   <div id="choiceMultiOptions" class="choice-options" role="group" aria-label="Answer choices"></div>
+   <div class="choice-actions">
+    <button type="button" id="choiceMultiCheck" class="choice-btn gold">✅ Check & explain · صحح واعرض الشرح</button>
+    <button type="button" id="choiceMultiNext" class="choice-btn primary" hidden>Next question · السؤال التالي</button>
+   </div>
+  </div>
+  <div id="choiceMultiResult" class="choice-grade" hidden aria-live="polite"></div>
+ </div>
+ <div id="choiceMultiSummary" class="choice-summary" hidden></div>
+ <p id="choiceMultiStatus" class="choice-status" role="status" aria-live="polite"></p>
+ <p class="choice-legend">طريقة تصحيح نبض: 3/3 عند اكتمال الخيارات الصحيحة فقط، ودرجة جزئية للخيارات الصحيحة غير المكتملة دون أخطاء، وصفر إذا اختير خيار خاطئ. ليست آلية Open Doors الرسمية.</p>
+ </section><section id="essayLab" class="panel" hidden aria-labelledby="essayHeading">
  <div class="essay-intro"><div><div class="essay-kicker">NABD / OPEN DOORS / EXTENDED WRITTEN · 2026/27</div><h2 id="essayHeading">✍️ التدريب على المقالي فقط | Advanced Written Answers</h2>
  <p>بنك الأسئلة الكتابية الخاص · الكيمياء والأحياء والطب · نمط التفكير في المسائل المتقدمة · الإجابات الإنجليزية والترجمة العربية · صورة ورقة الحل · تقييم حسب خطوات الإجابة.</p></div>
  <span class="essay-stamp">ESSAY LAB V1 · <span id="essayBankSize">18</span> TASKS</span></div>
@@ -213,7 +294,7 @@ async function loadPortal(){
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;message('loginStatus','جارٍ تسجيل الدخول...');const res=await db.auth.signInWithPassword({email:$('emailInput').value.trim(),password:$('passInput').value});$('passInput').value='';$('loginBtn').disabled=false;if(res.error){message('loginStatus','تعذر الدخول: '+res.error.message);return}await loadPortal()});
 $('logoutBtn').onclick=signOut;
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>selectTab(b.dataset.tab);
-function selectTab(tab){for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active',b.dataset.tab===tab);for(const k of ['trainer','curriculum','smartFocus','realExam','stats','sources','patterns','essayLab'])$(k).hidden=k!==tab;if(tab==='stats')renderStats()}
+function selectTab(tab){for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('active',b.dataset.tab===tab);for(const k of ['trainer','curriculum','smartFocus','realExam','stats','sources','patterns','essayLab','choiceSingle','choiceMulti'])$(k).hidden=k!==tab;if(tab==='stats')renderStats()}
 $('sourceFilter').addEventListener('change',renderSources);
 function renderSources(){const x=$('sourceItems');clear(x);const f=$('sourceFilter').value;const sources=state.sources.filter(s=>f==='all'||(s.subject||'').includes(f));if(!sources.length){x.append(node('p','muted','لا توجد نتائج لهذا المرشح'));return}for(const s of sources){const card=node('article','item');const bar=node('div','sourcebar');bar.append(node('h3','',s.name));const u=safeUrl(s.url);if(u){const a=node('a','', 'فتح المصدر ↗');a.href=u;a.target='_blank';a.rel='noopener noreferrer';bar.append(a)}card.append(bar,node('p','tag',(s.source_year||'')+' · '+(s.subject||'')+' · '+(s.status||'')),node('p','muted',(s.source_group||'')+' · '+(s.note||'')));x.append(card)}}
 function renderPatterns(){let x=$('patternItems');clear(x);for(const p of state.patterns){const card=node('article','item');card.append(node('h3','',p.subject+' · '+p.kind),node('p','',p.method),node('p','muted','طريقة البناء: '+p.construction),node('p','muted','تدرج الصعوبة: '+p.difficulty_rule),node('p','tag','تصحيح مقترح: '+p.rubric));x.append(card)}}
@@ -340,5 +421,6 @@ document.getElementById('realExamQuickStart').addEventListener('click',()=>{sele
 await loadPortal();
 </script>
 <script type="module" src="assets/js/open-doors-essay.js?v=1"></script>
+<script type="module" src="assets/js/open-doors-choice.js?v=1"></script>
 </body>
 </html>
