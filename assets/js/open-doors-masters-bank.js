@@ -230,15 +230,15 @@ const MULTI=[
 ["biology","bi-m06","Protein structure","Which interactions often contribute to protein folding stability?","ما الروابط أو التأثيرات التي تساهم غالبًا في ثبات طي البروتين؟",
  ["Hydrophobic effects","Hydrogen bonds","Disulfide bonds in appropriate proteins","All protein tertiary structure relies only on covalent peptide bonds"],
  ["التأثيرات الكارهة للماء","الروابط الهيدروجينية","روابط ثنائي الكبريت في بعض البروتينات","تعتمد البنية الثالثة دائمًا على روابط الببتيد فقط"],
- "Stability arises from diverse interactions beyond peptide bonds, with context-dependent contributions.","ينشأ الثبات من تآثرات متعددة غير روابط الببتيد، وتتفاوت أهمية كل منها.");
+ "Stability arises from diverse interactions beyond peptide bonds, with context-dependent contributions.","ينشأ الثبات من تآثرات متعددة غير روابط الببتيد، وتتفاوت أهمية كل منها."],
 ["biology","bi-m07","Cell biology","Which can be assessed with flow cytometry plus appropriate labels?","ما الذي يمكن قياسه بقياس التدفق الخلوي مع الواسمات المناسبة؟",
  ["Relative surface antigen expression","Cell-cycle DNA content","Fraction of marker-positive cells","Whole-genome base sequence with routine scatter alone"],
  ["التعبير النسبي عن مستضدات السطح","محتوى DNA خلال دورة الخلية","نسبة الخلايا الإيجابية للواسم","تسلسل الجينوم كاملًا بالتبعثر الروتيني وحده"],
- "Fluorescence and scatter profiles support phenotyping and cell-cycle analysis, not whole-genome sequencing.","تدعم الإشارات الفلورية والتبعثر التنميط ودورة الخلية، لا التسلسل الجينومي الكامل.");
+ "Fluorescence and scatter profiles support phenotyping and cell-cycle analysis, not whole-genome sequencing.","تدعم الإشارات الفلورية والتبعثر التنميط ودورة الخلية، لا التسلسل الجينومي الكامل."],
 ["biology","bi-m08","Research ethics","Which are valid principles for human biospecimen studies?","ما المبادئ الصحيحة عند البحث على عينات بشرية؟",
  ["Informed consent or approved legal basis","Appropriate de-identification","Ethics review when required","Publish identifiable samples without permission"],
  ["موافقة مستنيرة أو أساس قانوني مناسب","إزالة بيانات التعريف وفق الحاجة","مراجعة أخلاقية عند لزومها","نشر عينات تكشف الهوية بلا إذن"],
- "Research governance requires legitimate consent/basis, privacy protections and appropriate oversight.","تحتاج إدارة البحث إلى أساس مشروع وحماية خصوصية ومراجعة مختصة عند الضرورة.");
+ "Research governance requires legitimate consent/basis, privacy protections and appropriate oversight.","تحتاج إدارة البحث إلى أساس مشروع وحماية خصوصية ومراجعة مختصة عند الضرورة."],
 ["medicine","md-m01","Epidemiology","Which are common limitations in an observational cohort study?","ما القيود الشائعة في دراسة الأتراب الرصدية؟",
  ["Confounding","Loss to follow-up","Selection bias","Automatic random allocation"],
  ["الإرباك","الفقد أثناء المتابعة","انحياز الاختيار","العشوائية التلقائية"],
@@ -246,27 +246,27 @@ const MULTI=[
 ["medicine","md-m02","Diagnostic accuracy","Which characteristics can change positive predictive value of a diagnostic test?","ما العوامل التي قد تغيّر PPV لاختبار تشخيصي؟",
  ["Disease prevalence","Sensitivity","Specificity","Color of test packaging alone"],
  ["انتشار المرض","الحساسية","النوعية","لون عبوة الاختبار وحده"],
- "Bayesian PPV depends on prevalence, sensitivity and specificity.","تعتمد PPV بايزيًا على انتشار المرض وحساسية الاختبار ونوعيته.");
+ "Bayesian PPV depends on prevalence, sensitivity and specificity.","تعتمد PPV بايزيًا على انتشار المرض وحساسية الاختبار ونوعيته."],
 ["medicine","md-m03","Critical appraisal","Which strengthen a randomized clinical trial?","ما الذي يقوي جودة تجربة سريرية عشوائية؟",
  ["Allocation concealment","Intention-to-treat analysis","Prespecified outcome measures","Selective reporting after results are known"],
  ["إخفاء التخصيص","التحليل حسب نية العلاج","تحديد النتائج مسبقًا","اختيار نشر النتائج بعد معرفتها"],
- "Concealment, prespecification and intent-to-treat reduce common selection and analysis biases.","يحد إخفاء التخصيص والتخطيط السابق والتحليل حسب نية العلاج من انحيازات شائعة.");
+ "Concealment, prespecification and intent-to-treat reduce common selection and analysis biases.","يحد إخفاء التخصيص والتخطيط السابق والتحليل حسب نية العلاج من انحيازات شائعة."],
 ["medicine","md-m04","Public health","Which approaches can inform population-level disease prevention?","ما المقاربات التي تدعم الوقاية من المرض على مستوى المجتمع؟",
  ["Surveillance data","Risk factor analysis","Evaluation of interventions","Assuming a single strategy works universally without measurement"],
  ["بيانات الترصد","تحليل عوامل الخطر","تقييم التدخلات","افتراض نجاح استراتيجية واحدة للجميع دون قياس"],
- "Prevention planning requires ongoing surveillance, determinants assessment and evaluation.","تتطلب الوقاية ترصدًا وتحليل محددات المرض وتقييمًا لفعالية التدخلات.");
+ "Prevention planning requires ongoing surveillance, determinants assessment and evaluation.","تتطلب الوقاية ترصدًا وتحليل محددات المرض وتقييمًا لفعالية التدخلات."],
 ["medicine","md-m05","Meta-analysis","Which should be considered when interpreting a pooled meta-analysis?","ما الجوانب التي يجب مراعاتها عند تفسير تحليل تلوي؟",
  ["Between-study heterogeneity","Risk of bias","Publication bias","Assuming pooled estimates are automatically causal"],
  ["تغاير الدراسات","خطر التحيز","انحياز النشر","افتراض السببية تلقائيًا للتقدير المجمع"],
- "Heterogeneity, publication and internal study biases affect pooled effect estimates.","يؤثر تغاير الدراسات وانحياز النشر والجودة الداخلية على تقدير الأثر المجمع.");
+ "Heterogeneity, publication and internal study biases affect pooled effect estimates.","يؤثر تغاير الدراسات وانحياز النشر والجودة الداخلية على تقدير الأثر المجمع."],
 ["medicine","md-m06","Clinical physiology","Which factors materially influence oxygen delivery DO₂ in a simplified physiological model?","ما العوامل المؤثرة في توصيل الأكسجين DO₂ في نموذج مبسط؟",
  ["Cardiac output","Hemoglobin concentration","Arterial hemoglobin saturation","PaO₂ alone completely determines delivery"],
  ["النتاج القلبي","تركيز الهيموغلوبين","التشبع الشرياني للهيموغلوبين","PaO₂ وحده يحدد التوصيل كليًا"],
- "DO₂ equals flow times oxygen content; hemoglobin concentration and saturation dominate oxygen carriage.","DO₂ يساوي تدفق الدم مضروبًا بمحتوى الأكسجين الذي يتأثر بالهيموغلوبين والتشبع.");
+ "DO₂ equals flow times oxygen content; hemoglobin concentration and saturation dominate oxygen carriage.","DO₂ يساوي تدفق الدم مضروبًا بمحتوى الأكسجين الذي يتأثر بالهيموغلوبين والتشبع."],
 ["medicine","md-m07","Pharmacology","Which may alter total drug exposure at a fixed dose?","ما العوامل التي قد تغيّر التعرض الكلي لدواء بجرعة ثابتة؟",
  ["Bioavailability","Clearance","Drug interactions","Patient's handwriting style"],
  ["التوافر الحيوي","التصفية","التداخلات الدوائية","أسلوب خط المريض"],
- "Drug AUC can change with bioavailability, clearance and interactions; handwriting does not determine pharmacokinetic exposure.","قد يتغير AUC مع التوافر الحيوي والتصفية والتداخلات، ولا يحدده شكل الخط.");
+ "Drug AUC can change with bioavailability, clearance and interactions; handwriting does not determine pharmacokinetic exposure.","قد يتغير AUC مع التوافر الحيوي والتصفية والتداخلات، ولا يحدده شكل الخط."],
 ["medicine","md-m08","Research ethics","Which improve ethical standards in clinical research?","ما الإجراءات التي تعزز أخلاقيات البحث السريري؟",
  ["Voluntary informed consent","Independent ethics review","Protection of participant confidentiality","Withholding known major risks"],
  ["موافقة طوعية مستنيرة","مراجعة أخلاقية مستقلة","حماية سرية المشاركين","إخفاء المخاطر المهمة المعروفة"],
@@ -398,7 +398,7 @@ function generated(subject,kind,seed){
     return qGenerated(subject,kind,n,"Relative expression ΔΔCt",
      "Assuming ideal equal amplification efficiency, ΔΔCt=−"+ct+". What is relative fold change 2^(−ΔΔCt)?",
      "مع افتراض كفاءة تضخيم مثالية وΔΔCt=−"+ct+"، كم التغير النسبي 2^(−ΔΔCt)؟",
-     [fold/2+"×",fold+"×",fold*2+"×",ct+"×"],[1],"2^"+ct+"="+fold+"-fold.");
+     [fold/2+"×",fold+"×",fold*2+"×",fold*3+"×"],[1],"2^"+ct+"="+fold+"-fold.");
    }
    const gen=2+Math.floor(n/3)%8,total=100*Math.pow(2,gen);
    return qGenerated(subject,kind,n,"Microbial generations",
@@ -410,10 +410,10 @@ function generated(subject,kind,seed){
    return qGenerated(subject,kind,n,"Risk ratio",
     "Exposed disease risk is "+exposed+"%, unexposed risk is 10%. Calculate risk ratio (RR).",
     "خطر المرض لدى المعرضين "+exposed+"% وغير المعرضين 10%. احسب RR.",
-    [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),(rr+4).toFixed(1)],[1],
+    [(rr/2).toFixed(1),rr.toFixed(1),(rr*2).toFixed(1),(rr*3).toFixed(1)],[1],
     "RR="+exposed+"/10="+rr.toFixed(1)+". Association is not proof of causation.");
   }
-  if(type===1){const h=2+Math.floor(n/3)%8,left=Math.pow(.5,h/2),ans=Math.round(left*1000)/10;
+  if(type===1){const h=2+Math.floor(n/3)%8,left=Math.pow(.5,h),ans=Math.round(left*1000)/10;
    return qGenerated(subject,kind,n,"Pharmacokinetics",
     "After "+h+" elimination half-lives, approximately what percent of a first-order drug remains?",
     "بعد "+h+" أنصاف عمر للتخلص من دواء ذي حركية مرتبة أولى، كم النسبة المئوية المتبقية؟",
