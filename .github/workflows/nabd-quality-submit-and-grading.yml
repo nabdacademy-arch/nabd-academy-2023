@@ -1,0 +1,37 @@
+name: NABD Reliable Submission and Auto Grading
+on:
+  push:
+    paths:
+      - 'assets/js/quality-student.js'
+      - 'student-exams.html'
+      - 'supabase/migrations/20261115_nabd_quality_reliable_exam_submit.sql'
+      - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - 'tests/nabd-quality-submit-and-grading.cjs'
+      - '.github/workflows/nabd-quality-submit-and-grading.yml'
+  pull_request:
+    paths:
+      - 'assets/js/quality-student.js'
+      - 'student-exams.html'
+      - 'supabase/migrations/20261115_nabd_quality_reliable_exam_submit.sql'
+      - 'supabase/functions/nabd-quality-autograde/index.ts'
+      - 'tests/nabd-quality-submit-and-grading.cjs'
+      - '.github/workflows/nabd-quality-submit-and-grading.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated TypeScript transform
+        run: npm install --no-save esbuild@0.25.10
+      - name: Validate student UI syntax
+        run: node --check assets/js/quality-student.js
+      - name: Parse grading Edge Function
+        run: npx --no-install esbuild supabase/functions/nabd-quality-autograde/index.ts --format=esm --outfile=/tmp/nabd-quality-autograde.js
+      - name: Check durable student receipts and deterministic grading
+        run: node tests/nabd-quality-submit-and-grading.cjs
