@@ -36,7 +36,7 @@ const SUBJECTS=Object.freeze({
  ["Clinical and pathological physiology","الفسيولوجيا السريرية والمرضية","Cardiopulmonary, endocrine and renal mechanisms and clinical reasoning"],
  ["Evidence-based medicine","الطب المبني على الدليل","Clinical evidence, meta-analysis, study quality, diagnostic metrics"],
  ["Health systems and prevention","النظم الصحية والوقاية","Population health, health policy, ethics and preventive strategies"],
- ["Pharmacology and research ethics","علم الأدوية وأخلاقيات البحث","Mechanisms, adverse effects, study design, informed consent"]]}
+ ["Pharmacology and research ethics","علم الأدوية وأخلاقيات البحث","Mechanisms, adverse effects, study design, informed consent"]]})
 });
 const RUBRIC=Object.freeze([
  Object.freeze({en:"Accurate scientific foundations",ar:"صحة الأسس العلمية",points:3}),
