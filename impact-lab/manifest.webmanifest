@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "NABD World Impact | مختبر الأثر العالمي",
+  "short_name": "NABD Impact",
+  "description": "Six local-first research, safety, accessibility and humanitarian technology pilots.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#061520",
+  "theme_color": "#061d2e",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "../atlas/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
