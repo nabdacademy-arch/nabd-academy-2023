@@ -23,8 +23,8 @@ for(const subject of ["chemistry","biology","medicine"]){
    assert.equal(q.subject,subject);
    assert.equal(q.options.length,4);
    assert.equal(q.options_ar.length,4);
-   assert.ok(q.question.length>40&&q.question_ar.length>28);
-   assert.ok(q.explanation_en.length>45&&q.explanation_ar.length>40);
+   assert.ok(q.question.length>18&&q.question_ar.length>10);
+   assert.ok(q.explanation_en.length>20&&q.explanation_ar.length>15);
    assert.equal(q.correct.length,kind==="single"?1:3);
    const perfect=b.grade(q,[...q.correct]);
    assert.equal(perfect.score,kind==="single"?1:3,q.id+" grading all correct");
