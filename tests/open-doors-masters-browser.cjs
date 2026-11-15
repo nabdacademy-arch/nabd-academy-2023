@@ -38,7 +38,6 @@ export function createClient(){
   // Subject cards change the master's track, not the bachelor's question bank.
   await page.locator('#masterSubjectCards [data-subject="biology"]').click();
   await page.locator('.master-nav [data-view="single"]').click();
-  console.log("DEBUG_AFTER_SINGLE",page.url(),"count",await page.locator("#masterPracticeCount").count(),"body", (await page.locator("body").innerText()).slice(0,420));
   await page.locator("#masterPracticeCount").selectOption("5",{timeout:6000});
   await page.locator("#masterPracticeStart").click();
   await page.locator("#masterPracticeQuestion").waitFor({state:"visible"});
@@ -73,7 +72,7 @@ export function createClient(){
   assert.match(await page.locator("#masterPracticeReport").innerText(),/الإجابة العلمية|model|reference/i);
   // Master's official sources and syllabus links are present for the selected track.
   await page.locator('.master-nav [data-view="sources"]').click();
-  assert.ok(await page.locator("#masterSourcesContent a[href*=od.globaluni.ru]").count()>=6);
+  assert.ok(await page.locator("#masterSourcesContent a[href*="od.globaluni.ru"]").count()>=6);
   await page.locator('.master-nav [data-view="curriculum"]').click();
   assert.ok(await page.locator("#masterCurriculumContent article").count()>=6);
   // Launch 43-question mock plus oral stage; do not wait 3 hours.
