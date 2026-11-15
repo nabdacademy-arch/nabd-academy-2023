@@ -4,6 +4,54 @@
 if(!document.querySelector("[data-quality-student]"))return;
 const $=id=>document.getElementById(id),client=window.nabdSupabase;
 let student=null,exam=null,questions=[],timer=null,attempted=new Map(),submitting=false,autoRequested=false,paperLang="ar";
+let autoRetries=0,gradeRefreshes=[],restoringAnswers=false;
+function draftKey(){return student&&exam?"nabd-draft-"+student.id+"-"+exam.id:null}
+function saveDraft(){
+ if(!student||!exam||submitting||restoringAnswers)return;
+ try{const key=draftKey();if(!key)return;
+   sessionStorage.setItem(key,JSON.stringify({at:Date.now(),answers:captureAnswers()}));
+ }catch{}
+}
+function clearDraft(id){
+ if(!student||!id)return;
+ try{sessionStorage.removeItem("nabd-draft-"+student.id+"-"+id)}catch{}
+}
+function restoreDraft(){
+ if(!exam||!student)return;
+ try{
+   const raw=sessionStorage.getItem(draftKey());if(!raw)return;
+   const stored=JSON.parse(raw);
+   if(!stored||Date.now()-Number(stored.at)>2*60*60*1000)return clearDraft(exam.id);
+   restoringAnswers=true;
+   for(const q of questions){
+     const value=stored.answers?.[q.id],id=String(q.id);
+     if(q.type==="matching"&&Array.isArray(value)){
+       value.forEach((item,i)=>{
+         const n=document.querySelector('select[data-question="'+id+'"][data-match-index="'+i+'"]');
+         if(n)n.value=item===null?"":String(item);
+       });
+     }else if(q.type==="mcq"||q.type==="true_false"){
+       if(value===null||value===undefined)continue;
+       const candidate=String(value);
+       for(const n of document.querySelectorAll('input[name="q_'+id+'"]'))
+         n.checked=n.value===candidate;
+     }else{
+       const n=document.querySelector('[name="q_'+id+'"]');
+       if(n&&typeof value==="string")n.value=value;
+     }
+   }
+ }catch{}finally{restoringAnswers=false}
+}
+function startGradeRefresh(){
+ gradeRefreshes.forEach(clearTimeout);gradeRefreshes=[];
+ for(const delay of [15000,45000,90000]){
+   gradeRefreshes.push(setTimeout(()=>{
+     if(student&&!exam&&!document.hidden)load();
+   },delay));
+ }
+}
+$("ql-student-form").addEventListener("input",saveDraft);
+$("ql-student-form").addEventListener("change",saveDraft);
 const tr=(ar,en)=>paperLang==="en"?en:ar;
 function setPaperLanguage(language){
  paperLang=language==="en"?"en":"ar";
@@ -111,7 +159,7 @@ async function openPaper(id){
  // prove that a screen was captured. Students can decline to begin the paper.
  const {data:monitoring}=await client.rpc("nabd_quality_proctor_student_state",{p_exam:id});
  if(monitoring?.enabled && !window.confirm("هذا الامتحان يخضع لمراقبة إشارات المتصفح (مغادرة التبويب وفقدان التركيز وبعض اختصارات النسخ/الطباعة/التصوير). لا تستخدم الأكاديمية الكاميرا أو تسجيل الشاشة لهذا الغرض. قد تُراجع الإشارات إداريًا ولا تثبت الغش وحدها، وتُحذف بعد 30 يومًا. هل تريد بدء الامتحان؟"))return;
- exam=data;questions=data.questions;autoRequested=false;
+ exam=data;questions=data.questions;autoRequested=false;autoRetries=0;
  const arabic=/[\u0600-\u06FF]/u;
  setPaperLanguage(questions.some(q=>arabic.test(q.prompt||""))?"ar":"en");
  $("ql-paper-title").textContent=data.title;
@@ -147,6 +195,7 @@ async function openPaper(id){
    $("ql-paper-questions").append(card);
  });
  $("ql-student-paper").hidden=false;$("ql-student-dashboard").hidden=true;message("ql-paper-status","");
+ restoreDraft();
  document.dispatchEvent(new CustomEvent("nabd:exam-open",{detail:{examId:exam.id}}));
  if(timer)clearInterval(timer);
  timer=setInterval(tick,1000);tick();$("ql-student-paper").scrollIntoView({behavior:"smooth",block:"start"});
@@ -167,33 +216,82 @@ function captureAnswers(){
  });
  return result;
 }
+async function confirmSavedSubmission(examId){
+  if(!student)return null;
+  try{
+    const {data,error}=await client.from("nabd_quality_submissions")
+      .select("id,submitted_at").eq("exam_id",examId)
+      .eq("student_id",student.id).maybeSingle();
+    if(!error&&data?.id)return {id:data.id,submitted_at:data.submitted_at,already_submitted:true};
+  }catch{}
+  return null;
+}
+function submissionError(error){
+ const raw=String(error?.message||""),code=String(error?.code||"");
+ if(/EXAM_CLOSED_OR_UNAVAILABLE/.test(raw))
+   return tr("انتهى وقت الامتحان أو أُغلق بواسطة الإدارة. لا يقبل الخادم تسليمًا جديدًا.",
+     "The exam has closed or was closed by the director. New submissions are no longer accepted.");
+ if(/STUDENT_ONLY/.test(raw)||code==="42501")
+   return tr("تعذّر التحقق من حساب الطالب. سجّل الدخول مجددًا من بوابة الطالب.",
+     "Your student session could not be verified. Sign in again through the student portal.");
+ if(/INVALID_ANSWERS/.test(raw))
+   return tr("الإجابات غير صالحة للتسليم. أعد فتح الامتحان بعد التأكد من اتصالك.",
+     "Your answers could not be validated. Reopen the exam after checking your connection.");
+ if(code==="PGRST202")
+   return tr("خدمة التسليم لم تكتمل تهيئتها بعد. أعد تحديث الصفحة.",
+     "The submission service is not yet ready. Refresh the page.");
+ return tr("لم يؤكد الخادم تسليم الإجابات. احتفظنا بها في هذه الجلسة؛ تحقق من الإنترنت وأعد المحاولة قبل إغلاق الامتحان.",
+   "The server has not confirmed your answers. They are temporarily saved in this tab; check your connection and retry before the exam closes.");
+}
 async function submit(auto=false){
  if(!student||!exam||submitting)return;
  if(!auto&&!window.confirm(tr("هل تريد تسليم إجاباتك الآن؟ هذه محاولة واحدة ولا يمكن تعديل الإجابات بعد التسليم.",
  "Submit your answers now? You have one attempt and cannot change submitted answers.")))return;
+ const currentExam=exam;
+ const answers=captureAnswers();
+ try{
+   const key=draftKey();if(key)sessionStorage.setItem(key,JSON.stringify({at:Date.now(),answers}));
+ }catch{}
  submitting=true;const b=$("ql-submit-answers");b.disabled=true;
  message("ql-paper-status",auto?
- tr("اقترب وقت الإغلاق، جارٍ محاولة التسليم تلقائيًا…","Exam closing soon, submitting automatically…"):
- tr("جارٍ تسجيل الإجابات في النظام…","Submitting your answers…"));
- const answers=captureAnswers();
- const {data,error}=await client.from("nabd_quality_submissions")
-   .insert({exam_id:exam.id,student_id:student.id,answers}).select("id,submitted_at").maybeSingle();
+ tr("اقترب وقت الإغلاق، جارٍ تسجيل الإجابات تلقائيًا…","The exam is closing; submitting your answers automatically…"):
+ tr("جارٍ تسجيل الإجابات والتحقق من استلام الخادم…","Submitting answers and verifying the server receipt…"));
+ let result=null,err=null;
+ try{
+   const {data,error}=await client.rpc("nabd_quality_submit_exam",{
+     p_exam:currentExam.id,p_answers:answers
+   });
+   if(!error&&data?.ok&&data?.id)result=data;
+   else err=error||{message:"No submission receipt"};
+ }catch(error){err=error}
+ if(!result)result=await confirmSavedSubmission(currentExam.id);
  submitting=false;
- if(error||!data){
-   b.disabled=false;
-   message("ql-paper-status",tr("تعذر التسليم. قد يكون وقت الامتحان قد انتهى، أو ربما سبق التسليم. تحقق من اتصالك ثم حدّث الصفحة.",
- "Submission failed. The exam may have closed or you may have already submitted. Check your connection and refresh."),"error");
+ if(!exam||currentExam.id!==exam.id)return;
+ if(!result){
+   const timeLeft=Date.parse(currentExam.closes_at)-Date.now();
+   b.disabled=timeLeft<=0;
+   message("ql-paper-status",submissionError(err),"error");
+   if(auto&&timeLeft>3000&&autoRetries<3){
+     autoRetries++;
+     setTimeout(()=>{if(exam?.id===currentExam.id&&!submitting)submit(true)},1800);
+   }
    return;
  }
+ clearDraft(currentExam.id);
  if(timer){clearInterval(timer);timer=null}
  document.dispatchEvent(new CustomEvent("nabd:exam-end"));
  $("ql-student-paper").hidden=true;
  $("ql-student-dashboard").hidden=false;
- exam=null;questions=[];autoRequested=false;
+ exam=null;questions=[];autoRequested=false;autoRetries=0;
  b.disabled=false;$("ql-student-form").hidden=false;
- await load();
- message("ql-student-status",tr("تم تسليم إجاباتك بنجاح. يمكنك متابعة التقييم الآلي الأولي والنتيجة المعتمدة من قائمة الامتحانات.",
- "Answers submitted successfully. You can review your grading status in the exam list."),"success");
+ try{await load()}catch{}
+ message("ql-student-status",result.already_submitted?
+   tr("تم التأكد من أن إجاباتك مسجّلة سابقًا. لا يلزم إرسالها مرة ثانية.",
+      "Your answers were already recorded. No second submission was made."):
+   tr("تم حفظ إجاباتك بنجاح على الخادم. تبدأ عملية التصحيح التلقائي عند توفر النتيجة، ويمكنك تحديث سجل الامتحانات.",
+      "Your answers have been saved on the server. Automated grading will update your results when available."),
+   "success");
+ startGradeRefresh();
 }
 function tick(){
  if(!exam)return;
@@ -210,7 +308,7 @@ function tick(){
  const seconds=Math.ceil(ms/1000),minutes=Math.floor(seconds/60);
  $("ql-timer").textContent=String(minutes).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
  $("ql-timer").classList.toggle("alert",ms<60000);
- if(ms<8000 && !autoRequested){
+ if(ms<25000 && !autoRequested){
    autoRequested=true;
    submit(true);
  }
@@ -221,6 +319,7 @@ $("ql-exit-paper").addEventListener("click",()=>{
  "Return to exam list without submitting? Unsaved answers will be lost.")))return;
  if(timer){clearInterval(timer);timer=null}
  document.dispatchEvent(new CustomEvent("nabd:exam-end"));
+ clearDraft(exam?.id);
  exam=null;questions=[];$("ql-student-form").hidden=false;
  $("ql-student-paper").hidden=true;$("ql-student-dashboard").hidden=false;load();
 });
