@@ -1,0 +1,45 @@
+name: NABD Open Doors Written Essay Lab
+on:
+  push:
+    paths:
+      - "open-doors-ai.html"
+      - "assets/js/open-doors-essay*.js"
+      - "assets/css/open-doors-essay.css"
+      - "supabase/functions/open-doors-essay-grade/**"
+      - "tests/open-doors-essay.test.cjs"
+      - ".github/workflows/open-doors-essay-check.yml"
+  pull_request:
+    paths:
+      - "open-doors-ai.html"
+      - "assets/js/open-doors-essay*.js"
+      - "assets/css/open-doors-essay.css"
+      - "supabase/functions/open-doors-essay-grade/**"
+      - "tests/open-doors-essay.test.cjs"
+      - ".github/workflows/open-doors-essay-check.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-essay-studio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate client JavaScript syntax
+        run: |
+          node --check assets/js/open-doors-essay-bank.js
+          node --check assets/js/open-doors-essay.js
+      - name: Run essay bank, UI and authorization tests
+        run: node tests/open-doors-essay.test.cjs
+
+  check-edge-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check founder-only essay grading function
+        run: deno check supabase/functions/open-doors-essay-grade/index.ts
