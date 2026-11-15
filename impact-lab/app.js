@@ -78,7 +78,6 @@ function setLanguage(next){
  renderHours();renderPhrases();
 }
 $("language").addEventListener("click",()=>setLanguage(lang==="ar"?"en":"ar"));
-switchTo(location.hash.slice(1));
 
 /* 01 · AI Crash Test — score from explicit HUMAN rubric, no medical truth assertion */
 const METRICS=[
@@ -375,6 +374,8 @@ function renderPhrases(){
 $("phrase-lang").addEventListener("change",renderPhrases);
 $("phrase-category").addEventListener("change",renderPhrases);
 renderHours();renderPhrases();
+// Deep-linked panels are initialized only after all module data is available.
+switchTo(location.hash.slice(1));
 if("serviceWorker" in navigator && location.protocol==="https:"){
  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}));
 }
