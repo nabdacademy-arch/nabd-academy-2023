@@ -1,0 +1,70 @@
+/* NABD Certificate / Institutional edition 2026
+   Fixed A4 landscape composition. Only the learner name is dynamic.
+   Brand palette follows NABD Academy's navy, teal and gold identity. */
+.nc-ui{--nc-navy:#092d3d;--nc-deep:#0b3e4d;--nc-teal:#0c7981;--nc-gold:#b58b43;--nc-cream:#fffdf8;color:#193c47;font-family:Tahoma,Arial,sans-serif;max-width:1180px;margin:auto}
+.nc-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.nc-heading h2{font-size:clamp(22px,3vw,30px);color:#092d3d;margin:6px 0}
+.nc-heading p{margin:0;line-height:1.8;color:#536e79}
+.nc-kicker{font:700 11px Arial,sans-serif;letter-spacing:.15em;color:#987332}
+.nc-tag{font-size:12px;color:#81622d;background:#fcf5e7;border:1px solid #e6d6b3;border-radius:100px;padding:9px 14px;white-space:nowrap}
+.nc-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;margin:20px 0 8px;padding:17px 20px;background:#f3f8f8;border:1px solid #d4e2e3;border-radius:14px}
+.nc-field{flex:1;min-width:240px}.nc-field label{display:block;font-weight:700;margin-bottom:9px}
+.nc-field .input{width:100%;background:#fff;font:600 18px Tahoma,Arial,sans-serif;min-height:48px}
+.nc-field small{display:block;font-size:12px;color:#58717b;margin-top:8px}
+.nc-buttons{display:flex;gap:8px;flex-wrap:wrap}.nc-buttons button{min-height:47px}
+.nc-buttons button:disabled{opacity:.48;cursor:not-allowed}
+.nc-feedback{margin:7px 0 13px;color:#4c6770;font-size:13px}
+.nc-advisory{margin:15px 0 2px;font-size:12px;line-height:1.8;color:#667b82}
+.nc-sheet-wrap{overflow:auto;background:linear-gradient(145deg,#e0e9e9,#edf1f0);border:1px solid #d4ddde;border-radius:18px;padding:clamp(7px,2vw,22px)}
+.nc-sheet{position:relative;box-sizing:border-box;isolation:isolate;container-type:inline-size;width:100%;min-width:620px;aspect-ratio:297/210;overflow:hidden;text-align:center;color:var(--nc-navy);background:linear-gradient(160deg,#fffefb 0%,#fffdfa 47%,#fbf8f0 100%);box-shadow:0 12px 38px #163a4129}
+.nc-sheet *{box-sizing:border-box}
+.nc-accent-edge{position:absolute;right:0;top:0;height:100%;width:1.75%;background:linear-gradient(180deg,#0e5264,#0b2837);z-index:2}
+.nc-top-rule{position:absolute;left:0;top:0;width:100%;height:1.4%;background:var(--nc-navy);z-index:2}
+.nc-frame{position:absolute;inset:3.3% 4.3% 3.5% 4.5%;border:1px solid #cdb88d;pointer-events:none}
+.nc-frame:before{content:"";position:absolute;inset:1%;border:1px solid #e9dfca}
+.nc-corner{position:absolute;width:6.8%;height:9%;border:solid var(--nc-gold);border-width:0;z-index:1;pointer-events:none}
+.nc-corner-a{top:4.6%;left:5.9%;border-left-width:2px;border-top-width:2px}
+.nc-corner-b{top:4.6%;right:7.2%;border-right-width:2px;border-top-width:2px}
+.nc-corner-c{bottom:4.9%;left:5.9%;border-left-width:2px;border-bottom-width:2px}
+.nc-corner-d{bottom:4.9%;right:7.2%;border-right-width:2px;border-bottom-width:2px}
+.nc-watermark{position:absolute;left:38%;top:35%;width:24%;aspect-ratio:1;border:2.7cqw solid #0b52610a;border-radius:50%;transform:rotate(-13deg);pointer-events:none}
+.nc-brand-lockup{position:absolute;top:8.1%;left:13%;width:74%;height:15.1%;display:flex;align-items:center;justify-content:center;gap:2.15cqw;direction:rtl;text-align:right}
+.nc-logo-box{height:9.6cqw;width:9.6cqw;flex:0 0 9.6cqw;border-radius:1.35cqw;border:1.25px solid #b8914d;background:#0a3746;display:grid;place-items:center;position:relative;box-shadow:inset 0 0 0 .58cqw #0a3746,inset 0 0 0 .67cqw #b8914d}
+.nc-logo-box:before{content:"";position:absolute;inset:1.3cqw;border:1px solid #c2a26766;border-radius:.7cqw}
+.nc-logo-letter{font:700 5.9cqw Georgia,serif;line-height:1;color:#f5d899;transform:translateY(-.4cqw)}
+.nc-logo-star{position:absolute;bottom:1.45cqw;right:1.55cqw;color:#e8bf69;font:700 1.8cqw Georgia,serif}
+.nc-brand-copy{max-width:60%;display:flex;flex-direction:column;justify-content:center;gap:.5cqw}
+.nc-brand-ar{font:700 3.05cqw Tahoma,Arial,sans-serif;line-height:1.3;color:#083544;white-space:nowrap}
+.nc-brand-en{font:700 1.47cqw Arial,sans-serif;line-height:1.4;letter-spacing:.11em;color:#8e6e38;white-space:nowrap;direction:ltr;text-align:right}
+.nc-brand-place{font:600 1.2cqw Arial,sans-serif;color:#7a8c8d;letter-spacing:.19em;direction:ltr;text-align:right}
+.nc-header-divider{position:absolute;left:16%;right:16%;top:26.3%;height:1px;background:linear-gradient(90deg,transparent,#bf9858,#bf9858,transparent)}
+.nc-overline{position:absolute;left:10%;width:80%;top:30%;font:700 1.45cqw Arial,sans-serif;letter-spacing:.35em;color:var(--nc-gold)}
+.nc-title{position:absolute;top:33.2%;left:8%;width:84%;font:700 6.2cqw Tahoma,Arial,sans-serif;line-height:1.3;color:#092e3d}
+.nc-title-en{position:absolute;top:43.7%;left:8%;width:84%;font:700 1.94cqw Georgia,'Times New Roman',serif;letter-spacing:.24em;color:#a17b3c}
+.nc-recipient{position:absolute;top:50.2%;left:8%;width:84%;font:500 1.95cqw Tahoma,Arial,sans-serif;color:#60747b}
+.nc-name-wrap{position:absolute;top:55.2%;left:12%;width:76%;height:10.2%;border-bottom:1px solid #cfb77f;display:flex;align-items:center;justify-content:center;padding:0 1cqw}
+.nc-name{font-family:Tahoma,Arial,sans-serif;font-size:4.3cqw;font-weight:800;color:#075365;white-space:nowrap;line-height:1.45;display:inline-block;max-width:none}
+.nc-name-pips{position:absolute;top:64.6%;left:46%;width:8%;height:.55%;background:linear-gradient(90deg,transparent,#b58b43,transparent)}
+.nc-desc-ar{position:absolute;top:68.4%;left:10%;width:80%;font:500 2.04cqw Tahoma,Arial,sans-serif;line-height:1.6;color:#405d66}
+.nc-desc-en{position:absolute;top:75.4%;left:10%;width:80%;font:italic 1.48cqw Georgia,serif;line-height:1.5;color:#63777d}
+.nc-footer-rule{position:absolute;left:13%;right:13%;top:83.3%;height:1px;background:linear-gradient(90deg,transparent,#d2c6ac,transparent)}
+.nc-footer{position:absolute;top:85%;left:11%;width:78%;height:10.2%;display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;gap:2.5%;direction:ltr}
+.nc-footer-unit{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.45;gap:.28cqw;text-align:center}
+.nc-footer-unit strong{font:700 1.6cqw Tahoma,Arial,sans-serif;color:#163f4d}
+.nc-footer-unit span{font:500 1.27cqw Tahoma,Arial,sans-serif;color:#6c7c81}
+.nc-footer-unit small{font:500 1.1cqw Arial,sans-serif;letter-spacing:.04em;color:#8b9496}
+.nc-signature-line{width:70%;height:1px;background:#70868a;margin-top:2.1cqw;margin-bottom:.24cqw}
+.nc-slogan{display:flex;flex-direction:column;align-items:center;gap:.47cqw;color:#93743d;white-space:nowrap}
+.nc-slogan-mark{font-size:2.35cqw;line-height:1}
+.nc-slogan strong{font:700 1.15cqw Arial,sans-serif;letter-spacing:.15em}
+.nc-slogan span{font:italic 1.1cqw Georgia,serif;color:#78868b}
+.nc-placeholder{position:absolute;left:25%;top:61%;width:50%;color:#a77e51;font:700 1.7cqw Tahoma,Arial,sans-serif;opacity:.85}
+.nc-placeholder[hidden]{display:none!important}
+@page{size:A4 landscape;margin:0}
+@media print{
+  html,body{margin:0!important;padding:0!important;width:297mm!important;height:210mm!important;overflow:hidden!important}
+  body *{visibility:hidden!important}
+  #nabd-cert-sheet,#nabd-cert-sheet *{visibility:visible!important}
+  #nabd-cert-sheet{position:fixed!important;left:0!important;top:0!important;width:297mm!important;height:210mm!important;min-width:0!important;max-width:none!important;aspect-ratio:auto!important;margin:0!important;box-shadow:none!important;border-radius:0!important;break-inside:avoid!important;page-break-inside:avoid!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  #nabd-cert-sheet .nc-placeholder{display:none!important}
+}
