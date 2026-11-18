@@ -9,6 +9,11 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.InputType;
@@ -70,6 +75,15 @@ public class MainActivity extends Activity {
     private final ArrayList<JSONObject> questions=new ArrayList<>();
     private final ArrayList<Integer> session=new ArrayList<>();
     private int sessionIndex=0,bankOffset=0;
+    private String chosenChapter="all",chosenPool="all";
+    private int chosenCount=20,quizCorrect=0,quizIncorrect=0,quizUnscored=0;
+    private boolean quizMode=false;
+    private static final int PICK_SLIDES=3814;
+    private PdfRenderer pdfRenderer;
+    private PdfRenderer.Page pdfPage;
+    private ParcelFileDescriptor pdfFd;
+    private int pdfIndex=0;
+    private String slideChapter="Skull";
 
     private ValueCallback<android.net.Uri[]> chooser;
 
@@ -222,18 +236,166 @@ public class MainActivity extends Activity {
         action(english?"🏠 Home":"🏠 الرئيسية",this::showNativeHome);
         action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
     }
+
+    private static final String[] CHAPTER_IDS={"Skull","ScalpFace","Neck","Orbit","EarMandible","Oral","TonguePharynx","Larynx","Nose","Mixed"};
+    private static final String[] CHAPTER_AR={"الجمجمة","فروة الرأس والوجه","الرقبة","الحجاج والعين","الأذن والفك السفلي","جوف الفم والغدد اللعابية","اللسان والبلعوم","الحنجرة والرغامى","الأنف والتجويف الأنفي","أسئلة متنوعة"};
+    private static final String[] CHAPTER_EN={"Skull","Scalp & Face","Neck","Orbit & Eye","Ear & Mandible","Oral Cavity & Salivary Glands","Tongue & Pharynx","Larynx & Trachea","Nose","Mixed questions"};
+    private String chapterTitle(String id){
+        for(int i=0;i<CHAPTER_IDS.length;i++)if(CHAPTER_IDS[i].equals(id))return english?CHAPTER_EN[i]:CHAPTER_AR[i];
+        return id;
+    }
+    private int chapterCount(String chapter) {
+        int n=0;for(JSONObject q:questions)if(chapter.equals(q.optString("chapter","")))n++;
+        return n;
+    }
+    private boolean matchesChapter(JSONObject q) {
+        return "all".equals(chosenChapter)||chosenChapter.equals(q.optString("chapter",""));
+    }
     private void showNativeHome(){
-        newPage("🧠 NABD • Head & Neck","نسخة المدير الخاصة • تعمل دون إنترنت بعد أول دخول");
-        card("✅ تم فتح بنك التشريح الخاص\n📚 "+questions.size()+" سؤالًا • عربي / English\nحفظ النتائج والمراجعة يتم محليًا على الهاتف.");
-        action("📖 جميع الأسئلة",()->showNativeList(null,0));
-        action("📚 محاكي الامتحانات",this::startNativeQuiz);
+        quizMode=false;
+        newPage("🧠 NABD • Head & Neck","مساحة المدير • النسخة التعليمية الخاصة");
+        card("✅ بنك الأسئلة متاح على الهاتف\n"+questions.size()+" سؤالًا • تصحيح + شرح + ترجمة متى توفرت\n"+
+             "🔐 تم التحقق من الحساب، والبيانات مخزنة مشفّرة للاستخدام دون إنترنت");
+        action("📚 الشابترات • شرح + سلايدات + تدريب",this::showNativeChapters);
+        action("📖 بنك الأسئلة مع الإجابات والشروحات",()->showNativeList(null,0));
+        action("🎯 محاكي الامتحانات حسب الفصل والصعوبة",this::showQuizSetup);
+        action("🖥️ قسم السلايدات وملفات PDF",this::showNativeSlideLibrary);
         action("🤖 اسأل بوت التشريح",this::showNativeSearch);
-        action("🎯 مراجعة أخطائي",this::showNativeWrong);
-        action("📎 المصادر العلمية",this::showNativeSources);
+        action("❌ مراجعة أخطائي",this::showNativeWrong);
+        action("📊 نتائجي وإحصاءاتي",this::showNativeStats);
+        action("📎 المصادر والمراجع",this::showNativeSources);
         action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
         action("🔒 تسجيل الخروج",()->{
-            nativeBank=null;questions.clear();session.clear();availableBank=null;showNativeLogin();
+            nativeBank=null;questions.clear();session.clear();availableBank=null;quizMode=false;showNativeLogin();
         });
+    }
+    private void showNativeChapters(){
+        newPage("📚 فصول التشريح","اختر فصلًا لشرح نقاطه العلمية أو التدرب على أسئلته");
+        menu();
+        for(String chapter:CHAPTER_IDS){
+            int n=chapterCount(chapter);
+            action("📁 "+chapterTitle(chapter)+" • "+n+" سؤال",()->showChapterMenu(chapter));
+        }
+    }
+    private void showChapterMenu(String chapter){
+        chosenChapter=chapter;
+        newPage("📚 "+chapterTitle(chapter),"Anatomy III • "+chapterCount(chapter)+" سؤالًا");
+        menu();
+        action("🖥️ سلايدات شرح المفاهيم",()->showChapterLesson(chapter,0));
+        action("📄 سلايدات PDF المرتبطة بالفصل",()->showPdfForChapter(chapter));
+        action("📖 جميع أسئلة هذا الشابتر",()->showNativeList(null,0));
+        action("📝 اختبرني في هذا الشابتر",this::showQuizSetup);
+        action("📎 مصادر ومراجع",this::showNativeSources);
+        action("⬅️ باقي الشابترات",this::showNativeChapters);
+    }
+    private ArrayList<JSONObject> concepts(String chapter){
+        ArrayList<JSONObject> result=new ArrayList<>();
+        LinkedHashSet<String> ids=new LinkedHashSet<>();
+        for(JSONObject q:questions){
+            if(!chapter.equals(q.optString("chapter","")))continue;
+            if(!"generated".equals(q.optString("kind","")))continue;
+            String key=q.optString("factRef",q.optString("id",""));
+            if(ids.add(key))result.add(q);
+        }
+        return result;
+    }
+    private void showChapterLesson(String chapter,int pos){
+        ArrayList<JSONObject> slides=concepts(chapter);
+        if(slides.isEmpty()){
+            newPage("🖥️ "+chapterTitle(chapter),"سلايدات شرح المفاهيم");
+            menu();card("لم تتوفر لهذا القسم بطاقات شرح بمفاهيم موثقة. يمكنك إضافة ملف سلايدات PDF خاص بالشابتر.");
+            action("📄 إضافة سلايدات PDF",()->showPdfForChapter(chapter));return;
+        }
+        int index=Math.min(Math.max(pos,0),slides.size()-1);
+        JSONObject q=slides.get(index);
+        newPage("🖥️ "+chapterTitle(chapter),"بطاقة شرح "+(index+1)+" من "+slides.size()+" • مستخلصة من بنك الأسئلة، وليست صور المحاضرة الأصلية");
+        menu();
+        String subject=questionText(q);
+        int answer=q.optInt("answer",-1);
+        JSONArray o=options(q);
+        card("🧩 الموضوع / Concept\n"+subject);
+        if(o!=null&&answer>=0&&answer<o.length())card("✅ النقطة الأساسية\n"+o.optString(answer));
+        String explanation=explanation(q);
+        if(!explanation.isEmpty())card("📚 الشرح والتفسير\n"+explanation);
+        if(!english&&q.optString("whyAr","").isEmpty())card("تنبيه: شرح هذا المفهوم بالعربية غير متاح في المصدر. النص الإنجليزي هو الأصل.");
+        action("🌐 العربية / English",()->{english=!english;showChapterLesson(chapter,index);});
+        action("📝 حل سؤال مرتبط بهذا المفهوم",()->showNativeQuestion(q,()->showChapterLesson(chapter,index)));
+        if(index>0)action("◀ السابق",()->showChapterLesson(chapter,index-1));
+        if(index<slides.size()-1)action("التالي ▶",()->showChapterLesson(chapter,index+1));
+        action("📄 عرض سلايدات PDF",()->showPdfForChapter(chapter));
+    }
+    private void showNativeSlideLibrary(){
+        newPage("🖥️ سلايدات التشريح","ملفات PDF محفوظة على جهازك + بطاقات شرح الفصول");
+        menu();
+        card("يمكن إضافة سلايدات PDF لكل شابتر من ملفات الهاتف. تبقى الملفات على جهازك وتُفتح دون إنترنت عند حفظ نسخة محلية منها.");
+        for(String id:CHAPTER_IDS){
+            action("📁 "+chapterTitle(id),()->showPdfForChapter(id));
+        }
+    }
+    private String slideKey(String chapter){return "slides_pdf_uri_"+chapter;}
+    private void showPdfForChapter(String chapter){
+        slideChapter=chapter;
+        newPage("📄 "+chapterTitle(chapter),"السلايدات الأصلية المضافة من هاتفك");
+        menu();
+        action("🖥️ شرح الشابتر من بنك الأسئلة",()->showChapterLesson(chapter,0));
+        String saved=getSharedPreferences("nabd-anatomy-slides",MODE_PRIVATE).getString(slideKey(chapter),"");
+        if(saved.isEmpty())card("لم تضف ملف سلايدات PDF لهذا الشابتر بعد.");
+        else action("📖 فتح ملف PDF المحفوظ",()->openPdf(saved,0));
+        action("➕ إضافة أو استبدال ملف سلايدات PDF",()->{
+            try{
+                Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("application/pdf");intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                startActivityForResult(intent,PICK_SLIDES);
+            }catch(Exception e){card("تعذر فتح منتقي الملفات: "+e.getMessage());}
+        });
+    }
+    private void closePdf(){
+        try{if(pdfPage!=null){pdfPage.close();pdfPage=null;}}catch(Exception ignored){}
+        try{if(pdfRenderer!=null){pdfRenderer.close();pdfRenderer=null;}}catch(Exception ignored){}
+        try{if(pdfFd!=null){pdfFd.close();pdfFd=null;}}catch(Exception ignored){}
+    }
+    private void openPdf(String uri,int page){
+        try{
+            closePdf();
+            pdfFd=getContentResolver().openFileDescriptor(Uri.parse(uri),"r");
+            if(pdfFd==null)throw new IOException("ملف PDF غير متاح.");
+            pdfRenderer=new PdfRenderer(pdfFd);
+            renderPdfPage(page);
+        }catch(Exception e){
+            closePdf();newPage("📄 خطأ في السلايدات","تعذر فتح ملف PDF");
+            card("اختر الملف مرة أخرى من هاتفك.\n"+e.getMessage());
+            action("عودة",()->showPdfForChapter(slideChapter));
+        }
+    }
+    private void renderPdfPage(int index){
+        try{
+            if(pdfPage!=null){pdfPage.close();pdfPage=null;}
+            if(pdfRenderer==null)return;
+            int total=pdfRenderer.getPageCount();
+            pdfIndex=Math.min(Math.max(0,index),total-1);
+            pdfPage=pdfRenderer.openPage(pdfIndex);
+            newPage("🖥️ سلايدات "+chapterTitle(slideChapter),"صفحة "+(pdfIndex+1)+" / "+total);
+            Bitmap bitmap=Bitmap.createBitmap(Math.min(pdfPage.getWidth()*2,1700),Math.min(pdfPage.getHeight()*2,2300),Bitmap.Config.ARGB_8888);
+            bitmap.eraseColor(Color.WHITE);
+            pdfPage.render(bitmap,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+            ImageView img=new ImageView(this);
+            img.setImageBitmap(bitmap);img.setAdjustViewBounds(true);
+            img.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            rootView.addView(img,new LinearLayout.LayoutParams(-1,-2));
+            if(pdfIndex>0)action("◀ الصفحة السابقة",()->renderPdfPage(pdfIndex-1));
+            if(pdfIndex+1<total)action("الصفحة التالية ▶",()->renderPdfPage(pdfIndex+1));
+            action("إغلاق السلايدات",()->{closePdf();showPdfForChapter(slideChapter);});
+        }catch(Exception e){closePdf();showPdfForChapter(slideChapter);}
+    }
+    private void showNativeStats(){
+        newPage("📊 نتائج التدريب","إحصاءات الإجابات المحفوظة على الهاتف");
+        menu();
+        android.content.SharedPreferences p=getSharedPreferences("nabd-anatomy-stats",MODE_PRIVATE);
+        card("✅ الصحيحة: "+p.getInt("correct",0)+"\n❌ الخاطئة: "+p.getInt("wrong",0)+"\n"+
+            "⚠ دون مفتاح موثوق: "+p.getInt("ungraded",0));
+        action("🎯 ابدأ تدريبًا جديدًا",this::showQuizSetup);
+        action("❌ مراجعة الأسئلة الخاطئة",this::showNativeWrong);
     }
     private String questionText(JSONObject q){String s=q.optString(english?"q":"qAr","");return s.isEmpty()?q.optString("q",""):s;}
     private JSONArray options(JSONObject q){JSONArray opts=q.optJSONArray(english?"opts":"optsAr");if(opts==null||opts.length()==0)opts=q.optJSONArray("opts");return opts;}
