@@ -224,11 +224,9 @@ public class MainActivity extends Activity {
             status("✅ اكتمل تحميل بنك التشريح. جارٍ فتح قائمة الشابترات...");
             openNativeBank(data);
         }catch(SecurityException wrong){
-            activeJwt=null;
             runOnUiThread(()->{loginButton.setEnabled(true);loginMessage.setText("⚠ "+wrong.getMessage());});
         }catch(Exception err){
             String reason=err.getMessage()==null?err.getClass().getSimpleName():err.getMessage();
-            activeJwt=null;
             try{
                 status("📦 الاتصال تعذّر، جارٍ فحص النسخة المحفوظة...");
                 String cached=decryptFromDevice(user,password);
