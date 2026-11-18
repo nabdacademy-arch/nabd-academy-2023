@@ -109,7 +109,37 @@ async function loadLearning(token=epoch){
 }
 async function busy(button,action){if(button?.disabled)return;if(button)button.disabled=true;try{await action()}catch(error){notice(statusMessage(error))}finally{if(button?.isConnected)button.disabled=false}}
 function updatePractice(id,values){practice[id]={...(practice[id]||{}),...values};if(!write(key,practice))notice(t('تعذر الحفظ على الجهاز؛ قد يكون التخزين ممتلئًا.','Could not save on the device; storage may be full.'))}
-async function inspectOffline(){if(!('caches' in window))return;const names=await caches.keys();const ready=names.includes('nabd-learning-public-v1');offlineState=ready?t('الحزمة العامة محفوظة على هذا الجهاز.','The public pack is saved on this device.'):t('الحزمة غير محفوظة بعد.','The pack has not been saved yet.');if(route==='offline'&&$('offline-status'))$('offline-status').textContent=offlineState}
+let offlineInspection = 0;
+async function inspectOffline(){
+ const inspection = ++offlineInspection;
+ let message;
+ try {
+  if (!('caches' in window) || !('serviceWorker' in navigator)) throw Error();
+  const scope = new URL('./', location.href).href;
+  const registration = await navigator.serviceWorker.getRegistration(scope);
+  const installed = registration?.scope === scope && registration.active;
+  const required = ['index.html', 'app.mjs', 'content.mjs', 'crisis-observations.json'];
+  let ready = false;
+  if (installed) {
+   const names = (await caches.keys()).filter(name => name.startsWith('nabd-learning-public-'));
+   for (const cacheName of names) {
+    const cache = await caches.open(cacheName);
+    const files = await cache.keys();
+    const urls = new Set(files.map(file => file.url));
+    if (required.every(path => urls.has(new URL(path, scope).href))) {
+     ready = true;
+     break;
+    }
+   }
+  }
+  message = ready ? t('الحزمة العامة محفوظة على هذا الجهاز.','The public pack is saved on this device.') : t('الحزمة غير محفوظة بالكامل بعد.','The pack is not fully saved yet.');
+ } catch {
+  message = t('تعذّر التحقق من الحزمة المحفوظة على هذا الجهاز.','Could not check the saved pack on this device.');
+ }
+ if (inspection !== offlineInspection) return;
+ offlineState = message;
+ if (route === 'offline' && $('offline-status')) $('offline-status').textContent = message;
+}
 function download(name,body,type){const url=URL.createObjectURL(new Blob([body],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 async function askTutor(form,button){
  const q=form.elements.question.value.trim();if(!q)return;const target=$('tutor-result');target.textContent=t('جارٍ البحث…','Searching…');
