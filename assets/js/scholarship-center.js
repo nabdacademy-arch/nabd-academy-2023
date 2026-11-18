@@ -259,21 +259,43 @@
     const email=document.getElementById("sch-email").value.trim();
     const password=document.getElementById("sch-password").value;
     const button=document.getElementById("sch-login-button");
-    if(!email || !password)return;
+    if(!email || !password || button.disabled)return;
+    if (!client) { setStatus(authStatus,"خدمة الدخول غير متاحة. حدّث الصفحة بعد عودة الاتصال.","error"); return; }
     button.disabled=true;
     setStatus(authStatus,"جارٍ التحقق من الحساب…");
-    const {error}=await client.auth.signInWithPassword({email,password});
-    button.disabled=false;
-    document.getElementById("sch-password").value="";
-    if(error){setStatus(authStatus,"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني.", "error");return;}
-    await verifyPublisher();
+    try {
+      const {error}=await client.auth.signInWithPassword({email,password});
+      if (error) {
+        const message = error.status >= 400 && error.status < 500 && error.status !== 429
+          ? "تعذر تسجيل الدخول. تحقق من بيانات الحساب وتأكيد البريد الإلكتروني."
+          : "تعذّر إكمال طلب الدخول. أعد المحاولة بعد قليل.";
+        setStatus(authStatus,message,"error");
+        return;
+      }
+      await verifyPublisher();
+    } catch (_) {
+      setStatus(authStatus,"تعذّر إكمال طلب الدخول. تحقّق من الاتصال ثم أعد المحاولة.","error");
+    } finally {
+      button.disabled=false;
+      document.getElementById("sch-password").value="";
+    }
   });
-  document.getElementById("sch-reset-password")?.addEventListener("click",async()=>{
+  document.getElementById("sch-reset-password")?.addEventListener("click",async(event)=>{
+    const button = event.currentTarget;
+    if (button.disabled) return;
     const email=document.getElementById("sch-email").value.trim();
     if(!email){setStatus(authStatus,"أدخل البريد الإلكتروني أولًا لطلب إعادة تعيين كلمة المرور.", "error");return;}
     const redirectTo=new URL("scholarship-manager.html",location.href).href;
-    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
-    setStatus(authStatus,error ? "تعذر طلب إعادة تعيين كلمة المرور." : "إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور.", error?"error":"success");
+    button.disabled=true;
+    try {
+      const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
+      if (error) throw error;
+      setStatus(authStatus,"إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور.","success");
+    } catch (_) {
+      setStatus(authStatus,"تعذّر طلب إعادة تعيين كلمة المرور. تحقّق من الاتصال ثم أعد المحاولة.","error");
+    } finally {
+      button.disabled=false;
+    }
   });
   document.getElementById("sch-logout")?.addEventListener("click",async()=>{
     await client.auth.signOut();
