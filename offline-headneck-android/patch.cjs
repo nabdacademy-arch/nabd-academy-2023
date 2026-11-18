@@ -9,35 +9,18 @@ const nextStart=s.indexOf('function top(){',oldStart);
 if(oldStart<0||nextStart<0)throw Error('Original Head & Neck source format changed');
 s=s.replace('<script type="module">','<script>');
 s=s.replace(/import \{createClient\} from '[^']+';\s*const sb=createClient\([^\n]+;\s*/,"const BANK_KEY='nabd-headneck-offline-private-bank-v1';\nconst PROGRESS_KEY='nabd-headneck-offline-progress-v1';\n");
-const localFuncs=[
-"async function ensureAccess(){",
-"  try {",
-"    owner={id:'device-local'};",
-"    const stored=localStorage.getItem(BANK_KEY);",
-"    bank=stored?JSON.parse(stored):null;",
-"    items=bank?[...(bank.new||[]),...(bank.original||[]),...(bank.archived||[])]:[];",
-"    const saved=localStorage.getItem(PROGRESS_KEY);",
-"    progress=saved?JSON.parse(saved):{};",
-"    el('gate').hidden=true;el('app').hidden=false;render();",
-"    if(!bank)openTab('data');",
-"  }catch(e){",
-"    put('gate','⚠ Unable to open private offline data: '+String(e.message||e));",
-"    el('gate').hidden=false;el('app').hidden=true;",
-"  }",
-"}",
-"async function saveProgress(){",
-"  try {localStorage.setItem(PROGRESS_KEY,JSON.stringify(progress));}",
-"  catch(e){console.warn('Local storage full:',e.message);}",
-"}",""
-].join('\n');
+const localFuncs="\nfunction showLogin(){\n  owner=null;bank=null;items=[];quiz=[];index=0;\n  const gate=el('gate');\n  gate.hidden=false;el('app').hidden=true;\n  gate.replaceChildren();\n  gate.append(node('h2','🔐 تسجيل دخول المدير'));\n  gate.append(node('p','أدخل البريد الإلكتروني وكلمة المرور الخاصين بحساب المدير في أكاديمية نبض. الاتصال مطلوب أول مرة فقط؛ بعد حفظ الأسئلة تستطيع تسجيل الدخول دون إنترنت.','muted'));\n  const form=document.createElement('form');form.id='loginForm';\n  const email=document.createElement('input');email.type='email';email.required=true;email.autocomplete='username';email.placeholder='البريد الإلكتروني للمدير';email.dir='ltr';\n  const pass=document.createElement('input');pass.type='password';pass.required=true;pass.autocomplete='current-password';pass.placeholder='كلمة مرور المدير';pass.dir='ltr';\n  const submit=btn('دخول المدير • Sign in',()=>{},'primary');submit.type='submit';submit.id='directorSubmit';\n  const status=node('p','يرجى تسجيل الدخول أولًا.','muted');status.id='loginStatus';status.setAttribute('role','status');\n  form.append(email,pass,submit);gate.append(form,status);\n  if(!window.NABDApp||typeof NABDApp.signIn!=='function'){\n    status.textContent='⚠ التطبيق قديم أو جسر أندرويد غير متاح. ثبّت نسخة الإصلاح.';submit.disabled=true;return;\n  }\n  form.onsubmit=e=>{\n    e.preventDefault();const u=email.value.trim(),p=pass.value;\n    if(!u||!p)return;\n    submit.disabled=true;status.textContent='جارٍ التحقق من المدير وتحميل أسئلة التشريح...';\n    NABDApp.signIn(u,p);pass.value='';\n  };\n}\nwindow.NABDLoginStatus=function(message){\n  const status=el('loginStatus');if(status)status.textContent=String(message||'');\n};\nwindow.NABDLoginResult=function(message){\n  const status=el('loginStatus'),submit=el('directorSubmit');\n  if(submit)submit.disabled=false;\n  if(!message||!message.ok){\n    if(status)status.textContent='⚠ '+(message&&message.message||'فشل تسجيل الدخول إلى حساب المدير.');\n    return;\n  }\n  try{\n    const json=NABDApp.takeBank();\n    if(!json)throw Error('بنك الأسئلة غير موجود على الهاتف.');\n    const data=JSON.parse(json);\n    if(!Array.isArray(data.new)||!Array.isArray(data.original)||!Array.isArray(data.archived))throw Error('بنك الأسئلة غير مكتمل.');\n    bank=data;owner={id:'verified-director'};\n    items=[...bank.new,...bank.original,...bank.archived];\n    if(!items.length)throw Error('بنك الأسئلة فارغ.');\n    try{progress=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}')}catch(e){progress={}}\n    el('gate').hidden=true;el('app').hidden=false;el('logout').hidden=false;\n    render();openTab('quiz');\n    el('data-help').textContent='تم تنزيل أسئلة حساب المدير وحفظها مشفرة في الهاتف. يمكنك التدريب والمراجعة بدون إنترنت.';\n    el('file').hidden=true;el('upload').hidden=true;\n    el('upload-status').textContent=(message.offline?'🔌 الوضع دون إنترنت':'🌐 تم التحقق من المدير')+' • '+items.length+' سؤالًا';\n  }catch(e){\n    showLogin();\n    const status=el('loginStatus');if(status)status.textContent='⚠ '+(e.message||e);\n  }\n};\nasync function ensureAccess(){showLogin()}\nasync function saveProgress(){\n  if(!owner)return;\n  try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(progress))}\n  catch(e){console.warn('Progress unavailable:',e.message)}\n}\n";
 s=s.slice(0,s.indexOf('async function ensureAccess(){'))+localFuncs+s.slice(s.indexOf('function top(){',oldStart));
 const block="const r=await sb.from('nabd_headneck_private_bank').upsert({owner_id:owner.id,payload:data,updated_at:new Date().toISOString()},{onConflict:'owner_id'});\nif(r.error)throw r.error;";
 if(!s.includes(block))throw Error('Expected upload block missing');
 s=s.replace(block,"localStorage.setItem(BANK_KEY,JSON.stringify(data));");
-s=s.split('\n').filter(l=>!l.includes('sb.auth.onAuthStateChange(')).join('\n');
+s=s.replace("el('upload').onclick=upload;sb.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){owner=null;items=[];bank=null;el('app').hidden=true;el('gate').hidden=false;put('gate','🔒 Signed out.')}});","el('upload').onclick=upload;el('logout').onclick=()=>{owner=null;bank=null;items=[];progress={};NABDApp.clearSession();el('logout').hidden=true;showLogin()};");
 s=s.replace('استورد ملف Head_Neck_Exam_Bank_V2.json مرة واحدة. يُحفظ في قاعدة بيانات محمية بحسابك، لا ضمن ملفات الموقع العامة.','استورد ملف Head_Neck_Exam_Bank_V2.json من هاتفك مرة واحدة؛ سيُحفظ محليًا وتعمل كل الوظائف دون الاتصال بالإنترنت.');
 s=s.replace('لن تُعرض الأسئلة للطلاب أو الزوار. الشرح الأصلي متاح حين توجد نسخة مُراجعة؛ بعض أسئلة الصور والمفاتيح التاريخية غير مدققة.','الأسئلة محفوظة على هذا الجهاز فقط. هذا التطبيق مستقل عن تسجيل الدخول للموقع، ولا يرسل بيانات عبر الشبكة. بعض مفاتيح الإجابات التاريخية غير مدققة.');
 s=s.replace('مساحة المدير الخاصة • Anatomy III','نسخة التشريح الخاصة • Anatomy III • Offline');
+s=s.replace('</style>',"\n.header-buttons{display:flex;gap:7px;align-items:center;flex-shrink:0}\nheader{padding:22px 14px;align-items:center;gap:12px}\nheader>div:first-child{flex:1;min-width:0}\nheader h1{font-size:clamp(17px,4.1vw,21px);line-height:1.4;white-space:normal;overflow-wrap:normal}\nheader small{display:block;line-height:1.6}\n#gate{max-width:530px;margin:28px auto;padding:22px}\n#loginForm{display:grid;gap:12px;margin-top:16px}\n#loginForm input{height:50px}\n#loginForm button{min-height:48px}\n#loginStatus{margin-top:14px}\n@media(max-width:560px){header{display:flex;flex-direction:column;align-items:stretch;padding:20px 13px}\nheader .header-buttons{justify-content:flex-start}\nheader h1{font-size:18px}\nheader>div:first-child{width:100%}}\n</style>");
+s=s.replace("<button id=\"lang\" aria-label=\"Language\">English</button>","<div class=\"header-buttons\"><button id=\"lang\" aria-label=\"Language\">English</button><button id=\"logout\" hidden>🔒 خروج</button></div>");
+s=s.replace('جارٍ التحقق من صلاحيات المدير…','جارٍ تحميل شاشة الدخول الآمن…');
 if(s.includes('sb.')||s.includes('cdn.jsdelivr.net')||s.includes('createClient'))throw Error('Online dependency remains in offline source');
 fs.mkdirSync(path.dirname(output),{recursive:true});
 fs.writeFileSync(output,s,'utf8');
