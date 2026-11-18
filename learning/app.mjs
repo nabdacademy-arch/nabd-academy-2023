@@ -1,3 +1,4 @@
+import {archivePage, radarPage} from './crisis-tracks.mjs';
 import {CATALOG} from './content.mjs';
 import {createVisualCompanion} from './medical-visuals.mjs';
 import {renderKnowledgeAtlas} from './knowledge-atlas.mjs';
@@ -16,7 +17,7 @@ let bookmarks=read('nabd-learning-bookmarks',[]);if(!Array.isArray(bookmarks))bo
 let db=null,user=null,profile=null,enrollments=[],certificates=[],cloudCourses=[],cloudLessons=[],cloudQuestions=[],cloudProgress=[],rounds=[],posts=[],cloudAttempts=[],cloudSubmissions=[];
 let accountStatus='',lmsStatus='',communityStatus='',roundsStatus='',accountReady=false,backendPromise=null,epoch=0;
 let route='',query='',activeNode='heart',graphSystem='cardio',graphMode='map',discussionStep=0,roundResults={},cloudFeedback=null,offlineState='';
-const nav=[['universe','◎','Student Universe','عالمي التعليمي'],['learn','▤','NABD LMS','الدروس والاختبارات'],['tutor','✧','Medical Tutor','المساعد التعليمي'],['atlas','⬡','Anatomy ATLAS 3D','أطلس التشريح 3D'],['library','▥','Medical Library','المكتبة الطبية'],['graph','◇','Knowledge Graph','خريطة المعرفة'],['rounds','◉','Grand Rounds','الجلسات العلمية'],['scholarships','↗','Scholarships Hub','المنح والفرص'],['community','◌','Academic Community','المجتمع الأكاديمي'],['offline','↓','Offline Mode','التعلّم دون إنترنت']];
+const nav=[['universe','◎','Student Universe','عالمي التعليمي'],['learn','▤','NABD LMS','الدروس والاختبارات'],['tutor','✧','Medical Tutor','المساعد التعليمي'],['atlas','⬡','Anatomy ATLAS 3D','أطلس التشريح 3D'],['library','▥','Medical Library','المكتبة الطبية'],['graph','◇','Knowledge Graph','خريطة المعرفة'],['rounds','◉','Grand Rounds','الجلسات العلمية'],['scholarships','↗','Scholarships Hub','المنح والفرص'],['community','◌','Academic Community','المجتمع الأكاديمي'],['crisis-archive','▤','Living Crisis Medicine Archive','أرشيف الطب تحت الحصار والأزمات الحية'],['disease-radar','◎','The Resurrecting Diseases Radar','مؤشر الأمراض المنسية والمهددة بالعودة'],['offline','↓','Offline Mode','التعلّم دون إنترنت']];
 const icons={arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',book:'<path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Zm0 0v15"/>',spark:'<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',check:'<path d="m5 12 4 4L19 6"/>'};
 const icon=name=>`<svg class="icon ${name==='arrow'?'arrow':''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]||icons.book}</svg>`;
 const btn=(url,label,secondary=false)=>`<a class="button ${secondary?'secondary':''}" href="${esc(url)}">${esc(label)}${icon('arrow')}</a>`;
@@ -77,7 +78,7 @@ function cloudCourse(id){const lessons=cloudLessons.filter(l=>String(l.course_id
 function render(){
  route=location.hash.slice(1)||'universe';if(!nav.some(n=>n[0]===route)&&!['account'].includes(route)&&!/^lesson\/[a-z0-9-]+$/.test(route)&&!/^course\/[^/]+$/.test(route))route='universe';
  if(route.startsWith('course/')){try{decodeURIComponent(route.split('/')[1])}catch{route='universe'}}
- shell();const views={universe,learn,tutor,atlas:atlasPage,library,graph,rounds:roundsView,scholarships,community,offline,account};
+ shell();const views={'crisis-archive':()=>archivePage(lang),'disease-radar':()=>radarPage(lang),universe,learn,tutor,atlas:atlasPage,library,graph,rounds:roundsView,scholarships,community,offline,account};
  $('view').querySelectorAll('.nabd-signature-lab').forEach(el=>el.nabdDispose?.());
  $('view').innerHTML=route.startsWith('lesson/')?lessonView(route.split('/')[1]):route.startsWith('course/')?cloudCourse(decodeURIComponent(route.split('/')[1])):views[route]();
  if(route==='atlas'){
