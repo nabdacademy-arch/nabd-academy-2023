@@ -298,9 +298,23 @@
     }
   });
   document.getElementById("sch-logout")?.addEventListener("click",async()=>{
-    await client.auth.signOut();
-    showLogin();
-    setStatus(authStatus,"تم تسجيل الخروج.","success");
+    const button = document.getElementById("sch-logout");
+    if (button.disabled) return;
+    button.disabled = true;
+    const version = sessionVersion;
+    try {
+      const {error} = await client.auth.signOut();
+      if (error) throw error;
+      if (version !== sessionVersion && signedInUser) return;
+      showLogin();
+      setStatus(authStatus,"تم تسجيل الخروج.","success");
+    } catch (_) {
+      if (version === sessionVersion) {
+        setStatus(publishStatus,"تعذّر تأكيد تسجيل الخروج. تحقّق من اتصالك ثم أعد المحاولة.","error");
+      }
+    } finally {
+      button.disabled = false;
+    }
   });
   function editItem(item) {
     if (submitting) return;
