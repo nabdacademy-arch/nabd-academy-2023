@@ -134,11 +134,82 @@
   const publishForm = document.getElementById("sch-publish-form");
   const authStatus = document.getElementById("sch-auth-status");
   const publishStatus = document.getElementById("sch-publish-status");
+  const draftStatus = document.getElementById("sch-draft-status");
+  const discardDraft = document.getElementById("sch-discard-draft");
+  const editId = document.getElementById("sch-edit-id");
+  const submitButton = document.getElementById("sch-submit");
+  const cancelEdit = document.getElementById("sch-cancel-edit");
+  const editorFields = ["sch-title", "sch-description", "sch-url"].map(id => document.getElementById(id));
   const posts = document.getElementById("sch-managed-posts");
   let signedInUser = null;
+  let draft = null;
+  let savedDraft = null;
+  let submitting = false;
   let ownItems = [];
+
+  const draftKey = userId => "nabd-scholarship-manager-draft-v1:" + userId;
+
+  function loadDraft(userId) {
+    try {
+      const stored = localStorage.getItem(draftKey(userId));
+      const values = JSON.parse(stored);
+      if (Array.isArray(values) && values.length === editorFields.length &&
+          values.every((value, index) => typeof value === "string" && value.length <= editorFields[index].maxLength) &&
+          values.some(value => value.trim())) {
+        draft = values;
+        savedDraft = stored;
+      }
+    } catch (_) {
+      // The editor remains usable when local storage is unavailable.
+    }
+  }
+
+  function clearDraft(userId, expected) {
+    try {
+      const key = draftKey(userId);
+      if (expected !== null && localStorage.getItem(key) === expected) localStorage.removeItem(key);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function showDraftStatus(message) {
+    if (discardDraft) discardDraft.hidden = !draft || !!editId.value;
+    const text = editId.value ? "" : message;
+    if (draftStatus && draftStatus.textContent !== text) setStatus(draftStatus, text);
+  }
+
+  function saveDraft() {
+    if (!signedInUser || editId.value) return;
+    const values = editorFields.map(field => field.value);
+    const userId = signedInUser.id;
+    if (!values.some(value => value.trim())) {
+      if (clearDraft(userId, savedDraft)) {
+        draft = null;
+        savedDraft = null;
+        showDraftStatus("");
+      } else {
+        showDraftStatus("تعذّر حذف المسودة المحفوظة من الجهاز.");
+      }
+      return;
+    }
+    draft = values;
+    try {
+      const serialized = JSON.stringify(values);
+      localStorage.setItem(draftKey(userId), serialized);
+      savedDraft = serialized;
+      showDraftStatus("حُفظت المسودة على هذا الجهاز.");
+    } catch (_) {
+      showDraftStatus("تعذّر حفظ المسودة على الجهاز. اترك الصفحة مفتوحة للاحتفاظ بالنص.");
+    }
+  }
+
   const showLogin = () => {
     signedInUser=null;
+    draft=null;
+    savedDraft=null;
+    resetEditor();
     loginPanel.hidden=false;
     dashboard.hidden=true;
   };
@@ -153,6 +224,12 @@
       await client.auth.signOut();
       setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.", "error");
       return;
+    }
+    if (signedInUser?.id !== user.id) {
+      draft = null;
+      savedDraft = null;
+      loadDraft(user.id);
+      resetEditor();
     }
     signedInUser=user;
     loginPanel.hidden=true;
@@ -185,27 +262,47 @@
   document.getElementById("sch-logout")?.addEventListener("click",async()=>{
     await client.auth.signOut();
     showLogin();
-    publishForm?.reset();
     setStatus(authStatus,"تم تسجيل الخروج.","success");
   });
   function editItem(item) {
-    document.getElementById("sch-edit-id").value=item.id;
+    if (submitting) return;
+    editId.value=item.id;
     document.getElementById("sch-title").value=item.title;
     document.getElementById("sch-description").value=item.description;
     document.getElementById("sch-url").value=item.application_url;
-    document.getElementById("sch-submit").textContent="حفظ التعديلات";
-    document.getElementById("sch-cancel-edit").hidden=false;
+    submitButton.textContent="حفظ التعديلات";
+    cancelEdit.hidden=false;
+    showDraftStatus("");
     setStatus(publishStatus,"تعديل إعلان موجود. احفظ التغييرات أو اضغط إلغاء.");
     publishForm.scrollIntoView({behavior:"smooth",block:"start"});
     document.getElementById("sch-title").focus();
   }
   function resetEditor() {
     publishForm.reset();
-    document.getElementById("sch-edit-id").value="";
-    document.getElementById("sch-submit").textContent="نشر المنحة الآن";
-    document.getElementById("sch-cancel-edit").hidden=true;
+    editId.value="";
+    submitButton.textContent="نشر المنحة الآن";
+    cancelEdit.hidden=true;
+    if (draft) editorFields.forEach((field, index) => { field.value = draft[index]; });
+    const message = draft && JSON.stringify(draft) === savedDraft
+      ? "استُعيدت المسودة المحفوظة على هذا الجهاز."
+      : "المسودة في هذه الصفحة فقط. اتركها مفتوحة للاحتفاظ بالنص.";
+    showDraftStatus(draft ? message : "");
   }
-  document.getElementById("sch-cancel-edit")?.addEventListener("click",()=>{resetEditor();setStatus(publishStatus,"");});
+  cancelEdit.addEventListener("click",()=>{resetEditor();setStatus(publishStatus,"");});
+  publishForm.addEventListener("input", saveDraft);
+  discardDraft?.addEventListener("click", () => {
+    if (!signedInUser || submitting || editId.value || !draft) return;
+    if (!window.confirm("هل تريد حذف مسودة الإعلان من هذا الجهاز؟")) return;
+    if (!clearDraft(signedInUser.id, savedDraft)) {
+      showDraftStatus("تعذّر حذف المسودة المحفوظة من الجهاز.");
+      return;
+    }
+    draft = null;
+    savedDraft = null;
+    resetEditor();
+    setStatus(publishStatus, "");
+    editorFields[0].focus();
+  });
   async function refreshOwnPosts(){
     if(!signedInUser)return;
     const {data,error}=await client.from("nabd_scholarship_opportunities")
@@ -242,25 +339,49 @@
   }
   publishForm?.addEventListener("submit",async(e)=>{
     e.preventDefault();
-    if(!signedInUser)return;
+    if(!signedInUser || submitting)return;
+    const userId = signedInUser.id;
     const title=document.getElementById("sch-title").value.trim();
     const description=document.getElementById("sch-description").value.trim();
     const application_url=document.getElementById("sch-url").value.trim();
-    const id=document.getElementById("sch-edit-id").value;
+    const id=editId.value;
     if(title.length<3 || title.length>180 || description.length<10 || description.length>12000 || !safeUrl(application_url)){
       setStatus(publishStatus,"تحقق من عنوان المنحة، والتفاصيل، ورابط تقديم صالح يبدأ بـ https:// أو http://.", "error");
       return;
     }
-    const button=document.getElementById("sch-submit");
-    button.disabled=true;
+    if (!id) saveDraft();
+    const expectedDraft = savedDraft;
+    submitting = true;
+    const controls = [submitButton, cancelEdit, discardDraft].filter(Boolean);
+    controls.forEach(control => { control.disabled = true; });
+    editorFields.forEach(field => { field.readOnly = true; });
     setStatus(publishStatus,"جارٍ حفظ الإعلان…");
     const values={title,description,application_url,updated_at:new Date().toISOString()};
-    let response;
-    if(id) response=await client.from("nabd_scholarship_opportunities").update(values).eq("id",id).eq("published_by",signedInUser.id).select("id").single();
-    else response=await client.from("nabd_scholarship_opportunities").insert({...values,published_by:signedInUser.id,status:"published"}).select("id").single();
-    button.disabled=false;
-    if(response.error){setStatus(publishStatus,"تعذر نشر الإعلان. تأكد من صلاحية الحساب واتصال الإنترنت ثم حاول مرة أخرى.", "error");return;}
+    try {
+      const query = client.from("nabd_scholarship_opportunities");
+      const request = id
+        ? query.update(values).eq("id",id).eq("published_by",userId)
+        : query.insert({...values,published_by:userId,status:"published"});
+      const {error} = await request.select("id").single();
+      if (error) throw error;
+    } catch (_) {
+      if (signedInUser?.id === userId) {
+        setStatus(publishStatus,"تعذّر تأكيد الحفظ. تحقّق من قائمة إعلاناتك بعد عودة الاتصال قبل إعادة المحاولة.","error");
+      }
+      return;
+    } finally {
+      submitting = false;
+      controls.forEach(control => { control.disabled = false; });
+      editorFields.forEach(field => { field.readOnly = false; });
+    }
+    const cleared = id || clearDraft(userId, expectedDraft);
+    if (signedInUser?.id !== userId) return;
+    if (!id) {
+      draft = null;
+      savedDraft = null;
+    }
     resetEditor();
+    if (!cleared) showDraftStatus("نُشر الإعلان، وتعذّر حذف المسودة من هذا الجهاز.");
     setStatus(publishStatus,id?"تم حفظ تعديلات المنحة بنجاح.":"نُشرت المنحة بنجاح وستظهر الآن في أخبار المنح على الموقع.","success");
     try{localStorage.setItem("nabd-scholarship-news-updated",String(Date.now()));}catch(_){}
     await refreshOwnPosts();
