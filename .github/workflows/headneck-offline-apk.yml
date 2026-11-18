@@ -4,6 +4,7 @@ on:
     branches:
       - feature/headneck-offline-apk
       - feature/headneck-bilingual-stable
+      - feature/headneck-network-v6
     paths:
       - 'offline-headneck-android/**'
       - 'director-headneck.html'
