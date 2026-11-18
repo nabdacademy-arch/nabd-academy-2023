@@ -205,7 +205,13 @@
     }
   }
 
+  let sessionVersion = 0;
   const showLogin = () => {
+    sessionVersion++;
+    ownItems = [];
+    posts.replaceChildren();
+    document.getElementById('sch-current-email').textContent = '';
+    setStatus(publishStatus, '');
     signedInUser=null;
     draft=null;
     savedDraft=null;
@@ -214,18 +220,28 @@
     dashboard.hidden=true;
   };
   async function verifyPublisher(){
+    const version = ++sessionVersion;
     if(!client){showLogin();setStatus(authStatus,"خدمة الدخول غير متاحة حاليًا.", "error");return;}
     const {data:{user},error:userError}=await client.auth.getUser();
+    if (version !== sessionVersion) return;
     if(userError || !user){showLogin();return;}
     const {data:role,error:roleError}=await client.from("nabd_scholarship_publishers")
       .select("active").eq("user_id",user.id).maybeSingle();
-    if(roleError || !role?.active){
+    if (version !== sessionVersion) return;
+    if (roleError) {
+      showLogin();
+      setStatus(authStatus, 'تعذّر التحقق من صلاحية الحساب. أعد المحاولة عند عودة الاتصال.', 'error');
+      return;
+    }
+    if(!role?.active){
       showLogin();
       await client.auth.signOut();
       setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.", "error");
       return;
     }
     if (signedInUser?.id !== user.id) {
+      ownItems = [];
+      posts.replaceChildren();
       draft = null;
       savedDraft = null;
       loadDraft(user.id);
@@ -305,9 +321,11 @@
   });
   async function refreshOwnPosts(){
     if(!signedInUser)return;
+    const version = sessionVersion;
     const {data,error}=await client.from("nabd_scholarship_opportunities")
       .select("id,title,description,application_url,status,published_at")
       .eq("published_by",signedInUser.id).order("published_at",{ascending:false}).limit(100);
+    if (version !== sessionVersion) return;
     if(error){setStatus(publishStatus,"تعذر تحميل قائمة الإعلانات.","error");return;}
     ownItems=data||[];
     posts.replaceChildren();
@@ -387,9 +405,15 @@
     await refreshOwnPosts();
   });
   if (!client){showLogin();setStatus(authStatus,"إعداد Supabase غير متاح.","error");return;}
-  client.auth.onAuthStateChange((event)=>{
+  client.auth.onAuthStateChange((event, session)=>{
+    if (event === "SIGNED_IN" && signedInUser && session?.user?.id !== signedInUser.id) {
+      showLogin();
+      const version = sessionVersion;
+      setTimeout(() => { if (version === sessionVersion) verifyPublisher(); }, 0);
+    }
     if(event==="SIGNED_OUT")showLogin();
     if(event==="PASSWORD_RECOVERY"){
+      showLogin();
       const resetPanel=document.getElementById("sch-new-password-panel");
       if(resetPanel){resetPanel.hidden=false;loginPanel.hidden=true;dashboard.hidden=true;}
     }
