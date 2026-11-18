@@ -342,13 +342,27 @@
       const edit=document.createElement("button");edit.type="button";edit.textContent="تعديل";edit.addEventListener("click",()=>editItem(item));
       const archive=document.createElement("button");archive.type="button";archive.textContent=item.status==="published"?"أرشفة":"إعادة نشر";
       archive.addEventListener("click",async()=>{
+        if (archive.disabled || !signedInUser || version !== sessionVersion) return;
         archive.disabled=true;
         const next=item.status==="published"?"archived":"published";
-        const {error:err}=await client.from("nabd_scholarship_opportunities")
-          .update({status:next,updated_at:new Date().toISOString()})
-          .eq("id",item.id).eq("published_by",signedInUser.id);
-        archive.disabled=false;
-        if(err){setStatus(publishStatus,"تعذر تعديل حالة الإعلان.","error");return;}
+        try {
+          const {data, error} = await client.from("nabd_scholarship_opportunities")
+            .update({status:next, updated_at:new Date().toISOString()})
+            .eq("id",item.id).eq("published_by",signedInUser.id).eq("status",item.status)
+            .select("id").maybeSingle();
+          if (version !== sessionVersion) return;
+          if (error) throw error;
+          if (!data) {
+            setStatus(publishStatus,"تغيّرت حالة الإعلان أو صلاحية الوصول إليه. جارٍ تحديث القائمة.");
+            await refreshOwnPosts();
+            return;
+          }
+        } catch (_) {
+          if (version === sessionVersion) setStatus(publishStatus,"تعذّر تأكيد حالة الإعلان. حدّث القائمة قبل إعادة المحاولة.","error");
+          return;
+        } finally {
+          archive.disabled=false;
+        }
         setStatus(publishStatus,next==="archived"?"تمت أرشفة الفرصة وإخفاؤها عن الجمهور.":"أعيد نشر الفرصة بنجاح.","success");
         await refreshOwnPosts();
       });
