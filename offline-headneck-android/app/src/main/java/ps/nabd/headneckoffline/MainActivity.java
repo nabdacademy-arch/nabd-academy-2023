@@ -67,6 +67,7 @@ public class MainActivity extends Activity {
     private volatile String availableBank=null;
     private WebView browser;
     private LinearLayout rootView;
+    private ScrollView pageScroll;
     private EditText emailInput, passwordInput;
     private TextView loginMessage;
     private Button loginButton;
@@ -149,7 +150,7 @@ public class MainActivity extends Activity {
         LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);l.setPadding(px(14),px(12),px(14),px(18));return l;
     }
     private void newPage(String title,String subtitle){
-        ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.setBackgroundColor(bg);
+        ScrollView scroll=new ScrollView(this);pageScroll=scroll;scroll.setFillViewport(true);scroll.setBackgroundColor(bg);
         rootView=stack();scroll.addView(rootView);
         setContentView(scroll);
         TextView name=title(title,22);name.setGravity(Gravity.CENTER);rootView.addView(name);
@@ -167,6 +168,7 @@ public class MainActivity extends Activity {
     private void space(LinearLayout parent,int dp){
         View v=new View(this);parent.addView(v,new LinearLayout.LayoutParams(1,px(dp)));
     }
+    private void scrollToAnswer(){if(pageScroll!=null)pageScroll.post(()->pageScroll.fullScroll(View.FOCUS_DOWN));}
     private void card(String text){
         TextView v=text(text,15);v.setPadding(px(14),px(14),px(14),px(14));
         v.setBackground(fill(panel,Color.rgb(37,80,100)));
@@ -358,7 +360,9 @@ public class MainActivity extends Activity {
     private void openPdf(String uri,int page){
         try{
             closePdf();
-            pdfFd=getContentResolver().openFileDescriptor(Uri.parse(uri),"r");
+            File saved=new File(uri);
+            if(!saved.getCanonicalPath().startsWith(getFilesDir().getCanonicalPath()+File.separator))throw new IOException("مسار ملف غير موثوق.");
+            pdfFd=ParcelFileDescriptor.open(saved,ParcelFileDescriptor.MODE_READ_ONLY);
             if(pdfFd==null)throw new IOException("ملف PDF غير متاح.");
             pdfRenderer=new PdfRenderer(pdfFd);
             renderPdfPage(page);
@@ -475,6 +479,7 @@ public class MainActivity extends Activity {
                 else card("📚 لا يتوفر شرح مدقق مرتبط بالسؤال في بنك المصدر.");
                 card("📎 المصدر: "+q.optString("source","غير محدد")+
                     "\nدرجة توثيق المفتاح: "+q.optString("answerVerified","غير مراجع"));
+                scrollToAnswer();
             });
         }
         action("👁 إظهار الحل والشرح دون احتساب",()->{
@@ -484,6 +489,7 @@ public class MainActivity extends Activity {
             }else card("⚠ لا يتوفر مفتاح إجابة موثوق.");
             if(!explanation(q).trim().isEmpty())card("💡 "+explanation(q));
             else card("لا يوجد شرح مدقق لهذا السؤال.");
+            scrollToAnswer();
         });
         action("🌐 تبديل اللغة • العربية / English",()->{english=!english;showNativeQuestion(q,next);});
         action(quizMode?"السؤال التالي ▶":"⬅️ رجوع إلى الأسئلة",next);
@@ -803,14 +809,36 @@ public class MainActivity extends Activity {
             chooser.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));
             chooser=null;
         }
+        if(request==PICK_SLIDES&&result==RESULT_OK&&data!=null&&data.getData()!=null){
+            try {
+                File target=new File(getFilesDir(),"slides_"+slideChapter+".pdf");
+                try(InputStream input=getContentResolver().openInputStream(data.getData());
+                    FileOutputStream out=new FileOutputStream(target)){
+                    if(input==null)throw new IOException("تعذر قراءة ملف السلايدات.");
+                    byte[] bytes=new byte[16384];int n;long total=0;
+                    while((n=input.read(bytes))!=-1){
+                        total+=n;
+                        if(total>160L*1024*1024)throw new IOException("حجم السلايدات يتجاوز 160 ميجابايت.");
+                        out.write(bytes,0,n);
+                    }
+                }catch(Exception e){target.delete();throw e;}
+                getSharedPreferences("nabd-anatomy-slides",MODE_PRIVATE).edit()
+                    .putString(slideKey(slideChapter),target.getAbsolutePath()).apply();
+                showPdfForChapter(slideChapter);
+            }catch(Exception e){
+                showPdfForChapter(slideChapter);
+                card("⚠ لم يُحفظ الملف: "+e.getMessage());
+            }
+        }
     }
     @Override public void onBackPressed(){
         if(browser!=null&&browser.canGoBack())browser.goBack();
+        else if(!questions.isEmpty()){closePdf();showNativeHome();}
         else super.onBackPressed();
     }
     @Override protected void onDestroy(){
         if(chooser!=null){chooser.onReceiveValue(null);chooser=null;}
-        availableBank=null;
+        availableBank=null;closePdf();
         if(browser!=null){browser.removeJavascriptInterface("NABDApp");browser.destroy();browser=null;}
         super.onDestroy();
     }
