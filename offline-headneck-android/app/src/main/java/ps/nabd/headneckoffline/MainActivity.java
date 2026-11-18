@@ -8,6 +8,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.RadioButton;
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
 import android.widget.Toast;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
@@ -76,6 +80,15 @@ public class MainActivity extends Activity {
     private final ArrayList<JSONObject> questions=new ArrayList<>();
     private final ArrayList<Integer> session=new ArrayList<>();
     private int sessionIndex=0,bankOffset=0;
+    private int examCorrect=0,examWrong=0,examUngraded=0;
+    private boolean examMode=false,questionSubmitted=false;
+    private String activeJwt=null,activeDirectorEmail="",chosenChapter="all",chosenPool="all";
+    private SecretKey activeBankKey=null;
+    private byte[] activeBankSalt=null;
+    private int lessonIndex=0;
+    private String pdfForChapter="";
+    private static final int PICK_PDF=2733;
+    private ScrollView pageScroll;
     private String chosenChapter="all",chosenPool="all";
     private int chosenCount=20,quizCorrect=0,quizIncorrect=0,quizUnscored=0;
     private boolean quizMode=false;
@@ -234,405 +247,409 @@ public class MainActivity extends Activity {
             showNativeHome();
         });
     }
+
+    private String statusLabel(JSONObject q){
+        String v=q.optString("answerVerified","not_verified");
+        if("externally_checked".equals(v))return "✅ إجابة خضعت لمراجعة إضافية";
+        if("curated_fact".equals(v))return "🟢 تدريب مبني على حقيقة منتقاة";
+        if("source_key".equals(v))return "🟠 إجابة من مفتاح المصدر؛ لم تُراجع مستقلًا";
+        return "⚪ بلا مفتاح إجابة موثوق - غير محسوب";
+    }
+    private boolean hasKey(JSONObject q){
+        int ans=q.optInt("answer",-1);
+        JSONArray list=q.optJSONArray("opts");
+        return !q.isNull("answer")&&list!=null&&ans>=0&&ans<list.length()
+          &&!"not_verified".equals(q.optString("answerVerified",""));
+    }
+    private String chapterLabel(String chapter){
+        if(nativeBank!=null){
+            JSONArray c=nativeBank.optJSONArray("chapters");
+            if(c!=null)for(int i=0;i<c.length();i++){
+                JSONObject o=c.optJSONObject(i);
+                if(o!=null&&chapter.equals(o.optString("id")))return o.optString(english?"en":"ar",chapter);
+            }
+        }
+        return chapter;
+    }
+    private String questionText(JSONObject q){
+        if(english)return q.optString("q","سؤال بدون نص");
+        String ar=q.optString("qAr","");
+        return ar.trim().isEmpty()?q.optString("q","سؤال بدون نص"):ar;
+    }
+    private JSONArray options(JSONObject q){
+        JSONArray en=q.optJSONArray("opts"),ar=q.optJSONArray("optsAr");
+        return !english&&ar!=null&&en!=null&&ar.length()==en.length()?ar:en;
+    }
+    private String explanation(JSONObject q){
+        String a=q.optString(english?"why":"whyAr","");
+        return a.trim().isEmpty()?q.optString("why",""):a;
+    }
+    private String id(JSONObject q){return q.optString("id",String.valueOf(q.hashCode()));}
+    private void goBottom(){if(pageScroll!=null)pageScroll.post(()->pageScroll.fullScroll(View.FOCUS_DOWN));}
     private void menu(){
-        action(english?"🏠 Home":"🏠 الرئيسية",this::showNativeHome);
+        action("🏠 الرئيسية",this::showNativeHome);
         action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
     }
-
-    private static final String[] CHAPTER_IDS={"Skull","ScalpFace","Neck","Orbit","EarMandible","Oral","TonguePharynx","Larynx","Nose","Mixed"};
-    private static final String[] CHAPTER_AR={"الجمجمة","فروة الرأس والوجه","الرقبة","الحجاج والعين","الأذن والفك السفلي","جوف الفم والغدد اللعابية","اللسان والبلعوم","الحنجرة والرغامى","الأنف والتجويف الأنفي","أسئلة متنوعة"};
-    private static final String[] CHAPTER_EN={"Skull","Scalp & Face","Neck","Orbit & Eye","Ear & Mandible","Oral Cavity & Salivary Glands","Tongue & Pharynx","Larynx & Trachea","Nose","Mixed questions"};
-    private String chapterTitle(String id){
-        for(int i=0;i<CHAPTER_IDS.length;i++)if(CHAPTER_IDS[i].equals(id))return english?CHAPTER_EN[i]:CHAPTER_AR[i];
-        return id;
+    private int reviewedCount(){
+        int n=0;for(JSONObject q:questions)if(hasKey(q))n++;return n;
     }
-    private int chapterCount(String chapter) {
-        int n=0;for(JSONObject q:questions)if(chapter.equals(q.optString("chapter","")))n++;
-        return n;
+    private int translatedCount(){
+        int n=0;for(JSONObject q:questions)if(q.optString("qAr","").trim().length()>0) n++;return n;
     }
-    private boolean matchesChapter(JSONObject q) {
-        return "all".equals(chosenChapter)||chosenChapter.equals(q.optString("chapter",""));
+    private int explainedCount(){
+        int n=0;for(JSONObject q:questions)if(!q.optString("why","").trim().isEmpty())n++;return n;
     }
     private void showNativeHome(){
-        quizMode=false;
-        newPage("🧠 NABD • Head & Neck","مساحة المدير • النسخة التعليمية الخاصة");
-        card("✅ بنك الأسئلة متاح على الهاتف\n"+questions.size()+" سؤالًا • تصحيح + شرح + ترجمة متى توفرت\n"+
-             "🔐 تم التحقق من الحساب، والبيانات مخزنة مشفّرة للاستخدام دون إنترنت");
-        action("📚 الشابترات • شرح + سلايدات + تدريب",this::showNativeChapters);
-        action("📖 بنك الأسئلة مع الإجابات والشروحات",()->{chosenChapter="all";showNativeList(null,0);});
-        action("🎯 محاكي الامتحانات حسب الفصل والصعوبة",this::showQuizSetup);
-        action("🖥️ قسم السلايدات وملفات PDF",this::showNativeSlideLibrary);
-        action("🤖 اسأل بوت التشريح",()->{chosenChapter="all";showNativeSearch();});
-        action("❌ مراجعة أخطائي",this::showNativeWrong);
-        action("📊 نتائجي وإحصاءاتي",this::showNativeStats);
-        action("📎 المصادر والمراجع",this::showNativeSources);
+        newPage("🧠 NABD • Head & Neck","مدير أكاديمية نبض • النسخة الخاصة • دراسة دون إنترنت");
+        card("📚 "+questions.size()+" سؤالًا  |  🔑 "+reviewedCount()+" بمفتاح إجابة\n🌐 "+translatedCount()+" بترجمة عربية  |  💡 "+explainedCount()+" بشرح\n\nالمحتوى مطابق للبنك المخزن لهذا الحساب. بعض أسئلة المصادر التاريخية غير مصححة.");
+        action("📖 جميع الأسئلة + الإجابات",()->showNativeList("",0));
+        action("🎓 قيّم مستواي • اختبار بدرجة",this::showTrainingSetup);
+        action("⚡ تدرب على شابتر / الأخطاء",this::showPracticeSetup);
+        action("🖼 شرائح شرح الشابترات",this::showChapters);
+        action("🤖 اسأل بوت التشريح",this::showNativeSearch);
+        action("🎯 سجل أخطائي",this::showNativeWrong);
+        action("📎 المصادر العلمية",this::showNativeSources);
         action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
-        action("🔒 تسجيل الخروج",()->{
-            nativeBank=null;questions.clear();session.clear();availableBank=null;quizMode=false;showNativeLogin();
+        action("🔒 تسجيل خروج",()->{
+            activeJwt=null;activeBankKey=null;nativeBank=null;questions.clear();
+            session.clear();availableBank=null;showNativeLogin();
         });
     }
-    private void showNativeChapters(){
-        newPage("📚 فصول التشريح","اختر فصلًا لشرح نقاطه العلمية أو التدرب على أسئلته");
-        menu();
-        for(String chapter:CHAPTER_IDS){
-            int n=chapterCount(chapter);
-            action("📁 "+chapterTitle(chapter)+" • "+n+" سؤال",()->showChapterMenu(chapter));
-        }
+    private boolean matches(JSONObject q,String search){
+        if(!"all".equals(chosenChapter)&&!chosenChapter.equals(q.optString("chapter","")))return false;
+        if(!"all".equals(chosenPool)&&!chosenPool.equals(q.optString("kind",""))
+            &&!(chosenPool.equals("original")&&q.optString("id","").startsWith("AYAM"))
+            &&!(chosenPool.equals("archived")&&q.optString("id","").startsWith("ARCH"))
+            &&!(chosenPool.equals("generated")&&q.optString("id","").startsWith("NEW")))return false;
+        if(search==null||search.trim().isEmpty())return true;
+        String hay=(q.optString("q","")+" "+q.optString("qAr","")+" "+
+            q.optString("chapter","")+" "+q.optString("why","")+" "+q.optString("source","")).toLowerCase(Locale.ROOT);
+        for(String token:search.toLowerCase(Locale.ROOT).trim().split("\\s+"))
+            if(token.length()>1&&!hay.contains(token))return false;
+        return true;
     }
-    private void showChapterMenu(String chapter){
-        chosenChapter=chapter;
-        newPage("📚 "+chapterTitle(chapter),"Anatomy III • "+chapterCount(chapter)+" سؤالًا");
-        menu();
-        action("📘 ملف شرح الشابتر كاملًا",()->showChapterStudyGuide(chapter,0));
-        action("🖥️ بطاقات السلايدات التعليمية",()->showChapterLesson(chapter,0));
-        action("📄 سلايدات PDF المرتبطة بالفصل",()->showPdfForChapter(chapter));
-        action("📖 جميع أسئلة هذا الشابتر",()->showNativeList(null,0));
-        action("📝 اختبرني في هذا الشابتر",this::showQuizSetup);
-        action("📎 مصادر ومراجع",this::showNativeSources);
-        action("⬅️ باقي الشابترات",this::showNativeChapters);
-    }
-    private ArrayList<JSONObject> concepts(String chapter){
-        ArrayList<JSONObject> result=new ArrayList<>();
-        LinkedHashSet<String> ids=new LinkedHashSet<>();
-        for(JSONObject q:questions){
-            if(!chapter.equals(q.optString("chapter","")))continue;
-            if(!"generated".equals(q.optString("kind","")))continue;
-            String key=q.optString("factRef",q.optString("id",""));
-            if(ids.add(key))result.add(q);
-        }
-        return result;
-    }
-
-    private void showChapterStudyGuide(String chapter,int page){
-        ArrayList<JSONObject> concepts=concepts(chapter);
-        int start=Math.min(page*12,concepts.size()),end=Math.min(start+12,concepts.size());
-        newPage("📘 ملف شرح: "+chapterTitle(chapter),"شرح الفصل من المفاهيم العلمية الموثقة في بنك الأسئلة • صفحة "+(page+1));
-        menu();
-        if(concepts.isEmpty()){
-            card("لا يحتوي هذا الشابتر على مفاهيم جديدة ذات شروح مستقلة في البنك المحفوظ. لا يمكن عرض ملف محاضرة غير متوفر.");
-            action("➕ إضافة PDF للفصل",()->showPdfForChapter(chapter));return;
-        }
-        card("يتضمن هذا الدليل "+concepts.size()+" مفهومًا، مستخلصًا من الإجابات وشروحها. لا تُعرض الأسئلة بدلًا من المحاضرات.");
-        for(int i=start;i<end;i++){
-            JSONObject q=concepts.get(i);
-            int answer=q.optInt("answer",-1);
-            JSONArray o=options(q);
-            if(o==null||answer<0||answer>=o.length())continue;
-            String fact=o.optString(answer);
-            String expl=explanation(q);
-            card("📌 "+(i+1)+". "+fact+
-                (expl.isEmpty()?"":"\n\n📖 "+expl));
-        }
-        action("🌐 العربية / English",()->{english=!english;showChapterStudyGuide(chapter,page);});
-        if(page>0)action("◀ السابق",()->showChapterStudyGuide(chapter,page-1));
-        if(end<concepts.size())action("التالي ▶",()->showChapterStudyGuide(chapter,page+1));
-        action("🖥️ بطاقات الشرح واحدة واحدة",()->showChapterLesson(chapter,0));
-        action("🎯 اختبر معلوماتك بالفصل",()->{chosenChapter=chapter;showQuizSetup();});
-    }
-    private void showChapterLesson(String chapter,int pos){
-        ArrayList<JSONObject> slides=concepts(chapter);
-        if(slides.isEmpty()){
-            newPage("🖥️ "+chapterTitle(chapter),"بطاقات شرح المفاهيم");
-            menu();card("لا توجد بطاقات شرح موثقة لهذا القسم داخل بنك الأسئلة الحالي. يمكنك إضافة سلايدات PDF.");
-            action("📄 إضافة سلايدات PDF",()->showPdfForChapter(chapter));return;
-        }
-        int index=Math.min(Math.max(pos,0),slides.size()-1);
-        JSONObject q=slides.get(index);
-        newPage("🖥️ "+chapterTitle(chapter),"شرح مفهوم "+(index+1)+" من "+slides.size()+" • بناءً على نقاط علمية من البنك وليست المحاضرة الأصلية");
-        menu();
-        int answer=q.optInt("answer",-1);
-        JSONArray o=options(q);
-        if(o!=null&&answer>=0&&answer<o.length()){
-            card("📌 النقطة العلمية الأساسية\n"+o.optString(answer));
-        }
-        String exp=explanation(q);
-        if(!exp.trim().isEmpty())card("📖 الشرح\n"+exp);
-        else card("لا يوجد شرح إضافي مدقق لهذه النقطة.");
-        if(!english&&(q.optString("whyAr","").isEmpty()||q.optJSONArray("optsAr")==null))
-            card("المصدر لا يحتوي شرحًا عربيًا كاملًا لهذا المفهوم، لذلك يظهر نصه الإنجليزي الأصلي.");
-        card("📚 المرجع: "+q.optString("source","مستخلص من بنك التشريح"));
-        action("🌐 العربية / English",()->{english=!english;showChapterLesson(chapter,index);});
-        action("📝 سؤال تطبيقي عن هذه النقطة",()->showNativeQuestion(q,()->showChapterLesson(chapter,index)));
-        if(index>0)action("◀ السابق",()->showChapterLesson(chapter,index-1));
-        if(index<slides.size()-1)action("التالي ▶",()->showChapterLesson(chapter,index+1));
-        action("📘 ملف شرح الشابتر كاملًا",()->showChapterStudyGuide(chapter,0));
-        action("📄 سلايدات PDF الخاصة",()->showPdfForChapter(chapter));
-    }
-    private void showNativeSlideLibrary(){
-        newPage("🖥️ سلايدات التشريح","ملفات PDF محفوظة على جهازك + بطاقات شرح الفصول");
-        menu();
-        card("يمكن إضافة سلايدات PDF لكل شابتر من ملفات الهاتف. تبقى الملفات على جهازك وتُفتح دون إنترنت عند حفظ نسخة محلية منها.");
-        for(String id:CHAPTER_IDS){
-            action("📁 "+chapterTitle(id),()->showPdfForChapter(id));
-        }
-    }
-    private String slideKey(String chapter){return "slides_pdf_uri_"+chapter;}
-    private void showPdfForChapter(String chapter){
-        slideChapter=chapter;
-        newPage("📄 "+chapterTitle(chapter),"السلايدات الأصلية المضافة من هاتفك");
-        menu();
-        action("📘 ملف شرح الشابتر",()->showChapterStudyGuide(chapter,0));
-        action("🖥️ بطاقات الشرح",()->showChapterLesson(chapter,0));
-        String saved=getSharedPreferences("nabd-anatomy-slides",MODE_PRIVATE).getString(slideKey(chapter),"");
-        if(saved.isEmpty())card("لم تضف ملف سلايدات PDF لهذا الشابتر بعد.");
-        else action("📖 فتح ملف PDF المحفوظ",()->openPdf(saved,0));
-        action("➕ إضافة أو استبدال ملف سلايدات PDF",()->{
-            try{
-                Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.setType("application/pdf");intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                startActivityForResult(intent,PICK_SLIDES);
-            }catch(Exception e){card("تعذر فتح منتقي الملفات: "+e.getMessage());}
-        });
-    }
-    private void closePdf(){
-        try{if(pdfPage!=null){pdfPage.close();pdfPage=null;}}catch(Exception ignored){}
-        try{if(pdfRenderer!=null){pdfRenderer.close();pdfRenderer=null;}}catch(Exception ignored){}
-        try{if(pdfFd!=null){pdfFd.close();pdfFd=null;}}catch(Exception ignored){}
-    }
-    private void openPdf(String uri,int page){
-        try{
-            closePdf();
-            File saved=new File(uri);
-            if(!saved.getCanonicalPath().startsWith(getFilesDir().getCanonicalPath()+File.separator))throw new IOException("مسار ملف غير موثوق.");
-            pdfFd=ParcelFileDescriptor.open(saved,ParcelFileDescriptor.MODE_READ_ONLY);
-            if(pdfFd==null)throw new IOException("ملف PDF غير متاح.");
-            pdfRenderer=new PdfRenderer(pdfFd);
-            renderPdfPage(page);
-        }catch(Exception e){
-            closePdf();newPage("📄 خطأ في السلايدات","تعذر فتح ملف PDF");
-            card("اختر الملف مرة أخرى من هاتفك.\n"+e.getMessage());
-            action("عودة",()->showPdfForChapter(slideChapter));
-        }
-    }
-    private void renderPdfPage(int index){
-        try{
-            if(pdfPage!=null){pdfPage.close();pdfPage=null;}
-            if(pdfRenderer==null)return;
-            int total=pdfRenderer.getPageCount();
-            pdfIndex=Math.min(Math.max(0,index),total-1);
-            pdfPage=pdfRenderer.openPage(pdfIndex);
-            newPage("🖥️ سلايدات "+chapterTitle(slideChapter),"صفحة "+(pdfIndex+1)+" / "+total);
-            Bitmap bitmap=Bitmap.createBitmap(Math.min(pdfPage.getWidth()*2,1700),Math.min(pdfPage.getHeight()*2,2300),Bitmap.Config.ARGB_8888);
-            bitmap.eraseColor(Color.WHITE);
-            pdfPage.render(bitmap,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-            ImageView img=new ImageView(this);
-            img.setImageBitmap(bitmap);img.setAdjustViewBounds(true);
-            img.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            rootView.addView(img,new LinearLayout.LayoutParams(-1,-2));
-            if(pdfIndex>0)action("◀ الصفحة السابقة",()->renderPdfPage(pdfIndex-1));
-            if(pdfIndex+1<total)action("الصفحة التالية ▶",()->renderPdfPage(pdfIndex+1));
-            action("إغلاق السلايدات",()->{closePdf();showPdfForChapter(slideChapter);});
-        }catch(Exception e){closePdf();showPdfForChapter(slideChapter);}
-    }
-    private void showNativeStats(){
-        newPage("📊 نتائج التدريب","إحصاءات الإجابات المحفوظة على الهاتف");
-        menu();
-        android.content.SharedPreferences p=getSharedPreferences("nabd-anatomy-stats",MODE_PRIVATE);
-        card("✅ الصحيحة: "+p.getInt("correct",0)+"\n❌ الخاطئة: "+p.getInt("wrong",0)+"\n"+
-            "⚠ دون مفتاح موثوق: "+p.getInt("ungraded",0));
-        action("🎯 ابدأ تدريبًا جديدًا",this::showQuizSetup);
-        action("❌ مراجعة الأسئلة الخاطئة",this::showNativeWrong);
-    }
-    private String questionText(JSONObject q){String s=q.optString(english?"q":"qAr","");return s.isEmpty()?q.optString("q",""):s;}
-    private JSONArray options(JSONObject q){JSONArray opts=q.optJSONArray(english?"opts":"optsAr");if(opts==null||opts.length()==0)opts=q.optJSONArray("opts");return opts;}
-    private String explanation(JSONObject q){String s=q.optString(english?"why":"whyAr","");return s.isEmpty()?q.optString("why",""):s;}
-    private String id(JSONObject q){return q.optString("id",String.valueOf(q.hashCode()));}
-
     private void showNativeList(String search,int offset){
+        bankOffset=offset;
         ArrayList<JSONObject> subset=new ArrayList<>();
-        String needle=search==null?"":search.trim().toLowerCase(Locale.ROOT);
-        for(JSONObject q:questions){
-            if(!matchesChapter(q))continue;
-            String hay=q.optString("q","")+" "+q.optString("qAr","")+" "+
-                q.optString("why","")+" "+q.optString("whyAr","")+" "+
-                q.optString("chapter","")+" "+q.optString("source","");
-            JSONArray o=q.optJSONArray("opts");if(o!=null)hay+=" "+o.toString();
-            JSONArray ar=q.optJSONArray("optsAr");if(ar!=null)hay+=" "+ar.toString();
-            if(needle.isEmpty()||hay.toLowerCase(Locale.ROOT).contains(needle))subset.add(q);
-        }
+        for(JSONObject q:questions)if(matches(q,search))subset.add(q);
         int start=Math.min(offset,subset.size()),end=Math.min(start+12,subset.size());
-        newPage("📖 بنك أسئلة التشريح",chapterTitle(chosenChapter)+" • "+(subset.isEmpty()?0:start+1)+"–"+end+" / "+subset.size());
-        menu();
-        action("🔎 البحث داخل البنك",this::showNativeSearch);
+        newPage("📖 بنك أسئلة التشريح", "عرض "+(subset.isEmpty()?0:start+1)+"–"+end+" من "+subset.size());
+        action("🏠 الرئيسية",this::showNativeHome);
+        EditText query=edit("ابحث باسم العصب أو العظم أو المصطلح",false);
+        query.setInputType(InputType.TYPE_CLASS_TEXT);
+        if(search!=null)query.setText(search);
+        action("🔎 بحث",()->showNativeList(query.getText().toString(),0));
+        action("🧩 تصفية حسب الشابتر",this::showChapterFilter);
+        action("🌐 تبديل عربي / English",()->{english=!english;showNativeList(search,offset);});
+        if(subset.isEmpty())card("لا توجد أسئلة مطابقة. جرّب مسح البحث أو الفلاتر.");
         for(int i=start;i<end;i++){
-            final JSONObject q=subset.get(i);
-            card((i+1)+". "+questionText(q)+"\n"+
-                (q.optString("answerVerified","not_verified").equals("not_verified")?"⚠ المفتاح غير موثق":"✓ خيار الإجابة والشرح داخل السؤال"));
-            action("📝 عرض الخيارات والحل والشرح",()->showNativeQuestion(q,()->showNativeList(search,start)));
+            JSONObject q=subset.get(i);
+            card((i+1)+". "+questionText(q)+"\n"+statusLabel(q));
+            action("📖 الحل والشرح",()->showNativeQuestion(q,()->showNativeList(search,offset),false));
         }
-        if(end<subset.size())action("التالي ◀",()->showNativeList(search,end));
-        if(start>0)action("▶ السابق",()->showNativeList(search,Math.max(0,start-12)));
-        if(subset.isEmpty())card("لا توجد أسئلة بهذه التصفية.");
+        if(end<subset.size())action("الصفحة التالية ◀",()->showNativeList(search,offset+12));
+        if(start>0)action("▶ الصفحة السابقة",()->showNativeList(search,Math.max(0,offset-12)));
     }
-
-    private boolean hasKey(JSONObject q,int index){
-        JSONArray original=q.optJSONArray("opts");
-        return index>=0&&original!=null&&index<original.length()&&
-             !q.optString("answerVerified","not_verified").equals("not_verified");
-    }
-    private void recordAnswer(JSONObject q,boolean correct,boolean graded){
-        android.content.SharedPreferences p=getSharedPreferences("nabd-anatomy-stats",MODE_PRIVATE);
-        String counter=graded?(correct?"correct":"wrong"):"ungraded";
-        p.edit().putInt(counter,p.getInt(counter,0)+1).apply();
-        if(graded)getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).edit()
-                .putBoolean(id(q),!correct).apply();
-        if(quizMode){if(!graded)quizUnscored++;else if(correct)quizCorrect++;else quizIncorrect++;}
-    }
-    private void showNativeQuestion(JSONObject q,Runnable next){
-        newPage("📚 سؤال تشريح",chapterTitle(q.optString("chapter",""))+
-                " • "+q.optString("sourceLevel",q.optString("kind","")));
-        card(questionText(q));
-        JSONArray choices=options(q);
-        if(choices==null||choices.length()==0){card("⚠ لا تتوفر خيارات هذا السؤال.");action("رجوع",next);return;}
-        boolean bilingual=q.optString("qAr","").length()>0&&q.optJSONArray("optsAr")!=null;
-        if(!english&&!bilingual){
-            card("🌐 لا توجد ترجمة عربية كاملة ومحفوظة لهذا السؤال من المصدر؛ يظهر نصه الإنجليزي الأصلي بدل إنشاء ترجمة غير دقيقة.");
+    private void showChapterFilter(){
+        newPage("🧩 تصفية بنك الأسئلة","اختر شابتر أو اعرض الجميع");
+        action("الكل",()->{chosenChapter="all";showNativeList("",0);});
+        if(nativeBank!=null){
+            JSONArray arr=nativeBank.optJSONArray("chapters");
+            if(arr!=null)for(int i=0;i<arr.length();i++){
+                JSONObject chapter=arr.optJSONObject(i);
+                if(chapter==null)continue;
+                String cid=chapter.optString("id","");
+                action(chapterLabel(cid),()->{chosenChapter=cid;showNativeList("",0);});
+            }
         }
+    }
+    private void recordResult(JSONObject q,boolean correct){
+        getSharedPreferences("nabd-anatomy-progress-v4",MODE_PRIVATE)
+            .edit().putString(id(q),correct?"correct":"wrong").apply();
+    }
+    private String answerText(JSONObject q,JSONArray choices){
+        if(!hasKey(q))return "⚠ هذا السؤال لم تُثبت له إجابة موثوقة، لذا لا أصحّحه آليًا.";
         int answer=q.optInt("answer",-1);
-        boolean graded=hasKey(q,answer);
-        final boolean[] answered={false};
-        final int correct=answer;
-        for(int i=0;i<choices.length();i++){
-            int selected=i;
-            String label=String.valueOf((char)('A'+i))+". "+choices.optString(i);
-            action(label,()->{
-                if(answered[0])return;answered[0]=true;
-                boolean right=graded&&selected==correct;
-                recordAnswer(q,right,graded);
-                if(graded){
-                    String correctText=choices.optString(correct);
-                    card((right?"✅ إجابة صحيحة":"❌ إجابة خاطئة")+
-                         "\nالإجابة الصحيحة: "+String.valueOf((char)('A'+correct))+" • "+correctText);
-                }else{
-                    card("⚠ هذه المسألة لا تمتلك مفتاح إجابة موثوقًا بعد. لن نضع علامة صح عشوائية ولن تحتسب ضمن نتيجة الامتحان.");
-                }
-                String expl=explanation(q);
-                if(!expl.trim().isEmpty())card("💡 شرح الإجابة\n"+expl);
-                else card("📚 لا يتوفر شرح مدقق مرتبط بالسؤال في بنك المصدر.");
-                card("📎 المصدر: "+q.optString("source","غير محدد")+
-                    "\nدرجة توثيق المفتاح: "+q.optString("answerVerified","غير مراجع"));
-                scrollToAnswer();
-            });
+        String a=choices.optString(answer);
+        String why=explanation(q);
+        return "✅ الإجابة: "+(char)('A'+answer)+". "+a+"\n"
+            +statusLabel(q)+(why.isEmpty()?"\n💡 لا يوجد شرح علمي محفوظ لهذا السؤال.":"\n\n💡 السبب:\n"+why)
+            +"\n\n📚 المصدر: "+q.optString("source","غير محدد");
+    }
+    private void showNativeQuestion(JSONObject q,Runnable next,boolean grade){
+        newPage("📚 سؤال التشريح", chapterLabel(q.optString("chapter",""))+" • "+statusLabel(q));
+        card(questionText(q));
+        final JSONArray choices=options(q);
+        if(choices==null){card("لا توجد خيارات محفوظة لهذا السؤال.");action("العودة",next);return;}
+        if(!english&&q.optString("qAr","").isEmpty()){
+            card("🌐 الترجمة العربية لهذا السؤال غير محفوظة. ستظهر الإنجليزية الأصلية.");
+            if(activeJwt!=null)action("🌐 ترجمة السؤال والخيارات الآن (تحتاج إنترنت)",()->translateQuestion(q,next,grade));
         }
-        action("👁 إظهار الحل والشرح دون احتساب",()->{
-            if(answered[0])return;answered[0]=true;
-            if(graded){
-                card("✅ الإجابة: "+String.valueOf((char)('A'+correct))+" • "+choices.optString(correct));
-            }else card("⚠ لا يتوفر مفتاح إجابة موثوق.");
-            if(!explanation(q).trim().isEmpty())card("💡 "+explanation(q));
-            else card("لا يوجد شرح مدقق لهذا السؤال.");
-            scrollToAnswer();
+        final RadioGroup group=new RadioGroup(this);
+        group.setOrientation(RadioGroup.VERTICAL);
+        for(int i=0;i<choices.length();i++){
+            RadioButton radio=new RadioButton(this);
+            radio.setId(4100+i);
+            radio.setButtonTintList(android.content.res.ColorStateList.valueOf(mint));
+            radio.setText((char)('A'+i)+". "+choices.optString(i));
+            radio.setTextColor(ink);radio.setTextSize(16);
+            radio.setPadding(px(10),px(9),px(10),px(9));
+            radio.setBackground(fill(panel,Color.rgb(35,80,100)));
+            LinearLayout.LayoutParams item=new LinearLayout.LayoutParams(-1,-2);
+            item.setMargins(0,px(4),0,px(4));group.addView(radio,item);
+        }
+        rootView.addView(group);
+        TextView response=text("اختر إجابتك ثم اضغط تأكيد، أو اكشف الإجابة والشرح مباشرة.",15);
+        response.setTextColor(ink);response.setPadding(px(13),px(12),px(13),px(12));
+        response.setBackground(fill(panel,Color.rgb(35,80,100)));
+        final boolean[] submitted={false};
+        action("✅ تأكيد إجابتي",()->{
+            if(submitted[0])return;
+            int selected=group.getCheckedRadioButtonId()-4100;
+            if(selected<0||selected>=choices.length()){response.setText("⚠ اختر إجابة أولًا.");return;}
+            submitted[0]=true;group.setEnabled(false);
+            for(int i=0;i<group.getChildCount();i++)group.getChildAt(i).setEnabled(false);
+            if(!hasKey(q)){
+                if(grade)examUngraded++;
+                response.setText(answerText(q,choices));
+            }else{
+                boolean ok=selected==q.optInt("answer",-1);
+                recordResult(q,ok);
+                if(grade){if(ok)examCorrect++;else examWrong++;}
+                response.setText((ok?"✅ إجابة صحيحة\n\n":"❌ إجابة خاطئة\n\n")+answerText(q,choices));
+            }
+            goBottom();
         });
-        action("🌐 تبديل اللغة • العربية / English",()->{english=!english;showNativeQuestion(q,next);});
-        action(quizMode?"السؤال التالي ▶":"⬅️ رجوع إلى الأسئلة",next);
+        action("🗝 إظهار الإجابة والشرح دون احتساب درجة",()->{
+            response.setText(answerText(q,choices));goBottom();
+        });
+        rootView.addView(response);
+        action("🌐 العربية / English",()->{english=!english;showNativeQuestion(q,next,false);});
+        action("➡️ التالي / العودة",next);
     }
-
-    private void showQuizSetup(){
-        quizMode=false;
-        newPage("🎯 محاكي امتحانات التشريح","اختر الفصل والمصدر والعدد، ثم ابدأ");
-        menu();
-        card("الشابتر الحالي: "+("all".equals(chosenChapter)?"كل الشابترات":chapterTitle(chosenChapter))+
-            "\nالمصدر: "+chosenPool+"\nعدد الأسئلة: "+chosenCount);
-        action("📚 اختر الشابتر",()->{
-            newPage("تحديد شابتر الامتحان","اختر نطاق التدريب");
-            action("🌐 كل الفصول",()->{chosenChapter="all";showQuizSetup();});
-            for(String chapter:CHAPTER_IDS)action(chapterTitle(chapter)+" • "+chapterCount(chapter),()->{
-                chosenChapter=chapter;showQuizSetup();
-            });
-        });
-        action("📂 اختر مصدر الأسئلة",()->{
-            newPage("مصادر الأسئلة","حدد بنك التدريب");
-            action("الكل",()->{chosenPool="all";showQuizSetup();});
-            action("الأسئلة الجديدة (1000)",()->{chosenPool="new";showQuizSetup();});
-            action("أسئلة المصادر السابقة",()->{chosenPool="original";showQuizSetup();});
-            action("الامتحانات التاريخية",()->{chosenPool="archived";showQuizSetup();});
-        });
-        action("🔢 عدد الأسئلة (10 / 20 / 40 / 80)",()->{
-            newPage("عدد الأسئلة","اختر عدد أسئلة جلسة الامتحان");
-            for(int n:new int[]{10,20,40,80})action(n+" سؤال",()->{chosenCount=n;showQuizSetup();});
-        });
-        action("✅ ابدأ امتحانًا جديدًا",this::startNativeQuiz);
+    private void translateQuestion(JSONObject q,Runnable next,boolean grade){
+        if(activeJwt==null){Toast.makeText(this,"يجب توفر الإنترنت وتسجيل دخول حديث للترجمة",Toast.LENGTH_LONG).show();return;}
+        newPage("🌐 ترجمة علمية", "جارٍ الاتصال بخدمة ترجمة الأسئلة الخاصة...");
+        card("عند اكتمال الترجمة ستظهر صياغة السؤال وخياراته بالعربية. لا تُعدّ الترجمة الآلية بديلًا عن المراجعة الطبية.");
+        new Thread(()->{
+            try{
+                JSONObject body=new JSONObject();body.put("question_id",id(q));
+                JSONObject result=new JSONObject(request("POST","/functions/v1/nabd-exam-translate",body,activeJwt));
+                String ar=result.optString("qAr","");
+                JSONArray opts=result.optJSONArray("optsAr");
+                if(!result.optBoolean("ok",false)||ar.isEmpty()||opts==null||opts.length()!=q.getJSONArray("opts").length())
+                    throw new IOException("الترجمة غير متاحة في الخدمة حاليًا.");
+                q.put("qAr",ar);q.put("optsAr",opts);
+                persistCurrentBank();
+                runOnUiThread(()->{english=false;showNativeQuestion(q,next,grade);});
+            }catch(Exception ex){
+                runOnUiThread(()->{
+                    card("⚠ تعذرت الترجمة الآن: "+ex.getMessage());
+                    action("العودة إلى السؤال",()->showNativeQuestion(q,next,grade));
+                });
+            }
+        },"nabd-anatomy-translate").start();
     }
-    private void startNativeQuiz(){
-        session.clear();
-        ArrayList<Integer> indexes=new ArrayList<>();
+    private void showTrainingSetup(){showSetup(true);}
+    private void showPracticeSetup(){showSetup(false);}
+    private void showSetup(boolean graded){
+        newPage(graded?"🎓 قيّم مستواي":"⚡ خطة تدريب خاصة", "اختر فصلًا وعدد أسئلة، ثم ابدأ");
+        card(graded?"امتحان بدرجة نهائية، مع توضيح الإجابات الموثوقة وغير المصححة.":"تدريب على الشابتر أو الأخطاء السابقة مع شرح كل إجابة.");
+        action("🧩 اختيار الشابتر: "+("all".equals(chosenChapter)?"الكل":chapterLabel(chosenChapter)),()->showSetupChapters(graded));
+        action("📚 المصدر: "+chosenPool,()->{
+            chosenPool=chosenPool.equals("all")?"generated":chosenPool.equals("generated")?"original":chosenPool.equals("original")?"archived":"all";
+            showSetup(graded);
+        });
+        action("🔢 عدد الأسئلة: "+practiceCount,()->{
+            practiceCount=practiceCount==10?20:practiceCount==20?40:practiceCount==40?80:10;
+            showSetup(graded);
+        });
+        action("▶️ ابدأ "+(graded?"الامتحان":"التدريب"),()->startNativeQuiz(graded,false));
+        action("🎯 تدريب على أخطائي فقط",()->startNativeQuiz(graded,true));
+        action("🏠 الرئيسية",this::showNativeHome);
+    }
+    private void showSetupChapters(boolean graded){
+        newPage("🧩 اختر الشابتر","يمكنك اختيار فصل محدد أو جميع الفصول");
+        action("جميع الشابترات",()->{chosenChapter="all";showSetup(graded);});
+        if(nativeBank!=null){
+            JSONArray arr=nativeBank.optJSONArray("chapters");
+            if(arr!=null)for(int i=0;i<arr.length();i++){
+                JSONObject c=arr.optJSONObject(i);if(c==null)continue;
+                String cid=c.optString("id","");
+                action(chapterLabel(cid),()->{chosenChapter=cid;showSetup(graded);});
+            }
+        }
+    }
+    private void startNativeQuiz(boolean graded,boolean mistakesOnly){
+        examMode=graded;examCorrect=0;examWrong=0;examUngraded=0;
+        session.clear();ArrayList<Integer> indexes=new ArrayList<>();
         for(int i=0;i<questions.size();i++){
             JSONObject q=questions.get(i);
-            if(!matchesChapter(q))continue;
-            String pool=q.optString("kind","original");
-            if(!"all".equals(chosenPool)){
-                if(chosenPool.equals("new")&&!pool.equals("generated"))continue;
-                if(chosenPool.equals("original")&&!pool.equals("original"))continue;
-                if(chosenPool.equals("archived")&&!pool.equals("archived"))continue;
-            }
+            if(!matches(q,""))continue;
+            if(mistakesOnly&&!getSharedPreferences("nabd-anatomy-progress-v4",MODE_PRIVATE).getString(id(q),"").equals("wrong"))continue;
             indexes.add(i);
         }
         Collections.shuffle(indexes);
-        for(int i=0;i<Math.min(chosenCount,indexes.size());i++)session.add(indexes.get(i));
-        sessionIndex=0;quizCorrect=0;quizIncorrect=0;quizUnscored=0;
-        quizMode=true;
+        for(int i=0;i<Math.min(practiceCount,indexes.size());i++)session.add(indexes.get(i));
+        sessionIndex=0;
         if(session.isEmpty()){
-            quizMode=false;newPage("⚠ لا توجد أسئلة","غيّر الفصل أو المصدر وعدد الأسئلة.");
-            action("الإعدادات",this::showQuizSetup);return;
+            newPage("⚠ لا توجد أسئلة","لا توجد أسئلة مطابقة لهذه الخيارات.");
+            action("تغيير الإعدادات",()->showSetup(graded));return;
         }
         nativeQuizQuestion();
     }
     private void nativeQuizQuestion(){
-        if(sessionIndex>=session.size()){showQuizResult();return;}
+        if(sessionIndex>=session.size()){showExamResults();return;}
         JSONObject q=questions.get(session.get(sessionIndex));
-        showNativeQuestion(q,()->{sessionIndex++;nativeQuizQuestion();});
-        card("السؤال "+(sessionIndex+1)+" من "+session.size()+
-             "\nالإجابات الصحيحة: "+quizCorrect+" • الخاطئة: "+quizIncorrect);
+        showNativeQuestion(q,()->{sessionIndex++;nativeQuizQuestion();},true);
+        card("🔢 السؤال "+(sessionIndex+1)+" / "+session.size()+" • "+(examMode?"محاكي":"تدريب"));
     }
-    private void showQuizResult(){
-        quizMode=false;
-        newPage("🏁 نتيجة الامتحان","انتهت جلسة التدريب");
-        int graded=quizCorrect+quizIncorrect;
-        int percent=graded==0?0:(int)Math.round(quizCorrect*100.0/graded);
-        card("✅ صحيح: "+quizCorrect+"\n❌ خطأ: "+quizIncorrect+
-            "\n⚠ غير محتسب: "+quizUnscored+
-            "\n🎯 الدقة: "+(graded==0?"—":percent+"%"));
-        action("❌ راجع أخطاءك",this::showNativeWrong);
-        action("🔁 امتحان جديد",this::showQuizSetup);
+    private void showExamResults(){
+        int scored=examCorrect+examWrong;
+        int percent=scored==0?0:(100*examCorrect/scored);
+        newPage("🏆 تقييم الجلسة",examMode?"النتيجة النهائية للمحاكي":"ملخص التدريب");
+        card("✅ صحيح: "+examCorrect+"\n❌ خطأ: "+examWrong+"\n⚪ غير محسوب: "+examUngraded+"\n📊 الدقة من الأسئلة المصححة: "+percent+"%");
+        if(scored==0)card("لم تتوفر إجابات موثوقة كافية لحساب درجة هذه الجلسة.");
+        else if(percent>=85)card("ممتاز! انتقل إلى أسئلة أصعب ومراجعة الأخطاء المتبقية.");
+        else if(percent>=65)card("جيد، ركّز على الأسئلة التي أخطأت بها، ثم أعد الاختبار.");
+        else card("راجع شرح الشابتر أولًا ثم تدرب على الأخطاء.");
+        action("🎯 راجع الأخطاء",this::showNativeWrong);
+        action("🔁 اختبار جديد",()->showSetup(examMode));
+        action("🏠 الرئيسية",this::showNativeHome);
+    }
+    private ArrayList<JSONObject> slidesOf(String chapter){
+        ArrayList<JSONObject> slides=new ArrayList<>();
+        LinkedHashSet<String> seen=new LinkedHashSet<>();
+        for(JSONObject q:questions){
+            if(!chapter.equals(q.optString("chapter","")))continue;
+            if(!hasKey(q)||q.optString("why","").trim().length()<10)continue;
+            if(!q.optString("kind","").equals("generated"))continue;
+            String fact=q.optString("factRef",id(q));
+            if(seen.add(fact))slides.add(q);
+        }
+        // Historical questions are included only as documented question cards, not invented lessons.
+        if(slides.isEmpty())for(JSONObject q:questions){
+            if(chapter.equals(q.optString("chapter",""))&&hasKey(q)&&!q.optString("why","").isEmpty()){
+                slides.add(q);if(slides.size()>=30)break;
+            }
+        }
+        return slides;
+    }
+    private void showChapters(){
+        newPage("🖼 سلايدات شرح الشابترات","شرائح مراجعة مُشتقة من تفسيرات الأسئلة، وليست ملفات محاضرات أصلية");
+        action("🏠 الرئيسية",this::showNativeHome);
+        JSONArray chapters=nativeBank==null?null:nativeBank.optJSONArray("chapters");
+        if(chapters==null)return;
+        for(int i=0;i<chapters.length();i++){
+            JSONObject c=chapters.optJSONObject(i);if(c==null)continue;
+            String chapter=c.optString("id","");
+            int total=0;for(JSONObject q:questions)if(chapter.equals(q.optString("chapter","")))total++;
+            card("📚 "+chapterLabel(chapter)+" • "+total+" سؤالًا\n🖼 "+slidesOf(chapter).size()+" شريحة مراجعة مبنية على الشروحات");
+            action("📖 شرح وسلايدات "+chapterLabel(chapter),()->showChapterSlide(chapter,0));
+            action("📎 ملفات PDF لهذا الشابتر",()->showChapterDocuments(chapter));
+            action("⚡ تدرب على هذا الشابتر",()->{
+                chosenChapter=chapter;chosenPool="all";showSetup(false);
+            });
+        }
+    }
+    private void showChapterSlide(String chapter,int number){
+        ArrayList<JSONObject> slides=slidesOf(chapter);
+        newPage("🖼 شرح "+chapterLabel(chapter),
+            slides.isEmpty()?"لا توجد شرائح مدقّقة":"الشريحة "+(number+1)+" من "+slides.size());
+        action("📚 جميع الشابترات",this::showChapters);
+        if(slides.isEmpty()){card("لم يتوفر شرح معتمد في البنك لهذا الشابتر.");return;}
+        JSONObject q=slides.get(Math.max(0,Math.min(number,slides.size()-1)));
+        card("🎯 الفكرة التشريحية\n"+questionText(q));
+        if(hasKey(q)){
+            int ans=q.optInt("answer",-1);JSONArray opts=options(q);
+            if(opts!=null&&ans>=0&&ans<opts.length())card("✅ المعلومة الأساسية\n"+opts.optString(ans));
+        }
+        card("💡 الشرح العلمي من بنك الأسئلة:\n"+explanation(q));
+        card("📚 المصدر: "+q.optString("source","")+"\n"+statusLabel(q));
+        action("📝 حل سؤال هذه الشريحة",()->showNativeQuestion(q,()->showChapterSlide(chapter,number),false));
+        action("🌐 العربية / English",()->{english=!english;showChapterSlide(chapter,number);});
+        if(number>0)action("▶ السابقة",()->showChapterSlide(chapter,number-1));
+        if(number+1<slides.size())action("التالية ◀",()->showChapterSlide(chapter,number+1));
+    }
+    private void showChapterDocuments(String chapter){
+        newPage("📎 ملفات وسلايدات الشابتر",chapterLabel(chapter));
+        card("يمكنك إضافة ملف PDF الأصلي من هاتفك؛ سيبقى متاحًا دون اتصال إذا ظل الملف على الجهاز. هذه الملفات غير مضمَّنة تلقائيًا، لأنها لم تكن ضمن بنك الأسئلة.");
+        pdfForChapter=chapter;
+        action("📥 ربط ملف شرح PDF من الهاتف",()->{
+            Intent intent=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType("application/pdf");intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            startActivityForResult(intent,PICK_PDF);
+        });
+        String saved=getSharedPreferences("nabd-chapter-pdfs",MODE_PRIVATE).getString("pdf-"+chapter,"");
+        if(!saved.isEmpty())action("📄 افتح السلايدات المحفوظة",()->{
+            try{
+                Intent it=new Intent(Intent.ACTION_VIEW);
+                it.setDataAndType(Uri.parse(saved),"application/pdf");
+                it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(it);
+            }catch(ActivityNotFoundException err){
+                card("لا يوجد تطبيق PDF لفتح الملف على هذا الهاتف.");
+            }
+        });
+        action("🖼 الشرائح التعليمية",()->showChapterSlide(chapter,0));
         action("🏠 الرئيسية",this::showNativeHome);
     }
     private void showNativeSearch(){
-        newPage("🤖 اسأل بوت التشريح","بحث محلي داخل جميع الأسئلة والإجابات والشروحات");
-        menu();
-        EditText term=edit("مثل: facial nerve / foramen ovale",false);
+        newPage("🤖 مساعد التشريح الخاص","بحث داخل بنك الأسئلة لا يختلق معلومات من خارج المصادر");
+        action("🏠 الرئيسية",this::showNativeHome);
+        EditText term=edit("مثال: facial nerve / foramen ovale",false);
         term.setInputType(InputType.TYPE_CLASS_TEXT);
-        action("🔎 ابحث",()->{
-            String q=term.getText().toString().trim();
-            if(q.isEmpty())return;
-            showNativeList(q,0);
+        action("🔎 ابحث وفسّر",()->{
+            String key=term.getText().toString().trim();
+            if(!key.isEmpty()){chosenChapter="all";chosenPool="all";showNativeList(key,0);}
         });
-        card("يعمل هذا البحث دون إنترنت اعتمادًا على بنك الأسئلة المحفوظ. لا يولّد إجابات طبية جديدة من خارج مصادر البنك.");
+        card("المساعد يعمل دون إنترنت بالبحث عن المصطلحات داخل الأسئلة والخيارات والشروح المحفوظة.");
     }
     private void showNativeWrong(){
-        newPage("🎯 مراجعة أخطائي","الأسئلة التي أجبت عنها بشكل غير صحيح");
-        menu();
+        newPage("🎯 مراجعة أخطائي","أسئلة بحاجة إلى مراجعة إضافية");
+        action("🏠 الرئيسية",this::showNativeHome);
         ArrayList<JSONObject> wrong=new ArrayList<>();
-        for(JSONObject q:questions)if(getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).getBoolean(id(q),false))wrong.add(q);
-        card("عدد الأسئلة التي تحتاج مراجعة: "+wrong.size());
-        for(int i=0;i<Math.min(wrong.size(),30);i++){
-            JSONObject q=wrong.get(i);
-            card(questionText(q));
-            action("راجع السؤال",()->showNativeQuestion(q,this::showNativeWrong));
+        for(JSONObject q:questions)
+            if(getSharedPreferences("nabd-anatomy-progress-v4",MODE_PRIVATE).getString(id(q),"").equals("wrong"))
+                wrong.add(q);
+        card("أخطاؤك المسجلة: "+wrong.size());
+        for(int i=0;i<Math.min(wrong.size(),45);i++){
+            JSONObject q=wrong.get(i);card(questionText(q));
+            action("📚 راجع الحل والشرح",()->showNativeQuestion(q,this::showNativeWrong,false));
         }
+        action("⚡ أعد التدريب على أخطائي",()->{
+            chosenChapter="all";chosenPool="all";startNativeQuiz(false,true);
+        });
     }
     private void showNativeSources(){
-        newPage("📎 المصادر العلمية","المراجع المسجلة في بنك التشريح الخاص");
-        menu();
+        newPage("📎 المصادر العلمية","المصادر المسجَّلة مع بنك أسئلة التشريح");
+        action("🏠 الرئيسية",this::showNativeHome);
         if(nativeBank==null)return;
         JSONArray refs=nativeBank.optJSONArray("references");
         if(refs==null)return;
         for(int i=0;i<refs.length();i++){
             JSONObject ref=refs.optJSONObject(i);
-            if(ref!=null)card("📚 "+ref.optString("name","Reference"));
+            if(ref!=null)card("📚 "+ref.optString("name","Reference")+"\n"+ref.optString("note",""));
         }
     }
-
+    private void persistCurrentBank(){
+        if(activeBankKey==null||activeBankSalt==null||nativeBank==null)return;
+        try{
+            SecureRandom rng=new SecureRandom();byte[] nonce=new byte[12];rng.nextBytes(nonce);
+            Cipher cipher=Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE,activeBankKey,new GCMParameterSpec(128,nonce));
+            cipher.updateAAD(activeDirectorEmail.getBytes(StandardCharsets.UTF_8));
+            byte[] encrypted=cipher.doFinal(nativeBank.toString().getBytes(StandardCharsets.UTF_8));
+            File tmp=new File(getFilesDir(),BANK_FILE+".tmp");
+            try(FileOutputStream stream=new FileOutputStream(tmp)){
+                stream.write(new byte[]{'N','A','B','2'});stream.write(activeBankSalt);stream.write(nonce);stream.write(encrypted);
+                stream.getFD().sync();
+            }
+            File dest=new File(getFilesDir(),BANK_FILE);
+            if(!tmp.renameTo(dest)){if(dest.exists()&&!dest.delete())throw new IOException("Save");if(!tmp.renameTo(dest))throw new IOException("Rename");}
+        }catch(Exception e){android.util.Log.w("NabdAnatomy","Could not persist translated bank");}
+    }
     private class PrivateDirectorBridge {
         @JavascriptInterface public void signIn(String email,String password) {
             new Thread(() -> {
@@ -744,6 +761,7 @@ public class MainActivity extends Activity {
         if(jwt.isEmpty()||id.isEmpty())throw new SecurityException("تعذر التحقق من جلسة المدير.");
         JSONArray owners=new JSONArray(request("GET","/rest/v1/nabd_exam_owner?select=user_id&user_id=eq."+id,null,jwt));
         if(owners.length()!=1)throw new SecurityException("هذا الحساب غير مصرح له بدخول بوت التشريح الخاص بالمدير.");
+        activeJwt=jwt;
 
         status("تم التحقق من المدير. جارٍ تنزيل الأسئلة الخاصة...");
         JSONArray newer=new JSONArray(),original=new JSONArray(),archived=new JSONArray();
@@ -813,6 +831,7 @@ public class MainActivity extends Activity {
             if(dst.exists()&&!dst.delete())throw new IOException("تعذر تحديث النسخة المحلية.");
             if(!tmp.renameTo(dst))throw new IOException("تعذر حفظ نسخة الأسئلة.");
         }
+        activeDirectorEmail=email;activeBankSalt=salt;activeBankKey=key(password.toCharArray(),salt);
         getSharedPreferences("offline_auth_v2",MODE_PRIVATE).edit().putString("director_email",email).apply();
     }
 
@@ -833,11 +852,18 @@ public class MainActivity extends Activity {
         cipher.init(Cipher.DECRYPT_MODE,key(password.toCharArray(),salt),new GCMParameterSpec(128,nonce));
         cipher.updateAAD(email.getBytes(StandardCharsets.UTF_8));
         byte[] clear=cipher.doFinal(all,32,all.length-32);
+        activeDirectorEmail=email;activeBankSalt=salt;activeBankKey=key(password.toCharArray(),salt);activeJwt=null;
         return new String(clear,StandardCharsets.UTF_8);
     }
 
     @Override protected void onActivityResult(int request,int result,Intent data){
         super.onActivityResult(request,result,data);
+        if(request==PICK_PDF&&result==RESULT_OK&&data!=null&&data.getData()!=null){
+            Uri uri=data.getData();
+            try{getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception ignored){}
+            getSharedPreferences("nabd-chapter-pdfs",MODE_PRIVATE).edit().putString("pdf-"+pdfForChapter,uri.toString()).apply();
+            showChapterDocuments(pdfForChapter);
+        }
         if(request==PICK_FILE&&chooser!=null){
             chooser.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));
             chooser=null;
