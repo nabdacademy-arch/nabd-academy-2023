@@ -34,7 +34,8 @@ jobs:
           const m=s.match(/<script>([\s\S]*?)<\/script>/);
           if(!m)throw Error('Patched script missing');
           new (require('vm').Script)(m[1]);
-          if(s.includes('cdn.jsdelivr.net')||s.includes('sb.auth'))throw Error('Online dependency present');
+          if(s.includes('cdn.jsdelivr.net')||s.includes('sb.auth'))throw Error('Online browser dependency present');
+          if(!s.includes('showLogin()')||!s.includes('NABDApp.signIn'))throw Error('Director login form is missing');
           console.log('Offline app JavaScript verified');
           NODE
       - name: Build APK
