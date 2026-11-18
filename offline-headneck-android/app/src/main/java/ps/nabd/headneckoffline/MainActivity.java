@@ -283,7 +283,8 @@ public class MainActivity extends Activity {
         chosenChapter=chapter;
         newPage("📚 "+chapterTitle(chapter),"Anatomy III • "+chapterCount(chapter)+" سؤالًا");
         menu();
-        action("🖥️ سلايدات شرح المفاهيم",()->showChapterLesson(chapter,0));
+        action("📘 ملف شرح الشابتر كاملًا",()->showChapterStudyGuide(chapter,0));
+        action("🖥️ بطاقات السلايدات التعليمية",()->showChapterLesson(chapter,0));
         action("📄 سلايدات PDF المرتبطة بالفصل",()->showPdfForChapter(chapter));
         action("📖 جميع أسئلة هذا الشابتر",()->showNativeList(null,0));
         action("📝 اختبرني في هذا الشابتر",this::showQuizSetup);
@@ -301,30 +302,61 @@ public class MainActivity extends Activity {
         }
         return result;
     }
+
+    private void showChapterStudyGuide(String chapter,int page){
+        ArrayList<JSONObject> concepts=concepts(chapter);
+        int start=Math.min(page*12,concepts.size()),end=Math.min(start+12,concepts.size());
+        newPage("📘 ملف شرح: "+chapterTitle(chapter),"شرح الفصل من المفاهيم العلمية الموثقة في بنك الأسئلة • صفحة "+(page+1));
+        menu();
+        if(concepts.isEmpty()){
+            card("لا يحتوي هذا الشابتر على مفاهيم جديدة ذات شروح مستقلة في البنك المحفوظ. لا يمكن عرض ملف محاضرة غير متوفر.");
+            action("➕ إضافة PDF للفصل",()->showPdfForChapter(chapter));return;
+        }
+        card("يتضمن هذا الدليل "+concepts.size()+" مفهومًا، مستخلصًا من الإجابات وشروحها. لا تُعرض الأسئلة بدلًا من المحاضرات.");
+        for(int i=start;i<end;i++){
+            JSONObject q=concepts.get(i);
+            int answer=q.optInt("answer",-1);
+            JSONArray o=options(q);
+            if(o==null||answer<0||answer>=o.length())continue;
+            String fact=o.optString(answer);
+            String expl=explanation(q);
+            card("📌 "+(i+1)+". "+fact+
+                (expl.isEmpty()?"":"\n\n📖 "+expl));
+        }
+        action("🌐 العربية / English",()->{english=!english;showChapterStudyGuide(chapter,page);});
+        if(page>0)action("◀ السابق",()->showChapterStudyGuide(chapter,page-1));
+        if(end<concepts.size())action("التالي ▶",()->showChapterStudyGuide(chapter,page+1));
+        action("🖥️ بطاقات الشرح واحدة واحدة",()->showChapterLesson(chapter,0));
+        action("🎯 اختبر معلوماتك بالفصل",()->{chosenChapter=chapter;showQuizSetup();});
+    }
     private void showChapterLesson(String chapter,int pos){
         ArrayList<JSONObject> slides=concepts(chapter);
         if(slides.isEmpty()){
-            newPage("🖥️ "+chapterTitle(chapter),"سلايدات شرح المفاهيم");
-            menu();card("لم تتوفر لهذا القسم بطاقات شرح بمفاهيم موثقة. يمكنك إضافة ملف سلايدات PDF خاص بالشابتر.");
+            newPage("🖥️ "+chapterTitle(chapter),"بطاقات شرح المفاهيم");
+            menu();card("لا توجد بطاقات شرح موثقة لهذا القسم داخل بنك الأسئلة الحالي. يمكنك إضافة سلايدات PDF.");
             action("📄 إضافة سلايدات PDF",()->showPdfForChapter(chapter));return;
         }
         int index=Math.min(Math.max(pos,0),slides.size()-1);
         JSONObject q=slides.get(index);
-        newPage("🖥️ "+chapterTitle(chapter),"بطاقة شرح "+(index+1)+" من "+slides.size()+" • مستخلصة من بنك الأسئلة، وليست صور المحاضرة الأصلية");
+        newPage("🖥️ "+chapterTitle(chapter),"شرح مفهوم "+(index+1)+" من "+slides.size()+" • بناءً على نقاط علمية من البنك وليست المحاضرة الأصلية");
         menu();
-        String subject=questionText(q);
         int answer=q.optInt("answer",-1);
         JSONArray o=options(q);
-        card("🧩 الموضوع / Concept\n"+subject);
-        if(o!=null&&answer>=0&&answer<o.length())card("✅ النقطة الأساسية\n"+o.optString(answer));
-        String explanation=explanation(q);
-        if(!explanation.isEmpty())card("📚 الشرح والتفسير\n"+explanation);
-        if(!english&&q.optString("whyAr","").isEmpty())card("تنبيه: شرح هذا المفهوم بالعربية غير متاح في المصدر. النص الإنجليزي هو الأصل.");
+        if(o!=null&&answer>=0&&answer<o.length()){
+            card("📌 النقطة العلمية الأساسية\n"+o.optString(answer));
+        }
+        String exp=explanation(q);
+        if(!exp.trim().isEmpty())card("📖 الشرح\n"+exp);
+        else card("لا يوجد شرح إضافي مدقق لهذه النقطة.");
+        if(!english&&(q.optString("whyAr","").isEmpty()||q.optJSONArray("optsAr")==null))
+            card("المصدر لا يحتوي شرحًا عربيًا كاملًا لهذا المفهوم، لذلك يظهر نصه الإنجليزي الأصلي.");
+        card("📚 المرجع: "+q.optString("source","مستخلص من بنك التشريح"));
         action("🌐 العربية / English",()->{english=!english;showChapterLesson(chapter,index);});
-        action("📝 حل سؤال مرتبط بهذا المفهوم",()->showNativeQuestion(q,()->showChapterLesson(chapter,index)));
+        action("📝 سؤال تطبيقي عن هذه النقطة",()->showNativeQuestion(q,()->showChapterLesson(chapter,index)));
         if(index>0)action("◀ السابق",()->showChapterLesson(chapter,index-1));
         if(index<slides.size()-1)action("التالي ▶",()->showChapterLesson(chapter,index+1));
-        action("📄 عرض سلايدات PDF",()->showPdfForChapter(chapter));
+        action("📘 ملف شرح الشابتر كاملًا",()->showChapterStudyGuide(chapter,0));
+        action("📄 سلايدات PDF الخاصة",()->showPdfForChapter(chapter));
     }
     private void showNativeSlideLibrary(){
         newPage("🖥️ سلايدات التشريح","ملفات PDF محفوظة على جهازك + بطاقات شرح الفصول");
@@ -339,7 +371,8 @@ public class MainActivity extends Activity {
         slideChapter=chapter;
         newPage("📄 "+chapterTitle(chapter),"السلايدات الأصلية المضافة من هاتفك");
         menu();
-        action("🖥️ شرح الشابتر من بنك الأسئلة",()->showChapterLesson(chapter,0));
+        action("📘 ملف شرح الشابتر",()->showChapterStudyGuide(chapter,0));
+        action("🖥️ بطاقات الشرح",()->showChapterLesson(chapter,0));
         String saved=getSharedPreferences("nabd-anatomy-slides",MODE_PRIVATE).getString(slideKey(chapter),"");
         if(saved.isEmpty())card("لم تضف ملف سلايدات PDF لهذا الشابتر بعد.");
         else action("📖 فتح ملف PDF المحفوظ",()->openPdf(saved,0));
