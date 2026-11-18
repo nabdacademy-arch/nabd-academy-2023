@@ -243,8 +243,29 @@ public class MainActivity extends Activity {
     private static final String[] CHAPTER_AR={"الجمجمة","فروة الرأس والوجه","الرقبة","الحجاج والعين","الأذن والفك السفلي","جوف الفم والغدد اللعابية","اللسان والبلعوم","الحنجرة والرغامى","الأنف والتجويف الأنفي","أسئلة متنوعة"};
     private static final String[] CHAPTER_EN={"Skull","Scalp & Face","Neck","Orbit & Eye","Ear & Mandible","Oral Cavity & Salivary Glands","Tongue & Pharynx","Larynx & Trachea","Nose","Mixed questions"};
     private String chapterTitle(String id){
-        for(int i=0;i<CHAPTER_IDS.length;i++)if(CHAPTER_IDS[i].equals(id))return english?CHAPTER_EN[i]:CHAPTER_AR[i];
+        for(int i=0;i<CHAPTER_IDS.length;i++)
+            if(CHAPTER_IDS[i].equals(id))return CHAPTER_AR[i]+"  |  "+CHAPTER_EN[i];
         return id;
+    }
+    private String safeText(String input,String missing){
+        return input==null||input.trim().isEmpty()?missing:input;
+    }
+    private String bilingualExplanation(JSONObject q){
+        String ar=q.optString("whyAr","").trim();
+        String en=q.optString("why","").trim();
+        return "🇵🇸 الشرح بالعربية / Arabic explanation\n"+
+            safeText(ar,"لم يتوفر شرح عربي محفوظ لهذا المفهوم في بنك المصدر.")+
+            "\n\n🇬🇧 Explanation in English\n"+
+            safeText(en,"No source-validated English explanation is stored for this concept.");
+    }
+    private String bilingualAnswer(JSONObject q,int index){
+        JSONArray en=q.optJSONArray("opts"),ar=q.optJSONArray("optsAr");
+        String englishAnswer=en!=null&&index>=0&&index<en.length()?en.optString(index,""):"";
+        String arabicAnswer=ar!=null&&en!=null&&ar.length()==en.length()&&index>=0&&index<ar.length()?ar.optString(index,""):"";
+        return "🇵🇸 المعلومة الأساسية / الإجابة\n"+
+            safeText(arabicAnswer,"لا تتوفر ترجمة عربية محفوظة لهذه الإجابة.")+
+            "\n\n🇬🇧 Key point / Answer\n"+
+            safeText(englishAnswer,"Answer text is not present in the source.");
     }
     private int chapterCount(String chapter) {
         int n=0;for(JSONObject q:questions)if(chapter.equals(q.optString("chapter","")))n++;
@@ -272,7 +293,7 @@ public class MainActivity extends Activity {
         });
     }
     private void showNativeChapters(){
-        newPage("📚 فصول التشريح","اختر فصلًا لشرح نقاطه العلمية أو التدرب على أسئلته");
+        newPage("📚 فصول التشريح","كل شابتر وشرح علمي باللغتين العربية والإنجليزية / Every chapter in Arabic and English");
         menu();
         for(String chapter:CHAPTER_IDS){
             int n=chapterCount(chapter);
@@ -306,7 +327,7 @@ public class MainActivity extends Activity {
     private void showChapterStudyGuide(String chapter,int page){
         ArrayList<JSONObject> concepts=concepts(chapter);
         int start=Math.min(page*12,concepts.size()),end=Math.min(start+12,concepts.size());
-        newPage("📘 ملف شرح: "+chapterTitle(chapter),"شرح الفصل من المفاهيم العلمية الموثقة في بنك الأسئلة • صفحة "+(page+1));
+        newPage("📘 ملف شرح: "+chapterTitle(chapter),"شرح عربي + English explanations من بنك الأسئلة • صفحة "+(page+1));
         menu();
         if(concepts.isEmpty()){
             card("لا يحتوي هذا الشابتر على مفاهيم جديدة ذات شروح مستقلة في البنك المحفوظ. لا يمكن عرض ملف محاضرة غير متوفر.");
@@ -316,12 +337,10 @@ public class MainActivity extends Activity {
         for(int i=start;i<end;i++){
             JSONObject q=concepts.get(i);
             int answer=q.optInt("answer",-1);
-            JSONArray o=options(q);
-            if(o==null||answer<0||answer>=o.length())continue;
-            String fact=o.optString(answer);
-            String expl=explanation(q);
-            card("📌 "+(i+1)+". "+fact+
-                (expl.isEmpty()?"":"\n\n📖 "+expl));
+            JSONArray opts=q.optJSONArray("opts");
+            if(opts==null||answer<0||answer>=opts.length())continue;
+            card("📌 "+(i+1)+"  |  "+chapterTitle(chapter)+"\n\n"+
+                bilingualAnswer(q,answer)+"\n\n"+bilingualExplanation(q));
         }
         action("🌐 العربية / English",()->{english=!english;showChapterStudyGuide(chapter,page);});
         if(page>0)action("◀ السابق",()->showChapterStudyGuide(chapter,page-1));
@@ -341,15 +360,11 @@ public class MainActivity extends Activity {
         newPage("🖥️ "+chapterTitle(chapter),"شرح مفهوم "+(index+1)+" من "+slides.size()+" • بناءً على نقاط علمية من البنك وليست المحاضرة الأصلية");
         menu();
         int answer=q.optInt("answer",-1);
-        JSONArray o=options(q);
-        if(o!=null&&answer>=0&&answer<o.length()){
-            card("📌 النقطة العلمية الأساسية\n"+o.optString(answer));
-        }
-        String exp=explanation(q);
-        if(!exp.trim().isEmpty())card("📖 الشرح\n"+exp);
-        else card("لا يوجد شرح إضافي مدقق لهذه النقطة.");
-        if(!english&&(q.optString("whyAr","").isEmpty()||q.optJSONArray("optsAr")==null))
-            card("المصدر لا يحتوي شرحًا عربيًا كاملًا لهذا المفهوم، لذلك يظهر نصه الإنجليزي الأصلي.");
+        JSONArray opts=q.optJSONArray("opts");
+        if(opts!=null&&answer>=0&&answer<opts.length())
+            card("📌 "+chapterTitle(chapter)+"\n\n"+bilingualAnswer(q,answer));
+        else card("⚠ لا يوجد مفتاح إجابة موثوق لهذا المفهوم / No verified answer key.");
+        card("💡 "+bilingualExplanation(q));
         card("📚 المرجع: "+q.optString("source","مستخلص من بنك التشريح"));
         action("🌐 العربية / English",()->{english=!english;showChapterLesson(chapter,index);});
         action("📝 سؤال تطبيقي عن هذه النقطة",()->showNativeQuestion(q,()->showChapterLesson(chapter,index)));
@@ -482,7 +497,8 @@ public class MainActivity extends Activity {
     private void showNativeQuestion(JSONObject q,Runnable next){
         newPage("📚 سؤال تشريح",chapterTitle(q.optString("chapter",""))+
                 " • "+q.optString("sourceLevel",q.optString("kind","")));
-        card(questionText(q));
+        card("🇵🇸 السؤال بالعربية\n"+safeText(q.optString("qAr",""),"الترجمة العربية غير محفوظة؛ يظهر الأصل الإنجليزي أدناه.")+
+             "\n\n🇬🇧 Question in English\n"+safeText(q.optString("q",""),"No question text recorded."));
         JSONArray choices=options(q);
         if(choices==null||choices.length()==0){card("⚠ لا تتوفر خيارات هذا السؤال.");action("رجوع",next);return;}
         boolean bilingual=q.optString("qAr","").length()>0&&q.optJSONArray("optsAr")!=null;
@@ -501,15 +517,12 @@ public class MainActivity extends Activity {
                 boolean right=graded&&selected==correct;
                 recordAnswer(q,right,graded);
                 if(graded){
-                    String correctText=choices.optString(correct);
-                    card((right?"✅ إجابة صحيحة":"❌ إجابة خاطئة")+
-                         "\nالإجابة الصحيحة: "+String.valueOf((char)('A'+correct))+" • "+correctText);
+                    card((right?"✅ إجابة صحيحة / Correct":"❌ إجابة خاطئة / Incorrect")+
+                         "\n("+String.valueOf((char)('A'+correct))+")\n"+bilingualAnswer(q,correct));
                 }else{
                     card("⚠ هذه المسألة لا تمتلك مفتاح إجابة موثوقًا بعد. لن نضع علامة صح عشوائية ولن تحتسب ضمن نتيجة الامتحان.");
                 }
-                String expl=explanation(q);
-                if(!expl.trim().isEmpty())card("💡 شرح الإجابة\n"+expl);
-                else card("📚 لا يتوفر شرح مدقق مرتبط بالسؤال في بنك المصدر.");
+                card("💡 "+bilingualExplanation(q));
                 card("📎 المصدر: "+q.optString("source","غير محدد")+
                     "\nدرجة توثيق المفتاح: "+q.optString("answerVerified","غير مراجع"));
                 scrollToAnswer();
@@ -518,10 +531,9 @@ public class MainActivity extends Activity {
         action("👁 إظهار الحل والشرح دون احتساب",()->{
             if(answered[0])return;answered[0]=true;
             if(graded){
-                card("✅ الإجابة: "+String.valueOf((char)('A'+correct))+" • "+choices.optString(correct));
+                card("✅ الإجابة / Answer: "+String.valueOf((char)('A'+correct))+"\n"+bilingualAnswer(q,correct));
             }else card("⚠ لا يتوفر مفتاح إجابة موثوق.");
-            if(!explanation(q).trim().isEmpty())card("💡 "+explanation(q));
-            else card("لا يوجد شرح مدقق لهذا السؤال.");
+            card("💡 "+bilingualExplanation(q));
             scrollToAnswer();
         });
         action("🌐 تبديل اللغة • العربية / English",()->{english=!english;showNativeQuestion(q,next);});
