@@ -253,6 +253,20 @@ public class MainActivity extends Activity {
           &&!"not_verified".equals(q.optString("answerVerified",""));
     }
     private String chapterLabel(String chapter){
+        if(!english){
+            switch(chapter){
+                case "Skull":return "الجمجمة";
+                case "ScalpFace":return "فروة الرأس والوجه";
+                case "Neck":return "الرقبة";
+                case "Orbit":return "الحجاج والعين";
+                case "EarMandible":return "الأذن والفك السفلي";
+                case "Oral":return "جوف الفم والغدد اللعابية";
+                case "TonguePharynx":return "اللسان والبلعوم";
+                case "Larynx":return "الحنجرة والرغامى";
+                case "Nose":return "الأنف والجيوب الأنفية";
+                case "Mixed":return "امتحانات تاريخية متنوعة";
+            }
+        }
         if(nativeBank!=null){
             JSONArray c=nativeBank.optJSONArray("chapters");
             if(c!=null)for(int i=0;i<c.length();i++){
