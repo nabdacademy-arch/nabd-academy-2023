@@ -1,6 +1,21 @@
 package ps.nabd.headneckoffline;
 
 import android.app.Activity;
+import android.view.View;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.text.InputType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.LinkedHashMap;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -46,12 +61,26 @@ public class MainActivity extends Activity {
     private static final String BANK_FILE="nabd_headneck_private_bank_v2.enc";
     private volatile String availableBank=null;
     private WebView browser;
+    private LinearLayout rootView;
+    private EditText emailInput, passwordInput;
+    private TextView loginMessage;
+    private Button loginButton;
+    private boolean english=false;
+    private JSONObject nativeBank;
+    private final ArrayList<JSONObject> questions=new ArrayList<>();
+    private final ArrayList<Integer> session=new ArrayList<>();
+    private int sessionIndex=0,bankOffset=0;
+
     private ValueCallback<android.net.Uri[]> chooser;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         getWindow().setStatusBarColor(Color.rgb(6,22,37));
         getWindow().setNavigationBarColor(Color.rgb(6,22,37));
+        showNativeLogin();
+    }
+
+    private void launchOriginalWebView(){
         WebView.setWebContentsDebuggingEnabled(false);
         browser=new WebView(this);
         browser.setBackgroundColor(Color.rgb(6,22,37));
@@ -93,6 +122,215 @@ public class MainActivity extends Activity {
             }
         });
         browser.loadUrl("file:///android_asset/index.html");
+    }
+
+
+    private int px(int dp){return (int)(dp*getResources().getDisplayMetrics().density+0.5f);}
+    private int bg=Color.rgb(6,22,37),panel=Color.rgb(10,38,58),ink=Color.rgb(237,250,255),mint=Color.rgb(34,217,202);
+    private GradientDrawable fill(int color,int border){
+        GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(px(14));
+        if(border!=0)d.setStroke(px(1),border);return d;
+    }
+    private LinearLayout stack(){
+        LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);l.setPadding(px(14),px(12),px(14),px(18));return l;
+    }
+    private void newPage(String title,String subtitle){
+        ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.setBackgroundColor(bg);
+        rootView=stack();scroll.addView(rootView);
+        setContentView(scroll);
+        TextView name=title(title,22);name.setGravity(Gravity.CENTER);rootView.addView(name);
+        TextView sub=text(subtitle,14);sub.setGravity(Gravity.CENTER);sub.setTextColor(Color.rgb(168,202,214));rootView.addView(sub);
+        space(rootView,12);
+    }
+    private TextView title(String s,int size){
+        TextView t=text(s,size);t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);return t;
+    }
+    private TextView text(String s,int size){
+        TextView t=new TextView(this);t.setText(s);t.setTextColor(ink);t.setTextSize(size);t.setPadding(px(5),px(7),px(5),px(7));
+        t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
+        return t;
+    }
+    private void space(LinearLayout parent,int dp){
+        View v=new View(this);parent.addView(v,new LinearLayout.LayoutParams(1,px(dp)));
+    }
+    private void card(String text){
+        TextView v=text(text,15);v.setPadding(px(14),px(14),px(14),px(14));
+        v.setBackground(fill(panel,Color.rgb(37,80,100)));
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(0,px(5),0,px(6));rootView.addView(v,p);
+    }
+    private Button action(String caption,Runnable run){
+        Button b=new Button(this);b.setText(caption);b.setTextColor(ink);b.setTextSize(14);b.setAllCaps(false);
+        b.setBackground(fill(Color.rgb(23,64,85),Color.rgb(44,102,117)));
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,px(52));p.setMargins(0,px(5),0,px(5));
+        rootView.addView(b,p);b.setOnClickListener(v->run.run());return b;
+    }
+    private EditText edit(String hint,boolean password){
+        EditText t=new EditText(this);t.setTextColor(ink);t.setHintTextColor(Color.rgb(155,185,200));
+        t.setHint(hint);t.setSingleLine(true);t.setTextSize(16);t.setPadding(px(14),0,px(14),0);
+        t.setBackground(fill(Color.rgb(7,28,42),Color.rgb(53,98,116)));
+        t.setInputType(password?(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD):(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS));
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,px(54));p.setMargins(0,px(8),0,px(8));rootView.addView(t,p);return t;
+    }
+    private void showNativeLogin(){
+        newPage("🧠 NABD • Head & Neck Lab","🔐 مساحة المدير الخاصة • Anatomy III");
+        space(rootView,18);
+        card("تسجيل الدخول\nأدخل نفس البريد الإلكتروني وكلمة المرور الخاصين بصفحة مدير الأكاديمية. يحتاج أول دخول إلى اتصال بالإنترنت، ثم يُحفظ بنك الأسئلة مشفرًا لاستخدامه دون نت.");
+        emailInput=edit("البريد الإلكتروني للمدير",false);
+        passwordInput=edit("كلمة مرور المدير",true);
+        loginButton=action("🔐 تسجيل الدخول • Sign in",()->{
+            String email=emailInput.getText().toString().trim(),pass=passwordInput.getText().toString();
+            if(email.isEmpty()||pass.isEmpty()){loginMessage.setText("أدخل البريد الإلكتروني وكلمة المرور.");return;}
+            loginButton.setEnabled(false);loginMessage.setText("جارٍ التحقق من بيانات المدير...");
+            passwordInput.setText("");
+            new Thread(()->nativeLogin(email,pass),"nabd-native-login").start();
+        });
+        loginMessage=text("يلزم الإنترنت عند تسجيل الدخول لأول مرة.",14);rootView.addView(loginMessage);
+    }
+    private void nativeLogin(String email,String password){
+        String user=email.trim().toLowerCase(Locale.ROOT);
+        try{
+            runOnUiThread(()->loginMessage.setText("جارٍ التحقق من صلاحيات المدير وتنزيل بنك الأسئلة..."));
+            String data=fetchOnlineBank(user,password);
+            if(questionCount(data)<1)throw new IOException("البنك فارغ.");
+            encryptToDevice(user,password,data);
+            openNativeBank(data);
+        }catch(SecurityException wrong){
+            runOnUiThread(()->{loginButton.setEnabled(true);loginMessage.setText("⚠ "+wrong.getMessage());});
+        }catch(Exception err){
+            runOnUiThread(()->loginMessage.setText("جارٍ البحث عن نسخة مشفّرة على الجهاز..."));
+            try{openNativeBank(decryptFromDevice(user,password));}
+            catch(Exception noLocal){
+                runOnUiThread(()->{
+                    loginButton.setEnabled(true);
+                    loginMessage.setText("⚠ تعذّر الاتصال أو فتح النسخة المحلية. استخدم الإنترنت أول مرة، أو تأكد من استخدام نفس بيانات المدير السابقة.");
+                });
+            }
+        }
+    }
+    private void openNativeBank(String raw)throws Exception{
+        final JSONObject data=new JSONObject(raw);
+        final JSONArray fresh=data.getJSONArray("new"),old=data.getJSONArray("original"),history=data.getJSONArray("archived");
+        final ArrayList<JSONObject> parsed=new ArrayList<>();
+        for(JSONArray a:new JSONArray[]{fresh,old,history})for(int i=0;i<a.length();i++)parsed.add(a.getJSONObject(i));
+        if(parsed.isEmpty())throw new IOException("لم تُسترجع الأسئلة.");
+        runOnUiThread(()->{
+            nativeBank=data;questions.clear();questions.addAll(parsed);
+            showNativeHome();
+        });
+    }
+    private void menu(){
+        action(english?"🏠 Home":"🏠 الرئيسية",this::showNativeHome);
+        action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
+    }
+    private void showNativeHome(){
+        newPage("🧠 NABD • Head & Neck","نسخة المدير الخاصة • تعمل دون إنترنت بعد أول دخول");
+        card("✅ تم فتح بنك التشريح الخاص\n📚 "+questions.size()+" سؤالًا • عربي / English\nحفظ النتائج والمراجعة يتم محليًا على الهاتف.");
+        action("📖 جميع الأسئلة",()->showNativeList(null,0));
+        action("📚 محاكي الامتحانات",this::startNativeQuiz);
+        action("🤖 اسأل بوت التشريح",this::showNativeSearch);
+        action("🎯 مراجعة أخطائي",this::showNativeWrong);
+        action("📎 المصادر العلمية",this::showNativeSources);
+        action(english?"🌐 العربية":"🌐 English",()->{english=!english;showNativeHome();});
+        action("🔒 تسجيل الخروج",()->{
+            nativeBank=null;questions.clear();session.clear();availableBank=null;showNativeLogin();
+        });
+    }
+    private String questionText(JSONObject q){String s=q.optString(english?"q":"qAr","");return s.isEmpty()?q.optString("q",""):s;}
+    private JSONArray options(JSONObject q){JSONArray opts=q.optJSONArray(english?"opts":"optsAr");if(opts==null||opts.length()==0)opts=q.optJSONArray("opts");return opts;}
+    private String explanation(JSONObject q){String s=q.optString(english?"why":"whyAr","");return s.isEmpty()?q.optString("why",""):s;}
+    private String id(JSONObject q){return q.optString("id",String.valueOf(q.hashCode()));}
+    private void showNativeList(String search,int offset){
+        bankOffset=offset;
+        ArrayList<JSONObject> subset=new ArrayList<>();
+        for(JSONObject q:questions){
+            if(search==null||search.isEmpty()||(q.optString("q","")+" "+q.optString("qAr","")+" "+q.optString("chapter","")).toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT)))subset.add(q);
+        }
+        int start=Math.min(offset,subset.size()),end=Math.min(start+15,subset.size());
+        newPage("📖 بنك أسئلة التشريح","عرض "+(subset.isEmpty()?0:start+1)+"–"+end+" من "+subset.size());
+        menu();
+        for(int i=start;i<end;i++){
+            final JSONObject q=subset.get(i);
+            card((i+1)+". "+questionText(q));
+            action("عرض السؤال والخيارات",()->showNativeQuestion(q,()->showNativeList(search,offset)));
+        }
+        if(end<subset.size())action("التالي ◀",()->showNativeList(search,offset+15));
+        if(start>0)action("▶ السابق",()->showNativeList(search,Math.max(0,offset-15)));
+    }
+    private void showNativeQuestion(JSONObject q,Runnable next){
+        newPage("📚 سؤال تشريح","Head & Neck • "+q.optString("chapter",""));
+        card(questionText(q));
+        JSONArray choices=options(q);
+        if(choices==null){card("لا توجد خيارات محفوظة لهذا السؤال.");action("العودة",next);return;}
+        int correct=q.optInt("answer",-1);
+        final boolean[] answered={false};
+        for(int i=0;i<choices.length();i++){
+            int selected=i;
+            String label=String.valueOf((char)('A'+i))+". "+choices.optString(i);
+            action(label,()->{
+                if(answered[0])return;
+                answered[0]=true;
+                if(correct<0||correct>=choices.length()){
+                    card("⚠ مفتاح إجابة غير مدقّق. لن يُحتسب السؤال في النتيجة.");
+                }else{
+                    boolean ok=selected==correct;
+                    getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).edit()
+                        .putBoolean(id(q),!ok).apply();
+                    card((ok?"✅ إجابة صحيحة":"❌ إجابة غير صحيحة")+"\n"+
+                        "الإجابة: "+String.valueOf((char)('A'+correct))+". "+choices.optString(correct));
+                }
+                String why=explanation(q);if(!why.isEmpty())card("💡 "+why);
+            });
+        }
+        action("🌐 العربية / English",()->{english=!english;showNativeQuestion(q,next);});
+        action("التالي / رجوع",next);
+    }
+    private void startNativeQuiz(){
+        session.clear();ArrayList<Integer> indexes=new ArrayList<>();
+        for(int i=0;i<questions.size();i++)indexes.add(i);
+        Collections.shuffle(indexes);
+        for(int i=0;i<Math.min(20,indexes.size());i++)session.add(indexes.get(i));
+        sessionIndex=0;nativeQuizQuestion();
+    }
+    private void nativeQuizQuestion(){
+        if(sessionIndex>=session.size()){showNativeHome();return;}
+        JSONObject q=questions.get(session.get(sessionIndex));
+        showNativeQuestion(q,()->{sessionIndex++;nativeQuizQuestion();});
+        card("السؤال "+(sessionIndex+1)+" / "+session.size());
+    }
+    private void showNativeSearch(){
+        newPage("🤖 اسأل بوت التشريح","بحث محلي داخل جميع الأسئلة والإجابات والشروحات");
+        menu();
+        EditText term=edit("مثل: facial nerve / foramen ovale",false);
+        term.setInputType(InputType.TYPE_CLASS_TEXT);
+        action("🔎 ابحث",()->{
+            String q=term.getText().toString().trim();
+            if(q.isEmpty())return;
+            showNativeList(q,0);
+        });
+        card("يعمل هذا البحث دون إنترنت اعتمادًا على بنك الأسئلة المحفوظ. لا يولّد إجابات طبية جديدة من خارج مصادر البنك.");
+    }
+    private void showNativeWrong(){
+        newPage("🎯 مراجعة أخطائي","الأسئلة التي أجبت عنها بشكل غير صحيح");
+        menu();
+        ArrayList<JSONObject> wrong=new ArrayList<>();
+        for(JSONObject q:questions)if(getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).getBoolean(id(q),false))wrong.add(q);
+        card("عدد الأسئلة التي تحتاج مراجعة: "+wrong.size());
+        for(int i=0;i<Math.min(wrong.size(),30);i++){
+            JSONObject q=wrong.get(i);
+            card(questionText(q));
+            action("راجع السؤال",()->showNativeQuestion(q,this::showNativeWrong));
+        }
+    }
+    private void showNativeSources(){
+        newPage("📎 المصادر العلمية","المراجع المسجلة في بنك التشريح الخاص");
+        menu();
+        if(nativeBank==null)return;
+        JSONArray refs=nativeBank.optJSONArray("references");
+        if(refs==null)return;
+        for(int i=0;i<refs.length();i++){
+            JSONObject ref=refs.optJSONObject(i);
+            if(ref!=null)card("📚 "+ref.optString("name","Reference"));
+        }
     }
 
     private class PrivateDirectorBridge {
