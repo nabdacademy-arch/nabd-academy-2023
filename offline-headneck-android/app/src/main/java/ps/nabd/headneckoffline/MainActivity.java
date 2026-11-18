@@ -401,63 +401,162 @@ public class MainActivity extends Activity {
     private JSONArray options(JSONObject q){JSONArray opts=q.optJSONArray(english?"opts":"optsAr");if(opts==null||opts.length()==0)opts=q.optJSONArray("opts");return opts;}
     private String explanation(JSONObject q){String s=q.optString(english?"why":"whyAr","");return s.isEmpty()?q.optString("why",""):s;}
     private String id(JSONObject q){return q.optString("id",String.valueOf(q.hashCode()));}
+
     private void showNativeList(String search,int offset){
-        bankOffset=offset;
         ArrayList<JSONObject> subset=new ArrayList<>();
+        String needle=search==null?"":search.trim().toLowerCase(Locale.ROOT);
         for(JSONObject q:questions){
-            if(search==null||search.isEmpty()||(q.optString("q","")+" "+q.optString("qAr","")+" "+q.optString("chapter","")).toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT)))subset.add(q);
+            if(!matchesChapter(q))continue;
+            String hay=q.optString("q","")+" "+q.optString("qAr","")+" "+
+                q.optString("why","")+" "+q.optString("whyAr","")+" "+
+                q.optString("chapter","")+" "+q.optString("source","");
+            JSONArray o=q.optJSONArray("opts");if(o!=null)hay+=" "+o.toString();
+            JSONArray ar=q.optJSONArray("optsAr");if(ar!=null)hay+=" "+ar.toString();
+            if(needle.isEmpty()||hay.toLowerCase(Locale.ROOT).contains(needle))subset.add(q);
         }
-        int start=Math.min(offset,subset.size()),end=Math.min(start+15,subset.size());
-        newPage("📖 بنك أسئلة التشريح","عرض "+(subset.isEmpty()?0:start+1)+"–"+end+" من "+subset.size());
+        int start=Math.min(offset,subset.size()),end=Math.min(start+12,subset.size());
+        newPage("📖 بنك أسئلة التشريح",chapterTitle(chosenChapter)+" • "+(subset.isEmpty()?0:start+1)+"–"+end+" / "+subset.size());
         menu();
+        action("🔎 البحث داخل البنك",this::showNativeSearch);
         for(int i=start;i<end;i++){
             final JSONObject q=subset.get(i);
-            card((i+1)+". "+questionText(q));
-            action("عرض السؤال والخيارات",()->showNativeQuestion(q,()->showNativeList(search,offset)));
+            card((i+1)+". "+questionText(q)+"\n"+
+                (q.optString("answerVerified","not_verified").equals("not_verified")?"⚠ المفتاح غير موثق":"✓ خيار الإجابة والشرح داخل السؤال"));
+            action("📝 عرض الخيارات والحل والشرح",()->showNativeQuestion(q,()->showNativeList(search,start)));
         }
-        if(end<subset.size())action("التالي ◀",()->showNativeList(search,offset+15));
-        if(start>0)action("▶ السابق",()->showNativeList(search,Math.max(0,offset-15)));
+        if(end<subset.size())action("التالي ◀",()->showNativeList(search,end));
+        if(start>0)action("▶ السابق",()->showNativeList(search,Math.max(0,start-12)));
+        if(subset.isEmpty())card("لا توجد أسئلة بهذه التصفية.");
+    }
+
+    private boolean hasKey(JSONObject q,int index){
+        JSONArray original=q.optJSONArray("opts");
+        return index>=0&&original!=null&&index<original.length()&&
+             !q.optString("answerVerified","not_verified").equals("not_verified");
+    }
+    private void recordAnswer(JSONObject q,boolean correct,boolean graded){
+        android.content.SharedPreferences p=getSharedPreferences("nabd-anatomy-stats",MODE_PRIVATE);
+        String counter=graded?(correct?"correct":"wrong"):"ungraded";
+        p.edit().putInt(counter,p.getInt(counter,0)+1).apply();
+        if(graded)getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).edit()
+                .putBoolean(id(q),!correct).apply();
+        if(quizMode){if(!graded)quizUnscored++;else if(correct)quizCorrect++;else quizIncorrect++;}
     }
     private void showNativeQuestion(JSONObject q,Runnable next){
-        newPage("📚 سؤال تشريح","Head & Neck • "+q.optString("chapter",""));
+        newPage("📚 سؤال تشريح",chapterTitle(q.optString("chapter",""))+
+                " • "+q.optString("sourceLevel",q.optString("kind","")));
         card(questionText(q));
         JSONArray choices=options(q);
-        if(choices==null){card("لا توجد خيارات محفوظة لهذا السؤال.");action("العودة",next);return;}
-        int correct=q.optInt("answer",-1);
+        if(choices==null||choices.length()==0){card("⚠ لا تتوفر خيارات هذا السؤال.");action("رجوع",next);return;}
+        boolean bilingual=q.optString("qAr","").length()>0&&q.optJSONArray("optsAr")!=null;
+        if(!english&&!bilingual){
+            card("🌐 لا توجد ترجمة عربية كاملة ومحفوظة لهذا السؤال من المصدر؛ يظهر نصه الإنجليزي الأصلي بدل إنشاء ترجمة غير دقيقة.");
+        }
+        int answer=q.optInt("answer",-1);
+        boolean graded=hasKey(q,answer);
         final boolean[] answered={false};
+        final int correct=answer;
         for(int i=0;i<choices.length();i++){
             int selected=i;
             String label=String.valueOf((char)('A'+i))+". "+choices.optString(i);
             action(label,()->{
-                if(answered[0])return;
-                answered[0]=true;
-                if(correct<0||correct>=choices.length()){
-                    card("⚠ مفتاح إجابة غير مدقّق. لن يُحتسب السؤال في النتيجة.");
+                if(answered[0])return;answered[0]=true;
+                boolean right=graded&&selected==correct;
+                recordAnswer(q,right,graded);
+                if(graded){
+                    String correctText=choices.optString(correct);
+                    card((right?"✅ إجابة صحيحة":"❌ إجابة خاطئة")+
+                         "\nالإجابة الصحيحة: "+String.valueOf((char)('A'+correct))+" • "+correctText);
                 }else{
-                    boolean ok=selected==correct;
-                    getSharedPreferences("nabd-anatomy-progress-v3",MODE_PRIVATE).edit()
-                        .putBoolean(id(q),!ok).apply();
-                    card((ok?"✅ إجابة صحيحة":"❌ إجابة غير صحيحة")+"\n"+
-                        "الإجابة: "+String.valueOf((char)('A'+correct))+". "+choices.optString(correct));
+                    card("⚠ هذه المسألة لا تمتلك مفتاح إجابة موثوقًا بعد. لن نضع علامة صح عشوائية ولن تحتسب ضمن نتيجة الامتحان.");
                 }
-                String why=explanation(q);if(!why.isEmpty())card("💡 "+why);
+                String expl=explanation(q);
+                if(!expl.trim().isEmpty())card("💡 شرح الإجابة\n"+expl);
+                else card("📚 لا يتوفر شرح مدقق مرتبط بالسؤال في بنك المصدر.");
+                card("📎 المصدر: "+q.optString("source","غير محدد")+
+                    "\nدرجة توثيق المفتاح: "+q.optString("answerVerified","غير مراجع"));
             });
         }
-        action("🌐 العربية / English",()->{english=!english;showNativeQuestion(q,next);});
-        action("التالي / رجوع",next);
+        action("👁 إظهار الحل والشرح دون احتساب",()->{
+            if(answered[0])return;answered[0]=true;
+            if(graded){
+                card("✅ الإجابة: "+String.valueOf((char)('A'+correct))+" • "+choices.optString(correct));
+            }else card("⚠ لا يتوفر مفتاح إجابة موثوق.");
+            if(!explanation(q).trim().isEmpty())card("💡 "+explanation(q));
+            else card("لا يوجد شرح مدقق لهذا السؤال.");
+        });
+        action("🌐 تبديل اللغة • العربية / English",()->{english=!english;showNativeQuestion(q,next);});
+        action(quizMode?"السؤال التالي ▶":"⬅️ رجوع إلى الأسئلة",next);
+    }
+
+    private void showQuizSetup(){
+        quizMode=false;
+        newPage("🎯 محاكي امتحانات التشريح","اختر الفصل والمصدر والعدد، ثم ابدأ");
+        menu();
+        card("الشابتر الحالي: "+("all".equals(chosenChapter)?"كل الشابترات":chapterTitle(chosenChapter))+
+            "\nالمصدر: "+chosenPool+"\nعدد الأسئلة: "+chosenCount);
+        action("📚 اختر الشابتر",()->{
+            newPage("تحديد شابتر الامتحان","اختر نطاق التدريب");
+            action("🌐 كل الفصول",()->{chosenChapter="all";showQuizSetup();});
+            for(String chapter:CHAPTER_IDS)action(chapterTitle(chapter)+" • "+chapterCount(chapter),()->{
+                chosenChapter=chapter;showQuizSetup();
+            });
+        });
+        action("📂 اختر مصدر الأسئلة",()->{
+            newPage("مصادر الأسئلة","حدد بنك التدريب");
+            action("الكل",()->{chosenPool="all";showQuizSetup();});
+            action("الأسئلة الجديدة (1000)",()->{chosenPool="new";showQuizSetup();});
+            action("أسئلة المصادر السابقة",()->{chosenPool="original";showQuizSetup();});
+            action("الامتحانات التاريخية",()->{chosenPool="archived";showQuizSetup();});
+        });
+        action("🔢 عدد الأسئلة (10 / 20 / 40 / 80)",()->{
+            newPage("عدد الأسئلة","اختر عدد أسئلة جلسة الامتحان");
+            for(int n:new int[]{10,20,40,80})action(n+" سؤال",()->{chosenCount=n;showQuizSetup();});
+        });
+        action("✅ ابدأ امتحانًا جديدًا",this::startNativeQuiz);
     }
     private void startNativeQuiz(){
-        session.clear();ArrayList<Integer> indexes=new ArrayList<>();
-        for(int i=0;i<questions.size();i++)indexes.add(i);
+        session.clear();
+        ArrayList<Integer> indexes=new ArrayList<>();
+        for(int i=0;i<questions.size();i++){
+            JSONObject q=questions.get(i);
+            if(!matchesChapter(q))continue;
+            String pool=q.optString("kind","original");
+            if(!"all".equals(chosenPool)){
+                if(chosenPool.equals("new")&&!pool.equals("generated"))continue;
+                if(chosenPool.equals("original")&&!pool.equals("original"))continue;
+                if(chosenPool.equals("archived")&&!pool.equals("archived"))continue;
+            }
+            indexes.add(i);
+        }
         Collections.shuffle(indexes);
-        for(int i=0;i<Math.min(20,indexes.size());i++)session.add(indexes.get(i));
-        sessionIndex=0;nativeQuizQuestion();
+        for(int i=0;i<Math.min(chosenCount,indexes.size());i++)session.add(indexes.get(i));
+        sessionIndex=0;quizCorrect=0;quizIncorrect=0;quizUnscored=0;
+        quizMode=true;
+        if(session.isEmpty()){
+            quizMode=false;newPage("⚠ لا توجد أسئلة","غيّر الفصل أو المصدر وعدد الأسئلة.");
+            action("الإعدادات",this::showQuizSetup);return;
+        }
+        nativeQuizQuestion();
     }
     private void nativeQuizQuestion(){
-        if(sessionIndex>=session.size()){showNativeHome();return;}
+        if(sessionIndex>=session.size()){showQuizResult();return;}
         JSONObject q=questions.get(session.get(sessionIndex));
         showNativeQuestion(q,()->{sessionIndex++;nativeQuizQuestion();});
-        card("السؤال "+(sessionIndex+1)+" / "+session.size());
+        card("السؤال "+(sessionIndex+1)+" من "+session.size()+
+             "\nالإجابات الصحيحة: "+quizCorrect+" • الخاطئة: "+quizIncorrect);
+    }
+    private void showQuizResult(){
+        quizMode=false;
+        newPage("🏁 نتيجة الامتحان","انتهت جلسة التدريب");
+        int graded=quizCorrect+quizIncorrect;
+        int percent=graded==0?0:(int)Math.round(quizCorrect*100.0/graded);
+        card("✅ صحيح: "+quizCorrect+"\n❌ خطأ: "+quizIncorrect+
+            "\n⚠ غير محتسب: "+quizUnscored+
+            "\n🎯 الدقة: "+(graded==0?"—":percent+"%"));
+        action("❌ راجع أخطاءك",this::showNativeWrong);
+        action("🔁 امتحان جديد",this::showQuizSetup);
+        action("🏠 الرئيسية",this::showNativeHome);
     }
     private void showNativeSearch(){
         newPage("🤖 اسأل بوت التشريح","بحث محلي داخل جميع الأسئلة والإجابات والشروحات");
