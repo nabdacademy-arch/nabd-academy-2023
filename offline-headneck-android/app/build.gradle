@@ -3,11 +3,11 @@ android {
     namespace 'ps.nabd.headneckoffline'
     compileSdk 35
     defaultConfig {
-        applicationId 'ps.nabd.headneckoffline'
+        applicationId 'ps.nabd.headneckoffline.secure'
         minSdk 26
-        targetSdk 35
-        versionCode 1
-        versionName '1.0'
+        targetSdk 34
+        versionCode 2
+        versionName '2.0'
     }
     buildTypes {
         release { minifyEnabled false }
