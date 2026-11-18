@@ -88,16 +88,7 @@ public class MainActivity extends Activity {
     private int lessonIndex=0;
     private String pdfForChapter="";
     private static final int PICK_PDF=2733;
-    private ScrollView pageScroll;
-    private String chosenChapter="all",chosenPool="all";
-    private int chosenCount=20,quizCorrect=0,quizIncorrect=0,quizUnscored=0;
-    private boolean quizMode=false;
-    private static final int PICK_SLIDES=3814;
-    private PdfRenderer pdfRenderer;
-    private PdfRenderer.Page pdfPage;
-    private ParcelFileDescriptor pdfFd;
-    private int pdfIndex=0;
-    private String slideChapter="Skull";
+    private int practiceCount=20;
 
     private ValueCallback<android.net.Uri[]> chooser;
 
@@ -868,36 +859,15 @@ public class MainActivity extends Activity {
             chooser.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));
             chooser=null;
         }
-        if(request==PICK_SLIDES&&result==RESULT_OK&&data!=null&&data.getData()!=null){
-            try {
-                File target=new File(getFilesDir(),"slides_"+slideChapter+".pdf");
-                try(InputStream input=getContentResolver().openInputStream(data.getData());
-                    FileOutputStream out=new FileOutputStream(target)){
-                    if(input==null)throw new IOException("تعذر قراءة ملف السلايدات.");
-                    byte[] bytes=new byte[16384];int n;long total=0;
-                    while((n=input.read(bytes))!=-1){
-                        total+=n;
-                        if(total>160L*1024*1024)throw new IOException("حجم السلايدات يتجاوز 160 ميجابايت.");
-                        out.write(bytes,0,n);
-                    }
-                }catch(Exception e){target.delete();throw e;}
-                getSharedPreferences("nabd-anatomy-slides",MODE_PRIVATE).edit()
-                    .putString(slideKey(slideChapter),target.getAbsolutePath()).apply();
-                showPdfForChapter(slideChapter);
-            }catch(Exception e){
-                showPdfForChapter(slideChapter);
-                card("⚠ لم يُحفظ الملف: "+e.getMessage());
-            }
-        }
     }
     @Override public void onBackPressed(){
         if(browser!=null&&browser.canGoBack())browser.goBack();
-        else if(!questions.isEmpty()){closePdf();showNativeHome();}
+        else if(!questions.isEmpty()){showNativeHome();}
         else super.onBackPressed();
     }
     @Override protected void onDestroy(){
         if(chooser!=null){chooser.onReceiveValue(null);chooser=null;}
-        availableBank=null;closePdf();
+        availableBank=null;
         if(browser!=null){browser.removeJavascriptInterface("NABDApp");browser.destroy();browser=null;}
         super.onDestroy();
     }
