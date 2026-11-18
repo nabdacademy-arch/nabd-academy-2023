@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/headneck-offline-apk
+      - feature/headneck-bilingual-stable
     paths:
       - 'offline-headneck-android/**'
       - 'director-headneck.html'
