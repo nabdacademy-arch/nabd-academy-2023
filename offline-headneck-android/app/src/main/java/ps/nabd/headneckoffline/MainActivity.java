@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
     // Public browser key only. Never place a secret/service-role key in the APK.
     private static final String BASE="https://zsmmmljgguycrvyrmakl.supabase.co";
     private static final String PUBLISHABLE="sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM";
-    private static final int CHUNK=500;
+    private static final int CHUNK=400;
     private static final int PICK_FILE=2732;
     private static final String BANK_FILE="nabd_headneck_private_bank_v2.enc";
     private volatile String availableBank=null;
@@ -205,22 +205,41 @@ public class MainActivity extends Activity {
     private void nativeLogin(String email,String password){
         String user=email.trim().toLowerCase(Locale.ROOT);
         try{
-            runOnUiThread(()->loginMessage.setText("جارٍ التحقق من صلاحيات المدير وتنزيل بنك الأسئلة..."));
+            status("🔐 جارٍ تسجيل الدخول والتحقق من صلاحيات المدير...");
+            // Check the encrypted local bank first for fast, reliable offline access.
+            try {
+                String saved=decryptFromDevice(user,password);
+                if(questionCount(saved)>=1000){
+                    status("✅ تم فك تشفير البنك المحفوظ، جارٍ فتح "+questionCount(saved)+" سؤالًا...");
+                    openNativeBank(saved);
+                    return;
+                }
+            } catch(Exception unavailable){ /* First login or another device. */ }
+            status("🌐 لا توجد نسخة محلية مكتملة. جارٍ الاتصال بقاعدة الأكاديمية...");
             String data=fetchOnlineBank(user,password);
-            if(questionCount(data)<1)throw new IOException("البنك فارغ.");
+            int count=questionCount(data);
+            if(count<2000)throw new IOException("استرداد غير مكتمل: "+count+" سؤالًا. لم تُحفظ النسخة الناقصة.");
+            status("🔐 تم تحميل "+count+" سؤالًا. جارٍ تشفير النسخة للحفظ دون إنترنت...");
             encryptToDevice(user,password,data);
+            status("✅ اكتمل تحميل بنك التشريح. جارٍ فتح قائمة الشابترات...");
             openNativeBank(data);
         }catch(SecurityException wrong){
+            activeJwt=null;
             runOnUiThread(()->{loginButton.setEnabled(true);loginMessage.setText("⚠ "+wrong.getMessage());});
         }catch(Exception err){
-            runOnUiThread(()->loginMessage.setText("جارٍ البحث عن نسخة مشفّرة على الجهاز..."));
-            try{openNativeBank(decryptFromDevice(user,password));}
-            catch(Exception noLocal){
-                runOnUiThread(()->{
-                    loginButton.setEnabled(true);
-                    loginMessage.setText("⚠ تعذّر الاتصال أو فتح النسخة المحلية. استخدم الإنترنت أول مرة، أو تأكد من استخدام نفس بيانات المدير السابقة.");
-                });
-            }
+            String reason=err.getMessage()==null?err.getClass().getSimpleName():err.getMessage();
+            activeJwt=null;
+            try{
+                status("📦 الاتصال تعذّر، جارٍ فحص النسخة المحفوظة...");
+                String cached=decryptFromDevice(user,password);
+                if(questionCount(cached)>=1000){openNativeBank(cached);return;}
+            }catch(Exception unavailable){}
+            runOnUiThread(()->{
+                loginButton.setEnabled(true);
+                loginMessage.setText("❌ تعذّر إكمال التنزيل: "+reason+"\n"+
+                    "لم تُحفظ أي نسخة ناقصة. شغّل الإنترنت واضغط تسجيل الدخول مجددًا. "+
+                    "إن كانت شبكة الهاتف بطيئة، جرّب Wi-Fi مستقرًا.");
+            });
         }
     }
     private void openNativeBank(String raw)throws Exception{
@@ -685,7 +704,9 @@ public class MainActivity extends Activity {
     }
 
     private void status(String value){
-        runOnUiThread(() -> {
+        runOnUiThread(()->{
+            // The native login screen is visible; the legacy WebView is not.
+            if(loginMessage!=null)loginMessage.setText(value);
             if(browser!=null)browser.evaluateJavascript(
                 "window.NABDLoginStatus && window.NABDLoginStatus("+JSONObject.quote(value)+")",null);
         });
@@ -710,34 +731,56 @@ public class MainActivity extends Activity {
         HttpStatus(int code,String message){super(message);status=code;}
     }
 
+
     private String request(String method,String path,JSONObject data,String jwt)throws Exception{
-        HttpURLConnection c=(HttpURLConnection)new URL(BASE+path).openConnection();
-        c.setConnectTimeout(16000);c.setReadTimeout(25000);
-        c.setRequestMethod(method);
-        c.setRequestProperty("apikey",PUBLISHABLE);
-        c.setRequestProperty("Accept","application/json");
-        if(jwt!=null)c.setRequestProperty("Authorization","Bearer "+jwt);
-        if(data!=null){
-            c.setDoOutput(true);
-            c.setRequestProperty("Content-Type","application/json");
-            try(OutputStream out=c.getOutputStream()){
-                out.write(data.toString().getBytes(StandardCharsets.UTF_8));
-            }
-        }
-        try{
-            int status=c.getResponseCode();
-            InputStream stream=status>=400?c.getErrorStream():c.getInputStream();
-            String body="";
-            if(stream!=null){
-                try(InputStream input=stream;ByteArrayOutputStream bytes=new ByteArrayOutputStream()){
-                    byte[] buf=new byte[8192];int n;
-                    while((n=input.read(buf))!=-1)bytes.write(buf,0,n);
-                    body=new String(bytes.toByteArray(),StandardCharsets.UTF_8);
+        int attempts="GET".equals(method)?3:1;
+        Exception last=null;
+        for(int round=1;round<=attempts;round++){
+            HttpURLConnection c=null;
+            try{
+                c=(HttpURLConnection)new URL(BASE+path).openConnection();
+                c.setConnectTimeout(14000);
+                c.setReadTimeout(25000);
+                c.setRequestMethod(method);
+                c.setRequestProperty("apikey",PUBLISHABLE);
+                c.setRequestProperty("Accept","application/json");
+                c.setRequestProperty("Accept-Encoding","gzip");
+                if(jwt!=null)c.setRequestProperty("Authorization","Bearer "+jwt);
+                if(data!=null){
+                    c.setDoOutput(true);
+                    c.setRequestProperty("Content-Type","application/json");
+                    try(OutputStream out=c.getOutputStream()){
+                        out.write(data.toString().getBytes(StandardCharsets.UTF_8));
+                    }
                 }
-            }
-            if(status>=400)throw new HttpStatus(status,body.substring(0,Math.min(body.length(),160)));
-            return body;
-        } finally {c.disconnect();}
+                int code=c.getResponseCode();
+                InputStream stream=code>=400?c.getErrorStream():c.getInputStream();
+                String body="";
+                if(stream!=null){
+                    String encoding=c.getContentEncoding();
+                    if(encoding!=null&&encoding.toLowerCase(Locale.ROOT).contains("gzip"))
+                        stream=new java.util.zip.GZIPInputStream(stream);
+                    try(InputStream input=stream;ByteArrayOutputStream bytes=new ByteArrayOutputStream()){
+                        byte[] buf=new byte[8192];int n;
+                        while((n=input.read(buf))!=-1)bytes.write(buf,0,n);
+                        body=new String(bytes.toByteArray(),StandardCharsets.UTF_8);
+                    }
+                }
+                if(code>=400)throw new HttpStatus(code,body.substring(0,Math.min(120,body.length())));
+                return body;
+            }catch(Exception ex){
+                last=ex;
+                boolean retry="GET".equals(method)&&
+                    (!(ex instanceof HttpStatus)||((HttpStatus)ex).status==429||
+                     ((HttpStatus)ex).status>=500);
+                if(!retry||round==attempts)break;
+                status("📡 ضعف الاتصال، إعادة المحاولة "+round+"/"+attempts+" لتنزيل دفعة الأسئلة...");
+                try{Thread.sleep(950L*round);}catch(InterruptedException interrupted){
+                    Thread.currentThread().interrupt();throw new IOException("توقف التنزيل",interrupted);
+                }
+            } finally {if(c!=null)c.disconnect();}
+        }
+        throw last==null?new IOException("تعذر الاتصال بالخادم"):last;
     }
 
     private String fetchOnlineBank(String email,String password)throws Exception {
@@ -762,9 +805,20 @@ public class MainActivity extends Activity {
         LinkedHashSet<String> chapters=new LinkedHashSet<>();
         LinkedHashSet<String> references=new LinkedHashSet<>();
         int rows=0;
+        int pageNumber=0;
+        int expectedPages=6; // 2082 questions; 400 per page.
         for(int offset=0;offset<10000;offset+=CHUNK){
+            pageNumber++;
+            status("📚 جارٍ تنزيل الأسئلة: "+rows+"/2082 • الدفعة "+pageNumber+"/"+expectedPages);
             String uri="/rest/v1/nabd_exam_questions?select=content,pool,chapter&order=id.asc&limit="+CHUNK+"&offset="+offset;
-            JSONArray page=new JSONArray(request("GET",uri,null,jwt));
+            JSONArray page;
+            try{
+                page=new JSONArray(request("GET",uri,null,jwt));
+            }catch(Exception e){
+                String msg=e.getMessage()==null?e.getClass().getSimpleName():e.getMessage();
+                throw new IOException("فشلت الدفعة "+pageNumber+"/"+expectedPages+
+                    " بعد "+rows+" سؤالًا. "+msg,e);
+            }
             for(int i=0;i<page.length();i++){
                 JSONObject r=page.getJSONObject(i);
                 JSONObject q=r.optJSONObject("content");
@@ -779,7 +833,7 @@ public class MainActivity extends Activity {
                 else original.put(q);
                 rows++;
             }
-            status("تم تحميل "+rows+" سؤالًا...");
+            status("✅ تم تحميل "+rows+" سؤالًا من البنك المحمي");
             if(page.length()<CHUNK)break;
         }
         if(rows<1)throw new SecurityException("لم يُسمح بتحميل بنك الأسئلة الخاص. تأكد من صلاحيات المدير.");
