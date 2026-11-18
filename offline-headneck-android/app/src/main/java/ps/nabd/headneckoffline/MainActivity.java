@@ -516,6 +516,12 @@ public class MainActivity extends Activity {
                 " • "+q.optString("sourceLevel",q.optString("kind","")));
         card("🇵🇸 السؤال بالعربية\n"+safeText(q.optString("qAr",""),"الترجمة العربية غير محفوظة؛ يظهر الأصل الإنجليزي أدناه.")+
              "\n\n🇬🇧 Question in English\n"+safeText(q.optString("q",""),"No question text recorded."));
+        if("ambiguous_or_invalid_options".equals(q.optString("editorialFlag",""))){
+            card("⚠️ تنبيه تدقيق علمي / Editorial review required\n\n"+
+                "🇵🇸 "+q.optString("editorialNoteAr","يحتاج السؤال إلى إصلاح الخيارات.")+
+                "\n\n🇬🇧 "+q.optString("editorialNoteEn","The question has no unique valid answer.")+
+                "\n\n📚 "+q.optString("reviewSourceUrl",""));
+        }
         JSONArray choices=options(q);
         if(choices==null||choices.length()==0){card("⚠ لا تتوفر خيارات هذا السؤال.");action("رجوع",next);return;}
         boolean bilingual=q.optString("qAr","").length()>0&&q.optJSONArray("optsAr")!=null;
