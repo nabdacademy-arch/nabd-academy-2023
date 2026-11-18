@@ -259,10 +259,10 @@ public class MainActivity extends Activity {
         card("✅ بنك الأسئلة متاح على الهاتف\n"+questions.size()+" سؤالًا • تصحيح + شرح + ترجمة متى توفرت\n"+
              "🔐 تم التحقق من الحساب، والبيانات مخزنة مشفّرة للاستخدام دون إنترنت");
         action("📚 الشابترات • شرح + سلايدات + تدريب",this::showNativeChapters);
-        action("📖 بنك الأسئلة مع الإجابات والشروحات",()->showNativeList(null,0));
+        action("📖 بنك الأسئلة مع الإجابات والشروحات",()->{chosenChapter="all";showNativeList(null,0);});
         action("🎯 محاكي الامتحانات حسب الفصل والصعوبة",this::showQuizSetup);
         action("🖥️ قسم السلايدات وملفات PDF",this::showNativeSlideLibrary);
-        action("🤖 اسأل بوت التشريح",this::showNativeSearch);
+        action("🤖 اسأل بوت التشريح",()->{chosenChapter="all";showNativeSearch();});
         action("❌ مراجعة أخطائي",this::showNativeWrong);
         action("📊 نتائجي وإحصاءاتي",this::showNativeStats);
         action("📎 المصادر والمراجع",this::showNativeSources);
