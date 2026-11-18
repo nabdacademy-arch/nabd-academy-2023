@@ -3,11 +3,11 @@ android {
     namespace 'ps.nabd.headneckoffline'
     compileSdk 35
     defaultConfig {
-        applicationId 'ps.nabd.headneckoffline.bilingualv5'
+        applicationId 'ps.nabd.headneckoffline.networkv6'
         minSdk 26
         targetSdk 34
-        versionCode 5
-        versionName '5.0'
+        versionCode 6
+        versionName '6.0'
     }
     buildTypes {
         release { minifyEnabled false }
