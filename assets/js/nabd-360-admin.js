@@ -97,18 +97,20 @@ function renderFaculty(host){
  host.append(list)
 }
 async function reviewApplication(app,status,adminNote,btn){
- if(s.busy)return;
+ if(s.busy||!s.applications.includes(app))return;
+ const epoch=s.epoch;
  if(!["pending","reviewing","approved","declined"].includes(status)||adminNote.length>600){msg("القرار أو الملاحظة غير صالحين.",true);return}
  if(status==="approved"&&!confirm("هل تحققت من معلومات المتطوع وموافقته؟ هذه موافقة مراجعة فقط وليست تكليفًا تلقائيًا."))return;
  s.busy=true;btn.disabled=true;
  try{
   const result=await s.db.from("nabd_360_lecturer_applications").update({status,admin_note:adminNote||null,reviewed_at:new Date().toISOString()}).eq("id",app.id).select("id,status,admin_note").maybeSingle();
+  if(epoch!==s.epoch)return;
   if(result.error||!result.data)throw result.error||Error("No confirmed record");
   app.status=result.data.status;app.admin_note=result.data.admin_note;
   msg("حُفظ قرار المراجعة فعليًا دون أي تعيين أو إعلان.");
   draw()
- }catch(e){msg("لم يتأكد حفظ المراجعة؛ تحقق من صلاحيات الحساب والاتصال.",true)}
- finally{s.busy=false;btn.disabled=false}
+ }catch(e){if(epoch===s.epoch)msg("لم يتأكد حفظ المراجعة؛ تحقق من صلاحيات الحساب والاتصال.",true)}
+ finally{if(epoch===s.epoch){s.busy=false;btn.disabled=false}}
 }
 function renderQuality(host){
  host.append(el("h3","","مؤشرات الثقة والمراجعة"));
@@ -145,17 +147,20 @@ async function refresh(){
  draw()
 }
 async function render(panel,{db,user}){
- s.panel=panel;s.db=db;s.user=user;s.epoch++;
- layout();
+ const epoch=++s.epoch;
+ if(s.panel&&s.panel!==panel)s.panel.replaceChildren();
+ s.panel=panel;s.db=db;s.user=user;s.metrics={};s.applications=[];s.busy=false;
+ panel.replaceChildren(el("p","n360adm-status","التحقق من هوية المدير وصلاحيته الفعلية…"));
  if(!db||!user){panel.replaceChildren(el("p","n360adm-denied","الدخول الإداري مطلوب."));return}
- msg("التحقق من هوية المدير وصلاحيته الفعلية…");
  try{
   const [auth,profile]=await Promise.all([db.auth.getUser(),db.from("profiles").select("role").eq("id",user.id).maybeSingle()]);
+  if(epoch!==s.epoch)return;
   if(auth.error||auth.data?.user?.id!==user.id||profile.error||profile.data?.role!=="admin"){
    panel.replaceChildren(el("p","n360adm-denied","رفض الوصول: دور المدير لم يُثبت من قاعدة البيانات."));return
   }
+  layout();
   await refresh()
- }catch(e){panel.replaceChildren(el("p","n360adm-denied","تعذّر التحقق من جلسة المدير."))}
+ }catch(e){if(epoch===s.epoch)panel.replaceChildren(el("p","n360adm-denied","تعذّر التحقق من جلسة المدير."))}
 }
 register({id:"nabd-university-360",title:"◌ UNIVERSITY 360",render});
 })();
