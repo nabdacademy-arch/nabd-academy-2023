@@ -161,12 +161,14 @@ function create({client,bucket,userId,showStatus}){
    const id=userId();
    if(!id)throw Error("يجب تسجيل دخول الباحث قبل رفع البحث.");
    const {body,size}=await access(file);
-   const key=pending && pending.file===file && pending.size===size
+   const resumable=size>SIX && !!window.tus?.Upload;
+   const key=resumable && pending?.owner===id && pending.file===file && pending.size===size
      ? pending.path : id+"/"+crypto.randomUUID()+".pdf";
-   pending={file,size,path:key};
+   const attempt=resumable ? {owner:id,file,size,path:key} : null;
+   pending=attempt;
    progressState(0,"جارٍ تجهيز الرفع…");
    try{
-     if(size>SIX && window.tus?.Upload){
+     if(resumable){
        await uploadTus(body,size,key);
      } else {
        // Native upload works for small files, or as a fallback if the CDN fails.
@@ -177,14 +179,11 @@ function create({client,bucket,userId,showStatus}){
        if(error)throw error;
        progressState(100,"اكتمل رفع ملف PDF · "+formatSize(size));
      }
-     pending=null;
+     if(pending===attempt)pending=null;
      progressState(100,"تم رفع البحث بنجاح · "+formatSize(size));
      return key;
    }catch(err){
      progressState(null);
-     // Preserve pending path on a TUS retry only; a standard upload can be
-     // retried with a new path if the remote server reports a conflict.
-     if(!window.tus?.Upload)pending=null;
      throw Error(errorText(err,size));
    }
  }
