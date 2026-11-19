@@ -63,7 +63,7 @@ test('untrusted imports cannot forge scores, unknown lesson IDs or special keys'
   assert.deepEqual(Object.keys(cleanPractice(CATALOG.lessons,{'unknown':{score:5}})),[]);
 });
 test('NABD ZERO is accessible internally and does not replace homepage',()=>{
-  assert.match(app,/href=\\"\.\/zero\.html\\"/);
+  assert.match(app,/href="\.\/zero\.html"/);
   assert.match(app,/PACKS\.learning/);
   assert.doesNotMatch(app,/nabd-learning-public-v1/);
   assert.match(html,/<html lang="ar" dir="rtl">/);
