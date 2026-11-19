@@ -13,39 +13,46 @@ function esc(v = '') {
 
 async function loadCourse() {
   const slug = new URLSearchParams(location.search).get('id');
-  const lang = localStorage.getItem('nabd_lang') || 'en';
+  let lang = 'en';
+  try {
+    if (localStorage.getItem('nabd_lang') === 'ar') lang = 'ar';
+  } catch {
+    // The page still works when the browser blocks preference storage.
+  }
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  const text = (ar, en) => lang === 'ar' ? ar : en;
+  const back = `<a class="btn btn-ghost" href="index.html#courses">${text('العودة للدورات', 'Back to Courses')}</a>`;
 
   if (!slug) {
-    box.innerHTML = `
-      <h1>Course not found</h1>
-      <p>No course ID was provided.</p>
-      <a class="btn" href="index.html#courses">Back to Courses</a>
-    `;
+    box.innerHTML = `<h1>${text('رابط الدورة غير مكتمل', 'Incomplete course link')}</h1>
+      <p>${text('اختر دورة من القائمة.', 'Choose a course from the list.')}</p>${back}`;
     return;
   }
 
-  if (!client) {
-    box.innerHTML = `
-      <h1>Backend unavailable</h1>
-      <p>The course database is not connected.</p>
-    `;
+  let data;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  box.innerHTML = `<p role="status">${text('جارٍ تحميل الدورة…', 'Loading course…')}</p>`;
+  try {
+    if (!client) throw new Error('Course service unavailable');
+    const result = await client.from('courses').select('*')
+      .eq('slug', slug).abortSignal(controller.signal).maybeSingle();
+    if (result.error || controller.signal.aborted) throw new Error('Course lookup failed');
+    data = result.data;
+  } catch {
+    box.innerHTML = `<h1>${text('تعذّر تحميل تفاصيل الدورة', 'Could not load course details')}</h1>
+      <p>${text('تحقق من اتصالك ثم حاول مجددًا.', 'Check your connection and try again.')}</p>
+      <button class="btn" type="button">${text('إعادة المحاولة', 'Try again')}</button> ${back}`;
+    box.querySelector('button').addEventListener('click', client ? loadCourse : () => location.reload(), {once:true});
     return;
+  } finally {
+    clearTimeout(timeout);
   }
 
-  box.innerHTML = `<p>Loading course…</p>`;
-
-  const { data, error } = await client
-    .from('courses')
-    .select('*')
-    .eq('slug', slug)
-    .maybeSingle();
-
-  if (error || !data) {
-    box.innerHTML = `
-      <h1>Course not found</h1>
-      <p>${esc(error?.message || 'This course does not exist.')}</p>
-      <a class="btn" href="index.html#courses">Back to Courses</a>
-    `;
+  if (!data) {
+    box.innerHTML = `<h1>${text('الدورة غير متاحة', 'Course unavailable')}</h1>
+      <p>${text('لم نجد دورة متاحة بهذا الرابط.', 'No available course matches this link.')}</p>${back}`;
     return;
   }
 
@@ -67,9 +74,6 @@ async function loadCourse() {
   const modules = Array.isArray(data.modules)
     ? data.modules
     : [];
-
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
   document.title = `${title} | NABD Academy`;
 
