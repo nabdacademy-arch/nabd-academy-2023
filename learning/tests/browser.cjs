@@ -121,6 +121,8 @@ const chromiumPath=existsSync('/usr/bin/chromium')?'/usr/bin/chromium':existsSyn
  const zeroBackup=await zeroExport;assert.equal(zeroBackup.suggestedFilename(),'nabd-zero-practice.json');
  await page.locator('#language').click();
  assert.equal(await page.locator('html').getAttribute('lang'),'en');
+ await page.locator('#language').click();
+ assert.equal(await page.locator('html').getAttribute('lang'),'ar');
  assert((await page.locator('#atlas-status').textContent()).length>0);
  await page.goto('http://127.0.0.1:8000/learning/#offline');
  await context.setOffline(true);await page.reload();await page.locator('#view h2').first().waitFor();assert((await page.locator('#connectivity').textContent()).includes('دون اتصال'));
