@@ -1,0 +1,25 @@
+name: NABD ZERO resilience
+on:
+  pull_request:
+    paths:
+      - 'learning/**'
+      - '.github/workflows/nabd-zero.yml'
+  push:
+    paths:
+      - 'learning/**'
+      - '.github/workflows/nabd-zero.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and resilience checks
+        run: |
+          node --check learning/app.mjs
+          node --check learning/sw.js
+          node --check learning/zero.mjs
+          node --check learning/zero-core.mjs
+          node --test learning/tests/zero.test.mjs
