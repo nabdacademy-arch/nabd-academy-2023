@@ -1412,6 +1412,11 @@ body.portal-body{
     ["Account Recovery","استعادة الحساب"],
     ["Reset password","إعادة تعيين كلمة المرور"],
     ["Enter your account email and we will send you a password reset link.","أدخل بريد حسابك وسنرسل لك رابطًا لإعادة تعيين كلمة المرور."],
+    ["Sending…","جارٍ الإرسال…"],
+    ["Enter your email address.","أدخل بريدك الإلكتروني."],
+    ["If your account is eligible, check your email for a reset link.","إذا كان حسابك مؤهلًا للاستعادة، فتحقّق من بريدك بحثًا عن الرابط."],
+    ["Too many requests. Wait before requesting another link.","أُرسلت طلبات كثيرة. انتظر قبل طلب رابط آخر."],
+    ["Could not confirm the request. Check your inbox and connection before trying again.","تعذّر تأكيد الطلب. تحقّق من صندوق البريد والاتصال قبل إعادة المحاولة."],
     ["Send reset link","إرسال رابط الاستعادة"],
     ["Set a new password","تعيين كلمة مرور جديدة"],
     ["Choose a new password for your NABD Academy account.","اختر كلمة مرور جديدة لحسابك في أكاديمية نبض."],
@@ -1514,7 +1519,7 @@ body.portal-body{
 
     const watchIds=[
       "authHeading","authIntro","signInStatus","signUpStatus",
-      "forgotPasswordStatus","resetPasswordStatus","claimCertificateStatus",
+      "sendResetButton","forgotPasswordStatus","resetPasswordStatus","claimCertificateStatus",
       "studentCourses","studentCertificates","studentClaims","courseSummary"
     ];
     watchIds.forEach(id=>{

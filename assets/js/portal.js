@@ -1446,6 +1446,7 @@ async function handleForgotPassword(event) {
     $("#forgotPasswordStatus");
 
 
+  if (button?.disabled) return;
   setStatus(status, "");
 
 
@@ -1491,22 +1492,18 @@ async function handleForgotPassword(event) {
 
     setStatus(
       status,
-      "Password reset link sent. Check your email ✓",
+      "If your account is eligible, check your email for a reset link.",
       "success"
     );
 
 
   } catch (error) {
-    let message =
-      error?.message ||
-      "Could not send reset email.";
-
-
-    if (/rate limit/i.test(message)) {
-      message =
-        "Email rate limit reached. Please wait and try again later.";
-    }
-
+    const limited = error?.status === 429 ||
+      /rate.limit/i.test(error?.code || "") ||
+      /rate limit/i.test(error?.message || "");
+    const message = limited
+      ? "Too many requests. Wait before requesting another link."
+      : "Could not confirm the request. Check your inbox and connection before trying again.";
 
     setStatus(
       status,
