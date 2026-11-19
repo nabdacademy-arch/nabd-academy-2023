@@ -12,12 +12,22 @@ function translate() {
   for (const node of document.querySelectorAll('[data-ar][data-en]')) node.textContent = node.dataset[lang];
   $('connection').textContent = navigator.onLine ? tr('متصل','Online') : tr('دون اتصال','Offline');
 }
+class PracticeStorageError extends Error {}
 function getProgress() {
-  try {return cleanPractice(CATALOG.lessons, JSON.parse(localStorage.getItem(PRACTICE_KEY) || '{}'));} catch {return {};}
+  try {
+    const raw = localStorage.getItem(PRACTICE_KEY);
+    return cleanPractice(CATALOG.lessons, JSON.parse(raw ?? '{}'), true);
+  } catch {
+    throw new PracticeStorageError(tr('تعذّرت قراءة سجل التدريب المحلي. بقي السجل كما هو.','Could not read the local practice record. It has been left unchanged.'));
+  }
 }
 function showProgress() {
-  const progress = getProgress();
-  $('practice-count').textContent = tr('سجلات التدريب الموجودة على هذا الجهاز: ','Practice records on this device: ') + Object.keys(progress).length + ' / ' + CATALOG.lessons.length;
+  try {
+    const progress = getProgress();
+    $('practice-count').textContent = tr('سجلات التدريب الموجودة على هذا الجهاز: ','Practice records on this device: ') + Object.keys(progress).length + ' / ' + CATALOG.lessons.length;
+  } catch (error) {
+    $('practice-count').textContent = error.message;
+  }
 }
 function baseFor(name) {return new URL(PACKS[name].scope, import.meta.url);}
 async function auditPack(name) {
@@ -103,8 +113,8 @@ function exportPractice() {
     const a = document.createElement('a');a.href=url;a.download='nabd-zero-practice.json';
     document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
     $('backup-message').textContent = tr('نُسخ ملف نتائج التدريب العام للتنزيل، دون بيانات حساب.','Public practice backup downloaded, without account information.');
-  } catch {
-    $('backup-message').textContent = tr('تعذّر تجهيز النسخة.','Unable to create backup.');
+  } catch (error) {
+    $('backup-message').textContent = error instanceof PracticeStorageError ? error.message : tr('تعذّر تجهيز النسخة.','Unable to create backup.');
   }
 }
 async function importPractice(file) {
@@ -113,7 +123,11 @@ async function importPractice(file) {
   const json = await file.text();
   const {progress,imported} = mergeBackup(CATALOG.lessons,getProgress(),json);
   if (!window.confirm(tr('دمج '+imported+' سجل تدريب على هذا الجهاز فقط؟ لن تُحذف الدرجات الأعلى.','Merge '+imported+' practice records on this device only? Higher scores will be preserved.'))) return false;
-  localStorage.setItem(PRACTICE_KEY,JSON.stringify(progress));
+  try {
+    localStorage.setItem(PRACTICE_KEY,JSON.stringify(progress));
+  } catch {
+    throw new PracticeStorageError(tr('تعذّر حفظ نتائج التدريب. تحقّق من مساحة الجهاز وإذن التخزين ثم أعد المحاولة.','Could not save practice results. Check device space and storage permission, then retry.'));
+  }
   showProgress();
   return true;
 }
@@ -129,8 +143,8 @@ $('import').addEventListener('change',async event=>{
     $('backup-message').textContent = completed
       ? tr('استُعيد تقدم التدريب المحلي بنجاح. حدّث مساحة التعلّم إذا كانت مفتوحة بتبويب آخر.','Local practice restored. Reload Learning Space if it is open in another tab.')
       : tr('لم تُجرَ تغييرات على بيانات التدريب.','No practice data changed.');
-  } catch {
-    $('backup-message').textContent = tr('الملف غير صالح أو لا يطابق نسخة تدريب نبض. لم نغيّر نتائجك.','Invalid or unsupported NABD practice backup. Your progress was not changed.');
+  } catch (error) {
+    $('backup-message').textContent = error instanceof PracticeStorageError ? error.message : tr('الملف غير صالح أو لا يطابق نسخة تدريب نبض. لم نغيّر نتائجك.','Invalid or unsupported NABD practice backup. Your progress was not changed.');
   } finally {input.value='';}
 });
 window.addEventListener('online',()=>{translate();auditAll();});
