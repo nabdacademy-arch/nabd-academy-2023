@@ -1,77 +1,53 @@
 const client = window.nabdSupabase;
 const form = document.getElementById('updatePasswordForm');
 const message = document.getElementById('updatePasswordMessage');
+const button = form.querySelector('[type="submit"]');
 
 function showMessage(text, bad = false) {
   message.textContent = text;
   message.classList.toggle('error', bad);
 }
 
-async function checkSession() {
-  if (!client) {
-    showMessage('Backend not connected.', true);
-    return;
-  }
+form.onsubmit = async event => {
+  event.preventDefault();
+  if (button.disabled) return;
 
-  const { data, error } = await client.auth.getSession();
-
-  if (error) {
-    showMessage(error.message, true);
-    return;
-  }
-
-  if (!data.session) {
-    showMessage(
-      'Open this page from the password reset link sent to your email.',
-      true
-    );
-  }
-}
-
-form.onsubmit = async e => {
-  e.preventDefault();
-
-  if (!client) return;
-
-  const password =
-    document.getElementById('newPassword').value;
-
-  const confirmPassword =
-    document.getElementById('confirmPassword').value;
-
+  const password = document.getElementById('newPassword').value;
   if (password.length < 8) {
-    showMessage(
-      'Password must be at least 8 characters.',
-      true
-    );
+    showMessage('Password must be at least 8 characters.', true);
+    return;
+  }
+  if (password !== document.getElementById('confirmPassword').value) {
+    showMessage('Passwords do not match.', true);
     return;
   }
 
-  if (password !== confirmPassword) {
-    showMessage(
-      'Passwords do not match.',
-      true
-    );
-    return;
+  button.disabled = true;
+  let updated = false;
+  try {
+    const { data, error } = await client.auth.getSession();
+    if (error) throw error;
+    if (!data?.session) {
+      showMessage('Open the password reset link sent to your email.', true);
+      return;
+    }
+
+    showMessage('Updating password…');
+    const result = await client.auth.updateUser({ password });
+    if (result.error) throw result.error;
+
+    updated = true;
+    form.reset();
+    showMessage('Password updated successfully ✓');
+    setTimeout(() => { location.href = 'portal.html'; }, 1200);
+  } catch (error) {
+    showMessage(error?.message || 'Could not update the password. Please try again.', true);
+  } finally {
+    button.disabled = updated;
   }
-
-  showMessage('Updating password…');
-
-  const { error } =
-    await client.auth.updateUser({
-      password
-    });
-
-  if (error) {
-    showMessage(error.message, true);
-    return;
-  }
-
-  showMessage('Password updated successfully ✓');
-
-  setTimeout(() => {
-    location.href = 'portal.html';
-  }, 1200);
 };
 
-checkSession();
+if (!client) {
+  button.disabled = true;
+  showMessage('Backend not connected. Reload the page when your connection returns.', true);
+}
