@@ -24,7 +24,6 @@ el('indicator-label').textContent = t('المؤشر','Indicator');
 el('prev').textContent = t('السابق','Previous');
 el('next').textContent = t('التالي','Next');
 el('credits').textContent = t('المصدر: مؤشرات التنمية العالمية، البنك الدولي، استنادًا إلى بيانات منظمة الصحة العالمية واليونيسف.','Source: World Development Indicators, World Bank, using WHO and UNICEF immunization data.');
-el('status').textContent = t('جارٍ تحميل السجلات…','Loading records…');
 el('prev').disabled = el('next').disabled = true;
 
 function openBank(series) {
@@ -63,10 +62,35 @@ function openBank(series) {
   el('next').onclick=()=>{page++;show()};
   show();
 }
-try {
-  const response = await fetch('./crisis-observations.json');
-  if(!response.ok) throw Error();
-  openBank((await response.json()).series);
-} catch {
-  el('status').textContent=t('تعذّر تحميل القاعدة. افتحها عند عودة الاتصال أو بعد حفظ حزمة التعلّم.','Unable to load the bank. Reopen online or after saving the learning pack.');
+const retry = document.createElement('button');
+retry.type = 'button';
+retry.className = 'quiet';
+retry.textContent = t('إعادة تحميل السجلات','Retry loading records');
+retry.hidden = true;
+el('status').after(retry);
+
+let loading = false;
+async function loadRecords() {
+  if (loading) return;
+  loading = true;
+  retry.disabled = true;
+  el('status').textContent = t('جارٍ تحميل السجلات…','Loading records…');
+  try {
+    const response = await fetch('./crisis-observations.json');
+    if (!response.ok) throw Error();
+    const {series} = await response.json();
+    openBank(series);
+    retry.hidden = true;
+    window.removeEventListener('online', loadRecords);
+  } catch {
+    el('status').textContent = t('تعذّر تحميل السجلات. يمكنك إعادة المحاولة من هنا.', 'Records could not be loaded. You can retry here.');
+    retry.hidden = false;
+    window.addEventListener('online', loadRecords);
+  } finally {
+    loading = false;
+    retry.disabled = false;
+  }
 }
+
+retry.addEventListener('click', loadRecords);
+await loadRecords();
