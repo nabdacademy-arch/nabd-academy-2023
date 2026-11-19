@@ -6,17 +6,25 @@
   const manager = document.querySelector("[data-scholarship-manager]");
   /* Keep the staff session separate from student/academy sessions. */
   const cfg = window.NABD_CONFIG || {};
-  const client = manager && window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey
-    ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+  if (!home && !listings && !manager) return;
+
+  function initClient() {
+    if (!manager) return window.nabdSupabase;
+    if (!window.supabase?.createClient || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
+    try {
+      return window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
         auth: {
           storageKey: "nabd-scholarships-manager-auth-v1",
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
-      })
-    : window.nabdSupabase;
-  if (!home && !listings && !manager) return;
+      });
+    } catch {
+      return null;
+    }
+  }
+  const client = initClient();
 
   const dateText = value => {
     try { return new Intl.DateTimeFormat("ar-PS",{year:"numeric",month:"short",day:"numeric"}).format(new Date(value)); }
@@ -128,6 +136,14 @@
   }
 
   if (!manager) return;
+  if (!client) {
+    document.getElementById("sch-login-form").addEventListener("submit", event => event.preventDefault());
+    document.getElementById("sch-login-button").disabled = true;
+    document.getElementById("sch-reset-password").disabled = true;
+    setStatus(document.getElementById("sch-auth-status"),
+      "تعذّر تحميل خدمة دخول مدير المنح. تحقق من اتصالك ثم أعد تحميل الصفحة.", "error");
+    return;
+  }
   const loginPanel = document.getElementById("sch-login-panel");
   const dashboard = document.getElementById("sch-dashboard");
   const loginForm = document.getElementById("sch-login-form");
@@ -265,7 +281,6 @@
     try{localStorage.setItem("nabd-scholarship-news-updated",String(Date.now()));}catch(_){}
     await refreshOwnPosts();
   });
-  if (!client){showLogin();setStatus(authStatus,"إعداد Supabase غير متاح.","error");return;}
   client.auth.onAuthStateChange((event)=>{
     if(event==="SIGNED_OUT")showLogin();
     if(event==="PASSWORD_RECOVERY"){
