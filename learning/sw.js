@@ -8,5 +8,30 @@ self.addEventListener('fetch',event=>{
  const request=event.request,url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin||!allowed.has(url.pathname)||request.headers.has('authorization'))return;
  const canonical=new URL(url.pathname,url.origin).href;
- event.respondWith(fetch(request).then(response=>{if(response.ok&&response.type==='basic'){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(canonical,copy)))}return response}).catch(async()=>await caches.match(canonical)||Response.error()));
+ event.respondWith(loadPublicAsset(event, canonical));
 });
+
+async function cachedOr(canonical, fallback) {
+ try {
+  return await caches.match(canonical, {cacheName: CACHE}) || fallback;
+ } catch {
+  return fallback;
+ }
+}
+
+async function loadPublicAsset(event, canonical) {
+ let response;
+ try {
+  response = await fetch(event.request);
+ } catch {
+  return cachedOr(canonical, Response.error());
+ }
+ if ([502, 503, 504].includes(response.status)) {
+  return cachedOr(canonical, response);
+ }
+ if (response.ok && response.type === 'basic') {
+  const copy = response.clone();
+  event.waitUntil(caches.open(CACHE).then(cache => cache.put(canonical, copy)));
+ }
+ return response;
+}
