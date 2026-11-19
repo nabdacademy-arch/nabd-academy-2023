@@ -5,6 +5,7 @@ if(!document.querySelector("[data-quality-student]"))return;
 const client=window.nabdSupabase;
 const note=document.getElementById("ql-proctor-student-notice");
 let examId=null,enabled=false,poll=null,checking=false,blurDelay=null;
+let sessionRevision=0;
 const last=new Map();
 const speak=(ar,en)=>document.getElementById("ql-student-paper")?.lang==="en"?en:ar;
 
@@ -14,12 +15,12 @@ function showStatus(text,mode="off"){
  note.dataset.state=mode;
 }
 async function refresh(){
- const id=examId;
+ const id=examId,revision=sessionRevision;
  if(!client||!id||checking)return;
  checking=true;
  try{
    const {data,error}=await client.rpc("nabd_quality_proctor_student_state",{p_exam:id});
-   if(id!==examId)return;
+   if(revision!==sessionRevision)return;
    if(error)throw error;
    enabled=Boolean(data?.enabled && data?.open);
    showStatus(enabled?
@@ -29,26 +30,33 @@ async function refresh(){
        "Browser monitoring is currently OFF for this exam."),
      enabled?"on":"off");
  }catch(error){
-   if(id===examId){
+   if(revision===sessionRevision){
      enabled=false;
      showStatus(speak("تعذّر الاتصال بخدمة المراقبة. لا يمكن تأكيد حالتها حاليًا.",
        "Unable to check monitoring status at the moment."),"error");
    }
- }finally{checking=false;}
+ }finally{if(revision===sessionRevision)checking=false;}
+}
+function resetSession(){
+ sessionRevision++;
+ checking=false;
+ if(poll){clearInterval(poll);poll=null;}
+ if(blurDelay){clearTimeout(blurDelay);blurDelay=null;}
+ enabled=false;
+ last.clear();
 }
 function start(id){
  if(!id)return;
- if(poll){clearInterval(poll);poll=null;}
- examId=id;enabled=false;last.clear();
+ resetSession();
+ examId=id;
  showStatus(speak("جارٍ التحقق من حالة مراقبة هذا الامتحان…",
    "Checking this exam's monitoring status…"));
  refresh();
  poll=setInterval(refresh,15000);
 }
 function stop(){
- if(poll){clearInterval(poll);poll=null;}
- if(blurDelay){clearTimeout(blurDelay);blurDelay=null;}
- examId=null;enabled=false;last.clear();
+ resetSession();
+ examId=null;
  showStatus(speak("انتهت جلسة مراقبة الامتحان.","Exam monitoring session ended."),"off");
 }
 function record(signal){
