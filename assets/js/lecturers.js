@@ -24,14 +24,24 @@
   }
   async function loadPage(reset=false){
     const token=generation;
-    if(reset){offset=0;records=[];render()}
-    const rows=await checked(db.from('nabd_teaching_records').select('*').order('created_at',{ascending:false}).order('id').range(offset,offset+pageSize-1));
-    if(token!==generation||!user)return;
-    const known=new Set(records.map(x=>x.id)); records.push(...rows.filter(x=>!known.has(x.id)));offset+=rows.length;
-    el('studio-more').hidden=rows.length<pageSize;render();
+    const more=el('studio-more');
+    if(!reset && (more.hidden || more.disabled))return;
+    more.disabled=true;
+    try {
+      if(reset){offset=0;records=[];render()}
+      const rows=await checked(db.from('nabd_teaching_records').select('*').order('created_at',{ascending:false}).order('id').range(offset,offset+pageSize-1));
+      if(token!==generation||!user)return;
+      const known=new Set(records.map(x=>x.id)); records.push(...rows.filter(x=>!known.has(x.id)));offset+=rows.length;
+      more.hidden=rows.length<pageSize;render();
+      status('تم تحميل السجلات المتاحة وفق صلاحيات حسابك.');
+    } catch(error) {
+      if(token===generation)throw error;
+    } finally {
+      if(token===generation)more.disabled=false;
+    }
   }
   async function refresh(){
-    const token=++generation;records=[];assignments=[];courses=[];admin=false;
+    const token=++generation;el('studio-more').hidden=true;records=[];assignments=[];courses=[];admin=false;
     el('studio-workspace').hidden=true;el('studio-admin').hidden=true;el('studio-editor').hidden=true;
     el('studio-record').reset();el('studio-record').elements.id.value='';el('editor-title').textContent='صمّم جلسة أو موردًا';
     const result=await db.auth.getUser();if(token!==generation)return;user=result.data?.user;
@@ -47,7 +57,7 @@
       el('studio-editor').hidden=!writable.length;
       el('record-course').innerHTML=options(writable);el('assignment-course').innerHTML=options(courses);
       el('studio-assignments').innerHTML=admin?assignments.map(a=>`<p>${escape(a.display_name)} · ${escape(title(a.course_id))} · ${a.active?'مفعّل':'موقوف'}</p>`).join(''):'';
-      el('studio-workspace').hidden=false;await loadPage(true);status('تم تحميل السجلات المتاحة وفق صلاحيات حسابك.');
+      el('studio-workspace').hidden=false;await loadPage(true);
     }catch(error){if(token!==generation)return;report(error);el('studio-login').hidden=false;el('studio-workspace').hidden=true;}
   }
   async function busy(button,action){if(button.disabled)return;button.disabled=true;try{await action()}catch(error){report(error)}finally{button.disabled=false}}
@@ -67,7 +77,7 @@
     const d=row.starts_at?new Date(row.starts_at):null;form.elements.starts_at.value=d?new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16):'';el('editor-title').textContent='تعديل السجل';el('studio-editor').scrollIntoView({block:'start'});form.elements.title.focus();});
   el('studio-cancel').onclick=()=>{el('studio-record').reset();el('studio-record').elements.id.value='';el('editor-title').textContent='صمّم جلسة أو موردًا'};
   el('studio-refresh').onclick=()=>busy(el('studio-refresh'),refresh);
-  el('studio-more').onclick=()=>busy(el('studio-more'),()=>loadPage());
+  el('studio-more').onclick=()=>loadPage().catch(report);
   el('studio-logout').onclick=()=>busy(el('studio-logout'),async()=>{const result=await db.auth.signOut();if(result.error)throw result.error;await refresh()});
   el('studio-search').oninput=render;el('studio-filter').onchange=render;
   if(db){db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){generation++;user=null;records=[];assignments=[];admin=false;el('studio-workspace').hidden=true;el('studio-login').hidden=false;el('studio-auth').reset();status('تم تسجيل الخروج.');}});refresh().catch(report)}else status('تعذر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع الإدارة.');
