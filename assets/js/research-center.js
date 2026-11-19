@@ -275,31 +275,47 @@
     if (id && !old) return status(publishStatus,"لم يتم العثور على البحث للتعديل. حدّث الصفحة وحاول مجددًا.","error");
     const button=$("res-submit");button.disabled=true;
     status(publishStatus,file?"جارٍ رفع البحث وحفظه…":"جارٍ حفظ التعديلات…");
-    let uploaded = null;
+    let savingRecord = false;
+    let saved = false;
     try {
-      if (file) uploaded = await uploadPdf(file);
+      const uploaded = file ? await uploadPdf(file) : null;
       const values = {
         title, abstract, author_name: author || null,
         updated_at:new Date().toISOString()
       };
       if (uploaded) values.pdf_path = uploaded;
+      savingRecord = true;
       let response;
       if (id) response = await client.from("nabd_research_papers")
         .update(values).eq("id",id).eq("published_by",user.id).select("id").maybeSingle();
       else response = await client.from("nabd_research_papers")
         .insert({...values,published_by:user.id,status:"published"}).select("id").maybeSingle();
-      if (response.error || !response.data) throw new Error("لم تُحفَظ بيانات البحث. تأكد من صلاحية الحساب والاتصال ثم حاول مجددًا.");
-      if (old && uploaded && old.pdf_path !== uploaded) {
-        // Remove the replaced PDF only after the database points at the new one.
-        await client.storage.from(bucket).remove([old.pdf_path]);
+      if (response.error || !response.data) {
+        // Only discard an upload after a definite data, constraint or permission rejection.
+        if (/^(?:(?:22|23)[0-9A-Z]{3}|42501)$/.test(response.error?.code || "")) {
+          savingRecord = false;
+          if (uploaded) await client.storage.from(bucket).remove([uploaded]);
+          throw Error("رفضت قاعدة البيانات حفظ البحث. راجع الصلاحيات والبيانات ثم حاول مجددًا.");
+        }
+        throw Error("تعذر تأكيد الحفظ.");
       }
+      saved = true;
       resetEditor();
       status(publishStatus,id ? "تم حفظ تعديلات البحث بنجاح." : "نُشر البحث بنجاح وسيظهر في أخبار البحوث على الموقع.","success");
       try { localStorage.setItem("nabd-research-news-updated",String(Date.now())); } catch (_) {}
+      if (old && uploaded && old.pdf_path !== uploaded) {
+        const cleanup = await client.storage.from(bucket).remove([old.pdf_path]);
+        if (cleanup.error) throw cleanup.error;
+      }
       await refreshOwn();
     } catch (err) {
-      if (uploaded) await client.storage.from(bucket).remove([uploaded]);
-      status(publishStatus,err?.message || "تعذر النشر. يرجى المحاولة لاحقًا.","error");
+      if (saved) {
+        status(publishStatus,"تم حفظ البحث. تعذّر إكمال التنظيف أو تحديث القائمة. حدّث الصفحة للاطلاع عليه.");
+      } else if (savingRecord) {
+        status(publishStatus,"تعذّر تأكيد حفظ البحث. تحقّق من قائمة أبحاثك قبل إعادة الإرسال.","error");
+      } else {
+        status(publishStatus,err?.message || "تعذر النشر. يرجى المحاولة لاحقًا.","error");
+      }
     } finally { button.disabled=false; }
   });
   if (!client) {
