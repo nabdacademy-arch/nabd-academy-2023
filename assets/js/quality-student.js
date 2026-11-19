@@ -73,14 +73,13 @@ async function auth(){
  if(role?.role!=="student"){$("ql-student-locked").hidden=false;$("ql-student-locked").querySelector("p").textContent="هذا القسم مخصّص لحسابات الطلاب المسجلين في الأكاديمية.";return}
  student=user;$("ql-student-locked").hidden=true;$("ql-student-dashboard").hidden=false;
  $("ql-student-history").hidden=false;
- await load();
+ const available=await load();
  // Deep link from the authenticated NABD Moodle dashboard. A student can open
  // only an exam returned by the server's approved-and-current RPC.
  const requested=new URLSearchParams(window.location.search).get("exam");
- if(requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested)
-   && !attempted.has(requested)){
-   const active=await client.rpc("nabd_quality_active_exams");
-   if(!active.error && (active.data||[]).some(x=>x.id===requested))await openPaper(requested);
+ if(available && requested && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requested)
+   && !attempted.has(requested) && available.some(x=>x.id===requested)){
+   await openPaper(requested);
  }
 }
 function renderHistory(rows,error){
@@ -110,21 +109,37 @@ function renderHistory(rows,error){
    list.append(card);
  });
 }
+let listRevision=0;
 async function load(){
  if(!student||!client)return;
  message("ql-student-status","جارٍ تحميل الامتحانات…");
- const [examsResult,submitted,history]=await Promise.all([
+ const revision=++listRevision;
+ const list=$("ql-student-list");
+ list.replaceChildren();
+ let examsResult,submitted,history;
+ try {
+  [examsResult,submitted,history]=await Promise.all([
   client.rpc("nabd_quality_active_exams"),
   client.from("nabd_quality_submissions").select("exam_id,human_score,submitted_at,ai_score,ai_notes,ai_review_required,ai_status").eq("student_id",student.id).limit(200),
   client.rpc("nabd_quality_student_history_v2")
- ]);
+  ]);
+ } catch {
+   if(revision!==listRevision)return false;
+   renderHistory([],true);
+   message("ql-student-status","تعذّر الاتصال. تحقق من اتصالك ثم حدّث قائمة الامتحانات.","error");
+   return false;
+ }
+ if(revision!==listRevision)return false;
  const aiByExam=new Map((submitted.data||[]).map(row=>[row.exam_id,row]));
  const totalsByExam=new Map((history.data||[]).map(row=>[row.exam_id,row.question_count]));
  renderHistory((history.data||[]).map(row=>({...row,...(aiByExam.get(row.exam_id)||{})})),history.error||submitted.error);
+ if(submitted.error || !Array.isArray(submitted.data)){
+   message("ql-student-status","تعذّر التحقق من تسليماتك السابقة. حدّث القائمة قبل بدء الامتحان.","error");
+   return false;
+ }
  if(examsResult.error)return message("ql-student-status","تعذّر تحميل الامتحانات حاليًا. حاول لاحقًا.","error");
  attempted=new Map((submitted.data||[]).map(a=>[a.exam_id,
    {...a,question_count:totalsByExam.get(a.exam_id)||null}]));
- const list=$("ql-student-list");list.replaceChildren();
  const active=examsResult.data||[];
  if(!active.length){list.append(el("p","ql-empty","لا توجد امتحانات مفتوحة الآن. ستظهر هنا تلقائيًا بعد موافقة مدير الأكاديمية على النشر."));message("ql-student-status","");return}
  for(const item of active){
@@ -148,6 +163,7 @@ async function load(){
    const actions=el("div","ql-list-actions");actions.append(button);card.append(actions);list.append(card);
  }
  message("ql-student-status","");
+ return active;
 }
 $("ql-refresh").addEventListener("click",load);
 async function openPaper(id){
