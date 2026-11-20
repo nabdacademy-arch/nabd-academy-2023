@@ -6,11 +6,17 @@ const $=id=>document.getElementById(id),client=window.nabdSupabase;
 let student=null,exam=null,questions=[],timer=null,attempted=new Map(),submitting=false,autoRequested=false,paperLang="ar";
 let autoRetries=0,gradeRefreshes=[],restoringAnswers=false;
 function draftKey(){return student&&exam?"nabd-draft-"+student.id+"-"+exam.id:null}
+function writeDraft(answers){
+ const key=draftKey();
+ if(!key)return false;
+ try{
+   sessionStorage.setItem(key,JSON.stringify({at:Date.now(),answers}));
+   return true;
+ }catch{return false}
+}
 function saveDraft(){
  if(!student||!exam||submitting||restoringAnswers)return;
- try{const key=draftKey();if(!key)return;
-   sessionStorage.setItem(key,JSON.stringify({at:Date.now(),answers:captureAnswers()}));
- }catch{}
+ writeDraft(captureAnswers());
 }
 function clearDraft(id){
  if(!student||!id)return;
@@ -235,13 +241,13 @@ function submissionError(error){
    return tr("تعذّر التحقق من حساب الطالب. سجّل الدخول مجددًا من بوابة الطالب.",
      "Your student session could not be verified. Sign in again through the student portal.");
  if(/INVALID_ANSWERS/.test(raw))
-   return tr("الإجابات غير صالحة للتسليم. أعد فتح الامتحان بعد التأكد من اتصالك.",
-     "Your answers could not be validated. Reopen the exam after checking your connection.");
+   return tr("الإجابات غير صالحة للتسليم. راجع الإجابات وتحقق من الاتصال.",
+     "Your answers could not be validated. Review the answers and check your connection.");
  if(code==="PGRST202")
-   return tr("خدمة التسليم لم تكتمل تهيئتها بعد. أعد تحديث الصفحة.",
-     "The submission service is not yet ready. Refresh the page.");
- return tr("لم يؤكد الخادم تسليم الإجابات. احتفظنا بها في هذه الجلسة؛ تحقق من الإنترنت وأعد المحاولة قبل إغلاق الامتحان.",
-   "The server has not confirmed your answers. They are temporarily saved in this tab; check your connection and retry before the exam closes.");
+   return tr("خدمة التسليم غير جاهزة حاليًا.",
+     "The submission service is not yet ready.");
+ return tr("لم يؤكد الخادم تسليم الإجابات. تحقق من الاتصال وأعد المحاولة قبل إغلاق الامتحان.",
+   "The server has not confirmed submission. Check your connection and retry before the exam closes.");
 }
 async function submit(auto=false){
  if(!student||!exam||submitting)return;
@@ -249,9 +255,7 @@ async function submit(auto=false){
  "Submit your answers now? You have one attempt and cannot change submitted answers.")))return;
  const currentExam=exam;
  const answers=captureAnswers();
- try{
-   const key=draftKey();if(key)sessionStorage.setItem(key,JSON.stringify({at:Date.now(),answers}));
- }catch{}
+ const draftSaved=writeDraft(answers);
  submitting=true;const b=$("ql-submit-answers");b.disabled=true;
  message("ql-paper-status",auto?
  tr("اقترب وقت الإغلاق، جارٍ تسجيل الإجابات تلقائيًا…","The exam is closing; submitting your answers automatically…"):
@@ -270,7 +274,10 @@ async function submit(auto=false){
  if(!result){
    const timeLeft=Date.parse(currentExam.closes_at)-Date.now();
    b.disabled=timeLeft<=0;
-   message("ql-paper-status",submissionError(err),"error");
+   const draftNotice=draftSaved
+     ?tr("حُفظت نسخة مؤقتة من الإجابات المرسلة في علامة التبويب هذه.","A temporary copy of the submitted answers was saved in this tab.")
+     :tr("تعذّر حفظ نسخة من الإجابات الحالية في المتصفح. أبقِ الصفحة مفتوحة.","The browser could not save a copy of your current answers. Keep this page open.");
+   message("ql-paper-status",submissionError(err)+" "+draftNotice,"error");
    if(auto&&timeLeft>3000&&autoRetries<3){
      autoRetries++;
      setTimeout(()=>{if(exam?.id===currentExam.id&&!submitting)submit(true)},1800);
