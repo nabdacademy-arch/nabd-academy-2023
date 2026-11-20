@@ -13,8 +13,15 @@ self.addEventListener("fetch",(event)=>{
   const url=new URL(request.url);
   if(url.origin!==self.location.origin||!url.pathname.startsWith(new URL("./",self.registration.scope).pathname))return;
   if(request.mode==="navigate"){
-    // Return the requested offline page, not the main page, when navigation fails.
-    event.respondWith(fetch(request).catch(async()=>await caches.match(request)||await caches.match("./index.html")));
+    event.respondWith(fetch(request).catch(async error => {
+      const cache = await caches.open(CACHE);
+      // The hospital links to this bundled page with a client-side department filter.
+      const clinicalHub = new URL("./clinical-hub.html", self.registration.scope);
+      const key = url.pathname === clinicalHub.pathname ? clinicalHub.href : request;
+      const page = await cache.match(key) || await cache.match("./index.html");
+      if (page) return page;
+      throw error;
+    }));
     return;
   }
   event.respondWith(caches.match(request).then(hit=>hit||fetch(request).then(response=>{
