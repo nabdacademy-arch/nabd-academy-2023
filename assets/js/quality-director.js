@@ -701,6 +701,12 @@ function editExam(x){
  status("ql-save-status","أنت تعدّل مسودة. تغييراتك لا تُنشر إلا بعد موافقتك.");
  $("ql-builder").scrollIntoView({behavior:"smooth",block:"start"});
 }
+function displayChoice(value,options,asLetter){
+ if(value==null||value==="")return "لم يُجب";
+ const index=typeof value==="string"&&/^\d+$/.test(value)?Number(value):value;
+ if(!Number.isInteger(index)||index<0||index>=options.length)return "قيمة غير معروفة";
+ return asLetter?"الخيار "+String.fromCharCode(65+index):String(index+1);
+}
 async function showGrading(exam){
  const totalMarks=(exam.questions||[]).length;
  $("ql-grading").hidden=false;
@@ -742,8 +748,13 @@ async function showGrading(exam){
          (typeof autoPart.fraction==="number"?" / 1":"")));
      }
      const ans=a.answers?.[q.id];
-     let val=Array.isArray(ans)?ans.map((v,j)=>"عنصر "+(j+1)+": "+(Number(v)+1)).join("، "):ans;
-     if(q.type==="mcq" && Number.isInteger(Number(ans)))val="الخيار "+String.fromCharCode(65+Number(ans));
+     let val=ans;
+     if(q.type==="mcq")val=displayChoice(ans,q.options||[],true);
+     if(q.type==="matching"&&Array.isArray(ans)){
+       val=(q.left_items||ans).map((_,j)=>
+         "عنصر "+(j+1)+": "+displayChoice(ans[j],q.right_items||[],false)
+       ).join("، ");
+     }
      if(q.type==="true_false")val=ans==="true"?"صحيح":ans==="false"?"خطأ":ans;
      detail.append(el("p","",val===null||val===undefined||val===""?"لم يُجب":String(val)));
      answer.append(detail);
