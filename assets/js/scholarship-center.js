@@ -60,23 +60,40 @@
     }
     return article;
   }
-  let publishedCache = [];
+  let publishedCache = null;
+  let nextRefresh = 0;
+  let lastAppliedRefresh = 0;
   async function fetchPublished() {
     if (!client) {
       if (home) home.textContent = "خدمة أخبار المنح غير متاحة حاليًا.";
-      if (listings) setStatus(document.getElementById("sch-public-status"),"تعذر الاتصال بخدمة المنح.", "error");
+      if (listings) {
+        listings.replaceChildren();
+        setStatus(document.getElementById("sch-public-status"),"تعذر الاتصال بخدمة المنح.", "error");
+      }
       return;
     }
-    const {data,error} = await client.from("nabd_scholarship_opportunities")
-      .select("id,title,description,application_url,published_at")
-      .eq("status","published").order("published_at",{ascending:false}).limit(100);
-    if (error) {
+    const request = ++nextRefresh;
+    let rows;
+    try {
+      const {data,error} = await client.from("nabd_scholarship_opportunities")
+        .select("id,title,description,application_url,published_at")
+        .eq("status","published").order("published_at",{ascending:false}).limit(100);
+      if (error) throw error;
+      rows = data || [];
+    } catch {
+      if (request < lastAppliedRefresh) return;
+      lastAppliedRefresh = request;
       const message = "تعذر تحديث فرص المنح. يرجى إعادة المحاولة لاحقًا.";
       if (home) setStatus(document.getElementById("sch-home-status"),message,"error");
-      if (listings) setStatus(document.getElementById("sch-public-status"),message,"error");
+      if (listings) {
+        if (publishedCache === null) listings.replaceChildren();
+        setStatus(document.getElementById("sch-public-status"),message,"error");
+      }
       return;
     }
-    publishedCache = data || [];
+    if (request < lastAppliedRefresh) return;
+    lastAppliedRefresh = request;
+    publishedCache = rows;
     if (home) {
       home.replaceChildren();
       if (!publishedCache.length) {
@@ -88,10 +105,13 @@
       }
       setStatus(document.getElementById("sch-home-status"),"");
     }
-    if (listings) renderPublicList();
+    if (listings) {
+      setStatus(document.getElementById("sch-public-status"),"");
+      renderPublicList();
+    }
   }
   function renderPublicList() {
-    if(!listings) return;
+    if(!listings || publishedCache === null) return;
     const search=(document.getElementById("sch-search")?.value || "").trim().toLocaleLowerCase();
     const filtered=publishedCache.filter(x=>(x.title+" "+x.description).toLocaleLowerCase().includes(search));
     listings.replaceChildren();
@@ -103,10 +123,10 @@
     } else filtered.forEach(x=>listings.append(card(x,false)));
     const count=document.getElementById("sch-results-count");
     if(count)count.textContent=filtered.length+" فرصة";
-    setStatus(document.getElementById("sch-public-status"),"");
   }
   if (home || listings) {
     document.getElementById("sch-search")?.addEventListener("input",renderPublicList);
+    if (listings) window.addEventListener("online", () => { if (!document.hidden) fetchPublished(); });
     fetchPublished();
     // Live database notifications refresh newly published scholarships without a reload.
     // Visibility changes and periodic checks are fallbacks for slow/disconnected networks.
