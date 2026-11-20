@@ -199,7 +199,7 @@
   function modulesView(r){if(r[0]==='media')return mediaView();if(r[0]!=='founder'&&window.NABD_DEPARTMENTS)return window.NABD_DEPARTMENTS.view({role:r[0],roleLabel:roleText(r[0]),lang,demo:state.demo});return `<div class="page-head"><div class="eyebrow">NABD / ROLE WORKSPACE</div><h1>${e(T('modules'))}</h1><p>${e(T('moduleIntro'))} — ${e(roleText(r[0]))}</p></div><div class="columns"><section class="panel"><div class="panel-head"><div><h2>${e(T('requestedModules'))}</h2></div><span class="tag pend">${e(T('phase'))}</span></div><div class="workflow">${r[4].map((name,i)=>`<div class="item"><span class="wi">${['♧','▣','◇','◈'][i%4]}</span><div><strong>${e(name)}</strong><small>${e(T('phase'))}</small></div></div>`).join('')}</div></section><section class="panel"><h2>${e(T('profile'))}</h2><div class="workflow"><div class="item"><div class="wi">${e(r[3])}</div><div><strong>${e(roleText(r[0]))}</strong><small>${e(state.demo?T('previewOnly'):T('real'))}</small></div></div><div class="item"><span class="wi">✓</span><div><strong>${e(T('tasks'))}</strong><small>${e(T('tasksIntro'))}</small></div></div></div></section></div>`;}
   function authStatus(msg,kind='error'){const spot=document.getElementById('authStatus');if(spot)spot.innerHTML=`<div class="notice ${e(kind)}">${e(msg)}</div>`;}
   async function loadProfile(user){mediaState.items=[];mediaState.loaded=false;mediaState.loading=false;state.user=user;const {data,error}=await client.from('portal_profiles').select('user_id,full_name,role,is_active').eq('user_id',user.id).maybeSingle();if(error||!data||!data.is_active){state.profile=null;await client.auth.signOut();renderAuth(T('unauthorized'),'error');return;}state.profile=data;state.demo=false;await refreshData();if(window.NABD_DEPARTMENTS&&data.role!=='founder'&&data.role!=='media')await window.NABD_DEPARTMENTS.load({client,role:data.role,user});if(data.role==='media')await loadMedia();render();}
-  async function refreshData(){const queries=[client.from('portal_tasks').select('id,title,details,assigned_role,assigned_user,status,due_date,created_at').order('created_at',{ascending:false}).limit(100)];if(isFounder())queries.push(client.from('portal_profiles').select('user_id,full_name,role,is_active').order('role'),client.from('portal_activity').select('id,action,created_at').order('created_at',{ascending:false}).limit(10));const result=await Promise.all(queries);if(result[0].error)throw result[0].error;state.tasks=result[0].data||[];state.profiles=isFounder()?(result[1]?.data||[]):[state.profile];state.activity=isFounder()?(result[2]?.data||[]):[];}
+  async function refreshData(){const user=state.user;const queries=[client.from('portal_tasks').select('id,title,details,assigned_role,assigned_user,status,due_date,created_at,updated_at').order('created_at',{ascending:false}).limit(100)];if(isFounder())queries.push(client.from('portal_profiles').select('user_id,full_name,role,is_active').order('role'),client.from('portal_activity').select('id,action,created_at').order('created_at',{ascending:false}).limit(10));const result=await Promise.all(queries);if(state.user!==user||state.demo)return;if(result[0].error)throw result[0].error;state.tasks=result[0].data||[];state.profiles=isFounder()?(result[1]?.data||[]):[state.profile];state.activity=isFounder()?(result[2]?.data||[]):[];}
   async function logout(){window.NABD_DEPARTMENTS?.reset();mediaState.items=[];mediaState.loaded=false;mediaState.loading=false;state.flash=null;state.profile=null;state.user=null;state.demo=false;state.recovering=false;state.authPage='login';if(client)await client.auth.signOut();renderAuth();}
   function closeMenu(){document.getElementById('sidebar')?.classList.remove('open');document.getElementById('overlay')?.classList.remove('open');}
   ROOT.addEventListener('click',async ev=>{const mcat=ev.target.closest('[data-media-category]');if(mcat&&hasMedia()){mediaState.category=mcat.dataset.mediaCategory;render();return;}const btn=ev.target.closest('[data-action],[data-view]');if(!btn)return;const action=btn.dataset.action;const view=btn.dataset.view;
@@ -213,7 +213,38 @@
     }catch(err){notify(err?.message||T('error'),'error');}return;}
     if(view){const destination=view==='modules'&&canMedia()?'media':view;if(destination==='media'&&!hasMedia())return;state.view=destination;state.flash=null;render();if(destination==='media'&&!mediaState.loaded&&!mediaState.loading)await loadMedia();return;}if(action==='lang'){lang=lang==='ar'?'en':'ar';localStorage.setItem('nabd-portal-language',lang);render();return;}if(action==='demo'){state.demo=true;state.profile=null;state.demoRole='founder';state.tasks=demoTasks();state.profiles=[];state.activity=[];state.flash=null;render();return;}if(action==='forgot'){state.authPage='recover';renderAuth();return;}if(action==='back'){state.authPage='login';renderAuth();return;}if(action==='open-password'&&!state.demo&&state.profile){document.getElementById('password-dialog')?.showModal();return;}if(action==='close-password'){document.getElementById('password-dialog')?.close();return;}if(action==='logout'){await logout();return;}if(action==='openmenu'){document.getElementById('sidebar')?.classList.add('open');document.getElementById('overlay')?.classList.add('open');return;}if(action==='closemenu'){closeMenu();return;}if(action==='openTask'&&isFounder()){document.getElementById('task-dialog')?.showModal();return;}if(action==='closeDialog'){document.getElementById('task-dialog')?.close();return;}});
   ROOT.addEventListener('input',ev=>{if(ev.target.id==='mediaSearch'&&hasMedia()){mediaState.search=ev.target.value.toLowerCase().trim();const list=document.getElementById('media-items');if(list)list.innerHTML=mediaCards();}});
-  ROOT.addEventListener('change',async ev=>{if(ev.target.id==='role-preview'&&state.demo){state.demoRole=ev.target.value;state.view='overview';render();return;}const taskId=ev.target.dataset.taskId;if(!taskId)return;const newStatus=ev.target.value;const task=state.tasks.find(t=>t.id===taskId);if(!task||!['todo','in_progress','done'].includes(newStatus))return;if(state.demo){task.status=newStatus;notify(T('demoChange'));return;}ev.target.disabled=true;const {error}=await client.from('portal_tasks').update({status:newStatus}).eq('id',taskId);if(error){ev.target.disabled=false;notify(error.message,'error');return;}try{await refreshData();notify(T('actionDone'));}catch(err){notify(err.message,'error');}});
+  ROOT.addEventListener('change',async ev=>{
+    const control=ev.target;
+    if(control.id==='role-preview'&&state.demo){state.demoRole=control.value;state.view='overview';render();return;}
+    const task=state.tasks.find(item=>item.id===control.dataset.taskId);
+    const status=control.value;
+    if(!task||control.disabled||!['todo','in_progress','done'].includes(status))return;
+    if(state.demo){task.status=status;notify(T('demoChange'));return;}
+    const user=state.user;
+    if(!user||!state.profile)return;
+    control.disabled=true;
+    let saved=false;
+    try{
+      const {data,error}=await client.from('portal_tasks').update({status})
+        .eq('id',task.id).eq('updated_at',task.updated_at).select('status,updated_at').maybeSingle();
+      if(state.user!==user||state.demo)return;
+      if(error)throw error;
+      if(data){
+        task.status=data.status;
+        task.updated_at=data.updated_at;
+        saved=true;
+      }
+      await refreshData();
+      if(state.user!==user||state.demo)return;
+      if(saved)notify(T('actionDone'));
+      else notify(U('تغيّرت المهمة أو لم تعد متاحة. راجع القائمة المحدّثة.','The task changed or is no longer available. Review the refreshed list.'),'error');
+    }catch{
+      if(state.user!==user||state.demo)return;
+      control.value=task.status;
+      notify(saved?U('حُفظت الحالة وتعذّر تحديث القائمة.','Status saved. The list could not be refreshed.'):
+        U('تعذّر تأكيد التغيير. حدّث القائمة قبل المحاولة مجددًا.','Change unconfirmed. Refresh the list before trying again.'),'error');
+    }finally{control.disabled=false;}
+  });
   ROOT.addEventListener('submit',async ev=>{const form=ev.target;if(!['login-form','recover-form','update-password','task-form','media-form','change-password-form'].includes(form.id))return;ev.preventDefault();const btn=form.querySelector('[type="submit"]');btn.disabled=true;try{const data=new FormData(form);
     if(form.id==='login-form'){if(!client)throw new Error(T('noConfig'));const {data:result,error}=await client.auth.signInWithPassword({email:String(data.get('email')).trim(),password:String(data.get('password'))});if(error)throw new Error(T('badLogin'));await loadProfile(result.user);return;}
     if(form.id==='recover-form'){if(!client)throw new Error(T('noConfig'));const {error}=await client.auth.resetPasswordForEmail(String(data.get('email')).trim(),{redirectTo:location.origin+location.pathname});if(error)throw error;authStatus(T('resetSent'),'success');return;}
