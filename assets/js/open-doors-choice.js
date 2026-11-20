@@ -151,6 +151,9 @@ async function switchTranslation(ctx){
   }
  }finally{btn.disabled=false}
 }
+function answerLetters(deck,indices){
+ return indices.map(index=>String.fromCharCode(65+deck.order.indexOf(index))).join(", ")||"—";
+}
 function renderResult(ctx){
  const result=getResult(ctx),deck=current(ctx),area=$(ctx.id+"Result");
  if(!result||!deck)return;
@@ -161,9 +164,8 @@ function renderResult(ctx){
  const accuracy=result.exact?"✓ Correct / إجابة صحيحة":
  result.score>0?"◔ Partially correct / صحيحة جزئيًا":"✗ Incorrect / غير صحيحة";
  area.append(make("p",accuracy));
- const letters=q.options.map((_,i)=>String.fromCharCode(65+deck.order.indexOf(i)));
- const selected=result.selected.map(i=>letters[i]).join(", ")||"—";
- const correct=result.correct.map(i=>letters[i]).join(", ");
+ const selected=answerLetters(deck,result.selected);
+ const correct=answerLetters(deck,result.correct);
  area.append(make("p","Your selection / اختيارك: "+selected+"   ·   Correct / الصحيح: "+correct));
  const ol=make("ol");
  deck.order.forEach((idx,i)=>{
@@ -240,10 +242,13 @@ function exportReport(ctx){
  const lines=["NABD Open Doors · "+ctx.kind.toUpperCase()+" choice independent practice",
  "NOT OFFICIAL · educational scoring rubric · "+new Date().toISOString()];
  for(let i=0;i<ctx.questions.length;i++){
-  const q=ctx.questions[i].q,r=ctx.reviewed[i];
+  const deck=ctx.questions[i],q=deck.q,r=ctx.reviewed[i];
   lines.push("","Question "+(i+1)+" / "+q.subject+" / "+q.topic,q.question);
-  for(let k=0;k<q.options.length;k++)lines.push(String.fromCharCode(65+k)+") "+q.options[k]+(q.correct.includes(k)?" [CORRECT]":""));
-  lines.push("Marked: "+(r?r.selected.join(","):"none"),"Points: "+(r?r.score+"/"+r.max:"not graded"),
+  deck.order.forEach((original,position)=>{
+   lines.push(String.fromCharCode(65+position)+") "+q.options[original]+(q.correct.includes(original)?" [CORRECT]":""));
+  });
+  lines.push("Your selection / اختيارك: "+answerLetters(deck,r?.selected||[]),
+   "Correct / الصحيح: "+answerLetters(deck,q.correct),"Points: "+(r?r.score+"/"+r.max:"not graded"),
    "Explanation: "+(q.explanation_en||q.explanation_ar||q.originalExplanation||"Not supplied"));
  }
  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
