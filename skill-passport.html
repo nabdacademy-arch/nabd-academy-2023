@@ -307,6 +307,7 @@
   let language = "ar";
   let db = null;
   let user = null;
+  let accountVersion = 0;
   let skills = [];
   let lastHistory = [];
 
@@ -382,7 +383,7 @@
     return null;
   }
 
-  async function loadSkills() {
+  async function loadSkills(version) {
     const { data, error } = await db
       .from("nabd_skill_catalog")
       .select("id, code, title_en, title_ar, domain, level, learning_objectives, safety_note")
@@ -390,6 +391,7 @@
       .order("domain", { ascending:true })
       .order("code", { ascending:true });
 
+    if (version !== accountVersion) return;
     if (error) throw error;
     skills = data || [];
     $("skillCount").textContent = skills.length;
@@ -442,7 +444,7 @@
     if (skills.some(skill => skill.id === previous)) select.value = previous;
   }
 
-  async function loadHistory() {
+  async function loadHistory(version) {
     if (!user) return;
 
     const { data, error } = await db
@@ -451,6 +453,7 @@
       .eq("student_id", user.id)
       .order("submitted_at", { ascending:false });
 
+    if (version !== accountVersion) return;
     if (error) throw error;
     lastHistory = data || [];
     $("recordCount").textContent = lastHistory.length;
@@ -486,50 +489,47 @@
     }).join("");
   }
 
-  async function refreshDashboard() {
-    if (!user) return;
+  async function refreshDashboard(version) {
+    if (version !== accountVersion || !user) return;
     try {
       setStatus("authStatus", tr("loading"));
-      await loadSkills();
-      await loadHistory();
+      await loadSkills(version);
+      if (version !== accountVersion) return;
+      await loadHistory(version);
+      if (version !== accountVersion) return;
       $("studentEmail").textContent = user.email || "—";
       setStatus("authStatus", tr("signedIn"), "success");
     } catch (error) {
+      if (version !== accountVersion) return;
       setStatus("authStatus", tr("loadError") + error.message, "error");
     }
   }
 
-  async function initialize() {
+  function initialize() {
     db = getSupabaseClient();
     if (!db) {
       setStatus("authStatus", tr("missingClient"), "error");
       return;
     }
 
-    try {
-      const { data, error } = await db.auth.getSession();
-      if (error) throw error;
-      user = data.session?.user || null;
-      if (user) await refreshDashboard();
-    } catch (error) {
-      setStatus("authStatus", tr("loadError") + error.message, "error");
-    }
-
-    db.auth.onAuthStateChange((_event, session) => {
-      user = session?.user || null;
-      if (user) {
-        $("studentEmail").textContent = user.email || "—";
-        refreshDashboard();
-      } else {
-        skills = [];
-        lastHistory = [];
-        $("studentEmail").textContent = "—";
-        $("recordCount").textContent = "0";
-        $("skillCount").textContent = "0";
-        renderCatalog();
-        renderSkillOptions();
-        renderHistory([]);
-      }
+    db.auth.onAuthStateChange((event, session) => {
+      const nextUser = session?.user || null;
+      if (nextUser?.id === user?.id) return;
+      user = nextUser;
+      const version = ++accountVersion;
+      skills = [];
+      lastHistory = [];
+      $("studentEmail").textContent = user?.email || "—";
+      $("recordCount").textContent = "0";
+      $("skillCount").textContent = "0";
+      for (const field of ["learned", "challenge", "nextStep", "password"]) $(field).value = "";
+      for (const id of ["authStatus", "historyStatus", "reflectionStatus"]) setStatus(id, "");
+      for (const id of ["submitBtn", "refreshBtn"]) setBusy($(id), false);
+      renderCatalog();
+      renderSkillOptions();
+      renderHistory([]);
+      if (user) setTimeout(() => refreshDashboard(version), 0);
+      else if (event === "SIGNED_OUT") setStatus("authStatus", tr("signedOut"), "success");
     });
   }
 
@@ -547,14 +547,14 @@
       return;
     }
 
+    const version = accountVersion;
     const button = $("loginBtn");
     setBusy(button, true);
     try {
-      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      const { error } = await db.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      user = data.user;
-      await refreshDashboard();
     } catch (error) {
+      if (version !== accountVersion) return;
       setStatus("authStatus", tr("loginError") + error.message, "error");
     } finally {
       setBusy(button, false);
@@ -563,20 +563,12 @@
 
   $("logoutBtn").addEventListener("click", async () => {
     if (!db) return;
+    const version = accountVersion;
     try {
       const { error } = await db.auth.signOut();
       if (error) throw error;
-      user = null;
-      skills = [];
-      lastHistory = [];
-      $("studentEmail").textContent = "—";
-      $("recordCount").textContent = "0";
-      $("skillCount").textContent = "0";
-      renderCatalog();
-      renderSkillOptions();
-      renderHistory([]);
-      setStatus("authStatus", tr("signedOut"), "success");
     } catch (error) {
+      if (version !== accountVersion) return;
       setStatus("authStatus", error.message, "error");
     }
   });
@@ -607,6 +599,7 @@
       return;
     }
 
+    const version = accountVersion;
     const button = $("submitBtn");
     setBusy(button, true);
     try {
@@ -627,6 +620,7 @@
           score:null
         });
 
+      if (version !== accountVersion) return;
       if (error) throw error;
 
       $("learned").value = "";
@@ -634,11 +628,12 @@
       $("nextStep").value = "";
       $("skillSelect").value = "";
       setStatus("reflectionStatus", tr("submitted"), "success");
-      await loadHistory();
+      await loadHistory(version);
     } catch (error) {
+      if (version !== accountVersion) return;
       setStatus("reflectionStatus", tr("submitError") + error.message, "error");
     } finally {
-      setBusy(button, false);
+      if (version === accountVersion) setBusy(button, false);
     }
   });
 
@@ -648,15 +643,18 @@
       return;
     }
 
+    const version = accountVersion;
     const button = $("refreshBtn");
     setBusy(button, true);
     try {
-      await loadHistory();
+      await loadHistory(version);
+      if (version !== accountVersion) return;
       setStatus("historyStatus", tr("signedIn"), "success");
     } catch (error) {
+      if (version !== accountVersion) return;
       setStatus("historyStatus", tr("refreshError") + error.message, "error");
     } finally {
-      setBusy(button, false);
+      if (version === accountVersion) setBusy(button, false);
     }
   });
 
