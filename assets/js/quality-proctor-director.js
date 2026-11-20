@@ -15,6 +15,7 @@ const labels={
  copy_attempt:"محاولة نسخ محتوى من صفحة الامتحان"
 };
 let director=null,exams=[],selected=null,currentState=null,busy=false,refreshing=false;
+let dashboardVersion=0;
 const dom=(tag,cls,text)=>{
  const node=document.createElement(tag);
  if(cls)node.className=cls;
@@ -39,9 +40,9 @@ function updateButtons(){
  const exam=exams.find(item=>item.id===selected);
  const online=Boolean(currentState?.enabled&&exam&&active(exam));
  const badge=$("ql-proctor-state");
- badge.textContent=online?"يعمل لهذا الامتحان":currentState?.enabled?"الامتحان انتهى":"متوقف";
+ badge.textContent=selected&&!currentState?"غير مؤكّد":online?"يعمل لهذا الامتحان":currentState?.enabled?"الامتحان انتهى":"متوقف";
  badge.className="ql-tag"+(online?" ql-tag-green":"");
- start.disabled=busy||!director||!active(exam)||Boolean(currentState?.enabled);
+ start.disabled=busy||!currentState||!director||!active(exam)||Boolean(currentState?.enabled);
  stop.disabled=busy||!director||!selected||!Boolean(currentState?.enabled);
  refreshButton.disabled=busy||refreshing||!director;
  select.disabled=busy||!director;
@@ -60,6 +61,7 @@ async function identity(){
  }
 }
 function reset(){
+ dashboardVersion++;refreshing=false;
  selected=null;currentState=null;exams=[];
  select.replaceChildren(new Option("سجّل الدخول بحساب المدير",""));
  log.replaceChildren(dom("p","ql-empty","المراقبة متاحة فقط لمدير الامتحانات."));
@@ -70,10 +72,12 @@ function reset(){
 }
 async function loadExams(){
  if(!director)return;
+ const owner=director;
  const {data,error}=await client.from("nabd_quality_exams")
    .select("id,title,status,opens_at,closes_at")
    .eq("created_by",director.id).in("status",["published","closed"])
    .order("created_at",{ascending:false}).limit(100);
+ if(owner!==director)return;
  if(error){message("تعذر تحميل الامتحانات. تحقق من الاتصال.","error");return;}
  exams=data||[];
  const old=selected;
@@ -82,7 +86,8 @@ async function loadExams(){
    const option=new Option(item.title+(active(item)?" · نشط": " · منتهٍ"),item.id);
    select.append(option);
  }
- selected=exams.some(item=>item.id===old)?old:(exams.find(active)?.id||exams[0]?.id||null);
+ const next=exams.some(item=>item.id===old)?old:(exams.find(active)?.id||exams[0]?.id||null);
+ if(next!==selected)selectExam(next);
  select.value=selected||"";
  if(!selected){
    currentState=null;log.replaceChildren(dom("p","ql-empty","لا توجد امتحانات منشورة بعد. انشر امتحانًا أولًا، ثم شغّل المراقبة خلال مدته."));
@@ -116,39 +121,58 @@ function render(events){
  }
  table.append(body);log.append(table);
 }
+function selectExam(id){
+ selected=id;
+ dashboardVersion++;
+ refreshing=false;
+ currentState=null;
+ log.replaceChildren(dom("p","ql-empty",id?"جارٍ تحميل سجل الامتحان…":"اختر الامتحان"));
+ $("ql-proctor-count").textContent="—";
+ $("ql-proctor-updated").textContent="—";
+ message("");
+ updateButtons();
+}
 async function loadDashboard(){
  if(!director||!selected||refreshing)return;
+ const version=dashboardVersion;
  const exam=selected;refreshing=true;updateButtons();
  try{
    const {data,error}=await client.rpc("nabd_quality_proctor_dashboard",{p_exam:exam});
+   if(version!==dashboardVersion)return;
    if(error||!data)throw Error(error?.message||"تعذّر تحميل سجل المراقبة.");
-   if(exam!==selected)return;
+   if(!currentState)message("");
    currentState=data;
    $("ql-proctor-count").textContent=String(data.total??0);
    $("ql-proctor-updated").textContent=formatDate(data.updated_at);
    render(Array.isArray(data.events)?data.events:[]);
- }catch(error){message("خطأ في سجل المراقبة: "+String(error?.message||error).slice(0,160),"error");}
- finally{refreshing=false;updateButtons();}
+ }catch(error){
+   if(version!==dashboardVersion)return;
+   if(!currentState)log.replaceChildren(dom("p","ql-empty","تعذّر تحميل السجل. اضغط على زر التحديث للمحاولة مجددًا."));
+   message("خطأ في سجل المراقبة: "+String(error?.message||error).slice(0,160),"error");
+ }
+ finally{if(version===dashboardVersion){refreshing=false;updateButtons();}}
 }
 async function toggle(enabled){
- if(!director||!selected||busy)return;
+ if(!director||!selected||!currentState||busy)return;
  const exam=exams.find(item=>item.id===selected);
  if(enabled&&!active(exam))return message("المراقبة لا تبدأ إلا خلال فترة امتحان منشور ونشط.","error");
  if(!window.confirm(enabled?
    "تشغيل المراقبة لهذا الامتحان؟ سيتم تسجيل إشارات المتصفح فقط، دون تصوير أو تسجيل شاشة، ولن تتغير درجات الطلاب تلقائيًا.":
    "هل تريد إيقاف مراقبة هذا الامتحان؟ لن تُسجّل إشارات جديدة بعد إيقافها. سيبقى السجل السابق للمراجعة وفق مدة الاحتفاظ."))return;
+ const version=dashboardVersion;
  busy=true;updateButtons();
  message(enabled?"جارٍ تشغيل المراقبة على الخادم…":"جارٍ إيقاف المراقبة على الخادم…");
  try{
    const {data,error}=await client.rpc("nabd_quality_proctor_toggle",{p_exam:selected,p_enabled:enabled});
+   if(version!==dashboardVersion)return;
    if(error||data?.enabled!==enabled)throw Error(error?.message||"لم يؤكد الخادم تغيير الحالة.");
    currentState={...(currentState||{}),enabled};
    message(enabled?"تم تشغيل المراقبة لهذا الامتحان. ستظهر إشارات الطلاب المتصلين بعد تفعيلها لديهم.":
      "تم إيقاف المراقبة؛ لا يجري استقبال إشارات جديدة.","success");
- }catch(error){message("لم يتغير وضع المراقبة: "+String(error?.message||error).slice(0,160),"error");}
+ }catch(error){if(version===dashboardVersion)message("لم يتغير وضع المراقبة: "+String(error?.message||error).slice(0,160),"error");}
  finally{busy=false;updateButtons();await loadDashboard();}
 }
-select.addEventListener("change",()=>{selected=select.value||null;currentState=null;updateButtons();if(selected)loadDashboard();});
+select.addEventListener("change",()=>{selectExam(select.value||null);if(selected)loadDashboard();});
 start.addEventListener("click",()=>toggle(true));
 stop.addEventListener("click",()=>toggle(false));
 refreshButton.addEventListener("click",()=>{if(director)loadExams();});
