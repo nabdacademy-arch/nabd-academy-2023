@@ -70,9 +70,9 @@ function showExam(ctx){
  $(ctx.id+"Summary").hidden=true;
  const deck=current(ctx);
  if(!deck)return;
- ctx.locked=false;ctx.choices.clear();ctx.showTranslation=false;
- $(ctx.id+"Translate").textContent="🌐 Show Arabic · إظهار الترجمة";
- $(ctx.id+"Translate").setAttribute("aria-pressed","false");
+ ctx.locked=false;ctx.choices.clear();
+ setTranslationVisible(ctx,false);
+ $(ctx.id+"Translate").disabled=false;
  $(ctx.id+"Result").hidden=true;
  $(ctx.id+"Result").replaceChildren();
  $(ctx.id+"Next").hidden=true;$(ctx.id+"Check").disabled=false;
@@ -120,36 +120,39 @@ function renderChoices(ctx){
   area.append(label);
  }
 }
+function setTranslationVisible(ctx,visible){
+ ctx.showTranslation=visible;
+ const btn=$(ctx.id+"Translate");
+ btn.textContent=visible?"🌐 Hide Arabic · إخفاء الترجمة":"🌐 Show Arabic · إظهار الترجمة";
+ btn.setAttribute("aria-pressed",String(visible));
+}
 async function switchTranslation(ctx){
- const deck=current(ctx);if(!deck)return;const q=deck.q;
- if(ctx.showTranslation){
-  ctx.showTranslation=false;$(ctx.id+"Translate").textContent="🌐 Show Arabic · إظهار الترجمة";
-  $(ctx.id+"Translate").setAttribute("aria-pressed","false");
+ const deck=current(ctx);if(!deck||$(ctx.id+"Panel").hidden)return;
+ const q=deck.q,btn=$(ctx.id+"Translate");
+ if(ctx.showTranslation||q.question_ar||trans(ctx,q)){
+  setTranslationVisible(ctx,!ctx.showTranslation);
   renderChoices(ctx);renderResult(ctx);return;
  }
- ctx.showTranslation=true;
- $(ctx.id+"Translate").textContent="🌐 Hide Arabic · إخفاء الترجمة";
- $(ctx.id+"Translate").setAttribute("aria-pressed","true");
- if(q.question_ar){renderChoices(ctx);renderResult(ctx);return}
- const cached=trans(ctx,q);
- if(cached){renderChoices(ctx);renderResult(ctx);return}
  if(!q.dbId){setStatus(ctx,"هذه المسألة بالإنجليزية فقط حاليًا؛ الأسئلة الجديدة متاحة باللغتين.",true);return}
- const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ ترجمة السؤال والاختيارات والشرح إلى العربية…");
+ btn.disabled=true;
+ setStatus(ctx,"جارٍ ترجمة السؤال والاختيارات والشرح إلى العربية…");
  try{
   const {data,error}=await db.functions.invoke("open-doors-translate",{body:{question_id:q.dbId}});
+  if(current(ctx)!==deck||$(ctx.id+"Panel").hidden)return;
   if(error||!data?.ok||!data.translation)throw Error("TRANSLATION_UNAVAILABLE");
   const t=data.translation;
   if(!Array.isArray(t.options_ar)||t.options_ar.length!==q.options.length||
+     !t.options_ar.every(option=>typeof option==="string"&&option.trim())||
      typeof t.question_ar!=="string"||!t.question_ar.trim())throw Error("INCOMPLETE_TRANSLATION");
   ctx.translation.set(q.id,t);
-  if(current(ctx)?.q.id!==q.id)return;
+  setTranslationVisible(ctx,true);
   renderChoices(ctx);renderResult(ctx);
   setStatus(ctx,"تمت الترجمة. عند اختلاف مصطلح علمي راجع السؤال الإنجليزي الأصلي.");
  }catch(err){
-  if(current(ctx)?.q.id===q.id){
-   setStatus(ctx,"تعذرت الترجمة الآلية حاليًا. السؤال الإنجليزي والتصحيح يستمران بالعمل.",true);
+  if(current(ctx)===deck&&!$(ctx.id+"Panel").hidden){
+   setStatus(ctx,"تعذرت الترجمة. اضغط إظهار الترجمة للمحاولة مجددًا. · Translation unavailable. Select Show Arabic to retry.",true);
   }
- }finally{btn.disabled=false}
+ }finally{if(current(ctx)===deck)btn.disabled=false}
 }
 function renderResult(ctx){
  const result=getResult(ctx),deck=current(ctx),area=$(ctx.id+"Result");
