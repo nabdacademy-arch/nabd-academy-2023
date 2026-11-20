@@ -524,7 +524,7 @@ async function uploadFile(f){
  return path;
 }
 $("ql-save-draft").addEventListener("click",async()=>{
- if(!director)return;
+ if(!director||$("ql-save-draft").disabled)return;
  try{validateQuestions()}catch(e){return status("ql-save-status",e.message,"error");}
  const title=$("ql-title").value.trim(),mins=Number($("ql-duration").value),course=$("ql-course").value||null;
  if(title.length<3||title.length>220||!Number.isInteger(mins)||mins<5||mins>180)return status("ql-save-status","تحقق من عنوان الامتحان والمدة من 5 إلى 180 دقيقة.","error");
@@ -536,16 +536,39 @@ $("ql-save-draft").addEventListener("click",async()=>{
    const sourcePath=uploaded||(importedFile?null:editingSourcePath)||null;
    const values={title,course_id:course,source_filename:file?.name||editingSourceFilename||"",
      source_path:sourcePath,questions,duration_minutes:mins,updated_at:new Date().toISOString()};
-   const result=editingId
-     ? await client.from("nabd_quality_exams").update(values).eq("id",editingId).eq("status","draft").select("id").maybeSingle()
-     : await client.from("nabd_quality_exams").insert({...values,status:"draft",created_by:director.id}).select("id").maybeSingle();
-   if(result.error||!result.data)throw Error("تعذر حفظ المسودة. تحقق من الصلاحيات أو حدّث الصفحة.");
    const previousPath=editingSourcePath;
+   const examId=editingId,ownerId=director.id;
+   let result;
+   try{
+     result=examId
+       ? await client.from("nabd_quality_exams").update(values).eq("id",examId).eq("status","draft").select("id").maybeSingle()
+       : await client.from("nabd_quality_exams").insert({...values,status:"draft",created_by:ownerId}).select("id").maybeSingle();
+   }catch{result=null;}
+   if(result&&!result.error&&!result.data){
+     if(uploaded)await client.storage.from(bucket).remove([uploaded]);
+     throw Error("تعذر حفظ المسودة. تحقق من الصلاحيات أو حدّث الصفحة.");
+   }
+   if(!result?.data?.id||result.error){
+     const uncertain="تعذّر تأكيد حفظ المسودة. راجع قائمة الامتحانات قبل إعادة الحفظ.";
+     if(!uploaded)throw Error(uncertain);
+     // Each upload has a new UUID. Its presence on the owner's row confirms this write.
+     try{
+       let lookup=client.from("nabd_quality_exams").select("id").eq("created_by",ownerId).eq("source_path",uploaded);
+       if(examId)lookup=lookup.eq("id",examId);
+       const confirmation=await lookup.maybeSingle();
+       if(confirmation.error||!confirmation.data?.id)throw Error();
+     }catch{throw Error(uncertain);}
+   }
    resetBuilder();
    status("ql-save-status","تم حفظ المسودة. لا تظهر للطلاب حتى تضغط «اعتماد ونشر الآن» من قسم التحكم.","success");
-   if(previousPath&&previousPath!==sourcePath)await client.storage.from(bucket).remove([previousPath]);
-   await loadExams();
- }catch(e){if(uploaded)await client.storage.from(bucket).remove([uploaded]);status("ql-save-status",e.message||"تعذر حفظ المسودة.","error")}
+   try{
+     if(previousPath&&previousPath!==sourcePath){
+       const cleanup=await client.storage.from(bucket).remove([previousPath]);
+       if(cleanup.error)throw cleanup.error;
+     }
+   }catch{status("ql-save-status","تم حفظ المسودة والمرفق الحالي. تعذّر تنظيف المرفق السابق.","success");}
+   try{await loadExams();}catch{status("ql-list-status","تعذّر تحديث قائمة الامتحانات. حدّث الصفحة لعرض المسودة.","error");}
+ }catch(e){status("ql-save-status",e.message||"تعذر حفظ المسودة.","error")}
  finally{b.disabled=false}
 });
 async function loadExams(){
