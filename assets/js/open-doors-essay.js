@@ -28,17 +28,23 @@ function normaliseArchive(q){
   ],origin:"NABD_EXISTING_DATABASE",source:bank.SOURCES[q.subject].page,max_points:10,
   originalRubric:rubric.slice(0,750)};
 }
-async function loadArchive(){
- if(state.cacheLoaded)return;state.cacheLoaded=true;
+let archiveRequest=null;
+function loadArchive(){
+ if(state.cacheLoaded)return Promise.resolve(true);
+ if(!archiveRequest)archiveRequest=fetchArchive().finally(()=>{archiveRequest=null});
+ return archiveRequest;
+}
+async function fetchArchive(){
  try{
   const u=await db.auth.getUser();
-  if(u.error||!u.data?.user){status("سجل الدخول أولًا إلى بوابة نبض.","Sign in to NABD first.",true);return}
+  if(u.error||!u.data?.user){status("سجل الدخول أولًا إلى بوابة نبض.","Sign in to NABD first.",true);return false}
   const {data,error}=await db.from("open_doors_questions").select("id,subject,kind,topic,question,explanation,rubric,origin,source_note")
    .eq("kind","written").in("subject",allSubjects).limit(100);
   if(error)throw Error(error.message);
   state.archive=(data||[]).map(normaliseArchive).filter(Boolean);
   $("essayBankSize").textContent=String(state.archive.length+bank.QUESTIONS.length);
- }catch(e){status("الأسئلة الجديدة متاحة؛ تعذّر جلب أرشيف الأسئلة الحالي.","New tasks are available; the existing protected archive could not be loaded.",true)}
+  state.cacheLoaded=true;return true;
+ }catch(e){status("الأسئلة الجديدة متاحة؛ تعذّر جلب أرشيف الأسئلة الحالي.","New tasks are available; the existing protected archive could not be loaded.",true);return false}
 }
 function langUI(){
  const lang=state.lang;
@@ -112,7 +118,17 @@ function buildDeck(){
  if(!pool.length){status("لا توجد أسئلة متاحة لهذا الاختيار.","No tasks available for this choice.",true);return}
  renderQuestion();
 }
-$("essayStart").addEventListener("click",async()=>{await loadArchive();buildDeck()});
+$("essayStart").addEventListener("click",async()=>{
+ const button=$("essayStart");
+ if(button.disabled)return;
+ button.disabled=true;
+ try{
+  const loaded=await loadArchive();
+  buildDeck();
+  if(!loaded)status("بدأت الجولة بالأسئلة المضمّنة. سيُعاد طلب الأرشيف عند فتح التدريب أو بدء جولة جديدة.",
+   "This round uses the built-in tasks. Opening the studio or starting another round will retry the archive.");
+ }finally{button.disabled=false}
+});
 $("essayHeroJump")?.addEventListener("click",()=>{
  document.querySelector('[data-tab="essayLab"]')?.click();
  $("essayLab")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -289,7 +305,7 @@ function finish(){
  }root.append(list);
  $("essayWorkspace").hidden=true;$("essayMeter").style.width="100%";
  const restart=elem("button",ar("ابدأ تدريبًا جديدًا","Start a new practice round"),"essay-btn primary");
- restart.addEventListener("click",buildDeck);root.append(restart);
+ restart.addEventListener("click",()=>$("essayStart").click());root.append(restart);
 }
 $("essayNext").addEventListener("click",()=>{
  if(state.index>=state.questions.length-1){finish();return}
