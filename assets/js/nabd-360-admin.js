@@ -102,9 +102,17 @@ async function reviewApplication(app,status,adminNote,btn){
  if(status==="approved"&&!confirm("هل تحققت من معلومات المتطوع وموافقته؟ هذه موافقة مراجعة فقط وليست تكليفًا تلقائيًا."))return;
  s.busy=true;btn.disabled=true;
  try{
-  const result=await s.db.from("nabd_360_lecturer_applications").update({status,admin_note:adminNote||null,reviewed_at:new Date().toISOString()}).eq("id",app.id).select("id,status,admin_note").maybeSingle();
-  if(result.error||!result.data)throw result.error||Error("No confirmed record");
-  app.status=result.data.status;app.admin_note=result.data.admin_note;
+  const previous=app.reviewed_at;
+  const nextTime=Math.max(Date.now(),previous?Date.parse(previous)+1:0);
+  let update=s.db.from("nabd_360_lecturer_applications")
+   .update({status,admin_note:adminNote||null,reviewed_at:new Date(nextTime).toISOString()}).eq("id",app.id);
+  update=previous===null?update.is("reviewed_at",null):update.eq("reviewed_at",previous);
+  const {data,error}=await update.select("id,status,admin_note,reviewed_at").maybeSingle();
+  if(error)throw error;
+  if(data?.id!==app.id||!data.reviewed_at){
+   msg("تعذّر تأكيد القرار لهذه النسخة. احتفظ بملاحظتك وحدّث القائمة لمراجعة آخر قرار قبل الحفظ.",true);return
+  }
+  app.status=data.status;app.admin_note=data.admin_note;app.reviewed_at=data.reviewed_at;
   msg("حُفظ قرار المراجعة فعليًا دون أي تعيين أو إعلان.");
   draw()
  }catch(e){msg("لم يتأكد حفظ المراجعة؛ تحقق من صلاحيات الحساب والاتصال.",true)}
@@ -135,7 +143,7 @@ async function refresh(){
   const {count,error}=await s.db.from(table).select(col,{count:"exact",head:true});
   if(error)throw error;return Number.isInteger(count)?count:null
  });
- requests.push(s.db.from("nabd_360_lecturer_applications").select("id,full_name,contact_email,expertise,institution,country,offer_topic,weekly_hours,status,admin_note,created_at").order("created_at",{ascending:false}).limit(70));
+ requests.push(s.db.from("nabd_360_lecturer_applications").select("id,full_name,contact_email,expertise,institution,country,offer_topic,weekly_hours,status,admin_note,reviewed_at,created_at").order("created_at",{ascending:false}).limit(70));
  const outcomes=await Promise.allSettled(requests);
  if(epoch!==s.epoch)return;
  metrics.forEach(([key],i)=>{const v=outcomes[i];s.metrics[key]=v.status==="fulfilled"?v.value:null});
