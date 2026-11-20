@@ -1,6 +1,7 @@
 /* NABD CONNECT — authenticated user ticket inbox. Supabase RLS remains the sole access boundary. */
 (()=>{"use strict";if(document.body.dataset.onePage!=="connect")return;
 const $=id=>document.getElementById(id),S={lang:"ar",db:null,user:null,tickets:[],ticket:null,busy:false,serial:0};
+const replyDrafts=new Map();
 const tr=(ar,en)=>S.lang==="ar"?ar:en;
 const make=(tag,cls,value)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(value!==undefined)x.textContent=String(value);return x};
 const when=ts=>{const d=new Date(ts);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat(S.lang==="ar"?"ar":"en",{dateStyle:"medium",timeStyle:"short"}).format(d):""};
@@ -36,7 +37,8 @@ function showMsg(row){
  node.append(make("p","",row.body),make("small","",when(row.created_at)));return node;
 }
 async function openTicket(id){
- const ticket=S.tickets.find(x=>x.id===id);if(!ticket)return;S.ticket=ticket;const serial=++S.serial;
+ const ticket=S.tickets.find(x=>x.id===id);if(!ticket)return;S.ticket=ticket;
+ $("nc-reply").value=replyDrafts.get(id)||"";const serial=++S.serial;
  $("nc-thread-title").textContent=ticket.subject;$("nc-thread-status").textContent=status(ticket.status);$("nc-reply-form").hidden=ticket.status==="resolved";renderTickets();
  const host=$("nc-messages");host.replaceChildren(make("p","nc-empty",tr("جارٍ تحميل الرسائل…","Loading messages…")));
  try{
@@ -87,12 +89,17 @@ async function sendReply(e){
  if(S.ticket.status==="resolved"){notify(tr("هذه التذكرة مغلقة. أنشئ تذكرة جديدة لمتابعة الموضوع.","This ticket is resolved. Open a new ticket for further assistance."),true);return}
  const body=$("nc-reply").value.trim();if(!body||body.length>2000)return;
  if(!basicGuard(body)){notify(tr("تجنّب مشاركة بيانات حساسة في الرسائل.","Please avoid sharing sensitive details in messages."),true);return}
- const ticketId=S.ticket.id;setBusy(true,"nc-reply-btn");notify(tr("جارٍ إرسال المتابعة…","Sending follow-up…"));
+ const ticketId=S.ticket.id;
+ const submittedText=$("nc-reply").value;
+ setBusy(true,"nc-reply-btn");notify(tr("جارٍ إرسال المتابعة…","Sending follow-up…"));
  try{
   const {error}=await S.db.from("nabd_support_messages").insert({ticket_id:ticketId,sender_id:S.user.id,body});
   if(error)throw error;
-  $("nc-reply").value="";notify(tr("تم إرسال رسالتك بنجاح.","Your reply was sent."));await openTicket(ticketId)
- }catch(err){notify(tr("لم يُؤكد إرسال الرد. تحقق من حالة التذكرة واتصالك.","Reply not confirmed. Check the ticket status and your connection."),true)}
+  if(replyDrafts.get(ticketId)===submittedText)replyDrafts.delete(ticketId);
+  if(S.ticket?.id!==ticketId)return;
+  if($("nc-reply").value===submittedText)$("nc-reply").value="";
+  notify(tr("تم إرسال رسالتك بنجاح.","Your reply was sent."));await openTicket(ticketId)
+ }catch(err){if(S.ticket?.id===ticketId)notify(tr("لم يُؤكد إرسال الرد. تحقق من حالة التذكرة واتصالك.","Reply not confirmed. Check the ticket status and your connection."),true)}
  finally{setBusy(false,"nc-reply-btn")}
 }
 async function init(){
@@ -106,6 +113,12 @@ async function init(){
 }
 $("one-lang").addEventListener("click",()=>{S.lang=S.lang==="ar"?"en":"ar";translate()});
 $("nc-create").addEventListener("submit",e=>{void createTicket(e)});
+$("nc-reply").addEventListener("input",()=>{
+ if(!S.ticket)return;
+ const text=$("nc-reply").value;
+ if(text)replyDrafts.set(S.ticket.id,text);
+ else replyDrafts.delete(S.ticket.id);
+});
 $("nc-reply-form").addEventListener("submit",e=>{void sendReply(e)});
 $("nc-refresh").addEventListener("click",()=>{void loadTickets(S.ticket?.id)});
 translate();authMessage(tr("جارٍ التحقق من الحساب…","Verifying your account…"));void init();
