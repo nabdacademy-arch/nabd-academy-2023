@@ -10,8 +10,8 @@ const $=id=>document.getElementById(id);
 const SUBJECTS=["chemistry","biology","medicine"];
 if(!BANK||!$("choiceSingle")||!$("choiceMulti"))throw Error("NABD_CHOICES_SETUP_MISSING");
 const sessions={
- single:{kind:"single",id:"choiceSingle",questions:[],index:0,choices:new Set(),reviewed:[],locked:false,showTranslation:false,translation:new Map(),loaded:false},
- multi:{kind:"multi",id:"choiceMulti",questions:[],index:0,choices:new Set(),reviewed:[],locked:false,showTranslation:false,translation:new Map(),loaded:false}
+ single:{kind:"single",id:"choiceSingle",questions:[],index:0,choices:new Set(),reviewed:[],locked:false,showTranslation:false,translation:new Map()},
+ multi:{kind:"multi",id:"choiceMulti",questions:[],index:0,choices:new Set(),reviewed:[],locked:false,showTranslation:false,translation:new Map()}
 };
 let existing=[],loading=null;
 function make(tag,txt,className){
@@ -252,14 +252,22 @@ function exportReport(ctx){
  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),20000);
 }
 async function start(ctx){
- const btn=$(ctx.id+"Start");btn.disabled=true;
- setStatus(ctx,"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
- let archiveAllowed=true;
- try{await readExisting()}catch(err){archiveAllowed=false;
-  setStatus(ctx,"تعذر تحميل الأرشيف الخاص؛ ستظل الأسئلة الجديدة المؤلفة متاحة. تأكد من تسجيل الدخول.",true);
- }
+ const btn=$(ctx.id+"Start");
+ if(btn.disabled)return;
  const subject=$(ctx.id+"Subject").value,source=$(ctx.id+"Source").value;
  const countOption=$(ctx.id+"Count").value;
+ btn.disabled=true;
+ let archiveAllowed=false;
+ if(source==="archive"||source==="mixed"){
+  setStatus(ctx,"جارٍ تحميل بنك التدريب…");
+  try{await readExisting();archiveAllowed=true}
+  catch{
+   if(source==="archive"){
+    setStatus(ctx,"تعذّر تحميل الأرشيف الخاص. تحقق من الدخول والاتصال أو اختر الأسئلة المؤلّفة.",true);
+    btn.disabled=false;return
+   }
+  }
+ }
  let pool=[];
  if(source==="new"||source==="mixed")pool.push(...BANK.sample(ctx.kind,subject));
  if(archiveAllowed&&(source==="archive"||source==="mixed"))pool.push(...existing.filter(x=>x.kind===ctx.kind&&(subject==="all"||x.subject===subject)));
@@ -274,6 +282,7 @@ async function start(ctx){
   btn.disabled=false;return}
  ctx.questions=pool.map(q=>({q,order:randomize(q.options.map((_,i)=>i))}));
  ctx.index=0;ctx.reviewed=[];showExam(ctx);
+ if(source==="mixed"&&!archiveAllowed)setStatus(ctx,"بدأت الجولة بالأسئلة المؤلّفة المتاحة على الجهاز. تعذّر تحميل الأرشيف الخاص.");
  btn.disabled=false;
 }
 function init(kind){
@@ -282,10 +291,6 @@ function init(kind){
  $(ctx.id+"Translate").addEventListener("click",()=>switchTranslation(ctx));
  $(ctx.id+"Check").addEventListener("click",()=>check(ctx));
  $(ctx.id+"Next").addEventListener("click",()=>ctx.index===ctx.questions.length-1?finish(ctx):(ctx.index++,showExam(ctx)));
- const tab=document.querySelector('[data-tab="'+ctx.id+'"]');
- tab?.addEventListener("click",()=>{
-  if(!ctx.loaded){ctx.loaded=true;readExisting().catch(()=>{});}
- });
  $(ctx.id+"Panel").hidden=true;
  $(ctx.id+"Result").hidden=true;
  $(ctx.id+"Summary").hidden=true;
