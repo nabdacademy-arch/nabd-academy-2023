@@ -371,17 +371,17 @@ $('translateBtn').addEventListener('click',async()=>{
  if(cached){state.translationVisible=!state.translationVisible;renderOptionalTranslation();return}
  const token=state.translationRequestToken;
  $('translateBtn').disabled=true;
- message('translateStatus','جارٍ ترجمة هذا السؤال وخياراته وشرحه إلى العربية...');
+ message('translateStatus','جارٍ البحث عن الترجمة العربية المحفوظة لهذا السؤال…');
  try{
-  const result=await db.functions.invoke('open-doors-translate',{body:{question_id:q.id}});
-  if(result.error||!result.data?.ok||!result.data?.translation){
-   const code=result.data?.code||result.error?.message||'TRANSLATION_UNAVAILABLE';
+  // Public practice reads only saved translations; no paid AI generation for guests.
+  const {data:translated,error:translationError}=await db.from('open_doors_question_translations')
+   .select('question_ar,options_ar,explanation_ar,rubric_ar').eq('question_id',q.id).maybeSingle();
+  if(translationError||!translated){
    if(state.deck[state.index]?.id===q.id && state.translationRequestToken===token){
-    message('translateStatus','تعذرت الترجمة الآن ('+code+'). يمكنك إعادة المحاولة، وتستمر الأسئلة الإنجليزية بالعمل.');
+    message('translateStatus','لا تتوفر ترجمة عربية محفوظة لهذا السؤال حاليًا؛ اختر الأسئلة المترجمة من بنك نبض الجديد.');
    }
    return;
   }
-  const translated=result.data.translation;
   if(!Array.isArray(translated.options_ar)||translated.options_ar.length!==(q.options||[]).length||
      typeof translated.question_ar!=='string'||typeof translated.explanation_ar!=='string'){
     if(state.deck[state.index]?.id===q.id)message('translateStatus','الترجمة غير مكتملة. حاول مجددًا.');
@@ -394,7 +394,7 @@ $('translateBtn').addEventListener('click',async()=>{
    message('translateStatus','ترجمة عربية مساعدة؛ يُرجى الرجوع إلى النص الإنجليزي عند اختلاف المصطلحات.');
   }
  }catch(e){
-  if(state.deck[state.index]?.id===q.id)message('translateStatus','تعذر الاتصال بخدمة الترجمة. جرّب مرة أخرى.');
+  if(state.deck[state.index]?.id===q.id)message('translateStatus','تعذر تحميل الترجمة المحفوظة. أعد المحاولة.');
  }finally{
   if(state.deck[state.index]?.id===q.id && state.translationRequestToken===token)$('translateBtn').disabled=false;
  }
