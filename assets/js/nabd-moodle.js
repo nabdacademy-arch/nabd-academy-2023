@@ -58,7 +58,7 @@ async function authenticate(){
    return showLogin(t("تعذر التحقق من ملف الطالب. راجع حسابك في بوابة الطلاب.","Could not verify your student profile."));
  }
  if(profileResult.data.role!=="student")return showDenied();
- state.user=user;state.profile=profileResult.data;showApp();
+ state.user=user;state.profile=profileResult.data;render();showApp();
  await refreshAll();
 }
 $("mdl-login-form").addEventListener("submit",async e=>{
@@ -73,16 +73,35 @@ $("mdl-login-form").addEventListener("submit",async e=>{
  await authenticate();
 });
 async function signOut(){
- if(db)await db.auth.signOut();
+ const retry=$("mdl-retry-sign-out");
+ if(retry.disabled)return;
+ retry.disabled=true;
  state.user=null;state.profile=null;state.courses=null;state.enrollments=null;state.exams=null;state.grades=null;
- showLogin();
+ state.loading=false;$("mdl-refresh").disabled=false;
+ $("mdl-app").hidden=true;$("mdl-denied").hidden=true;$("mdl-login").hidden=true;
+ $("mdl-exit").hidden=false;retry.hidden=true;
+ notice("mdl-load-message","");notice("mdl-course-message","");
+ notice("mdl-exit-message",t("جارٍ تسجيل الخروج…","Signing out…"));
+ try{
+   const {error}=await db.auth.signOut();
+   if(error)throw error;
+   $("mdl-exit").hidden=true;
+   showLogin();
+ }catch{
+   notice("mdl-exit-message",t("تعذر تأكيد تسجيل الخروج. تحقق من الاتصال وأعد المحاولة.","Sign-out could not be confirmed. Check your connection and try again."),"error");
+   retry.hidden=false;
+ }finally{
+   retry.disabled=false;
+ }
 }
+$("mdl-retry-sign-out").addEventListener("click",signOut);
 $("mdl-sign-out").addEventListener("click",signOut);
 $("mdl-change-account").addEventListener("click",signOut);
 $("mdl-refresh").addEventListener("click",()=>refreshAll(true));
 $("mdl-language").addEventListener("click",()=>applyLanguage(state.language==="ar"?"en":"ar"));
 async function refreshAll(manual=false){
  if(!state.user||state.loading)return;
+ const owner=state.user;
  state.loading=true;$("mdl-refresh").disabled=true;
  if(manual)notice("mdl-load-message",t("جارٍ تحديث بيانات حسابك…","Refreshing your account data…"));
  const [courses,enrollments,exams,grades]=await Promise.all([
@@ -93,6 +112,7 @@ async function refreshAll(manual=false){
    db.rpc("nabd_quality_active_exams"),
    db.rpc("nabd_quality_student_history")
  ]);
+ if(state.user!==owner)return;
  const failures=[];
  if(courses.error){state.courses=null;failures.push(t("الدورات","Courses"));}else state.courses=courses.data||[];
  if(enrollments.error){state.enrollments=null;failures.push(t("التسجيلات","Enrollments"));}else state.enrollments=enrollments.data||[];
@@ -209,10 +229,12 @@ function renderCourses(){
 }
 async function enroll(course,button){
  if(!state.user||!db)return;
+ const owner=state.user;
  const courseLabel=state.language==="ar"?course.title_ar:course.title_en;
  if(!window.confirm(t("تأكيد التسجيل في دورة ","Confirm enrollment in ")+courseLabel+"؟"))return;
  button.disabled=true;button.textContent=t("جارٍ التسجيل…","Enrolling…");
  const {data,error}=await db.rpc("nabd_moodle_self_enroll",{p_course_id:course.id});
+ if(state.user!==owner)return;
  if(error||!Array.isArray(data)||data.length===0){
    button.disabled=false;button.textContent=t("التسجيل في الدورة","Enroll now");
    notice("mdl-course-message",t("تعذر تسجيلك في الدورة. تحقق من حالة حساب الطالب وجرب مرة أخرى.","Enrollment could not be completed. Check your student account and try again."),"error");
