@@ -338,6 +338,7 @@
     setLanguage(state.lang);
     $("#login-form").addEventListener("submit",login);
     $("#record-form").addEventListener("submit",saveRecord);
+    $("#security-form").addEventListener("submit",changePassword);
     $("#member-form").addEventListener("submit",addMember);
     $("#language").addEventListener("click",()=>setLanguage(state.lang==="ar"?"en":"ar"));
     $("#signout").addEventListener("click",signOut);
