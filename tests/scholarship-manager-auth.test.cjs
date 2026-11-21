@@ -36,7 +36,7 @@ test('manager recovery uses only the dedicated client', async()=>{
   get('sch-email').value='staff@example.invalid';
   await get('sch-reset-password').handlers.click();
   assert.deepEqual(reset,{email:'staff@example.invalid',redirectTo:'https://test.invalid/scholarship-manager.html'});
-  listener('PASSWORD_RECOVERY');
+  listener('PASSWORD_RECOVERY',{user:{id:'fixture'}});
   assert.equal(get('sch-new-password-panel').hidden,false);
   assert.equal(get('sch-dashboard').hidden,true);
 });
@@ -124,4 +124,32 @@ test('recovery requests can be retried after an uncertain response without overl
   await last;
   assert.match(status.textContent,/إذا كان البريد مسجلًا/);
   assert.equal(button.disabled,false);
+});
+
+test('password changes stay with the recovery session and retry after network failure',async()=>{
+  let notify, sessionId, writes=0, complete;
+  const get=manager(()=>({auth:{
+    onAuthStateChange(fn){notify=fn;},
+    getUser:async()=>({data:{user:sessionId?{id:sessionId}:null}}),
+    updateUser(){writes++;return new Promise((resolve,reject)=>{complete={resolve,reject};});}
+  }}));
+  await new Promise(setImmediate);
+  const input=get('sch-new-password-value'), save=get('sch-save-password');
+  const submit=()=>get('sch-new-password-form').handlers.submit({preventDefault(){}});
+  function recover(id){sessionId=id;notify('PASSWORD_RECOVERY',{user:{id}});input.value='fixture password';}
+  await submit();assert.equal(writes,0);
+  recover('first');sessionId='second';
+  await submit();assert.equal(writes,0);assert.equal(input.value,'');
+  recover('first');
+  const interrupted=submit();await submit();await new Promise(setImmediate);
+  assert.equal(writes,1);complete.reject(Error('offline'));await interrupted;
+  assert.equal(save.disabled,false);assert.match(get('sch-new-password-status').textContent,/تعذر تأكيد/);
+  const late=submit();await new Promise(setImmediate);
+  notify('SIGNED_IN',{user:{id:'second'}});
+  complete.resolve({error:null});await late;
+  assert.equal(input.value,'');assert.equal(get('sch-new-password-panel').hidden,true);
+  recover('first');const success=submit();await new Promise(setImmediate);
+  sessionId=null;complete.resolve({error:null});await success;
+  assert.equal(input.value,'');assert.equal(get('sch-new-password-panel').hidden,true);
+  recover('first');notify('SIGNED_OUT');await submit();assert.equal(writes,3);
 });
