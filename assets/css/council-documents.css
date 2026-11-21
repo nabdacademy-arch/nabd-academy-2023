@@ -1,0 +1,84 @@
+/* NABD Council Documents — private membership card and appointment certificate */
+:root{--navy:#071b2d;--navy2:#123c51;--gold:#d6b77c;--light:#fff9ed;--teal:#69c9bf}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 85% 0,#23475a 0,transparent 55%),#061522;color:#f1f6f5;font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+button,a{font:inherit}button{cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid #e5cc96;outline-offset:4px}
+.doc-topbar{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px clamp(18px,4vw,65px);border-bottom:1px solid #c7aa765e;background:#081a29}
+.doc-topbar a{text-decoration:none;color:#efd4a1;font-weight:900}.doc-topbar a span{display:block;color:#b5c8d0;font-size:11px}
+.doc-wrap{width:min(1210px,95%);margin:0 auto;padding:29px 0 65px}
+.doc-eyebrow{display:block;color:#e9c890;font-size:11px;font-weight:800;letter-spacing:.12em}
+.doc-intro h1{font-size:clamp(26px,4vw,40px);margin:6px 0 9px;color:#fff6e4}
+.doc-intro p,.doc-privacy{color:#c2d4dc;max-width:830px;font-size:14px}
+.doc-message{border:1px solid #97b5bb6c;background:#113145;border-radius:10px;padding:11px 14px;color:#d0e9e8;margin:19px 0}
+.doc-message.error{border-color:#d9a988;color:#ffd5c2}
+.doc-controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:19px 0 32px}
+.doc-switch{display:flex;flex-wrap:wrap;gap:5px;background:#102e42;border:1px solid #d0ab716b;border-radius:12px;padding:5px}
+.doc-switch button{color:#b9d0d9;background:transparent;border:0;border-radius:8px;padding:11px 19px;font-weight:800}
+.doc-switch button[aria-pressed=true]{background:linear-gradient(115deg,#f2dba8,#caa466);color:#0c2939}
+.doc-primary,.doc-secondary{border-radius:10px;min-height:47px;padding:11px 18px;font-weight:850;border:1px solid #e8cc91;background:linear-gradient(120deg,#f0d8a6,#cba76f);color:#102d3c;text-decoration:none}
+.doc-secondary{background:#092a3d;color:#f2d9a6;border-color:#c9a9706f}
+.doc-primary:disabled{opacity:.48;cursor:not-allowed}
+.doc-print-zone{min-width:0}
+.nabd-id-card{direction:rtl;position:relative;isolation:isolate;overflow:hidden;width:min(100%,690px);aspect-ratio:1.69;background:linear-gradient(135deg,#123e50,#061c2d 64%,#041522);border:2px solid #dcc084;border-radius:22px;box-shadow:0 30px 68px #0008;display:flex;flex-direction:column;color:#fff;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.nabd-id-card:before{content:"";position:absolute;inset:-45% -30% auto auto;width:87%;height:140%;border-radius:50%;border:1px solid #bba1724d;background:radial-gradient(circle,#23616b3a,transparent 70%);z-index:-1}
+.nabd-id-card:after{content:"";position:absolute;bottom:-100px;left:-120px;width:420px;height:420px;border-radius:50%;border:3px solid #c4a57122;z-index:-1}
+.id-top{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #e2c2855c;padding:21px 28px 17px}
+.id-logo{display:flex;align-items:center;gap:11px}
+.id-logo>span{height:49px;width:49px;display:grid;place-items:center;border:1px solid #f4dca5;border-radius:14px;color:#f1d293;font-size:33px}
+.id-logo strong{display:block;font-size:19px;letter-spacing:.1em;direction:ltr;text-align:right}
+.id-logo small{display:block;color:#d4c8af;font-size:9px;letter-spacing:.09em;direction:ltr}
+.id-badge{font:800 12px system-ui,sans-serif;letter-spacing:.09em;color:#f1d59d;border:1px solid #d9b77e7f;border-radius:30px;padding:7px 13px}
+.id-content{display:flex;align-items:center;justify-content:space-between;gap:17px;flex:1;padding:17px 28px}
+.id-person{min-width:0}
+.id-overline{color:#e7c887;letter-spacing:.09em;font:800 10px system-ui,sans-serif}
+.id-person h2{font-size:clamp(23px,3.2vw,38px);line-height:1.55;margin:2px 0 3px;color:#fff8e7;overflow-wrap:anywhere}
+.id-person>strong{color:#e0c48a;font-size:17px}
+.id-person p{color:#e1eaf0;margin:4px 0 18px;font-weight:700;font-size:15px;line-height:1.55}
+.id-number{display:grid;gap:3px}.id-number span{font:800 10px system-ui,sans-serif;color:#b5d1d9;letter-spacing:.15em}
+.id-number b{color:#f4d7a2;font:800 clamp(14px,2.1vw,22px) ui-monospace,monospace;letter-spacing:.035em}
+.id-qr-side{text-align:center;flex:0 0 127px}.qr-box{background:white;border-radius:9px;padding:8px;display:grid;place-items:center;box-shadow:0 4px 12px #0003}.qr-box img{display:block!important;max-width:100%;height:auto!important;object-fit:contain}.qr-box canvas{display:none!important}
+.id-qr-side small{display:block;color:#e7cf9c;letter-spacing:.05em;font-size:9px;margin-top:7px;font-weight:800}
+.id-foot{border-top:1px solid #e2c2855c;padding:12px 28px;color:#c5d7d9;font-size:12px;display:flex;justify-content:space-between;gap:12px}
+.nabd-certificate{position:relative;direction:rtl;background:#fffdf6;color:#143140;width:min(100%,1120px);aspect-ratio:297/210;min-height:730px;border-radius:3px;padding:21px;border:1px solid #d8bd89;box-shadow:0 25px 55px #0005;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.certificate-border{position:relative;height:100%;border:5px double #bc9257;outline:1px solid #e3d3b2;outline-offset:-13px;padding:clamp(20px,3vw,40px);display:flex;flex-direction:column;text-align:center;overflow:hidden;background:radial-gradient(circle at 50% 32%,#faf5e8 0,transparent 50%),linear-gradient(145deg,#fffefa,#f7f0df)}
+.certificate-border:before{content:"✦";position:absolute;z-index:0;color:#d8c39718;font-size:320px;top:15%;left:50%;transform:translateX(-50%);font-family:Georgia,serif;pointer-events:none}
+.certificate-border>*{z-index:1}
+.cert-corner{position:absolute;top:12px;color:#b8965d;font-size:19px}.cert-corner-a{right:19px}.cert-corner-b{left:19px}
+.cert-head{display:flex;justify-content:center;align-items:center;gap:15px;margin:9px auto 7px}
+.cert-mark{height:67px;width:67px;display:grid;place-items:center;border-radius:17px;background:#14364a;border:2px solid #bc975e;font-size:41px;color:#f3d8a2}
+.cert-head strong{font-size:23px;color:#13394c;display:block}.cert-head small{font-size:10px;color:#7f694b;font-weight:800;letter-spacing:.13em;direction:ltr}
+.cert-divider{height:2px;background:linear-gradient(90deg,transparent,#b39361,transparent);width:73%;margin:9px auto 17px}
+.cert-kicker{font:800 11px system-ui,sans-serif;color:#916e3e;letter-spacing:.11em;margin:4px auto}
+.nabd-certificate h2{font-size:clamp(25px,3.5vw,43px);line-height:1.4;color:#123d50;margin:4px 0}
+.cert-english{color:#9c7b4d;font:800 13px system-ui,sans-serif;letter-spacing:.15em;margin:0 0 20px}
+.cert-phrase{color:#344750;font-size:17px;margin:6px 0}
+.nabd-certificate h3{font-size:clamp(25px,3.1vw,38px);line-height:1.4;color:#9c733f;margin:5px 0}
+.nabd-certificate h4{font-size:clamp(20px,2.5vw,28px);margin:3px 0 8px;color:#133e51}
+.cert-paragraph{font-size:15px;line-height:1.9;max-width:700px;margin:6px auto auto;color:#43515a}
+.cert-bottom{margin-top:auto;display:grid;grid-template-columns:1fr 1.3fr 142px;align-items:end;gap:20px;text-align:right;padding:8px 24px 0;border-top:1px solid #ccb385}
+.cert-data{display:grid;gap:5px;color:#67553c;font-size:12px}.cert-data strong{color:#223a4a;font:800 15px ui-monospace,monospace}
+.cert-issuer{text-align:center;border-top:1px solid #b79967;padding-top:8px;color:#214154}.cert-issuer strong{display:block;font-size:14px}.cert-issuer small{display:block;color:#776a54;font-size:10px}
+.cert-qr .qr-box{width:118px;height:118px;margin:auto;border:1px solid #b7a181}.cert-qr span{display:block;text-align:center;font:800 10px system-ui,sans-serif;color:#8a713f;margin-top:3px}
+.doc-privacy{margin:19px 0}
+footer{padding:20px;text-align:center;color:#8eacbc;font-size:11px}
+@media(max-width:760px){.nabd-certificate{min-height:630px}.certificate-border{padding:15px}.cert-head strong{font-size:17px}.cert-mark{width:51px;height:51px;font-size:28px}.nabD-id-card{} .cert-phrase{font-size:14px}.cert-paragraph{font-size:12px}.cert-bottom{grid-template-columns:1fr 1fr 100px;gap:8px;padding:7px 0}.cert-qr .qr-box{width:85px;height:85px}.cert-data strong{font-size:11px}.cert-issuer strong{font-size:11px}}
+@media(max-width:520px){.id-top{padding:11px 14px}.id-logo>span{width:36px;height:36px;font-size:25px}.id-logo strong{font-size:12px}.id-logo small{font-size:7px}.id-badge{font-size:8px;padding:5px}.id-content{padding:9px 14px;gap:8px}.id-person h2{font-size:18px}.id-person>strong{font-size:12px}.id-person p{font-size:11px;margin-bottom:10px}.id-overline{font-size:7px}.id-number b{font-size:12px}.id-qr-side{flex-basis:74px}.qr-box{padding:5px}.id-foot{padding:9px 14px;font-size:9px}.nabd-certificate{aspect-ratio:auto;min-height:680px;padding:9px}.cert-english{font-size:10px}.cert-kicker{font-size:9px}.cert-bottom{grid-template-columns:1fr 1fr;gap:10px}.cert-qr{grid-column:1/-1;justify-self:center}.cert-qr .qr-box{width:85px;height:85px}.cert-paragraph{font-size:12px}}
+@media print{
+ @page{size:A4 landscape;margin:8mm}
+ body{background:white!important;margin:0;color:#000}
+ .no-print,.doc-intro,.doc-message,footer{display:none!important}
+ .doc-wrap{width:100%;margin:0;padding:0}
+ .doc-print-zone{display:block!important}
+ #document-card:not([hidden]),#document-certificate:not([hidden]){display:flex!important}
+ .nabd-id-card{margin:20mm auto 0;width:95mm;height:61mm;aspect-ratio:auto;border-radius:3mm;box-shadow:none}
+ .id-top{padding:3mm 4mm 2mm}.id-logo>span{width:9mm;height:9mm;font-size:26px;border-radius:2mm}
+ .id-logo strong{font-size:11px}.id-logo small{font-size:6px}.id-badge{font-size:6px}
+ .id-content{padding:2mm 4mm}.id-overline{font-size:7px}.id-person h2{font-size:19px;margin:0}.id-person>strong{font-size:10px}.id-person p{font-size:9px;margin:1mm 0}.id-number b{font-size:13px}
+ .id-qr-side{flex-basis:26mm}.id-qr-side .qr-box{padding:1mm}
+ .id-qr-side small{font-size:6px}.id-foot{padding:1.5mm 4mm;font-size:8px}
+ .nabd-certificate{width:281mm;height:194mm;min-height:0;padding:3mm;aspect-ratio:auto;box-shadow:none;border-radius:0;border:1px solid #c2a26e;break-inside:avoid}
+ .certificate-border{padding:8mm 10mm}.cert-head{margin-top:2mm}.cert-mark{width:17mm;height:17mm}.cert-head strong{font-size:19px}
+ .nabd-certificate h2{font-size:34px}.nabd-certificate h3{font-size:30px}.nabd-certificate h4{font-size:24px}
+ .cert-paragraph{font-size:13px}.cert-bottom{padding-bottom:1mm}.cert-qr .qr-box{width:32mm;height:32mm}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
