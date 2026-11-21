@@ -39,7 +39,7 @@
     compose:["إنشاء سجل جديد","Create council record"],
     members:["إدارة عضويات المجالس","Manage council members"]
   };
-  const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false};
+  const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false,deepLinkApplied:false};
   const T = (ar,en) => state.lang === "ar" ? ar : en;
   const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const codeName = code => {const c=councils.find(x=>x.code===code);return c?(state.lang==="ar"?c.ar:c.en):code;};
@@ -220,9 +220,22 @@
         setGate(T("الحساب صحيح، لكن ليس لديه تكليف فعّال في مجالس نبض. تواصل مع الإدارة للحصول على قرار عضوية.","Signed in, but this account has no active NABD council appointment. Contact the administration."),true);
         return;
       }
+      // A council link routes the member only after authorization; it never grants access.
+      if(!state.deepLinkApplied){
+        const direct=new URLSearchParams(location.search).get("council");
+        if(direct && councils.some(c=>c.code===direct) && canAccess(direct)){
+          state.councilFilter=direct;
+          state.tab="records";
+        } else if(!state.isAdmin && ownMemberships().length===1) {
+          state.councilFilter=ownMemberships()[0].council_code;
+          state.tab="records";
+        }
+        state.deepLinkApplied=true;
+      }
       $("#gate").hidden=true;$("#workspace").hidden=false;
       notice("");
       renderDashboard();
+      setTab(state.tab);
       await loadRecords(epoch);
     }catch(_){
       if(epoch===state.authEpoch){state.user=null;state.records=[];setGate(T("تعذر إتمام التحقق الآمن. أعد المحاولة.","Secure verification failed. Please retry."),true);}
