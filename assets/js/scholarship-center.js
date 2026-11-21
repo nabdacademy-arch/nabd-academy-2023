@@ -6,17 +6,25 @@
   const manager = document.querySelector("[data-scholarship-manager]");
   /* Keep the staff session separate from student/academy sessions. */
   const cfg = window.NABD_CONFIG || {};
-  const client = manager && window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey
-    ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+  if (!home && !listings && !manager) return;
+
+  function initClient() {
+    if (!manager) return window.nabdSupabase;
+    if (!window.supabase?.createClient || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
+    try {
+      return window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
         auth: {
           storageKey: "nabd-scholarships-manager-auth-v1",
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: true
         }
-      })
-    : window.nabdSupabase;
-  if (!home && !listings && !manager) return;
+      });
+    } catch {
+      return null;
+    }
+  }
+  const client = initClient();
 
   const dateText = value => {
     try { return new Intl.DateTimeFormat("ar-PS",{year:"numeric",month:"short",day:"numeric"}).format(new Date(value)); }
@@ -128,6 +136,14 @@
   }
 
   if (!manager) return;
+  if (!client) {
+    document.getElementById("sch-login-form").addEventListener("submit", event => event.preventDefault());
+    document.getElementById("sch-login-button").disabled = true;
+    document.getElementById("sch-reset-password").disabled = true;
+    setStatus(document.getElementById("sch-auth-status"),
+      "تعذّر تحميل خدمة دخول مدير المنح. تحقق من اتصالك ثم أعد تحميل الصفحة.", "error");
+    return;
+  }
   const loginPanel = document.getElementById("sch-login-panel");
   const dashboard = document.getElementById("sch-dashboard");
   const loginForm = document.getElementById("sch-login-form");
@@ -137,21 +153,40 @@
   const posts = document.getElementById("sch-managed-posts");
   let signedInUser = null;
   let ownItems = [];
+  let verification = 0;
+  const retryRole = document.getElementById("sch-retry-role");
   const showLogin = () => {
     signedInUser=null;
     loginPanel.hidden=false;
     dashboard.hidden=true;
   };
   async function verifyPublisher(){
-    if(!client){showLogin();setStatus(authStatus,"خدمة الدخول غير متاحة حاليًا.", "error");return;}
-    const {data:{user},error:userError}=await client.auth.getUser();
-    if(userError || !user){showLogin();return;}
-    const {data:role,error:roleError}=await client.from("nabd_scholarship_publishers")
-      .select("active").eq("user_id",user.id).maybeSingle();
-    if(roleError || !role?.active){
-      showLogin();
+    const attempt=++verification;
+    showLogin();
+    retryRole.hidden=true;
+    let user,role;
+    try{
+      const identity=await client.auth.getUser();
+      if(attempt!==verification)return;
+      if(identity.error?.name==="AuthSessionMissingError"||(!identity.error&&!identity.data?.user)){
+        setStatus(authStatus,"");return;
+      }
+      if(identity.error||!identity.data?.user)throw Error("IDENTITY_UNAVAILABLE");
+      user=identity.data.user;
+      const result=await client.from("nabd_scholarship_publishers")
+        .select("active").eq("user_id",user.id).maybeSingle();
+      if(attempt!==verification)return;
+      if(result.error)throw result.error;
+      role=result.data;
+    }catch{
+      if(attempt!==verification)return;
+      retryRole.hidden=false;
+      setStatus(authStatus,"تعذر التحقق من الصلاحية. تحقق من الاتصال ثم أعد المحاولة. · Unable to verify access. Check your connection and retry.","error");
+      return;
+    }
+    if(role?.active!==true){
+      setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.","error");
       await client.auth.signOut();
-      setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.", "error");
       return;
     }
     signedInUser=user;
@@ -161,33 +196,103 @@
     document.getElementById("sch-current-email").textContent=user.email || "";
     await refreshOwnPosts();
   }
+  retryRole.addEventListener("click",()=>{if(!retryRole.hidden)return verifyPublisher();});
   loginForm?.addEventListener("submit",async (e)=>{
     e.preventDefault();
     const email=document.getElementById("sch-email").value.trim();
     const password=document.getElementById("sch-password").value;
     const button=document.getElementById("sch-login-button");
-    if(!email || !password)return;
+    if(button.disabled || !email || !password)return;
+    const attempt=++verification;
+    retryRole.hidden=true;
     button.disabled=true;
+    const passwordField=document.getElementById("sch-password");
+    passwordField.value="";
     setStatus(authStatus,"جارٍ التحقق من الحساب…");
-    const {error}=await client.auth.signInWithPassword({email,password});
-    button.disabled=false;
-    document.getElementById("sch-password").value="";
-    if(error){setStatus(authStatus,"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني.", "error");return;}
-    await verifyPublisher();
+    try{
+      let result;
+      try{
+        result=await client.auth.signInWithPassword({email,password});
+      }catch{
+        if(attempt===verification)setStatus(authStatus,"تعذر الاتصال بخدمة الدخول. تحقق من الاتصال وحاول مجددًا. · Check your connection and try again.","error");
+        return;
+      }
+      if(attempt!==verification)return;
+      if(result.error){
+        const error=result.error;
+        const interrupted=error.name==="AuthRetryableFetchError" || error.status===0 || error.status>=500;
+        setStatus(authStatus,interrupted
+          ?"تعذر الاتصال بخدمة الدخول. تحقق من الاتصال وحاول مجددًا. · Check your connection and try again."
+          :"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني. · Check your sign-in details.","error");
+        return;
+      }
+      await verifyPublisher();
+    }finally{
+      button.disabled=false;
+    }
   });
-  document.getElementById("sch-reset-password")?.addEventListener("click",async()=>{
-    const email=document.getElementById("sch-email").value.trim();
+  const resetButton=document.getElementById("sch-reset-password");
+  document.getElementById("sch-email").addEventListener("input",()=>{
+    if(resetButton?.disabled)setStatus(authStatus,"");
+  });
+  resetButton?.addEventListener("click",async()=>{
+    if(resetButton.disabled)return;
+    const emailField=document.getElementById("sch-email");
+    const email=emailField.value.trim();
     if(!email){setStatus(authStatus,"أدخل البريد الإلكتروني أولًا لطلب إعادة تعيين كلمة المرور.", "error");return;}
-    const redirectTo=new URL("scholarship-manager.html",location.href).href;
-    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
-    setStatus(authStatus,error ? "تعذر طلب إعادة تعيين كلمة المرور." : "إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور.", error?"error":"success");
+    const attempt=verification;
+    const current=()=>attempt===verification && emailField.value.trim()===email && !loginPanel.hidden;
+    resetButton.disabled=true;
+    setStatus(authStatus,"جارٍ طلب رابط الاستعادة… · Requesting a recovery link…");
+    try{
+      const redirectTo=new URL("scholarship-manager.html",location.href).href;
+      const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
+      if(error)throw error;
+      if(current())setStatus(authStatus,"إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور. · If this email is registered, a recovery link will be sent.","success");
+    }catch{
+      if(current())setStatus(authStatus,"تعذر تأكيد طلب الاستعادة. تفقد بريدك قبل إعادة المحاولة. · Check your inbox before retrying.","error");
+    }finally{
+      resetButton.disabled=false;
+    }
   });
-  document.getElementById("sch-logout")?.addEventListener("click",async()=>{
-    await client.auth.signOut();
+  const retryLogout=document.getElementById("sch-retry-logout");
+  let exitAttempt=null;
+  let exitingUserId=null;
+  function finishExit(){
+    exitAttempt=null;exitingUserId=null;
+    retryLogout.hidden=true;
+    loginForm.hidden=false;
     showLogin();
-    publishForm?.reset();
-    setStatus(authStatus,"تم تسجيل الخروج.","success");
-  });
+    resetEditor();
+    ownItems=[];
+    posts.replaceChildren();
+    document.getElementById("sch-current-email").textContent="";
+    setStatus(authStatus,"تم تسجيل الخروج. · Signed out.","success");
+  }
+  async function signOut(){
+    if(exitAttempt || (!signedInUser && retryLogout.hidden))return;
+    const attempt={};
+    exitAttempt=attempt;
+    if(signedInUser)exitingUserId=signedInUser.id;
+    verification++;
+    retryRole.hidden=true;
+    showLogin();
+    loginForm.hidden=true;
+    retryLogout.hidden=true;
+    setStatus(authStatus,"جارٍ تسجيل الخروج… · Signing out…");
+    try{
+      const {error}=await client.auth.signOut();
+      if(error)throw error;
+      if(exitAttempt===attempt)finishExit();
+    }catch{
+      if(exitAttempt!==attempt)return;
+      exitAttempt=null;
+      retryLogout.hidden=false;
+      setStatus(authStatus,"تعذر تأكيد الخروج. تحقق من الاتصال وأعد المحاولة. · Sign-out could not be confirmed. Please retry.","error");
+    }
+  }
+  document.getElementById("sch-logout")?.addEventListener("click",signOut);
+  retryLogout.addEventListener("click",signOut);
   function editItem(item) {
     document.getElementById("sch-edit-id").value=item.id;
     document.getElementById("sch-title").value=item.title;
@@ -265,21 +370,63 @@
     try{localStorage.setItem("nabd-scholarship-news-updated",String(Date.now()));}catch(_){}
     await refreshOwnPosts();
   });
-  if (!client){showLogin();setStatus(authStatus,"إعداد Supabase غير متاح.","error");return;}
-  client.auth.onAuthStateChange((event)=>{
-    if(event==="SIGNED_OUT")showLogin();
+  const recoveryPanel=document.getElementById("sch-new-password-panel");
+  const passwordField=document.getElementById("sch-new-password-value");
+  const savePassword=document.getElementById("sch-save-password");
+  const passwordStatus=document.getElementById("sch-new-password-status");
+  let recovery=null;
+  function closeRecovery(){
+    recovery=null;
+    recoveryPanel.hidden=true;
+    passwordField.value="";
+    savePassword.disabled=false;
+    setStatus(passwordStatus,"");
+  }
+  client.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_OUT" && (exitAttempt || !retryLogout.hidden)){
+      verification++;closeRecovery();finishExit();return;
+    }
+    if(exitingUserId && (event==="PASSWORD_RECOVERY" || (event==="SIGNED_IN" && session?.user?.id!==exitingUserId))){
+      exitAttempt=null;exitingUserId=null;retryLogout.hidden=true;loginForm.hidden=false;
+      resetEditor();posts.replaceChildren();ownItems=[];showLogin();setStatus(authStatus,"");
+    }
+    if(event==="SIGNED_OUT" || (recovery && event==="SIGNED_IN" && session?.user?.id!==recovery.userId)){
+      verification++;retryRole.hidden=true;closeRecovery();showLogin();
+    }
     if(event==="PASSWORD_RECOVERY"){
-      const resetPanel=document.getElementById("sch-new-password-panel");
-      if(resetPanel){resetPanel.hidden=false;loginPanel.hidden=true;dashboard.hidden=true;}
+      verification++;retryRole.hidden=true;closeRecovery();showLogin();
+      if(!session?.user?.id)return;
+      recovery={userId:session.user.id};
+      recoveryPanel.hidden=false;loginPanel.hidden=true;
     }
   });
   document.getElementById("sch-new-password-form")?.addEventListener("submit",async(e)=>{
     e.preventDefault();
-    const password=document.getElementById("sch-new-password-value").value;
-    if(password.length<12){setStatus(document.getElementById("sch-new-password-status"),"استخدم كلمة مرور من 12 حرفًا على الأقل.","error");return;}
-    const {error}=await client.auth.updateUser({password});
-    setStatus(document.getElementById("sch-new-password-status"),error?"تعذر تغيير كلمة المرور.":"تم تحديث كلمة المرور. يمكنك دخول البوابة الآن.",error?"error":"success");
-    if(!error){document.getElementById("sch-new-password-panel").hidden=true;await verifyPublisher();}
+    const attempt=recovery;
+    if(!attempt || savePassword.disabled)return;
+    const password=passwordField.value;
+    if(password.length<12){setStatus(passwordStatus,"استخدم كلمة مرور من 12 حرفًا على الأقل.","error");return;}
+    savePassword.disabled=true;
+    try{
+      const identity=await client.auth.getUser();
+      if(attempt!==recovery)return;
+      if(identity.error)throw identity.error;
+      if(identity.data?.user?.id!==attempt.userId){
+        closeRecovery();showLogin();
+        setStatus(authStatus,"تغيّر الحساب. افتح رابط استعادة الحساب المطلوب مجددًا.","error");
+        return;
+      }
+      const {error}=await client.auth.updateUser({password});
+      if(attempt!==recovery)return;
+      if(error)throw error;
+    }catch{
+      if(attempt===recovery)setStatus(passwordStatus,"تعذر تأكيد تغيير كلمة المرور. تحقق من الاتصال وحاول مجددًا. · Password change could not be confirmed.","error");
+      return;
+    }finally{
+      if(attempt===recovery)savePassword.disabled=false;
+    }
+    closeRecovery();
+    await verifyPublisher();
   });
   verifyPublisher();
 })();
