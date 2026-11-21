@@ -137,6 +137,7 @@
   const posts = document.getElementById("sch-managed-posts");
   let signedInUser = null;
   let ownItems = [];
+  let ownPostsRequest = 0;
   const showLogin = () => {
     signedInUser=null;
     loginPanel.hidden=false;
@@ -209,12 +210,22 @@
   async function refreshOwnPosts(){
     const owner=signedInUser;
     if(!owner)return;
-    const {data,error}=await client.from("nabd_scholarship_opportunities")
-      .select("id,title,description,application_url,status,published_at")
-      .eq("published_by",owner.id).order("published_at",{ascending:false}).limit(100);
-    if(owner!==signedInUser)return;
-    if(error){setStatus(publishStatus,"تعذر تحميل قائمة الإعلانات.","error");return;}
-    ownItems=data||[];
+    const request = ++ownPostsRequest;
+    let rows;
+    try {
+      const {data,error}=await client.from("nabd_scholarship_opportunities")
+        .select("id,title,description,application_url,status,published_at")
+        .eq("published_by",owner.id).order("published_at",{ascending:false}).limit(100);
+      if(error)throw error;
+      rows=data||[];
+    } catch {
+      if(request===ownPostsRequest && owner===signedInUser){
+        setStatus(publishStatus,"تعذر تحميل قائمة الإعلانات.","error");
+      }
+      return;
+    }
+    if(request!==ownPostsRequest || owner!==signedInUser)return;
+    ownItems=rows;
     posts.replaceChildren();
     if(!ownItems.length){
       const p=document.createElement("p");p.textContent="لم تنشر أي فرصة حتى الآن.";posts.append(p);return;
