@@ -1,0 +1,57 @@
+/* NABD director-controlled council account center. All selectors namespaced. */
+#councilAccounts{--nc-navy:#0b2536;--nc-dark:#061928;--nc-gold:#d5b276;--nc-teal:#177d80;direction:rtl;text-align:right;background:#f7fafb;border-color:#d7e3e6;}
+#councilAccounts *{box-sizing:border-box}
+#councilAccounts .ncg-hero{position:relative;overflow:hidden;border-radius:19px;padding:25px 25px 23px;background:linear-gradient(95deg,rgba(5,22,34,.80),rgba(6,25,38,.93)),url("../images/councils/hero-architecture.svg") center/cover;color:#fff;border:1px solid #a98a54;box-shadow:0 14px 28px #092a3d25;}
+#councilAccounts .ncg-eyebrow{font-size:11px;letter-spacing:.13em;color:#e9cc99;font-weight:850}
+#councilAccounts h2{margin:8px 0;font-size:clamp(22px,3vw,31px);color:#fff7e6}
+#councilAccounts .ncg-hero p{margin:7px 0 13px;color:#dfebec;line-height:1.8;max-width:760px}
+#councilAccounts .ncg-portal-link{display:inline-flex;gap:8px;align-items:center;border-radius:9px;padding:10px 16px;color:#122c39;font-weight:850;text-decoration:none;background:linear-gradient(115deg,#f7e3b5,#d6b478)}
+#councilAccounts .ncg-title{font-size:19px;color:#11384a;margin:22px 0 10px}
+#councilAccounts .ncg-subtitle{color:#51727f;margin:0 0 15px;font-size:13px;line-height:1.8}
+#councilAccounts .ncg-councils{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+#councilAccounts .ncg-council{border:1px solid #c9dbe0;border-radius:13px;background:#fff;color:#123746;padding:14px 11px;text-align:right;cursor:pointer;min-height:95px;transition:border-color .15s,background .15s,transform .15s}
+#councilAccounts .ncg-council:hover{border-color:#b79a64;transform:translateY(-2px)}
+#councilAccounts .ncg-council[aria-pressed="true"]{border:2px solid #c2a064;background:linear-gradient(145deg,#102e3f,#071e2e);color:#fff5e3;box-shadow:0 10px 20px #082b3b20}
+#councilAccounts .ncg-council strong{font-size:13px;display:block;line-height:1.6}
+#councilAccounts .ncg-council small{display:block;margin-top:7px;font:750 10px ui-monospace,monospace;letter-spacing:.04em;color:#9e884f}
+#councilAccounts .ncg-council[aria-pressed="true"] small{color:#f6dba6}
+#councilAccounts .ncg-selected{margin:18px 0;padding:13px 16px;border:1px solid #d9d0bb;background:#fffaf0;border-radius:12px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;color:#183e4c}
+#councilAccounts .ncg-selected code{font-family:ui-monospace,monospace;font-size:12px;color:#705324;font-weight:900}
+#councilAccounts .ncg-selected button{margin-inline-start:auto;border:1px solid #c5a46a;padding:8px 12px;border-radius:8px;background:#fff;color:#72562c;cursor:pointer;font-weight:800}
+#councilAccounts .ncg-card{background:#fff;border:1px solid #d8e4e9;border-radius:17px;padding:clamp(16px,2vw,24px);margin:18px 0;box-shadow:0 9px 25px rgba(8,36,51,.045)}
+#councilAccounts .ncg-modes{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+#councilAccounts .ncg-modes button{padding:11px 16px;border:1px solid #c9dfe2;color:#124650;background:#edf6f6;border-radius:9px;font-weight:800;cursor:pointer}
+#councilAccounts .ncg-modes button[aria-pressed="true"]{color:#fff;background:#11394c;border-color:#b89a67}
+#councilAccounts .ncg-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#councilAccounts label{display:grid;gap:6px;font-size:13px;color:#244a59;font-weight:780}
+#councilAccounts input,#councilAccounts select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #ccdce0;border-radius:9px;background:#fff;color:#153746;font:inherit}
+#councilAccounts input:focus,#councilAccounts select:focus{outline:2px solid #bf9e69;outline-offset:2px}
+#councilAccounts .ncg-check{display:flex;gap:10px;align-items:flex-start;margin:15px 0;line-height:1.75;font-size:12px}
+#councilAccounts .ncg-check input{width:18px;min-height:18px;flex:0 0 18px;margin-top:3px}
+#councilAccounts .ncg-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+#councilAccounts .ncg-action{border:0;border-radius:10px;padding:11px 17px;background:linear-gradient(125deg,#156b74,#0d4358);color:white;font-weight:850;cursor:pointer;min-height:44px}
+#councilAccounts .ncg-action:disabled{opacity:.55;cursor:wait}
+#councilAccounts .ncg-action.secondary{background:#eff5f6;color:#17485a;border:1px solid #bed2d9}
+#councilAccounts .ncg-action.gold{color:#142e3b;background:linear-gradient(125deg,#f2dba9,#d5b174)}
+#councilAccounts .ncg-note{font-size:12px;color:#597983;line-height:1.8;margin:7px 0}
+#councilAccounts .ncg-status{padding:11px 14px;border-radius:10px;background:#edf7f4;color:#0c6358;border:1px solid #afd9d1;font-size:13px;margin:12px 0}
+#councilAccounts .ncg-status.error{background:#fff0ef;color:#9a3037;border-color:#ebbdbe}
+#councilAccounts .ncg-results{display:grid;gap:8px;margin:13px 0}
+#councilAccounts .ncg-result{border:1px solid #d0e0e4;border-radius:10px;padding:11px 13px;background:#f9fcfc;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+#councilAccounts .ncg-result b{color:#123a4b}
+#councilAccounts .ncg-result small{display:block;color:#6a818a}
+#councilAccounts .ncg-result button{border:1px solid #14747a;border-radius:8px;background:#e7f5f4;color:#0a6064;padding:9px 12px;font-weight:800;cursor:pointer}
+#councilAccounts .ncg-result.selected{background:#eff7eb;border-color:#90bda0}
+#councilAccounts .ncg-credentials{background:#fff9e8;border:2px solid #c4a36b;border-radius:13px;padding:17px;margin-top:17px}
+#councilAccounts .ncg-credentials strong{display:block;color:#614819;margin-bottom:5px}
+#councilAccounts .ncg-credentials code{display:block;background:#fff;border:1px solid #e5d0a8;padding:8px;border-radius:8px;margin:7px 0;overflow-wrap:anywhere;direction:ltr;text-align:left;font:750 13px ui-monospace,monospace}
+#councilAccounts .ncg-members{display:grid;gap:9px;margin-top:13px}
+#councilAccounts .ncg-member{padding:13px 15px;border:1px solid #d1e1e5;background:#f8fcfc;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:13px}
+#councilAccounts .ncg-member strong{color:#163e4d}
+#councilAccounts .ncg-member small{display:block;color:#57717c;overflow-wrap:anywhere}
+#councilAccounts .ncg-member .ncg-action{white-space:nowrap;font-size:12px}
+#councilAccounts .ncg-pill{display:inline-flex;font-size:11px;padding:4px 9px;border-radius:20px;background:#e5f2ef;color:#18735e;margin-top:6px}
+#councilAccounts .ncg-pill.off{background:#fce7e2;color:#a1483c}
+@media(max-width:1050px){#councilAccounts .ncg-councils{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){#councilAccounts .ncg-councils{grid-template-columns:1fr 1fr}#councilAccounts .ncg-fields{grid-template-columns:1fr}#councilAccounts .ncg-result,#councilAccounts .ncg-member{align-items:stretch;flex-direction:column}#councilAccounts .ncg-council{min-height:100px;padding:10px}#councilAccounts .ncg-council strong{font-size:12px}}
+@media(prefers-reduced-motion:reduce){#councilAccounts .ncg-council{transition:none}}

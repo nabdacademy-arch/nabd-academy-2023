@@ -65,6 +65,7 @@
         <button class="side-button" type="button" data-tab="records"><span>▤</span><span data-ar="محاضر وقرارات ومهام" data-en="Records & tasks">محاضر وقرارات ومهام</span></button>
         <button class="side-button" type="button" data-tab="compose"><span>✎</span><span data-ar="إضافة سجل جديد" data-en="Create record">إضافة سجل جديد</span></button>
         <button class="side-button" id="membership-tab-button" type="button" data-tab="members" hidden><span>♙</span><span data-ar="إدارة العضويات" data-en="Manage members">إدارة العضويات</span></button>
+        <button class="side-button" type="button" data-tab="security"><span>♜</span><span data-ar="أمان الحساب" data-en="Account security">أمان الحساب</span></button>
       </nav>
       <div class="sidebar-security"><span class="sidebar-lock" aria-hidden="true">♜</span><p data-ar="مساحة خاصة بأعضاء المجالس فقط" data-en="Private space for council members only">مساحة خاصة بأعضاء المجالس فقط</p><small>MEMBERS ONLY · NABD</small></div>
       <div class="sidebar-bottom"><div class="account-chip"><span class="account-avatar" aria-hidden="true">N</span><div><strong id="account-name">—</strong><small id="account-role">—</small></div></div><button id="signout" type="button" class="signout-button" data-ar="تسجيل الخروج" data-en="Sign out">تسجيل الخروج</button></div>
@@ -100,6 +101,16 @@
           <label for="new-body" data-ar="المحتوى والتفاصيل" data-en="Details and notes">المحتوى والتفاصيل</label><textarea id="new-body" rows="7" maxlength="6000" placeholder="الأهداف، الخطوات، المسؤوليات، النتائج المتوقعة..."></textarea>
           <label for="new-due" data-ar="موعد المتابعة (اختياري)" data-en="Follow-up date (optional)">موعد المتابعة (اختياري)</label><input id="new-due" type="date">
           <div class="form-actions"><button id="save-record" class="primary-button" type="submit" data-ar="حفظ السجل في المجلس" data-en="Save council record">حفظ السجل في المجلس</button><p data-ar="يحفظ السجل في قاعدة البيانات، ولا يُنشر خارج مجالسك." data-en="The record stays in the database and is not published outside your councils.">يحفظ السجل في قاعدة البيانات، ولا يُنشر خارج مجالسك.</p></div>
+        </form>
+      </section>
+      <section id="security-view" class="view" hidden>
+        <div class="section-heading"><div><span class="eyebrow">ACCOUNT SECURITY</span><h2 data-ar="تغيير كلمة مرور حسابك" data-en="Change your account password">تغيير كلمة مرور حسابك</h2></div></div>
+        <form id="security-form" class="form-panel" autocomplete="off">
+          <p data-ar="غيّر كلمة المرور الأولية التي استلمتها من المدير قبل استخدام حسابك بانتظام." data-en="Replace your initial password from the director before using your account regularly.">غيّر كلمة المرور الأولية التي استلمتها من المدير قبل استخدام حسابك بانتظام.</p>
+          <label for="security-password" data-ar="كلمة المرور الجديدة" data-en="New password">كلمة المرور الجديدة</label><input id="security-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+          <label for="security-confirm" data-ar="تأكيد كلمة المرور" data-en="Confirm new password">تأكيد كلمة المرور</label><input id="security-confirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+          <p data-ar="استخدم 12 حرفًا على الأقل، تشمل حروفًا كبيرة وصغيرة ورقمًا." data-en="Use at least 12 characters, including upper/lowercase letters and a number.">استخدم 12 حرفًا على الأقل، تشمل حروفًا كبيرة وصغيرة ورقمًا.</p>
+          <button class="primary-button" id="security-save" type="submit" data-ar="تغيير كلمة المرور" data-en="Change password">تغيير كلمة المرور</button>
         </form>
       </section>
       <section id="members-view" class="view" hidden>

@@ -37,9 +37,10 @@
     overview:["لوحة قيادة المجالس","Councils leadership dashboard"],
     records:["سجل أعمال المجالس","Councils work register"],
     compose:["إنشاء سجل جديد","Create council record"],
-    members:["إدارة عضويات المجالس","Manage council members"]
+    members:["إدارة عضويات المجالس","Manage council members"],
+    security:["أمان الحساب","Account security"]
   };
-  const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false};
+  const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false,deepLinkApplied:false};
   const T = (ar,en) => state.lang === "ar" ? ar : en;
   const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const codeName = code => {const c=councils.find(x=>x.code===code);return c?(state.lang==="ar"?c.ar:c.en):code;};
@@ -220,9 +221,22 @@
         setGate(T("الحساب صحيح، لكن ليس لديه تكليف فعّال في مجالس نبض. تواصل مع الإدارة للحصول على قرار عضوية.","Signed in, but this account has no active NABD council appointment. Contact the administration."),true);
         return;
       }
+      // A council link routes the member only after authorization; it never grants access.
+      if(!state.deepLinkApplied){
+        const direct=new URLSearchParams(location.search).get("council");
+        if(direct && councils.some(c=>c.code===direct) && canAccess(direct)){
+          state.councilFilter=direct;
+          state.tab="records";
+        } else if(!state.isAdmin && ownMemberships().length===1) {
+          state.councilFilter=ownMemberships()[0].council_code;
+          state.tab="records";
+        }
+        state.deepLinkApplied=true;
+      }
       $("#gate").hidden=true;$("#workspace").hidden=false;
       notice("");
       renderDashboard();
+      setTab(state.tab);
       await loadRecords(epoch);
     }catch(_){
       if(epoch===state.authEpoch){state.user=null;state.records=[];setGate(T("تعذر إتمام التحقق الآمن. أعد المحاولة.","Secure verification failed. Please retry."),true);}
@@ -292,8 +306,27 @@
       await verifyAccess();setTab("members");
     }catch(_){notice(T("تعذر الاتصال أثناء تعديل العضوية.","Connection failed while changing membership."),true);}finally{btn.disabled=false;}
   }
+  async function changePassword(event){
+    event.preventDefault();
+    if(!state.user||!state.db)return;
+    const next=$("#security-password").value;
+    const confirm=$("#security-confirm").value;
+    if(next!==confirm){notice(T("كلمتا المرور غير متطابقتين.","Passwords do not match."),true);return;}
+    if(next.length<12||!/[A-Z]/.test(next)||!/[a-z]/.test(next)||!/[0-9]/.test(next)){
+      notice(T("استخدم 12 حرفًا على الأقل مع حرف كبير وصغير ورقم.","Use at least 12 characters with uppercase, lowercase and a number."),true);return;
+    }
+    const button=$("#security-save");button.disabled=true;
+    try{
+      const {error}=await state.db.auth.updateUser({password:next});
+      if(error)throw error;
+      $("#security-form").reset();
+      notice(T("تم تحديث كلمة المرور. لا تشاركها مع أي شخص.","Your password was updated. Keep it private."));
+    }catch(_){notice(T("لم يتم تغيير كلمة المرور. حاول مرة أخرى.","Password change failed. Please try again."),true);}
+    finally{button.disabled=false;}
+  }
   async function signOut(){
     ++state.authEpoch;
+    state.deepLinkApplied=false;
     $("#workspace").hidden=true;
     state.user=null;state.profile=null;state.isAdmin=false;state.memberships=[];state.records=[];
     try{await state.db?.auth.signOut();}catch(_){}
@@ -305,6 +338,7 @@
     setLanguage(state.lang);
     $("#login-form").addEventListener("submit",login);
     $("#record-form").addEventListener("submit",saveRecord);
+    $("#security-form").addEventListener("submit",changePassword);
     $("#member-form").addEventListener("submit",addMember);
     $("#language").addEventListener("click",()=>setLanguage(state.lang==="ar"?"en":"ar"));
     $("#signout").addEventListener("click",signOut);
