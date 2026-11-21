@@ -276,7 +276,7 @@ function clear(el){el.replaceChildren()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function labelDifficulty(x){return {basic:'أساسي',intermediate:'متوسط',advanced:'متقدم',oral:'شفهي'}[x]||x}
 function lastPerformance(id){let h=state.attempts.filter(x=>x.question_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));return h.length?!!h[0].is_correct:null}
-function calcStats(){message('kQuestions',state.questions.length);message('kSources',state.sources.length);message('kAnswered',state.attempts.length);const judged=state.attempts.filter(x=>x.is_correct!==null);message('kRate',judged.length?Math.round(judged.filter(x=>x.is_correct).length/judged.length*100)+'%':'—')}
+function calcStats(){message('kQuestions',state.questions.length);message('kSources',state.sources.length);message('kAnswered',state.attempts.length);const judged=state.attempts.filter(x=>typeof x.is_correct==='boolean');message('kRate',judged.length?Math.round(judged.filter(x=>x.is_correct).length/judged.length*100)+'%':'—')}
 // Guest training never asks for a password and never reads or writes another account's attempts.
 const GUEST_ATTEMPTS_KEY='nabd-open-doors-public-local-attempts-v1';
 function localAttempts(){
@@ -326,7 +326,10 @@ function bankStatus(text,refresh){
  $('guestBankRefresh').hidden=!refresh;
 }
 function withDeadline(promise,ms=8500){
- return Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(Error('BANK_TIMEOUT')),ms))]);
+ let timer;
+ return Promise.race([promise,new Promise((_,reject)=>{
+  timer=setTimeout(()=>reject(Error('BANK_TIMEOUT')),ms);
+ })]).finally(()=>clearTimeout(timer));
 }
 let loadingBank=false;
 async function loadPortal(){
@@ -395,6 +398,15 @@ function startTimer(){stopTimer();
  state.interval=setInterval(updateMockTimer,1000);
 }
 function paintTimer(){const m=Math.floor(state.seconds/60),s=state.seconds%60;message('timer','⏱ '+m+':'+String(s).padStart(2,'0'))}
+// Enforce the real deadline at answer submission too: a background-throttled
+// mobile browser must not let a late tap score points before its next interval tick.
+function mockTimeExpired(){
+ if(state.complete)return true;
+ if(state.mode==='mock'&&state.deadline&&Date.now()>=state.deadline){
+  finishRound();return true;
+ }
+ return false;
+}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateMockTimer()});
 function startExam(){const result=selectDeck();if(!result.deck.length){alert('لا توجد أسئلة بهذه الخيارات. جرّب مستوى أو مجالًا مختلفًا.');return}
  state.deck=result.deck;state.mode=result.mode;state.index=0;state.round=[];state.locked=false;state.complete=false;
@@ -479,7 +491,7 @@ $('translateBtn').addEventListener('click',async()=>{
  }
 });
 $('checkBtn').onclick=async()=>{
- if(state.locked)return;const q=state.deck[state.index];
+ if(state.locked||mockTimeExpired())return;const q=state.deck[state.index];
  if(q.kind==='written'||q.kind==='oral'){
   showFeedback('الإجابة النموذجية الإرشادية','السؤال: '+q.question+'\n\n'+q.explanation+'\n\nسلم تقييم مقترح: '+(q.rubric||'الدقة العلمية والتفسير والمثال.'));
   $('selfMark').hidden=false;$('nextBtn').disabled=true;return;
@@ -491,9 +503,9 @@ $('checkBtn').onclick=async()=>{
  showFeedback(ok?'✅ إجابة صحيحة':'❌ تحتاج مراجعة','الإجابة: '+answerText+'\n\nالتفسير: '+q.explanation);
  await saveAttempt(q,chosen.join(','),ok,ok?q.points:0);
 };
-for(const [id,ok] of [['selfRight',true],['selfWrong',false]])$(id).onclick=async()=>{if(!$('nextBtn').disabled)return;const q=state.deck[state.index];$('nextBtn').disabled=false;$('selfMark').hidden=true;await saveAttempt(q,$('writtenInput').value,ok,ok?q.points:0)};
-$('skipBtn').onclick=async()=>{const q=state.deck[state.index];if(state.locked)return;showFeedback('تم تخطي السؤال','الإجابة أو العناصر المطلوبة: '+((q.answers||[]).join(', ')||'راجع الشرح')+'\n'+q.explanation);await saveAttempt(q,'[skipped]',false,0)};
-$('nextBtn').onclick=()=>{if($('nextBtn').disabled)return;state.index++;renderQuestion()};
+for(const [id,ok] of [['selfRight',true],['selfWrong',false]])$(id).onclick=async()=>{if(!$('nextBtn').disabled||mockTimeExpired())return;const q=state.deck[state.index];$('nextBtn').disabled=false;$('selfMark').hidden=true;await saveAttempt(q,$('writtenInput').value,ok,ok?q.points:0)};
+$('skipBtn').onclick=async()=>{if(state.locked||mockTimeExpired())return;const q=state.deck[state.index];showFeedback('تم تخطي السؤال','الإجابة أو العناصر المطلوبة: '+((q.answers||[]).join(', ')||'راجع الشرح')+'\n'+q.explanation);await saveAttempt(q,'[skipped]',false,0)};
+$('nextBtn').onclick=()=>{if($('nextBtn').disabled||mockTimeExpired())return;state.index++;renderQuestion()};
 $('stopBtn').onclick=()=>finishRound();
 function finishRound(){if(state.complete)return;stopTimer();state.complete=true;$('examStage').hidden=true;$('examDone').hidden=false;const count=state.round.length,ok=state.round.filter(x=>x.is_correct).length,earned=state.round.reduce((a,x)=>a+Number(x.awarded_points),0);message('doneSummary','حللت '+count+' سؤالًا؛ إجابات صحيحة '+ok+'، مجموع النقاط '+earned+'. افتح قسم تقدمي لمراجعة نقاط الضعف.');renderStats();calcStats()}
 function resetExam(){stopTimer();$('examSetup').hidden=false;$('examStage').hidden=true;$('examDone').hidden=true}
