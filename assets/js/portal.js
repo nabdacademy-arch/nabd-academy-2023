@@ -119,14 +119,14 @@ function normalizeProgress(value, allowFraction = false) {
     progress *= 100;
   }
 
-  progress = Math.round(progress);
-
-  if (progress < 0) progress = 0;
-  if (progress > 100) progress = 100;
-
-  return progress;
+  return Math.min(100, Math.max(0, progress));
 }
 
+
+// Reserve a displayed 100% for progress that has actually reached completion.
+function displayProgress(percent) {
+  return percent >= 100 ? 100 : Math.min(99, Math.round(percent));
+}
 
 function enrollmentProgress(enrollment) {
   if (enrollment.progress_percent != null) {
@@ -559,11 +559,7 @@ function renderMetrics() {
         0
       );
 
-    average =
-      Math.round(
-        total /
-        enrollments.length
-      );
+    average = displayProgress(total / enrollments.length);
   }
 
 
@@ -679,7 +675,7 @@ function renderCourses() {
               </span>
 
               <strong>
-                ${progress}%
+                ${displayProgress(progress)}%
               </strong>
 
             </div>
