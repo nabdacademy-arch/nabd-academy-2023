@@ -1179,15 +1179,10 @@ async function handleSignUp(event) {
       .toLowerCase() || "";
 
 
-  const password =
-    $("#signUpPassword")
-      ?.value || "";
-
-
-  const confirm =
-    $("#signUpPasswordConfirm")
-      ?.value || "";
-
+  const passwordField = $("#signUpPassword");
+  const confirmationField = $("#signUpPasswordConfirm");
+  const password = passwordField?.value || "";
+  const confirm = confirmationField?.value || "";
 
   const button =
     $("#signUpButton");
@@ -1278,8 +1273,12 @@ async function handleSignUp(event) {
       throw new Error("Could not confirm the registration request. Check your inbox before trying again.");
     }
 
-    if (data.session) {
-      await loadDashboard(confirmedSessionUser(data));
+    const sessionUser = data.session ? confirmedSessionUser(data) : null;
+    if (passwordField.value === password) passwordField.value = "";
+    if (confirmationField.value === confirm) confirmationField.value = "";
+
+    if (sessionUser) {
+      await loadDashboard(sessionUser);
 
       return;
     }
