@@ -9,6 +9,9 @@ on:
       - 'assets/js/academic-core.js'
       - 'assets/js/nabd-signature.js'
       - 'academy.html'
+      - 'index.html'
+      - 'assets/css/nabd-councils-home.css'
+      - 'tests/councils-homepage.test.cjs'
       - 'supabase/migrations/20261121_nabd_councils_network.sql'
       - 'tests/councils-gateway.test.cjs'
       - 'tests/councils-design.test.cjs'
@@ -22,6 +25,9 @@ on:
       - 'assets/js/academic-core.js'
       - 'assets/js/nabd-signature.js'
       - 'academy.html'
+      - 'index.html'
+      - 'assets/css/nabd-councils-home.css'
+      - 'tests/councils-homepage.test.cjs'
       - 'supabase/migrations/20261121_nabd_councils_network.sql'
       - 'tests/councils-gateway.test.cjs'
       - 'tests/councils-design.test.cjs'
@@ -43,7 +49,7 @@ jobs:
           node --check assets/js/nabd-signature.js
       - name: Validate eight councils, protected routes and design assets
         run: |
-          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs
       - name: Verify local SVG artwork XML
         run: |
           python3 - <<'PY'
