@@ -83,7 +83,7 @@ export function createClient(){
   await online.locator("#modeSel").selectOption("mock");
   await online.locator("#startBtn").click();
   await online.locator("#examStage").waitFor({state:"visible",timeout:6000});
-  assert.match(await online.locator("#timer").innerText(),/2:59|3:00/);
+  assert.match(await online.locator("#timer").innerText(),/179:5[0-9]|180:00/);
   await online.evaluate(()=>{
     const original=Date.now;
     Date.now=()=>original()+181*60*1000;
