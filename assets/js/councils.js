@@ -190,7 +190,7 @@
     renderDashboard();
   }
   async function loadMembers(epoch){
-    const {data,error}=await state.db.from("nabd_council_memberships").select("user_id,council_code,position,active,appointed_at").order("appointed_at",{ascending:false});
+    const {data,error}=await state.db.from("nabd_council_memberships").select("user_id,council_code,position,active,appointed_at,member_code").order("appointed_at",{ascending:false});
     if(epoch!==state.authEpoch)return false;
     if(error){notice(T("تعذر التحقق من العضوية. الدخول محجوب.","Membership verification failed. Access is blocked."),true,"#gate-message");return false;}
     state.memberships=data||[];
