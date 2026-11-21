@@ -1,0 +1,53 @@
+name: NABD Open Doors Public Resilience
+on:
+  push:
+    paths:
+      - 'open-doors-ai.html'
+      - 'open-doors-masters.html'
+      - 'assets/js/open-doors-choice.js'
+      - 'assets/js/open-doors-essay.js'
+      - 'assets/js/open-doors-masters.js'
+      - 'assets/js/open-doors-choice-bank.js'
+      - 'assets/js/open-doors-essay-bank.js'
+      - 'tests/open-doors-resilience-browser.cjs'
+      - '.github/workflows/open-doors-resilience.yml'
+  pull_request:
+    paths:
+      - 'open-doors-ai.html'
+      - 'open-doors-masters.html'
+      - 'assets/js/open-doors-choice.js'
+      - 'assets/js/open-doors-essay.js'
+      - 'assets/js/open-doors-masters.js'
+      - 'assets/js/open-doors-choice-bank.js'
+      - 'assets/js/open-doors-essay-bank.js'
+      - 'tests/open-doors-resilience-browser.cjs'
+      - '.github/workflows/open-doors-resilience.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-guest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Test real guest resilience without internet SDK
+        run: |
+          node --check tests/open-doors-resilience-browser.cjs
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/nabd-open-doors-resilience-http.log 2>&1 &
+          sleep 2
+          node tests/open-doors-resilience-browser.cjs
+      - name: Upload mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nabd-open-doors-resilience-mobile
+          path: open-doors-resilience-results/
+          retention-days: 7
