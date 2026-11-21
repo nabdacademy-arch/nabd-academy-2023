@@ -1,0 +1,41 @@
+name: NABD Councils Network Checks
+on:
+  push:
+    paths:
+      - 'councils.html'
+      - 'assets/js/councils.js'
+      - 'assets/css/councils.css'
+      - 'assets/js/academic-core.js'
+      - 'assets/js/nabd-signature.js'
+      - 'academy.html'
+      - 'supabase/migrations/20261121_nabd_councils_network.sql'
+      - 'tests/councils-gateway.test.cjs'
+      - '.github/workflows/councils-gateway.yml'
+  pull_request:
+    paths:
+      - 'councils.html'
+      - 'assets/js/councils.js'
+      - 'assets/css/councils.css'
+      - 'assets/js/academic-core.js'
+      - 'assets/js/nabd-signature.js'
+      - 'academy.html'
+      - 'supabase/migrations/20261121_nabd_councils_network.sql'
+      - 'tests/councils-gateway.test.cjs'
+      - '.github/workflows/councils-gateway.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse gateway scripts
+        run: |
+          node --check assets/js/councils.js
+          node --check assets/js/academic-core.js
+          node --check assets/js/nabd-signature.js
+      - name: Validate eight councils and protected routes
+        run: node --test tests/councils-gateway.test.cjs

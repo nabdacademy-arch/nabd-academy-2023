@@ -39,7 +39,8 @@ jobs:
           node --check assets/js/academic-core.js
           node tests/academic-core-integrity.test.mjs
   browser:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 does not support the ubuntu-26.04 latest image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
