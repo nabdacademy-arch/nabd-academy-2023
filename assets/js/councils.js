@@ -124,6 +124,21 @@
       setTab("records");
     }));
   }
+  function renderMemberDocuments(){
+    const root=$("#identity-list");
+    const mine=ownMemberships();
+    if(!mine.length){
+      root.innerHTML='<div class="empty-card">'+esc(T("لا توجد عضويات نشطة باسم هذا الحساب. يدير المدير إصدار بطاقات الأعضاء من لوحة المدير.","This account has no active council memberships. Directors can issue member documents from the director dashboard."))+'</div>';
+      return;
+    }
+    root.innerHTML=mine.map(m=>{
+      const href="council-documents.html?member="+encodeURIComponent(state.user.id)+"&council="+encodeURIComponent(m.council_code);
+      return '<article class="record-card"><div class="record-heading"><span class="kind-tag">'+esc(codeName(m.council_code))+'</span><span class="status-tag">'+esc(positionName(m.position))+'</span></div>'
+        +'<h3 class="member-identity-number" dir="ltr">'+esc(m.member_code||"—")+'</h3>'
+        +'<p>'+esc(T("هذه عضويتك الرسمية في المجلس، ويمكن التحقق من تكليفك عبر QR.","This is your institutional council appointment, verifiable through a QR code."))+'</p>'
+        +'<a class="member-identity-link" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(T("فتح البطاقة وشهادة التكليف ↗","Open membership card and certificate ↗"))+'</a></article>';
+    }).join("");
+  }
   function renderStats(){
     // Show real active appointments, not the number of councils available to admins.
     const count=state.isAdmin
