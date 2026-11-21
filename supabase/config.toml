@@ -6,3 +6,11 @@ verify_jwt = false
 # Director provisioning always requires a valid signed-in user JWT.
 [functions.nabd-council-provision]
 verify_jwt = true
+
+# Issuance, list and delegation require authenticated, authorized accounts.
+[functions.nabd-official-documents]
+verify_jwt = true
+
+# Public QR verification uses an unguessable token and never exposes private data.
+[functions.nabd-document-verify]
+verify_jwt = false
