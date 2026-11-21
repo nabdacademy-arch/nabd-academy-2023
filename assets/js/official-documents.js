@@ -16,11 +16,30 @@ const kinds={student:"طالب",member:"عضو مجلس",other:"حساب بال�
 const db=window.nabdSupabase;
 const state={allowed:[],admin:false,type:"statement",person:null,issuer:null,items:[],doc:null,ready:false,busy:false};
 function message(m="",error=false){const n=$("feedback");n.textContent=m;n.classList.toggle("error",error);n.hidden=!m;}
+// The public interface should not show raw internal server identifiers to members or administrators.
+const serviceMessages={
+ account_profile_missing:"هذا الحساب غير مرتبط بملف شخصي في أكاديمية نبض. يرجى التواصل مع المدير لإصلاح الربط.",
+ profile_lookup_failed:"تعذر قراءة ملف الحساب بسبب مشكلة في صلاحيات الخادم. أعد المحاولة أو تواصل مع إدارة النظام.",
+ issuer_not_authorized:"ليس لدى حسابك صلاحية إصدار المستندات. اطلب تفويضًا من المدير العام.",
+ invalid_session:"انتهت جلسة الدخول. سجّل الدخول مرة أخرى من لوحة المدير.",
+ authentication_required:"سجّل الدخول بحساب المدير أو الحساب المخوّل أولًا.",
+ authorization_unavailable:"تعذر التحقق من التفويض حاليًا. أعد المحاولة.",
+ service_unavailable:"خدمة المستندات غير متاحة حاليًا. حاول لاحقًا.",
+ request_failed:"تعذّر إتمام العملية. حاول مرة أخرى.",
+ search_failed:"تعذر البحث في حسابات الأكاديمية.",
+ issue_failed:"تعذر إصدار المستند. لم يتم تأكيد إصدار مستند جديد.",
+ subject_profile_missing:"الحساب المختار ليس له ملف شخصي صالح. اختر حسابًا آخر.",
+ list_failed:"تعذّر تحميل سجل المستندات.",
+ cannot_save_permission:"تعذر حفظ التفويض. حاول مجددًا."
+};
+function userFriendlyError(code,fallback){
+ return serviceMessages[code]||fallback||"حدث خطأ أثناء الاتصال بمركز المستندات.";
+}
 async function call(action,args={}){
  if(!db)throw Error("خدمة قاعدة بيانات نبض غير متاحة");
  const {data,error}=await db.functions.invoke("nabd-official-documents",{body:{action,...args}});
- if(error){let details=null;try{details=await error.context?.json?.();}catch(_){}throw Error(details?.error||error.message||"فشل طلب الخدمة");}
- if(data?.error)throw Error(data.error);
+ if(error){let details=null;try{details=await error.context?.json?.();}catch(_){}throw Error(userFriendlyError(details?.error,error.message));}
+ if(data?.error)throw Error(userFriendlyError(data.error));
  return data;
 }
 function chooseType(id){
