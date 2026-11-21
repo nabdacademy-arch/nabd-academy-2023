@@ -4,6 +4,15 @@ on:
     paths:
       - 'councils.html'
       - 'council-documents.html'
+      - 'official-documents.html'
+      - 'official-document-verify.html'
+      - 'assets/css/official-documents.css'
+      - 'assets/js/official-documents.js'
+      - 'assets/js/official-document-verification.js'
+      - 'supabase/functions/nabd-official-documents/index.ts'
+      - 'supabase/functions/nabd-document-verify/index.ts'
+      - 'supabase/migrations/20261121_official_documents_center.sql'
+      - 'tests/official-documents.test.cjs'
       - 'council-verify.html'
       - 'assets/css/council-documents.css'
       - 'assets/js/council-documents.js'
@@ -36,6 +45,15 @@ on:
     paths:
       - 'councils.html'
       - 'council-documents.html'
+      - 'official-documents.html'
+      - 'official-document-verify.html'
+      - 'assets/css/official-documents.css'
+      - 'assets/js/official-documents.js'
+      - 'assets/js/official-document-verification.js'
+      - 'supabase/functions/nabd-official-documents/index.ts'
+      - 'supabase/functions/nabd-document-verify/index.ts'
+      - 'supabase/migrations/20261121_official_documents_center.sql'
+      - 'tests/official-documents.test.cjs'
       - 'council-verify.html'
       - 'assets/css/council-documents.css'
       - 'assets/js/council-documents.js'
@@ -80,11 +98,13 @@ jobs:
           node --check assets/js/nabd-councils-director.js
           node --check assets/js/council-documents.js
           node --check assets/js/council-verification.js
+          node --check assets/js/official-documents.js
+          node --check assets/js/official-document-verification.js
           node --check assets/js/academic-core.js
           node --check assets/js/nabd-signature.js
       - name: Validate eight councils, protected routes and design assets
         run: |
-          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs tests/council-identity-verification.test.cjs
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs tests/council-identity-verification.test.cjs tests/official-documents.test.cjs
       - name: Verify local SVG artwork XML
         run: |
           python3 - <<'PY'
