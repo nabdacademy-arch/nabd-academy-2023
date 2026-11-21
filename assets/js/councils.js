@@ -109,9 +109,9 @@
         +(allowed?'data-council="'+c.code+'"':'disabled aria-disabled="true"')
         +' aria-label="'+esc(councilName+(allowed?"":T(" - دخول مقيد"," - Restricted")))+'">'
         +'<span class="council-art" aria-hidden="true"><img loading="lazy" decoding="async" width="760" height="340" alt="" src="'+art+'"></span>'
-        +'<span class="council-content"><span class="council-icon" aria-hidden="true">'+esc(c.icon)+'</span>'
-        +'<span class="council-text"><h3>'+esc(councilName)+'</h3><p>'+esc(summary)+'</p>'
-        +'<span class="council-foot">'+esc(label)+' <span aria-hidden="true">←</span></span></span></span>'
+        +'<div class="council-content"><span class="council-icon" aria-hidden="true">'+esc(c.icon)+'</span>'
+        +'<div class="council-text"><h3>'+esc(councilName)+'</h3><p>'+esc(summary)+'</p>'
+        +'<span class="council-foot">'+esc(label)+' <span aria-hidden="true">←</span></span></div></div>'
         +'<span class="council-arrow" aria-hidden="true">‹</span>'
         +'</button>';
     }).join("");
