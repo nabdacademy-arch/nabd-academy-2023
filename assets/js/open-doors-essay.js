@@ -1,9 +1,9 @@
 /* NABD Open Doors advanced written coach — public independent training studio.
  * Text/image graded by an authenticated Edge Function only with explicit consent.
  * No grade stored on the academy servers. Local typed drafts persist per-tab only. */
-import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const db=createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
- {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const dbPromise=import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/+esm")
+ .then(({createClient})=>createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
+ {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})).catch(()=>null);
 const bank=window.OpenDoorsEssayBank;
 const $=id=>document.getElementById(id);
 if(!bank||!$("essayLab"))throw Error("ESSAY_BANK_UNAVAILABLE");
@@ -32,6 +32,7 @@ async function loadArchive(){
  if(state.cacheLoaded)return;state.cacheLoaded=true;
  try{
   // The practice archive is now publicly readable. Auth is reserved for paid AI grading.
+  const db=await dbPromise;if(!db)throw Error("BANK_UNAVAILABLE");
   const {data,error}=await db.from("open_doors_questions").select("id,subject,kind,topic,question,explanation,rubric,origin,source_note")
    .eq("kind","written").in("subject",allSubjects).limit(100);
   if(error)throw Error(error.message);
@@ -245,6 +246,7 @@ async function grade(){
  if(answer.length>6500){status("الإجابة أطول من الحد المسموح؛ اختصر إلى 6500 حرف.","Answer exceeds 6,500 characters.",true);return}
  state.busy=true;$("essayGrade").disabled=true;status("يجري تحليل الحل حسب المعايير الأربعة، وفحص الخطوات والمعادلات...","Grading your reasoning, equations and four rubric criteria...");
  try{
+  const db=await dbPromise;if(!db)throw Error("AI_UNAVAILABLE_OFFLINE");
   const auth=await db.auth.getUser();
   if(auth.error||!auth.data?.user)throw Error("AUTH_REQUIRED");
   const image=state.photo?await imagePayload(state.photo):null;
