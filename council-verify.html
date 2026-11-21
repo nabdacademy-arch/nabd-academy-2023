@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#081c2b">
+<title>التحقق من عضوية مجالس نبض | NABD Council Verification</title>
+<style>
+:root{color-scheme:dark;--gold:#e4c38a;--bg:#061726;--card:#112b3d;--text:#fff9ed}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 0 0,#20465a 0,transparent 45%),linear-gradient(160deg,#071a2b,#04121f);min-height:100vh;color:var(--text);font-family:Tahoma,Arial,system-ui,sans-serif;display:flex;flex-direction:column;line-height:1.8}
+header{padding:24px clamp(16px,5vw,70px);border-bottom:1px solid #cba96c58;display:flex;align-items:center;gap:15px;justify-content:space-between}
+header a{color:#e8c992;text-decoration:none;font-weight:850}header small{display:block;color:#bbcfda}
+main{width:min(650px,94%);margin:clamp(30px,7vw,90px) auto 50px;flex:1}
+.seal{margin:0 auto 16px;display:grid;place-items:center;width:74px;height:74px;font-size:39px;color:#f0d59f;border:2px solid #d9b475;border-radius:23px;background:#193648}
+h1{text-align:center;font-size:clamp(27px,5vw,40px);margin:0 0 10px;color:#ffedc8}p.lead{text-align:center;color:#b9cbd4;margin:0 auto 30px;max-width:590px}
+.panel{padding:clamp(23px,5vw,40px);border-radius:23px;border:1px solid #dfc28c66;background:linear-gradient(140deg,#15374a,#0b2336 72%);box-shadow:0 30px 60px #0005;position:relative;overflow:hidden}
+.panel:before{content:"";display:block;width:130%;position:absolute;top:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#e1c083,transparent)}
+input,button{font:inherit}label{display:block;color:#e9d5ae;font-size:13px;margin-bottom:7px}input{width:100%;min-height:50px;border:1px solid #d3bc8d88;background:#061d2c;color:white;border-radius:12px;padding:12px 15px;text-align:left;direction:ltr}
+button{border:0;background:linear-gradient(110deg,#f2dcae,#c39b59);color:#133041;border-radius:11px;min-height:49px;padding:11px 18px;font-weight:900;cursor:pointer;margin-top:15px;width:100%}
+button:disabled{opacity:.55}.notice{min-height:34px;color:#d3dfe1;margin-top:17px;text-align:center}.state{margin:19px 0;padding:22px;border-radius:14px;background:#0a2534;border:1px solid #86aab888;display:none}
+.state.show{display:block}.state h2{font-size:24px;margin:0 0 9px}.state.ok{border-color:#4cc1a9;color:#d0ffee}.state.bad{border-color:#d5ac74;color:#ffe2bd}
+.meta{display:grid;gap:0;margin-top:14px}.field{padding:12px 0;border-top:1px solid #ffffff22;display:flex;align-items:center;justify-content:space-between;gap:20px}.field span:first-child{color:#b8ccd8}.field strong{overflow-wrap:anywhere;text-align:left;direction:auto}
+.note{font-size:13px;color:#c2cbd3;text-align:center;margin-top:27px}footer{text-align:center;padding:19px;border-top:1px solid #d2b58044;color:#a3b7c1;font-size:12px}
+@media(max-width:470px){.field{display:block}.field strong{display:block;text-align:right;margin-top:3px}}
+</style>
+<script defer src="assets/js/config.js?v=1"></script>
+<script defer src="assets/js/council-verification.js?v=1"></script>
+</head>
+<body>
+<header><a href="index.html"><strong>✦ NABD ACADEMY</strong><small>INSTITUTIONAL COUNCILS NETWORK</small></a><a href="councils.html">بوابة المجالس ←</a></header>
+<main>
+  <div class="seal" aria-hidden="true">♛</div>
+  <h1>التحقق من عضوية مجالس نبض</h1>
+  <p class="lead">التحقق الرقمي الرسمي من حالة التكليف في المجالس الثمانية لأكاديمية نبض للعلوم الطبية. تُعرض الحالة الحالية مباشرة من سجل العضويات.</p>
+  <section class="panel" aria-label="التحقق من عضوية المجلس">
+    <label for="token">رمز التحقق الموجود داخل رمز QR (ليس كلمة المرور)</label>
+    <form id="verification-form">
+      <input id="token" type="text" required spellcheck="false" autocomplete="off" maxlength="36" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      <button id="verify" type="submit">تحقق من صحة العضوية</button>
+    </form>
+    <p class="notice" id="message" role="status" aria-live="polite"></p>
+    <div class="state" id="result" aria-live="polite">
+      <h2 id="result-title"></h2>
+      <p id="result-description"></p>
+      <div class="meta" id="result-details"></div>
+    </div>
+  </section>
+  <p class="note">هذا التحقق يثبت عضوية مجلس داخل أكاديمية نبض فقط، ولا يمثل اعتمادًا حكوميًا أو شهادة تأهيل جامعي أو ترخيصًا طبيًا.</p>
+</main>
+<footer>© NABD ACADEMY · Verification is checked live · لا تُعرض بيانات تسجيل الدخول</footer>
+</body>
+</html>

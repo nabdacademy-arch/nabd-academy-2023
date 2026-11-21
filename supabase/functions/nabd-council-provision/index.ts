@@ -80,7 +80,7 @@ Deno.serve(async (req:Request)=>{
 
     if(action==="list"){
       const {data,error}=await admin.from("nabd_council_memberships")
-        .select("user_id,council_code,position,active,appointed_at")
+        .select("user_id,council_code,position,active,appointed_at,member_code")
         .order("appointed_at",{ascending:false}).limit(500);
       if(error)return fail("Could not load council memberships",500);
       const memberships=data||[];

@@ -38,7 +38,8 @@
     records:["سجل أعمال المجالس","Councils work register"],
     compose:["إنشاء سجل جديد","Create council record"],
     members:["إدارة عضويات المجالس","Manage council members"],
-    security:["أمان الحساب","Account security"]
+    security:["أمان الحساب","Account security"],
+    identity:["بطاقتي وشهادتي","My membership documents"]
   };
   const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false,deepLinkApplied:false};
   const T = (ar,en) => state.lang === "ar" ? ar : en;
@@ -85,6 +86,7 @@
     $("#view-title").textContent=T(...titles[tab]);
     if(tab==="records")renderRecords();
     if(tab==="members")renderMembers();
+    if(tab==="identity")renderMemberDocuments();
   }
   function addOptions(selector,items,all=false) {
     const el=$(selector);if(!el)return;
@@ -121,6 +123,21 @@
       $("#filter-council").value=state.councilFilter;
       setTab("records");
     }));
+  }
+  function renderMemberDocuments(){
+    const root=$("#identity-list");
+    const mine=ownMemberships();
+    if(!mine.length){
+      root.innerHTML='<div class="empty-card">'+esc(T("لا توجد عضويات نشطة باسم هذا الحساب. يدير المدير إصدار بطاقات الأعضاء من لوحة المدير.","This account has no active council memberships. Directors can issue member documents from the director dashboard."))+'</div>';
+      return;
+    }
+    root.innerHTML=mine.map(m=>{
+      const href="council-documents.html?member="+encodeURIComponent(state.user.id)+"&council="+encodeURIComponent(m.council_code);
+      return '<article class="record-card"><div class="record-heading"><span class="kind-tag">'+esc(codeName(m.council_code))+'</span><span class="status-tag">'+esc(positionName(m.position))+'</span></div>'
+        +'<h3 class="member-identity-number" dir="ltr">'+esc(m.member_code||"—")+'</h3>'
+        +'<p>'+esc(T("هذه عضويتك الرسمية في المجلس، ويمكن التحقق من تكليفك عبر QR.","This is your institutional council appointment, verifiable through a QR code."))+'</p>'
+        +'<a class="member-identity-link" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(T("فتح البطاقة وشهادة التكليف ↗","Open membership card and certificate ↗"))+'</a></article>';
+    }).join("");
   }
   function renderStats(){
     // Show real active appointments, not the number of councils available to admins.
@@ -188,7 +205,7 @@
     renderDashboard();
   }
   async function loadMembers(epoch){
-    const {data,error}=await state.db.from("nabd_council_memberships").select("user_id,council_code,position,active,appointed_at").order("appointed_at",{ascending:false});
+    const {data,error}=await state.db.from("nabd_council_memberships").select("user_id,council_code,position,active,appointed_at,member_code").order("appointed_at",{ascending:false});
     if(epoch!==state.authEpoch)return false;
     if(error){notice(T("تعذر التحقق من العضوية. الدخول محجوب.","Membership verification failed. Access is blocked."),true,"#gate-message");return false;}
     state.memberships=data||[];

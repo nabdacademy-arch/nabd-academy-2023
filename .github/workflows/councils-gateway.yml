@@ -3,6 +3,15 @@ on:
   push:
     paths:
       - 'councils.html'
+      - 'council-documents.html'
+      - 'council-verify.html'
+      - 'assets/css/council-documents.css'
+      - 'assets/js/council-documents.js'
+      - 'assets/js/council-verification.js'
+      - 'supabase/config.toml'
+      - 'supabase/functions/nabd-council-verify/index.ts'
+      - 'supabase/migrations/20261121_council_member_numbers_and_verification.sql'
+      - 'tests/council-identity-verification.test.cjs'
       - 'admin.html'
       - 'assets/js/nabd-councils-director.js'
       - 'assets/css/nabd-councils-director.css'
@@ -26,6 +35,15 @@ on:
   pull_request:
     paths:
       - 'councils.html'
+      - 'council-documents.html'
+      - 'council-verify.html'
+      - 'assets/css/council-documents.css'
+      - 'assets/js/council-documents.js'
+      - 'assets/js/council-verification.js'
+      - 'supabase/config.toml'
+      - 'supabase/functions/nabd-council-verify/index.ts'
+      - 'supabase/migrations/20261121_council_member_numbers_and_verification.sql'
+      - 'tests/council-identity-verification.test.cjs'
       - 'admin.html'
       - 'assets/js/nabd-councils-director.js'
       - 'assets/css/nabd-councils-director.css'
@@ -60,11 +78,13 @@ jobs:
         run: |
           node --check assets/js/councils.js
           node --check assets/js/nabd-councils-director.js
+          node --check assets/js/council-documents.js
+          node --check assets/js/council-verification.js
           node --check assets/js/academic-core.js
           node --check assets/js/nabd-signature.js
       - name: Validate eight councils, protected routes and design assets
         run: |
-          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs tests/council-identity-verification.test.cjs
       - name: Verify local SVG artwork XML
         run: |
           python3 - <<'PY'

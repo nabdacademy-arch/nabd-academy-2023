@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#091e30">
+<title>بطاقة وشهادة عضوية مجالس نبض | NABD Council Documents</title>
+<link rel="stylesheet" href="assets/css/council-documents.css?v=1">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
+<script defer src="assets/js/config.js?v=1"></script>
+<script defer src="assets/js/supabase-client.js?v=1"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="assets/js/council-documents.js?v=1"></script>
+</head>
+<body>
+<header class="doc-topbar no-print">
+  <a href="councils.html">✦ NABD COUNCILS <span>شبكة المجالس المؤسسية</span></a>
+  <a href="admin.html" id="director-return" hidden>← إدارة الحسابات</a>
+</header>
+<main class="doc-wrap">
+  <div class="doc-intro no-print">
+    <span class="doc-eyebrow">VERIFIABLE INSTITUTIONAL MEMBERSHIP</span>
+    <h1>بطاقة العضوية وشهادة التكليف</h1>
+    <p>تصدر البيانات من سجلات عضوية المجالس المعتمدة في أكاديمية نبض. رمز QR يتيح للمتلقي التحقق من الحالة الحالية للتكليف.</p>
+  </div>
+  <div id="doc-message" class="doc-message no-print" role="status" aria-live="polite">جارٍ التحقق من الحساب والصلاحيات…</div>
+  <div class="doc-controls no-print" id="doc-controls" hidden>
+    <div class="doc-switch" role="group" aria-label="نوع المستند">
+      <button type="button" data-document="card" aria-pressed="true">بطاقة العضوية</button>
+      <button type="button" data-document="certificate" aria-pressed="false">شهادة التكليف</button>
+    </div>
+    <button id="print-document" type="button" class="doc-primary">طباعة / حفظ PDF</button>
+    <a id="verify-link" href="council-verify.html" target="_blank" rel="noopener noreferrer" class="doc-secondary">التحقق من العضوية ↗</a>
+  </div>
+  <div class="doc-print-zone" id="print-zone" hidden>
+    <article class="nabd-id-card" id="document-card" aria-label="بطاقة عضوية رسمية لأكاديمية نبض">
+      <div class="id-top">
+        <div class="id-logo"><span>✦</span><div><strong>NABD ACADEMY</strong><small>ACADEMY OF MEDICAL SCIENCES</small></div></div>
+        <div class="id-badge">NCN • MEMBERSHIP</div>
+      </div>
+      <div class="id-content">
+        <div class="id-person">
+          <span class="id-overline">INSTITUTIONAL COUNCILS NETWORK</span>
+          <h2 id="card-name">—</h2>
+          <strong id="card-position">—</strong>
+          <p id="card-council">—</p>
+          <div class="id-number"><span>MEMBER ID</span><b id="card-code" dir="ltr">—</b></div>
+        </div>
+        <div class="id-qr-side">
+          <div id="card-qr" class="qr-box" aria-label="رمز QR للتحقق"></div>
+          <small>VERIFY MEMBERSHIP</small>
+        </div>
+      </div>
+      <div class="id-foot"><span id="card-date">تاريخ التكليف: —</span><span>VERIFIABLE · NABD</span></div>
+    </article>
+    <article class="nabd-certificate" id="document-certificate" hidden aria-label="شهادة تكليف عضوية مجلس نبض">
+      <div class="certificate-border">
+        <div class="cert-corner cert-corner-a" aria-hidden="true">❖</div><div class="cert-corner cert-corner-b" aria-hidden="true">❖</div>
+        <div class="cert-head"><span class="cert-mark">✦</span><div><strong>أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY FOR MEDICAL SCIENCES</small></div></div>
+        <div class="cert-divider"></div>
+        <p class="cert-kicker">NABD COUNCILS NETWORK · OFFICIAL APPOINTMENT RECORD</p>
+        <h2>شهادة تكليف بعضوية مجلس</h2>
+        <p class="cert-english">CERTIFICATE OF COUNCIL APPOINTMENT</p>
+        <p class="cert-phrase">تشهد أكاديمية نبض للعلوم الطبية بتسجيل تكليف</p>
+        <h3 id="cert-name">—</h3>
+        <p class="cert-phrase">للعمل بصفة <strong id="cert-position">—</strong> في</p>
+        <h4 id="cert-council">—</h4>
+        <p class="cert-paragraph">وذلك للمشاركة في أعمال المجلس ومبادراته وفق الأنظمة الداخلية للأكاديمية، اعتبارًا من تاريخ التكليف الموضح أدناه. وتظل صلاحية هذا التكليف خاضعة لسجل العضوية الإلكتروني.</p>
+        <div class="cert-bottom">
+          <div class="cert-data">
+            <span>رقم العضوية الثابت</span><strong id="cert-code" dir="ltr">—</strong>
+            <span id="cert-date">تاريخ التكليف: —</span>
+          </div>
+          <div class="cert-issuer">
+            <strong>الإدارة العامة • أكاديمية نبض</strong>
+            <small>سجل إلكتروني صادر عن المنصة المؤسسية</small>
+            <small>هذه الشهادة لا تمثل اعتمادًا حكوميًا أو مؤهلًا جامعيًا.</small>
+          </div>
+          <div class="cert-qr"><div id="certificate-qr" class="qr-box" aria-label="رمز QR للتحقق"></div><span>SCAN TO VERIFY</span></div>
+        </div>
+      </div>
+    </article>
+  </div>
+  <p id="privacy-note" class="doc-privacy no-print" hidden>تحتوي البطاقة والشهادة على الاسم والمجلس والصفة ورقم العضوية، ولا تحتويان على البريد أو كلمة المرور. رابط QR يكشف هذه البيانات فقط لمن يملك الرابط، ويستعلم عن حالة العضوية مباشرة.</p>
+</main>
+<footer class="no-print">© NABD ACADEMY · Internal appointment documents with live verification</footer>
+</body>
+</html>

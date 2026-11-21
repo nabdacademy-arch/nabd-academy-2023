@@ -16,6 +16,7 @@ const councils=[
 const labels={member:"عضو مجلس",chair:"رئيس المجلس",vice_chair:"نائب الرئيس",secretary:"مقرر المجلس"};
 const state={code:"trustees",mode:"new",selected:null,members:[],credential:null,busy:false,initialized:false};
 const link=code=>new URL("councils.html?council="+encodeURIComponent(code),location.href).href;
+const documentsLink=(id,code)=>new URL("council-documents.html?member="+encodeURIComponent(id)+"&council="+encodeURIComponent(code),location.href).href;
 function status(message,fail=false) {
  const n=$("ncg-status");
  n.textContent=message;n.classList.toggle("error",fail);n.hidden=!message;
@@ -148,7 +149,13 @@ function renderMembers(){
  target.innerHTML=rows.length?rows.map(m=>{
   const p=m.account||{};
   const username=E(p.full_name||p.email||m.user_id);
-  return '<div class="ncg-member"><div><strong>'+username+'</strong><small dir="ltr">'+E(p.email||m.user_id)+'</small><small>'+E(labels[m.position]||m.position)+'</small><span class="ncg-pill '+(m.active?"":"off")+'">'+(m.active?"عضوية نشطة":"عضوية معلقة")+'</span></div><button type="button" class="ncg-action '+(m.active?"secondary":"")+'" data-ncg-toggle="'+E(m.user_id)+'" data-ncg-next="'+String(!m.active)+'">'+(m.active?"تعليق العضوية":"إعادة التفعيل")+'</button></div>';
+  const number=m.member_code?'<small class="ncg-member-code" dir="ltr">رقم العضوية: '+E(m.member_code)+'</small>':"";
+  const docs='<a class="ncg-action gold ncg-document-link" target="_blank" rel="noopener noreferrer" href="'+E(documentsLink(m.user_id,m.council_code))+'">بطاقة العضوية وشهادة التكليف ↗</a>';
+  return '<div class="ncg-member"><div class="ncg-member-info"><strong>'+username+'</strong><small dir="ltr">'+E(p.email||m.user_id)+'</small>'
+   +number+'<small>'+E(labels[m.position]||m.position)+'</small><span class="ncg-pill '+(m.active?"":"off")+'">'
+   +(m.active?"عضوية نشطة":"عضوية معلقة")+'</span></div><div class="ncg-document-actions">'+docs
+   +'<button type="button" class="ncg-action '+(m.active?"secondary":"")+'" data-ncg-toggle="'+E(m.user_id)
+   +'" data-ncg-next="'+String(!m.active)+'">'+(m.active?"تعليق العضوية":"إعادة التفعيل")+'</button></div></div>';
  }).join(""):'<p class="ncg-note">لا توجد عضويات مسجلة لهذا المجلس بعد.</p>';
  target.querySelectorAll("[data-ncg-toggle]").forEach(btn=>btn.addEventListener("click",()=>toggle(btn)));
 }
