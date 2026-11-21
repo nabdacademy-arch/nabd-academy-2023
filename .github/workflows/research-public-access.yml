@@ -1,0 +1,35 @@
+name: NABD Public Research Access
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/js/research-center.js'
+      - 'assets/css/research-center.css'
+      - 'index.html'
+      - 'research-news.html'
+      - 'supabase/migrations/20261122_split_research_public_access_rls.sql'
+      - 'tests/research-public-rls.test.cjs'
+      - '.github/workflows/research-public-access.yml'
+  pull_request:
+    paths:
+      - 'assets/js/research-center.js'
+      - 'assets/css/research-center.css'
+      - 'index.html'
+      - 'research-news.html'
+      - 'supabase/migrations/20261122_split_research_public_access_rls.sql'
+      - 'tests/research-public-rls.test.cjs'
+      - '.github/workflows/research-public-access.yml'
+jobs:
+  research-public-access:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check research news JavaScript
+        run: node --check assets/js/research-center.js
+      - name: Verify published research permission boundary and retry UI
+        run: node --test tests/research-public-rls.test.cjs
