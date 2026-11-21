@@ -69,6 +69,28 @@
   }
 
   let papers = [];
+  let publicLoaded = false;
+  // A failed refresh must not hide already-loaded publications. On first-load
+  // failures, replace the indefinite spinner with a real retry control.
+  function showPublicLoadError(message) {
+    const renderError = target => {
+      if (!target) return;
+      target.replaceChildren();
+      const panel = document.createElement("div");
+      panel.className = "res-retry-panel";
+      const text = document.createElement("p");
+      text.textContent = message;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sch-btn sch-btn--gold";
+      button.textContent = "إعادة تحميل الأبحاث ↻";
+      button.addEventListener("click", () => fetchPublic());
+      panel.append(text, button);
+      target.append(panel);
+    };
+    renderError(home);
+    renderError(listing);
+  }
   function showPublic() {
     if (home) {
       home.replaceChildren();
@@ -94,19 +116,31 @@
   }
   async function fetchPublic() {
     if (!client) {
-      status($("res-public-status") || $("res-home-status"), "خدمة الأبحاث غير متاحة مؤقتًا.", "error");
+      const message = "خدمة الأبحاث غير متاحة مؤقتًا.";
+      status($("res-public-status") || $("res-home-status"), message, "error");
+      if (!publicLoaded) showPublicLoadError(message);
       return;
     }
-    const {data, error} = await client.from("nabd_research_papers")
-      .select("id,title,abstract,author_name,pdf_path,published_at")
-      .eq("status","published").order("published_at",{ascending:false}).limit(100);
-    if (error) {
-      status($("res-public-status") || $("res-home-status"), "تعذر تحديث أبحاث الأكاديمية. حاول مرة أخرى لاحقًا.", "error");
-      return;
+    try {
+      const {data, error} = await client.from("nabd_research_papers")
+        .select("id,title,abstract,author_name,pdf_path,published_at")
+        .eq("status","published").order("published_at",{ascending:false}).limit(100);
+      if (error) {
+        // No account information, internal query or secret is exposed in the UI.
+        console.warn("NABD research listing refresh failed", error.code || "unknown");
+        throw error;
+      }
+      papers = data || [];
+      publicLoaded = true;
+      showPublic();
+      status($("res-public-status") || $("res-home-status"), "");
+    } catch (_) {
+      const message = publicLoaded
+        ? "تعذر تحديث الأبحاث الآن. الأبحاث المعروضة هي آخر نسخة تم تحميلها بنجاح."
+        : "تعذر تحميل الأبحاث المنشورة. تحقق من الاتصال ثم اضغط إعادة المحاولة.";
+      status($("res-public-status") || $("res-home-status"), message, "error");
+      if (!publicLoaded) showPublicLoadError(message);
     }
-    papers = data || [];
-    showPublic();
-    status($("res-public-status") || $("res-home-status"), "");
   }
   if (home || listing) {
     $("res-search")?.addEventListener("input", showPublic);
