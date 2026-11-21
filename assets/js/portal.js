@@ -445,7 +445,7 @@ async function loadCertificates(user) {
    ========================================================= */
 
 async function loadClaims(user) {
-  if (!window.nabdSupabase || !user) {
+  if (!window.nabdSupabase || !user?.id) {
     return [];
   }
 
@@ -453,7 +453,7 @@ async function loadClaims(user) {
     const { data, error } =
       await window.nabdSupabase
         .from("certificate_claims")
-        .select("*")
+        .select("certificate_id,status")
         .eq("student_id", user.id)
         .order(
           "created_at",
