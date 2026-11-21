@@ -1,5 +1,5 @@
 /* NABD Open Doors — dedicated single-choice and multiple-choice practice, no new AI billing.
- * Original NABD bank + founder-only Supabase question bank. Official samples are linked,
+ * Original NABD bank + public read-only Supabase question bank. Official samples are linked,
  * never passed off as official reused questions. Selection and grading are local.
  */
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -40,13 +40,12 @@ function translateText(ctx,english,arabic){
 async function readExisting(){
  if(loading)return loading;
  loading=(async()=>{
-  const auth=await db.auth.getUser();
-  if(auth.error||!auth.data?.user)throw Error("SIGN_IN_REQUIRED");
+  // Public read-only Open Doors bank: no email, password, or user session required.
   const res=await db.from("open_doors_questions")
    .select("id,subject,kind,topic,difficulty,question,options,answers,explanation,origin,source_note")
    .in("kind",["single","multi"]).in("subject",SUBJECTS).limit(400);
   if(res.error)throw Error("BANK_UNAVAILABLE");
-  if(!res.data?.length)throw Error("NOT_AUTHORIZED");
+  if(!res.data?.length)throw Error("BANK_EMPTY");
   existing=res.data.map(BANK.normalizeDatabase).filter(Boolean);
   return existing;
  })().catch(err=>{loading=null;throw err});
@@ -256,7 +255,7 @@ async function start(ctx){
  setStatus(ctx,"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
  let archiveAllowed=true;
  try{await readExisting()}catch(err){archiveAllowed=false;
-  setStatus(ctx,"تعذر تحميل الأرشيف الخاص؛ ستظل الأسئلة الجديدة المؤلفة متاحة. تأكد من تسجيل الدخول.",true);
+  setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
  }
  const subject=$(ctx.id+"Subject").value,source=$(ctx.id+"Source").value;
  const countOption=$(ctx.id+"Count").value;
