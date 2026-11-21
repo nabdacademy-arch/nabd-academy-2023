@@ -78,12 +78,14 @@
 <link rel="stylesheet" href="assets/css/nabd-director-exam-bot.css?v=7">
 
 <link rel="stylesheet" href="assets/css/nabd-gateway-system.css?v=1">
+<link rel="stylesheet" href="assets/css/nabd-councils-director.css?v=1">
 <script defer src="assets/js/nabd-gateway-system.js?v=1"></script>
 </head>
 <body><nav aria-label="Academy workspaces" style="display:flex;flex-wrap:wrap;gap:16px;padding:14px 4%;background:#071d2c;color:#64e3d3"><a href="academy.html" style="color:inherit">مسارات نبض ←</a><a href="lecturers.html" style="color:inherit">إدارة المحاضرين والتكليفات ←</a><a href="portal/" style="color:inherit">المجلس التنفيذي ←</a> <a href="university-os.html" style="color:inherit">◈ UNIVERSITY OS V22 ←</a></nav><section id="login" class="wrap"><div class="card" style="max-width:450px;margin:60px auto"><h1>Director Login</h1><form id="loginForm"><p>Email</p><input id="email" class="input" type="email" required><p>Password</p><input id="password" class="input" type="password" required><button class="btn" style="margin-top:15px;width:100%">Sign in</button></form><div id="loginMsg" class="status hidden"></div></div></section>
 <main id="app" class="wrap hidden"><div class="hero"><h1>Control Center</h1><p>Signed in as <b id="adminName"></b> · ADMIN</p><button id="logout" class="btn secondary">Sign out</button></div><div id="msg" class="status hidden"></div>
 <div class="tabs"><button class="btn" data-tab="students">Students</button><button class="btn secondary" data-tab="enrollments">Enrollments</button><button class="btn secondary" data-tab="claims">Certificate Claims</button><button class="btn secondary" data-tab="certificates">Certificates</button><button class="btn secondary" data-tab="feedback">Feedback</button><button class="btn secondary" data-tab="applications">Executive Applications</button>
 <button type="button" class="btn secondary" data-tab="overview">الملخص التنفيذي</button>
+<button type="button" class="btn secondary" data-tab="councilAccounts" id="councilAccountsTab">♛ إدارة حسابات المجالس الثمانية</button>
 <button type="button" class="btn secondary" data-tab="os-admin-suite">✦ تشغيل المقررات والجودة V16</button>
 <button type="button" class="btn secondary" data-tab="executives">المناصب الـ11</button>
 <button type="button" class="btn secondary" data-tab="mediaReview">مراجعة الإعلام</button>
@@ -217,6 +219,62 @@
  <label class="os-check"><input type="checkbox" data-os-check="admin-governance" data-description="Decision approved and logged"><span>جرى الاعتماد والتوثيق في النظام الرسمي</span></label>
  </div><div><div class="os-meter" id="os-admin-governance-meter" role="status"></div><p class="os-warning">هذه مؤشرات مراجعة محلية مؤقتة؛ لا تعدّل بيانات الإدارة ولا تسجل قرارًا رسميًا في قاعدة البيانات.</p><button type="button" class="os-btn primary" id="os-admin-report">تنزيل حزمة تدقيق داخلية TXT</button><p id="os-admin-status" class="os-status" role="status" aria-live="polite"></p><div class="os-links"><a href="research-office.html">مكتب الأبحاث المقيّد ↗</a><a href="lecturers.html">استوديو المحاضر ↗</a></div></div></div></section>
  </section>
+<section id="councilAccounts" class="panel card hidden" aria-labelledby="ncg-heading">
+  <div class="ncg-hero">
+    <span class="ncg-eyebrow">NABD COUNCILS NETWORK · DIRECTOR CONTROL</span>
+    <h2 id="ncg-heading">إدارة حسابات وصلاحيات المجالس الثمانية</h2>
+    <p>اختر مجلسًا ثم أنشئ حساب دخول جديدًا أو اربط حسابًا موجودًا في الأكاديمية. جميع الأعضاء يدخلون من بوابة موحّدة، ولا يمكن لأحد الوصول إلى سجلات مجلس غير مكلّف فيه.</p>
+    <a href="councils.html" class="ncg-portal-link" target="_blank" rel="noopener">فتح بوابة المجالس الموحّدة ↗</a>
+  </div>
+  <h3 class="ncg-title">01 / اختر المجلس المختص</h3>
+  <p class="ncg-subtitle">كل مجلس له رمز تعريفي ورابط توجيه خاص به. الرمز يُستخدم للتوجيه فقط، ولا يحل محل اسم المستخدم وكلمة المرور والصلاحية المعتمدة.</p>
+  <div id="ncg-councils" class="ncg-councils" role="group" aria-label="اختيار المجلس"></div>
+  <div class="ncg-selected"><strong id="ncg-selected-name">—</strong><code id="ncg-selected-code">—</code><button id="ncg-copy-link" type="button">نسخ رابط المجلس</button></div>
+  <div class="ncg-card">
+    <h3 class="ncg-title">02 / إدارة الدخول والتكليف</h3>
+    <div class="ncg-modes" role="group" aria-label="طريقة إضافة العضو">
+      <button type="button" data-ncg-mode="new" aria-pressed="true">+ إنشاء حساب جديد</button>
+      <button type="button" data-ncg-mode="existing" aria-pressed="false">ربط حساب موجود في الأكاديمية</button>
+    </div>
+    <form id="ncg-create-form" autocomplete="off">
+      <div class="ncg-fields">
+        <label>الاسم الكامل للعضو<input id="ncg-name" maxlength="120" minlength="3" required autocomplete="off" placeholder="اسم العضو كما سيظهر داخل نبض"></label>
+        <label>البريد الإلكتروني (اسم الدخول)<input id="ncg-email" type="email" maxlength="254" required autocomplete="off" dir="ltr" placeholder="member@example.com"></label>
+        <label>كلمة مرور أولية قوية<input id="ncg-password" type="text" minlength="12" maxlength="128" required autocomplete="off" dir="ltr" placeholder="12 حرفًا على الأقل"></label>
+        <label>الصفة داخل المجلس<select id="ncg-new-position"><option value="member">عضو مجلس</option><option value="chair">رئيس المجلس</option><option value="vice_chair">نائب الرئيس</option><option value="secretary">مقرر المجلس</option></select></label>
+      </div>
+      <div class="ncg-actions"><button class="ncg-action secondary" id="ncg-generate" type="button">توليد كلمة مرور قوية</button></div>
+      <label class="ncg-check"><input id="ncg-email-verified" type="checkbox" required> أؤكد أن هذا البريد يخص العضو المقصود، وأنه وافق على منحه الحساب. سأُسلّم بيانات الدخول لصاحبها عبر قناة خاصة وآمنة.</label>
+      <p class="ncg-note">الاسم وكلمة المرور ليسا رمزًا سريًا للمجلس. الحساب مرتبط ببريد فعلي، وكلمة المرور لا تُحفَظ في سجل المدير وتظهر لتسليمها مرة واحدة فقط.</p>
+      <button class="ncg-action gold" id="ncg-create-submit" type="submit">إنشاء الحساب وتكليفه في المجلس المختار</button>
+    </form>
+    <div id="ncg-existing" hidden>
+      <div class="ncg-fields">
+        <label>ابحث بالاسم أو البريد في حسابات نبض<input id="ncg-search-query" type="search" minlength="2" maxlength="70" placeholder="اسم العضو أو بريده الإلكتروني"></label>
+        <label>الصفة داخل المجلس<select id="ncg-existing-position"><option value="member">عضو مجلس</option><option value="chair">رئيس المجلس</option><option value="vice_chair">نائب الرئيس</option><option value="secretary">مقرر المجلس</option></select></label>
+      </div>
+      <div class="ncg-actions"><button type="button" class="ncg-action secondary" id="ncg-search">بحث عن حساب موجود</button></div>
+      <div id="ncg-search-results" class="ncg-results" role="region" aria-label="نتائج البحث"></div>
+      <p class="ncg-note" id="ncg-selected-account">لم يتم اختيار حساب بعد.</p>
+      <button class="ncg-action gold" id="ncg-assign" type="button" disabled>ربط الحساب بالمجلس المختار</button>
+      <p class="ncg-note">سيستعمل العضو بريده وكلمة مروره الحالية في الأكاديمية. لن نغيّر دوره كطالب أو محاضر ولن ننشئ كلمة مرور جديدة له.</p>
+    </div>
+    <div class="ncg-credentials" id="ncg-credentials" hidden>
+      <strong>تم إنشاء الحساب — بيانات الدخول للتسليم مرة واحدة</strong>
+      <p class="ncg-note">انسخ البيانات للعضو المقصود فقط. لا ترسلها في مجموعة عامة، واطلب منه تغيير كلمة المرور بعد الدخول.</p>
+      <code id="ncg-credentials-email"></code>
+      <code id="ncg-credentials-password"></code>
+      <div class="ncg-actions"><button type="button" id="ncg-copy-credentials" class="ncg-action gold">نسخ بيانات الدخول</button><button type="button" id="ncg-clear-credentials" class="ncg-action secondary">إخفاء البيانات</button></div>
+    </div>
+    <p class="ncg-status" id="ncg-status" role="status" aria-live="polite" hidden></p>
+  </div>
+  <div class="ncg-card">
+    <h3 class="ncg-title">03 / الأعضاء المكلّفون في المجلس المختار</h3>
+    <p class="ncg-subtitle">يظهر الاسم والصفة وحالة العضوية. يمكنك تعليق العضوية أو إعادة تفعيلها دون حذف حساب الطالب أو المحاضر الأصلي.</p>
+    <div class="ncg-actions"><button type="button" class="ncg-action secondary" id="ncg-refresh">تحديث قائمة الأعضاء ↻</button></div>
+    <div id="ncg-members" class="ncg-members" aria-live="polite"></div>
+  </div>
+</section>
 </main>
 <div id="modalbg" class="modalbg hidden"><div class="modal"><button id="close" class="btn secondary">Close</button><div id="modal"></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
@@ -401,5 +459,6 @@ q('mcRequests').addEventListener('click',e=>{
 <script defer src="assets/js/nabd-360-admin.js?v=1"></script>
 <div style="max-width:1150px;margin:18px auto;padding:14px 18px;border:1px solid #a3d6d2;border-radius:16px;background:#e9f8f7;color:#075966;font:700 14px system-ui;direction:rtl">✺ <a href="nabd-science-immune.html#nsi-admin" style="color:#075966">SCIENCE IMMUNE · غرفة مراجعة تغيّر الأدلة والمحتوى العلمي ↗</a></div>
 <script defer src="assets/js/nabd-frontier-admin.js?v=1"></script>
+<script defer src="assets/js/nabd-councils-director.js?v=1"></script>
 <script type="module" src="assets/js/nabd-director-exam-bot.js?v=7"></script>
 </body></html>
