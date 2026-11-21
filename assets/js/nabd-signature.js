@@ -24,6 +24,7 @@ script.defer=true;document.head.append(script);
   ["nabd-connect.html","مراسلاتي مع الإدارة","My support tickets"],
   ["nabd-2050.html","مختبر نبض 2050","NABD 2050 Future Lab"],
   ["academy.html","مسارات الأكاديمية","Pathways"],
+  ["councils.html","بوابة المجالس الثمانية (للأعضاء)","Eight Councils (members only)"],
   ["lecturers.html","استوديو المحاضر","Faculty Studio"],
   ["skill-passport.html","جواز المهارات","Skill Passport"],
   ["learning/","مكتبة التعليم","Learning Universe"],
