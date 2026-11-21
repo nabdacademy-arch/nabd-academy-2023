@@ -81,6 +81,7 @@ $("mdl-sign-out").addEventListener("click",signOut);
 $("mdl-change-account").addEventListener("click",signOut);
 $("mdl-refresh").addEventListener("click",()=>refreshAll(true));
 $("mdl-language").addEventListener("click",()=>applyLanguage(state.language==="ar"?"en":"ar"));
+let lastSuccessfulRefresh=null;
 async function refreshAll(manual=false){
  if(!state.user||state.loading)return;
  state.loading=true;$("mdl-refresh").disabled=true;
@@ -108,6 +109,7 @@ async function refreshAll(manual=false){
        state[key]=result.value.data||[];
      }
    });
+   lastSuccessfulRefresh=failures.length?null:Date.now();
    notice("mdl-load-message",failures.length?t("تعذر تحميل: ","Unable to load: ")+failures.join(state.language==="ar"?"، ":", ")+".":"",failures.length?"error":"");
    render();
  }finally{
@@ -265,6 +267,15 @@ $("mdl-language").textContent=startLang==="ar"?"EN":"عربي";
 applyLanguage(startLang);
 authenticate();
 setInterval(()=>{if(state.user&&document.visibilityState==="visible")updateTimers()},1000);
-setInterval(()=>{if(state.user&&document.visibilityState==="visible")refreshAll()},60000);
-document.addEventListener("visibilitychange",()=>{if(state.user&&document.visibilityState==="visible")refreshAll()});
+function refreshWhenVisible(){
+ if(document.visibilityState!=="visible"||window.navigator.onLine===false)return;
+ if(lastSuccessfulRefresh!==null&&Date.now()-lastSuccessfulRefresh<30000)return;
+ return refreshAll();
+}
+setInterval(refreshWhenVisible,60000);
+document.addEventListener("visibilitychange",refreshWhenVisible);
+window.addEventListener("online",()=>{
+ lastSuccessfulRefresh=null;
+ refreshWhenVisible();
+});
 })();
