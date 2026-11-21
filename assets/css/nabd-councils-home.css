@@ -1,0 +1,148 @@
+/* NABD Homepage · Councils entry. Scoped to active compact homepage only. */
+.neo-site .neo-councils-section {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:linear-gradient(130deg,#071a2b,#102a39 48%,#061522);
+  padding:clamp(38px,5.5vw,76px) 0;
+  border-block:1px solid rgba(216,180,113,.28);
+}
+.neo-site .neo-councils-section:before {
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:url("../images/councils/hero-architecture.svg") left center/cover no-repeat;
+  opacity:.57;
+}
+.neo-site .neo-councils-section:after {
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(4,19,31,.17),rgba(4,19,31,.86) 61%,rgba(4,19,31,.97));
+  pointer-events:none;
+}
+.neo-site .neo-councils-card {
+  max-width:1180px;
+  margin-inline:auto;
+  padding:clamp(24px,3.8vw,48px);
+  position:relative;
+  border:1px solid rgba(230,192,124,.6);
+  border-radius:23px;
+  background:linear-gradient(120deg,rgba(6,25,40,.64),rgba(6,24,39,.82));
+  box-shadow:inset 0 1px 0 rgba(247,214,157,.16),0 22px 55px rgba(0,0,0,.20);
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(240px,.7fr);
+  align-items:center;
+  gap:clamp(20px,3vw,56px);
+}
+.neo-site .neo-councils-kicker {
+  display:block;
+  color:#e8c98e!important;
+  font-size:.76rem;
+  font-weight:900;
+  letter-spacing:.14em;
+  margin-bottom:10px;
+}
+.neo-site .neo-councils-card h2 {
+  color:#fff8e9!important;
+  font-size:clamp(1.65rem,3vw,2.8rem);
+  line-height:1.33;
+  margin:0 0 13px;
+  text-shadow:0 4px 23px rgba(0,0,0,.45);
+}
+.neo-site .neo-councils-card p {
+  color:#e5e5dd!important;
+  line-height:1.85;
+  max-width:650px;
+  font-size:clamp(.88rem,1.3vw,1rem);
+  margin:0;
+}
+.neo-site .neo-councils-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:13px;
+  align-items:center;
+  margin-top:24px;
+}
+.neo-site .neo-councils-button {
+  text-decoration:none;
+  color:#132b38!important;
+  font-weight:900;
+  font-size:.93rem;
+  background:linear-gradient(115deg,#f8e2b5,#dab87c 58%,#b58e53);
+  border:1px solid rgba(255,237,188,.75);
+  border-radius:12px;
+  padding:13px 24px;
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.24);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.neo-site .neo-councils-button:hover {
+  transform:translateY(-3px);
+  box-shadow:0 15px 32px rgba(201,156,85,.24);
+}
+.neo-site .neo-councils-note {
+  color:#e2d3b5!important;
+  border:1px solid rgba(227,194,133,.28);
+  border-radius:30px;
+  padding:9px 13px;
+  background:rgba(6,27,42,.68);
+  font-weight:750;
+  font-size:.74rem;
+}
+.neo-site .neo-councils-identity {
+  display:grid;
+  gap:12px;
+  align-content:center;
+  justify-items:center;
+  min-height:215px;
+  border-inline-start:1px solid rgba(224,186,118,.31);
+  padding-inline-start:clamp(16px,2.5vw,32px);
+}
+.neo-site .neo-councils-emblem {
+  width:96px;height:96px;border-radius:23px;
+  display:grid;place-items:center;
+  font:900 3.2rem Georgia,serif;
+  color:#f6dcaa;
+  border:1px solid rgba(224,186,115,.67);
+  box-shadow:inset 0 0 0 6px rgba(223,186,118,.09),0 12px 36px rgba(0,0,0,.25);
+  background:linear-gradient(145deg,#1e4956,#0a2032 75%);
+}
+.neo-site .neo-councils-identity strong {
+  display:block;color:#f3dab1!important;letter-spacing:.16em;
+  font:800 .8rem system-ui,sans-serif;
+  text-align:center;
+}
+.neo-site .neo-councils-pillars {
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+}
+.neo-site .neo-councils-pillars span {
+  display:inline-flex;min-width:75px;justify-content:center;
+  color:#e8d6af!important;
+  border:1px solid rgba(223,189,128,.33);
+  background:rgba(9,36,49,.67);
+  border-radius:8px;padding:6px 10px;font-size:.72rem;font-weight:720;
+}
+@media(max-width:780px) {
+  .neo-site .neo-councils-card {grid-template-columns:1fr;gap:22px;}
+  .neo-site .neo-councils-identity {
+    min-height:auto;grid-template-columns:auto 1fr;justify-items:start;
+    border-inline-start:0;border-top:1px solid rgba(224,186,118,.31);
+    padding:18px 0 0;gap:10px 15px;
+  }
+  .neo-site .neo-councils-emblem {grid-row:span 2;width:62px;height:62px;font-size:2rem;border-radius:14px;}
+  .neo-site .neo-councils-identity strong {text-align:start;align-self:end;}
+  .neo-site .neo-councils-pillars {justify-content:start;align-self:start;}
+}
+@media(max-width:520px) {
+  .neo-site .neo-councils-section {padding:27px 0;}
+  .neo-site .neo-councils-card {border-radius:16px;padding:24px 18px;}
+  .neo-site .neo-councils-identity {grid-template-columns:1fr;justify-items:center;}
+  .neo-site .neo-councils-identity strong {text-align:center;}
+  .neo-site .neo-councils-pillars {justify-content:center;}
+  .neo-site .neo-councils-actions {align-items:stretch;flex-direction:column;}
+  .neo-site .neo-councils-button {justify-content:center;width:100%;}
+  .neo-site .neo-councils-note {text-align:center;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .neo-site .neo-councils-button {transition:none;}
+}
