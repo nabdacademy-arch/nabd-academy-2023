@@ -1,0 +1,61 @@
+name: NABD Open Doors Guest Hardening
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-essay.js'
+      - 'assets/js/open-doors-choice.js'
+      - 'assets/js/open-doors-masters.js'
+      - 'tests/open-doors-guest-hardening.test.cjs'
+      - 'tests/open-doors-guest-hardening-browser.cjs'
+      - '.github/workflows/open-doors-guest-hardening.yml'
+  pull_request:
+    paths:
+      - 'open-doors-ai.html'
+      - 'assets/js/open-doors-essay.js'
+      - 'assets/js/open-doors-choice.js'
+      - 'assets/js/open-doors-masters.js'
+      - 'tests/open-doors-guest-hardening.test.cjs'
+      - 'tests/open-doors-guest-hardening-browser.cjs'
+      - '.github/workflows/open-doors-guest-hardening.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate guest resilience and source assertions
+        run: |
+          node --check tests/open-doors-guest-hardening.test.cjs
+          node --check tests/open-doors-guest-hardening-browser.cjs
+          node --test tests/open-doors-guest-hardening.test.cjs
+  real-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Exercise no-sign-in offline and live-like guest scenarios
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/nabd-open-doors-guest-http.log 2>&1 &
+          sleep 2
+          node tests/open-doors-guest-hardening-browser.cjs
+      - name: Save mobile screenshots on completion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-doors-guest-hardening
+          path: guest-browser-results/
+          retention-days: 7
