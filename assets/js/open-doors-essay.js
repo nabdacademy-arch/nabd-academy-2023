@@ -256,6 +256,17 @@ async function grade(){
  if(!q)return;
  const answer=$("essayAnswer").value.trim();
  if(answer.length<12&&!state.photo){status("اكتب إجابة من 12 حرفًا على الأقل أو أرفق صورة للحل.","Provide at least 12 characters or attach a readable photo.",true);return}
+ // Public access is free; paid AI grading is deliberately restricted server-side
+ // to the Academy founder. Never ask a guest to consent to upload their work
+ // to an endpoint which will reject them, and never imply an automatic score.
+ const dbForAccess=await dbPromise;
+ const access=dbForAccess?await dbForAccess.auth.getUser().catch(()=>({data:{user:null}})):{data:{user:null}};
+ if(!access.data?.user){
+  status("الأسئلة والمراجعة الذاتية مجانية للجميع دون حساب. التصحيح الذكي الخارجي غير متاح للزوار؛ اضغط «عرض الحل والمعايير» لتقييم إجابتك بنفسك.",
+   "Questions and rubric-based self-review are free without an account. External AI grading is not available to guests; select Reveal answer and rubric.",true);
+  $("essayReveal").disabled=false;
+  return;
+ }
  if(!$("essayConsent").checked){status("للتصحيح الذكي وافق أولًا على إرسال إجابتك والصورة الاختيارية لخدمة الذكاء الاصطناعي.","Consent to AI-provider processing of your answer and optional image before grading.",true);return}
  if(answer.length>6500){status("الإجابة أطول من الحد المسموح؛ اختصر إلى 6500 حرف.","Answer exceeds 6,500 characters.",true);return}
  state.busy=true;$("essayGrade").disabled=true;status("يجري تحليل الحل حسب المعايير الأربعة، وفحص الخطوات والمعادلات...","Grading your reasoning, equations and four rubric criteria...");
@@ -263,6 +274,8 @@ async function grade(){
   const db=await dbPromise;if(!db)throw Error("AI_UNAVAILABLE_OFFLINE");
   const auth=await db.auth.getUser();
   if(auth.error||!auth.data?.user)throw Error("AUTH_REQUIRED");
+  // The server independently checks the founder's identity. Other signed-in
+  // accounts must not be told that a subscription or a login unlocks grading.
   const image=state.photo?await imagePayload(state.photo):null;
   const body={question:{id:q.id,subject:q.subject,topic:q.topic,prompt_en:q.prompt_en,prompt_ar:q.prompt_ar,
       model_en:q.model_en,model_ar:q.model_ar,rubric:q.rubric},answer,image};
@@ -312,6 +325,12 @@ $("essayNext").addEventListener("click",()=>{
 });
 function loadInitial(){
  $("essayBankSize").textContent=String(bank.QUESTIONS.length);
+ // Inform public visitors of the actual entitlement before they type an essay.
+ const notice=document.createElement("p");
+ notice.className="essay-public-grading-note";
+ notice.textContent="للجميع: الأسئلة والحلول والمراجعة الذاتية مجانية بلا حساب. التصحيح الذكي الآلي مقيّد إداريًا ولا يتاح للزائر. / Free questions and self-review; automated AI grading is restricted.";
+ $("essayLab").querySelector(".essay-workspace")?.prepend(notice);
+ if(!$("essayLab").querySelector(".essay-workspace"))$("essayLab").prepend(notice);
  $("essayWorkspace").hidden=true;$("essaySummary").hidden=true;
  updateSourceLinks("chemistry");langUI();
 }
