@@ -251,6 +251,8 @@ function printDoc(row){
  $("sheet-signatory-en").textContent=isDirector?"GENERAL DIRECTOR · DIGITAL AUTHORIZATION":
   "AUTHORIZED ISSUER · DIGITAL APPROVAL";
  renderVerifiedDetails(row);
+ const evidenceCount=$("sheet-verified-details").querySelectorAll(".evidence-row").length;
+ document.querySelector(".official-sheet")?.classList.toggle("document-dense",evidenceCount>5);
  const body=$("sheet-body");
  body.replaceChildren(
   textSection("ar","النص العربي الرسمي · ARABIC TEXT",t.lines),
@@ -338,6 +340,14 @@ function init(){
  $("refresh-list").addEventListener("click",()=>loadHistory());
  $("save-issuer").addEventListener("click",grant);
  $("print-button").addEventListener("click",()=>{if(state.doc?.status==="issued"&&!$("print-button").disabled)window.print();});
+ $("zoom-document").addEventListener("click",()=>{
+  const area=$("print-area");
+  const active=area.classList.toggle("doc-preview-zoom");
+  $("zoom-document").setAttribute("aria-pressed",String(active));
+  $("zoom-document").innerHTML=active
+    ?'عرض الصفحة كاملة <span lang="en" dir="ltr">· Fit page</span>'
+    :'تكبير المعاينة للقراءة <span lang="en" dir="ltr">· Zoom</span>';
+ });
  $("back-to-workspace").addEventListener("click",()=>{$("print-area").hidden=true;$("workspace").hidden=false;message("يمكنك اختيار مستند جديد.");window.scrollTo(0,0);});
  renderScopes();
  (async()=>{try{
