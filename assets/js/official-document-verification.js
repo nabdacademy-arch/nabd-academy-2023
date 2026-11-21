@@ -6,7 +6,7 @@ const names={statement:"إفادة قيد بيانات",permit:"تصريح مش�
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 function field(label,text){const e=document.createElement("div");e.className="field";const s=document.createElement("span");s.textContent=label;const b=document.createElement("strong");b.textContent=text;e.append(s,b);return e;}
 function show(status,title,description,data=[]){const root=$("result");root.hidden=false;root.className=status;$("title").textContent=title;$("description").textContent=description;$("details").replaceChildren(...data.map(([key,value])=>field(key,value)));}
-function fmt(d){try{return new Intl.DateTimeFormat("ar-PS",{year:"numeric",month:"long",day:"numeric"}).format(new Date(d));}catch{return "—";}}
+function fmt(d){try{return new Intl.DateTimeFormat("ar-PS",{timeZone:"Asia/Hebron",year:"numeric",month:"long",day:"numeric"}).format(new Date(d));}catch{return "—";}}
 async function check(e){
  e?.preventDefault();
  const token=$("token").value.trim();
