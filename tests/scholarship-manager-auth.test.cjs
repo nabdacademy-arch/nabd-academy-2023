@@ -153,3 +153,46 @@ test('password changes stay with the recovery session and retry after network fa
   assert.equal(input.value,'');assert.equal(get('sch-new-password-panel').hidden,true);
   recover('first');notify('SIGNED_OUT');await submit();assert.equal(writes,3);
 });
+
+test('staff sign-in unlocks after an interruption and verifies the publisher before opening the dashboard',async()=>{
+  let user=null, roleReads=0;
+  const requests=[];
+  const get=manager(()=>({
+    auth:{
+      getUser:async()=>({data:{user}}),
+      onAuthStateChange(){},
+      signInWithPassword:()=>new Promise((resolve,reject)=>requests.push({resolve,reject}))
+    },
+    from(table){return {
+      select(){return this;},eq(){return this;},order(){return this;},limit:async()=>({data:[]}),
+      async maybeSingle(){assert.equal(table,'nabd_scholarship_publishers');roleReads++;return {data:{active:true}};}
+    };}
+  }));
+  await new Promise(setImmediate);
+  const password=get('sch-password'),button=get('sch-login-button'),message=get('sch-auth-status');
+  get('sch-email').value='staff@example.invalid';
+  const submit=()=>get('sch-login-form').handlers.submit({preventDefault(){}});
+  for(const failure of ['offline','unavailable','denied']){
+    password.value='fixture';
+    const pending=submit();
+    assert.equal(password.value,'');
+    password.value='next attempt';
+    await submit();
+    assert.equal(requests.length,1);
+    const request=requests.shift();
+    if(failure==='offline')request.reject(Error('offline'));
+    else request.resolve({error:{status:failure==='denied'?400:503}});
+    await pending;
+    assert.equal(button.disabled,false);
+    assert.equal(password.value,'next attempt');
+    assert.match(message.textContent,failure==='denied'?/sign-in details/:/connection/);
+    assert.equal(get('sch-dashboard').hidden,true);
+    assert.equal(roleReads,0);
+  }
+  const pending=submit();
+  user={id:'publisher'};requests.shift().resolve({error:null});
+  await pending;
+  assert.equal(roleReads,1);
+  assert.equal(get('sch-dashboard').hidden,false);
+  assert.equal(button.disabled,false);
+});
