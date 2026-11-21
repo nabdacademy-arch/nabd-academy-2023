@@ -255,12 +255,44 @@
       resetButton.disabled=false;
     }
   });
-  document.getElementById("sch-logout")?.addEventListener("click",async()=>{
-    await client.auth.signOut();
+  const retryLogout=document.getElementById("sch-retry-logout");
+  let exitAttempt=null;
+  let exitingUserId=null;
+  function finishExit(){
+    exitAttempt=null;exitingUserId=null;
+    retryLogout.hidden=true;
+    loginForm.hidden=false;
     showLogin();
-    publishForm?.reset();
-    setStatus(authStatus,"تم تسجيل الخروج.","success");
-  });
+    resetEditor();
+    ownItems=[];
+    posts.replaceChildren();
+    document.getElementById("sch-current-email").textContent="";
+    setStatus(authStatus,"تم تسجيل الخروج. · Signed out.","success");
+  }
+  async function signOut(){
+    if(exitAttempt || (!signedInUser && retryLogout.hidden))return;
+    const attempt={};
+    exitAttempt=attempt;
+    if(signedInUser)exitingUserId=signedInUser.id;
+    verification++;
+    retryRole.hidden=true;
+    showLogin();
+    loginForm.hidden=true;
+    retryLogout.hidden=true;
+    setStatus(authStatus,"جارٍ تسجيل الخروج… · Signing out…");
+    try{
+      const {error}=await client.auth.signOut();
+      if(error)throw error;
+      if(exitAttempt===attempt)finishExit();
+    }catch{
+      if(exitAttempt!==attempt)return;
+      exitAttempt=null;
+      retryLogout.hidden=false;
+      setStatus(authStatus,"تعذر تأكيد الخروج. تحقق من الاتصال وأعد المحاولة. · Sign-out could not be confirmed. Please retry.","error");
+    }
+  }
+  document.getElementById("sch-logout")?.addEventListener("click",signOut);
+  retryLogout.addEventListener("click",signOut);
   function editItem(item) {
     document.getElementById("sch-edit-id").value=item.id;
     document.getElementById("sch-title").value=item.title;
@@ -351,6 +383,13 @@
     setStatus(passwordStatus,"");
   }
   client.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_OUT" && (exitAttempt || !retryLogout.hidden)){
+      verification++;closeRecovery();finishExit();return;
+    }
+    if(exitingUserId && (event==="PASSWORD_RECOVERY" || (event==="SIGNED_IN" && session?.user?.id!==exitingUserId))){
+      exitAttempt=null;exitingUserId=null;retryLogout.hidden=true;loginForm.hidden=false;
+      resetEditor();posts.replaceChildren();ownItems=[];showLogin();setStatus(authStatus,"");
+    }
     if(event==="SIGNED_OUT" || (recovery && event==="SIGNED_IN" && session?.user?.id!==recovery.userId)){
       verification++;retryRole.hidden=true;closeRecovery();showLogin();
     }
