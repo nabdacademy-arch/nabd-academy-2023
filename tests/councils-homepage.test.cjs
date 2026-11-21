@@ -15,7 +15,7 @@ test("compact main homepage links to the real members-only councils gateway",()=
  assert.match(compact,/href="councils\.html" class="neo-councils-button"/);
  assert.match(compact,/href="councils\.html" data-neo-ar="بوابة المجالس الثمانية/);
  assert.match(compact,/data-neo-en="NABD Academy Councils Network"/);
- assert.match(compact,/الأعضاء المعتمدين فقط/);
+ assert.match(compact,/الدخول للأعضاء المعتمدين فقط/);
  assert.match(page,/nabd-councils-home\.css\?v=1/);
 });
 test("homepage has a single linked feature and does not expose member records",()=>{
