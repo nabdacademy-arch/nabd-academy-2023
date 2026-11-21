@@ -391,3 +391,9 @@ body:before {
 @media(prefers-reduced-motion:reduce) {
   .council-card {transition:none!important;}
 }
+
+/* Verifiable council member identity */
+.member-identity-number{color:#f7d99a!important;font:850 clamp(17px,2vw,22px) ui-monospace,monospace!important;letter-spacing:.04em;overflow-wrap:anywhere}
+.member-identity-link{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:10px 15px;background:linear-gradient(115deg,#f2dbad,#d0ac74);color:#123042!important;border:1px solid #e9c98d;border-radius:10px;text-decoration:none;font-weight:800;font-size:13px;transition:transform .15s}
+.member-identity-link:hover{transform:translateY(-2px)}
+.member-identity-link:focus-visible{outline:3px solid #f3e8c7;outline-offset:3px}
