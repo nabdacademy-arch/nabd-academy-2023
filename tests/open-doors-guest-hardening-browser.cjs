@@ -71,10 +71,11 @@ export function createClient(){
 
   const online=await browser.newPage({viewport:{width:1140,height:820}});
   online.on("pageerror",e=>errors.push("mock-online: "+e.message));
+  await online.route(/^https:\/\//,r=>r.abort());
+  // Playwright applies later, more-specific routes before the generic network block.
   await online.route(/https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2\.57\.0\/\+esm/,r=>
    r.fulfill({status:200,contentType:"text/javascript",
     headers:{"Access-Control-Allow-Origin":"*"},body:fakeModule}));
-  await online.route(/^https:\/\//,r=>r.abort());
   await online.goto("http://127.0.0.1:8123/open-doors-ai.html",{waitUntil:"domcontentloaded"});
   await online.locator("#appView").waitFor({state:"visible",timeout:15000});
   assert.equal(await online.locator("#kQuestions").innerText(),"1");
