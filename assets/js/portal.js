@@ -279,6 +279,7 @@ function openForgotPassword() {
 
 
 function openResetPassword() {
+  dashboardRequest++;
   state.recoveryMode = true;
 
   showAuth();
@@ -1107,14 +1108,21 @@ async function handleCertificateClaim(event) {
    LOAD DASHBOARD
    ========================================================= */
 
+let dashboardRequest = 0;
+
 async function loadDashboard(user) {
+  const request = ++dashboardRequest;
+  const isCurrent = () => request === dashboardRequest && state.user === user && !state.recoveryMode;
   if (!user) {
     openSignIn();
     return;
   }
 
 
-  if (state.user?.id !== user.id) resetClaimForm();
+  if (state.user?.id !== user.id) {
+    resetClaimForm();
+    $("#dashboardSection")?.classList.remove("active");
+  }
   state.user = user;
 
   showLoader(true);
@@ -1136,6 +1144,8 @@ async function loadDashboard(user) {
     ]);
 
 
+    if (!isCurrent()) return;
+
     state.profile = profile;
     state.courses = courses;
     state.enrollments = enrollments;
@@ -1154,15 +1164,18 @@ async function loadDashboard(user) {
 
 
   } catch (error) {
+    if (!isCurrent()) return;
     console.error(
       "Dashboard load error:",
       error
     );
 
-    showDashboard();
+    state.user = null;
+    openSignIn();
+    setStatus($("#signInStatus"), "The portal could not load your session. Please try again.", "error");
 
   } finally {
-    showLoader(false);
+    if (isCurrent()) showLoader(false);
   }
 }
 
