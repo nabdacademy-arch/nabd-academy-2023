@@ -5,13 +5,13 @@
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#082336">
 <title>مركز المستندات الرسمية | أكاديمية نبض</title>
-<link rel="stylesheet" href="assets/css/official-documents.css?v=3">
+<link rel="stylesheet" href="assets/css/official-documents.css?v=4">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="assets/js/config.js"></script>
 <script defer src="assets/js/supabase-client.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script defer src="assets/js/official-documents.js?v=4"></script>
+<script defer src="assets/js/official-documents.js?v=5"></script>
 </head>
 <body>
 <header class="doc-head no-print">
@@ -35,6 +35,12 @@
       <div class="search-line"><input id="subject-query" type="search" minlength="2" maxlength="70" placeholder="ابحث عن اسم الطالب أو العضو…"><button id="search-subject" type="button" class="secondary">بحث عن حساب</button></div>
       <div class="doc-search-results" id="search-results" aria-live="polite"></div>
       <div id="selected-subject" class="selected-subject" hidden><span>المستفيد المختار</span><strong id="selected-name">—</strong><small id="selected-kind">—</small></div>
+      <div id="english-name-fields" class="english-name-fields" hidden>
+        <label for="subject-name-en">الاسم الكامل بالإنجليزية <span lang="en" dir="ltr">Full name in English</span></label>
+        <input id="subject-name-en" type="text" dir="ltr" lang="en" autocomplete="off" maxlength="160" placeholder="First Middle Family" aria-describedby="english-name-guidance">
+        <p id="english-name-guidance" class="muted">لضمان الدقة الرسمية، اكتب الاسم كما يؤكده صاحب الحساب أو كما يرد في وثيقته الإنجليزية. لا يخمّن النظام تهجئة الأسماء العربية.</p>
+        <label class="check-line"><input id="english-name-confirmed" type="checkbox"> أؤكد أنني راجعت كتابة الاسم الإنجليزي مع صاحبه، أو حسب وثيقة قدمها. <span lang="en" dir="ltr">Spelling confirmed</span></label>
+      </div>
       <p class="muted">يُستخدم اسم صاحب المستند من حسابه المسجل فقط. التاريخ ورقم المستند يُحددهما الخادم عند الإصدار ولا يُعدّلان يدويًا.</p>
       <button id="issue" class="issue-button" type="button" disabled>إصدار المستند بالبيانات المعتمدة</button>
     </div>
@@ -70,8 +76,8 @@
           <span class="sheet-bilingual-mark">النسخة العربية <span aria-hidden="true">◆</span> ENGLISH VERSION · SAME DOCUMENT NUMBER</span>
         </div>
         <div class="sheet-person">
-          <div><span>اسم صاحب المستند <em lang="en" dir="ltr">Document holder</em></span><strong id="sheet-name">—</strong></div>
-          <div><span>تاريخ الإصدار <em lang="en" dir="ltr">Issue date</em></span><strong id="sheet-date">—</strong><small id="sheet-date-en" lang="en" dir="ltr">—</small></div>
+          <div class="sheet-person-name"><span>اسم صاحب المستند <em lang="en" dir="ltr">Document holder</em></span><strong id="sheet-name">—</strong><strong id="sheet-name-en" class="sheet-name-english" lang="en" dir="ltr">—</strong></div>
+          <div class="sheet-person-date"><span>تاريخ الإصدار <em lang="en" dir="ltr">Issue date</em></span><strong id="sheet-date">—</strong><strong id="sheet-date-en" class="sheet-date-english" lang="en" dir="ltr">—</strong></div>
         </div>
         <div class="sheet-verified-details" id="sheet-verified-details" hidden aria-label="البيانات الأكاديمية والمؤسسية المثبتة">
           </div>
@@ -79,25 +85,35 @@
         <div class="sheet-note" id="sheet-note"></div>
         <div class="sheet-footer">
           <div class="signature-stack">
-            <div class="institution-seal" role="img" aria-label="ختم أكاديمية نبض المؤسسي الإلكتروني باللون الأزرق، غير حكومي">
-              <svg class="academy-blue-seal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" aria-hidden="true" focusable="false">
+            <div class="institution-seal" role="img" aria-label="ختم مؤسسي أزرق لأكاديمية نبض، محاكاة طبعة حبر على الورق لا ختمًا حكوميًا">
+              <svg class="academy-blue-seal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" aria-hidden="true" focusable="false">
                 <defs>
-                  <path id="nabd-seal-top-arc" d="M 30 111 A 80 80 0 0 1 190 111"/>
-                  <path id="nabd-seal-bottom-arc" d="M 31 113 A 79 79 0 0 0 189 113"/>
-                  <pattern id="nabd-seal-ink-grain" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".55" fill="#07539a" opacity=".18"/><circle cx="7" cy="8" r=".4" fill="#07539a" opacity=".12"/></pattern>
+                  <filter id="stamp-ink-press" x="-8%" y="-8%" width="116%" height="116%">
+                    <feTurbulence baseFrequency="0.047" numOctaves="2" seed="7" result="grain" type="fractalNoise"/>
+                    <feDisplacementMap in="SourceGraphic" in2="grain" scale="0.7" xChannelSelector="R" yChannelSelector="G"/>
+                  </filter>
+                  <pattern id="stamp-ink-fibers" width="13" height="13" patternUnits="userSpaceOnUse">
+                    <path d="M1 5l3 -1M9 11l2 -1" stroke="#1757a0" stroke-width=".38" opacity=".27"/>
+                  </pattern>
                 </defs>
-                <circle cx="110" cy="110" r="104" fill="none" stroke="#1256a0" strokeWidth="5"/>
-                <circle cx="110" cy="110" r="96" fill="url(#nabd-seal-ink-grain)" stroke="#1a61aa" strokeWidth="1.6"/>
-                <circle cx="110" cy="110" r="69" fill="none" stroke="#1256a0" strokeWidth="3"/>
-                <circle cx="110" cy="110" r="65" fill="none" stroke="#4382bf" strokeWidth="1" strokeDasharray="3 5"/>
-                <text fill="#104f99" fontFamily="Georgia,serif" fontWeight="900" fontSize="14.5" letterSpacing="1.2"><textPath href="#nabd-seal-top-arc" startOffset="50%" textAnchor="middle">NABD ACADEMY</textPath></text>
-                <text fill="#104f99" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="11" letterSpacing=".7"><textPath href="#nabd-seal-bottom-arc" startOffset="50%" textAnchor="middle">INSTITUTIONAL DIGITAL SEAL</textPath></text>
-                <text x="110" y="87" textAnchor="middle" fill="#104f99" fontSize="30" fontWeight="900" fontFamily="Georgia,serif">✦</text>
-                <text x="110" y="113" textAnchor="middle" fill="#104f99" fontSize="15" fontWeight="900" fontFamily="Tahoma,Arial,sans-serif">أكاديمية نبض</text>
-                <text x="110" y="131" textAnchor="middle" fill="#1359a1" fontSize="10.5" fontWeight="800" fontFamily="Tahoma,Arial,sans-serif">للعلوم الطبية</text>
-                <path d="M 78 143 L 142 143" stroke="#14579e" strokeWidth="1.7"/>
-                <text x="110" y="155" textAnchor="middle" fill="#14579e" fontSize="8.5" fontWeight="900" fontFamily="Arial,sans-serif">NABD · DIGITAL</text>
-                <circle cx="29" cy="110" r="4" fill="#175aa3"/><circle cx="191" cy="110" r="4" fill="#175aa3"/>
+                <g fill="none" stroke="#1557a4" stroke-linecap="round" filter="url(#stamp-ink-press)">
+                  <circle cx="120" cy="120" r="111" stroke-width="6"/>
+                  <circle cx="120" cy="120" r="101" stroke-width="2"/>
+                  <circle cx="120" cy="120" r="80" stroke-width="2.6"/>
+                  <circle cx="120" cy="120" r="75" stroke-width="1.1" stroke-dasharray="1.8 5" opacity=".72"/>
+                  <path d="M55 71h130M55 167h130" stroke-width="1.4"/>
+                </g>
+                <circle cx="120" cy="120" r="107" fill="url(#stamp-ink-fibers)" opacity=".43"/>
+                <g fill="#1256a0" text-anchor="middle">
+                  <text x="120" y="42" font-size="13" font-family="Tahoma,Arial,sans-serif" font-weight="900">أكاديمية نبض للعلوم الطبية</text>
+                  <text x="120" y="63" font-size="12.3" font-family="Arial,sans-serif" font-weight="900" letter-spacing="1.1">NABD ACADEMY</text>
+                  <text x="120" y="109" font-size="34" font-family="Georgia,serif" font-weight="900" letter-spacing="3">NABD</text>
+                  <text x="120" y="132" font-size="12.7" font-family="Tahoma,Arial,sans-serif" font-weight="900">العلوم الطبية</text>
+                  <text x="120" y="152" font-size="11" font-family="Arial,sans-serif" font-weight="850" letter-spacing=".75">MEDICAL SCIENCES</text>
+                  <text x="120" y="188" font-size="13" font-family="Tahoma,Arial,sans-serif" font-weight="900">ختم إلكتروني مؤسسي</text>
+                  <text x="120" y="206" font-size="10.5" font-family="Arial,sans-serif" font-weight="900" letter-spacing=".7">DIGITAL ACADEMY SEAL</text>
+                </g>
+                <g fill="#1557a4"><circle cx="30" cy="120" r="4"/><circle cx="210" cy="120" r="4"/></g>
               </svg>
             </div>
             <div class="issue-signature">
@@ -116,6 +132,14 @@
         <div class="sheet-bottom"><div><strong id="sheet-number" dir="ltr">—</strong><small>الرقم المرجعي الرسمي / OFFICIAL REFERENCE NO.</small></div><span>وثيقة مؤسسية داخلية قابلة للتحقق؛ ليست اعتمادًا حكوميًا أو ترخيصًا طبيًا.<span lang="en" dir="ltr">Internal Academy document · Not a government certificate or medical licence.</span></span></div>
       </div>
     </article>
+    <div id="legacy-english-name-editor" class="legacy-english-name-editor no-print" hidden>
+      <strong>استكمال الاسم الإنجليزي لهذا المستند القديم <span lang="en" dir="ltr">Add English name to existing record</span></strong>
+      <p>يمكن للمدير أو المُصدر الأصلي اعتماد التهجئة الإنجليزية مرة واحدة، دون تغيير التاريخ أو رقم المستند أو رمز التحقق.</p>
+      <label for="legacy-subject-name-en">الاسم الكامل بالإنجليزية · <span lang="en" dir="ltr">Full name in English</span></label>
+      <input id="legacy-subject-name-en" dir="ltr" lang="en" type="text" autocomplete="off" maxlength="160" placeholder="First Middle Family">
+      <label class="check-line"><input type="checkbox" id="legacy-english-name-confirmed"> أؤكد أن التهجئة راجعها صاحب المستند أو وردت في وثيقته.</label>
+      <button id="save-legacy-english-name" type="button" class="issue-button">حفظ الاسم الإنجليزي لهذا المستند</button>
+    </div>
     <div class="print-actions no-print">
       <button id="print-button" type="button" class="issue-button" disabled>طباعة أو حفظ PDF</button>
       <button id="zoom-document" type="button" class="secondary" aria-pressed="false">تكبير المعاينة للقراءة <span lang="en" dir="ltr">· Zoom</span></button>
