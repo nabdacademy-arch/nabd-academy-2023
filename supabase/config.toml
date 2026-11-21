@@ -1,0 +1,8 @@
+# Required authentication mode for NABD council Edge Functions.
+# The public QR verifier accepts an opaque UUID token, not a user JWT.
+[functions.nabd-council-verify]
+verify_jwt = false
+
+# Director provisioning always requires a valid signed-in user JWT.
+[functions.nabd-council-provision]
+verify_jwt = true
