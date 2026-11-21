@@ -306,6 +306,24 @@
       await verifyAccess();setTab("members");
     }catch(_){notice(T("تعذر الاتصال أثناء تعديل العضوية.","Connection failed while changing membership."),true);}finally{btn.disabled=false;}
   }
+  async function changePassword(event){
+    event.preventDefault();
+    if(!state.user||!state.db)return;
+    const next=$("#security-password").value;
+    const confirm=$("#security-confirm").value;
+    if(next!==confirm){notice(T("كلمتا المرور غير متطابقتين.","Passwords do not match."),true);return;}
+    if(next.length<12||!/[A-Z]/.test(next)||!/[a-z]/.test(next)||!/[0-9]/.test(next)){
+      notice(T("استخدم 12 حرفًا على الأقل مع حرف كبير وصغير ورقم.","Use at least 12 characters with uppercase, lowercase and a number."),true);return;
+    }
+    const button=$("#security-save");button.disabled=true;
+    try{
+      const {error}=await state.db.auth.updateUser({password:next});
+      if(error)throw error;
+      $("#security-form").reset();
+      notice(T("تم تحديث كلمة المرور. لا تشاركها مع أي شخص.","Your password was updated. Keep it private."));
+    }catch(_){notice(T("لم يتم تغيير كلمة المرور. حاول مرة أخرى.","Password change failed. Please try again."),true);}
+    finally{button.disabled=false;}
+  }
   async function signOut(){
     ++state.authEpoch;
     state.deepLinkApplied=false;
