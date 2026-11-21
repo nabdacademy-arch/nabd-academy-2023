@@ -7,6 +7,7 @@ on:
       - "assets/css/open-doors-essay.css"
       - "supabase/functions/open-doors-essay-grade/**"
       - "tests/open-doors-essay.test.cjs"
+      - "tests/open-doors-public-reliability.test.cjs"
       - ".github/workflows/open-doors-essay-check.yml"
   pull_request:
     paths:
@@ -15,6 +16,7 @@ on:
       - "assets/css/open-doors-essay.css"
       - "supabase/functions/open-doors-essay-grade/**"
       - "tests/open-doors-essay.test.cjs"
+      - "tests/open-doors-public-reliability.test.cjs"
       - ".github/workflows/open-doors-essay-check.yml"
   workflow_dispatch:
 permissions:
@@ -32,7 +34,7 @@ jobs:
           node --check assets/js/open-doors-essay-bank.js
           node --check assets/js/open-doors-essay.js
       - name: Run essay bank, UI and authorization tests
-        run: node tests/open-doors-essay.test.cjs
+        run: node --test tests/open-doors-essay.test.cjs tests/open-doors-public-reliability.test.cjs
 
   check-edge-typescript:
     runs-on: ubuntu-latest
