@@ -65,7 +65,7 @@ async function doSearch(issuer=false){
   target.querySelectorAll("[data-id]").forEach(btn=>btn.addEventListener("click",()=>selectPerson(list.find(p=>p.id===btn.dataset.id),issuer)));
  }catch(e){target.textContent="";message("تعذر البحث: "+e.message,true);}
 }
-function fmt(date){try{return new Intl.DateTimeFormat("ar-PS",{year:"numeric",month:"long",day:"numeric"}).format(new Date(date));}catch{return "—";}}
+function fmt(date){try{return new Intl.DateTimeFormat("ar-PS",{timeZone:"Asia/Hebron",year:"numeric",month:"long",day:"numeric"}).format(new Date(date));}catch{return "—";}}
 function viewUrl(token){return new URL("official-document-verify.html?token="+encodeURIComponent(token),location.href).href;}
 function qr(parent,url){
  parent.replaceChildren();
