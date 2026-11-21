@@ -2,6 +2,7 @@
 const test=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
+const {execFileSync}=require("node:child_process");
 const path=require("node:path");
 const read=p=>fs.readFileSync(path.resolve(__dirname,"..",p),"utf8");
 const html=read("open-doors-ai.html");
@@ -22,9 +23,9 @@ test("public bachelor entry has no email/password gate and offers offline bank f
  assert.match(html,/await loadPortal\(\)/);
 });
 test("all public question modules parse and local single/multi practice stays available",()=>{
- assert.doesNotThrow(()=>new Function(choice.replace(/^const dbPromise=import\([^\n]+\)[\s\S]*?\.catch\(\(\)=>null\);/,"const dbPromise=Promise.resolve(null);")));
- assert.doesNotThrow(()=>new Function(essay.replace(/^const dbPromise=import\([^\n]+\)[\s\S]*?\.catch\(\(\)=>null\);/,"const dbPromise=Promise.resolve(null);")));
- assert.doesNotThrow(()=>new Function(master.replace(/^import [^\n]+;?/gm,"")));
+ for(const file of ["assets/js/open-doors-choice.js","assets/js/open-doors-essay.js","assets/js/open-doors-masters.js"]){
+  assert.doesNotThrow(()=>execFileSync(process.execPath,["--check",path.resolve(__dirname,"..",file)]));
+ }
  assert.match(choice,/function init\(kind\)/);
  assert.match(bank,/window\.OpenDoorsChoiceBank/);
 });
