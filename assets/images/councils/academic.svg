@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" role="img" aria-hidden="true"><defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#112d43"/><stop offset=".54" stop-color="#061725"/><stop offset="1" stop-color="#06131f"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1" y1=".2" y2=".9"><stop stop-color="#fff1c0"/><stop offset=".35" stop-color="#d2ad68"/><stop offset=".75" stop-color="#87623c"/><stop offset="1" stop-color="#d8bc7b"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#73e4d4" stop-opacity=".24"/><stop offset="1" stop-color="#1a304a" stop-opacity="0"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#d4a66a" stop-opacity=".42"/><stop offset="1" stop-color="#d4a66a" stop-opacity="0"/></radialGradient>
+<radialGradient id="teal"><stop stop-color="#4fc4bf" stop-opacity=".46"/><stop offset="1" stop-color="#4fc4bf" stop-opacity="0"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+<pattern id="mesh" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0H0V34" fill="none" stroke="#d6c18b" stroke-width=".65" opacity=".09"/></pattern>
+</defs><rect width="760" height="340" fill="url(#bg)"/><rect width="760" height="340" fill="url(#mesh)"/><circle cx="580" cy="260" r="250" fill="url(#glow)" opacity=".3"/><path d="M0 340Q350 255 760 330" stroke="#e8ce9d" fill="none" stroke-width="2" opacity=".45"/><circle cx="415" cy="193" r="260" fill="url(#glow)"/><path d="M80 165Q240 94 383 174Q501 109 665 165L665 292Q505 233 383 300Q238 231 80 292Z" fill="#b79d70" stroke="#f0d499" stroke-width="4"/><path d="M90 175Q235 119 379 198V282Q240 219 90 273Z" fill="#f0dec2" opacity=".91"/><path d="M657 175Q510 121 388 198V283Q513 223 657 273Z" fill="#eee0c8" opacity=".84"/><path d="M383 177V295M115 198Q249 149 344 207M425 211Q552 149 630 193M117 227Q235 190 344 237M425 240Q543 192 628 221" fill="none" stroke="#998568" stroke-width="2.5"/><rect x="0" y="0" width="760" height="340" fill="url(#glass)" opacity=".18"/></svg>
