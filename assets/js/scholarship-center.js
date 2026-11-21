@@ -212,12 +212,29 @@
     if(error){setStatus(authStatus,"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني.", "error");return;}
     await verifyPublisher();
   });
-  document.getElementById("sch-reset-password")?.addEventListener("click",async()=>{
-    const email=document.getElementById("sch-email").value.trim();
+  const resetButton=document.getElementById("sch-reset-password");
+  document.getElementById("sch-email").addEventListener("input",()=>{
+    if(resetButton?.disabled)setStatus(authStatus,"");
+  });
+  resetButton?.addEventListener("click",async()=>{
+    if(resetButton.disabled)return;
+    const emailField=document.getElementById("sch-email");
+    const email=emailField.value.trim();
     if(!email){setStatus(authStatus,"أدخل البريد الإلكتروني أولًا لطلب إعادة تعيين كلمة المرور.", "error");return;}
-    const redirectTo=new URL("scholarship-manager.html",location.href).href;
-    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
-    setStatus(authStatus,error ? "تعذر طلب إعادة تعيين كلمة المرور." : "إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور.", error?"error":"success");
+    const attempt=verification;
+    const current=()=>attempt===verification && emailField.value.trim()===email && !loginPanel.hidden;
+    resetButton.disabled=true;
+    setStatus(authStatus,"جارٍ طلب رابط الاستعادة… · Requesting a recovery link…");
+    try{
+      const redirectTo=new URL("scholarship-manager.html",location.href).href;
+      const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
+      if(error)throw error;
+      if(current())setStatus(authStatus,"إذا كان البريد مسجلًا فستصله رسالة استعادة كلمة المرور. · If this email is registered, a recovery link will be sent.","success");
+    }catch{
+      if(current())setStatus(authStatus,"تعذر تأكيد طلب الاستعادة. تفقد بريدك قبل إعادة المحاولة. · Check your inbox before retrying.","error");
+    }finally{
+      resetButton.disabled=false;
+    }
   });
   document.getElementById("sch-logout")?.addEventListener("click",async()=>{
     await client.auth.signOut();
