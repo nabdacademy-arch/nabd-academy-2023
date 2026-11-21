@@ -319,21 +319,56 @@
     try{localStorage.setItem("nabd-scholarship-news-updated",String(Date.now()));}catch(_){}
     await refreshOwnPosts();
   });
-  client.auth.onAuthStateChange((event)=>{
-    if(event==="SIGNED_OUT"){verification++;retryRole.hidden=true;showLogin();}
+  const recoveryPanel=document.getElementById("sch-new-password-panel");
+  const passwordField=document.getElementById("sch-new-password-value");
+  const savePassword=document.getElementById("sch-save-password");
+  const passwordStatus=document.getElementById("sch-new-password-status");
+  let recovery=null;
+  function closeRecovery(){
+    recovery=null;
+    recoveryPanel.hidden=true;
+    passwordField.value="";
+    savePassword.disabled=false;
+    setStatus(passwordStatus,"");
+  }
+  client.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_OUT" || (recovery && event==="SIGNED_IN" && session?.user?.id!==recovery.userId)){
+      verification++;retryRole.hidden=true;closeRecovery();showLogin();
+    }
     if(event==="PASSWORD_RECOVERY"){
-      verification++;retryRole.hidden=true;
-      const resetPanel=document.getElementById("sch-new-password-panel");
-      if(resetPanel){resetPanel.hidden=false;loginPanel.hidden=true;dashboard.hidden=true;}
+      verification++;retryRole.hidden=true;closeRecovery();showLogin();
+      if(!session?.user?.id)return;
+      recovery={userId:session.user.id};
+      recoveryPanel.hidden=false;loginPanel.hidden=true;
     }
   });
   document.getElementById("sch-new-password-form")?.addEventListener("submit",async(e)=>{
     e.preventDefault();
-    const password=document.getElementById("sch-new-password-value").value;
-    if(password.length<12){setStatus(document.getElementById("sch-new-password-status"),"استخدم كلمة مرور من 12 حرفًا على الأقل.","error");return;}
-    const {error}=await client.auth.updateUser({password});
-    setStatus(document.getElementById("sch-new-password-status"),error?"تعذر تغيير كلمة المرور.":"تم تحديث كلمة المرور. يمكنك دخول البوابة الآن.",error?"error":"success");
-    if(!error){document.getElementById("sch-new-password-panel").hidden=true;await verifyPublisher();}
+    const attempt=recovery;
+    if(!attempt || savePassword.disabled)return;
+    const password=passwordField.value;
+    if(password.length<12){setStatus(passwordStatus,"استخدم كلمة مرور من 12 حرفًا على الأقل.","error");return;}
+    savePassword.disabled=true;
+    try{
+      const identity=await client.auth.getUser();
+      if(attempt!==recovery)return;
+      if(identity.error)throw identity.error;
+      if(identity.data?.user?.id!==attempt.userId){
+        closeRecovery();showLogin();
+        setStatus(authStatus,"تغيّر الحساب. افتح رابط استعادة الحساب المطلوب مجددًا.","error");
+        return;
+      }
+      const {error}=await client.auth.updateUser({password});
+      if(attempt!==recovery)return;
+      if(error)throw error;
+    }catch{
+      if(attempt===recovery)setStatus(passwordStatus,"تعذر تأكيد تغيير كلمة المرور. تحقق من الاتصال وحاول مجددًا. · Password change could not be confirmed.","error");
+      return;
+    }finally{
+      if(attempt===recovery)savePassword.disabled=false;
+    }
+    closeRecovery();
+    await verifyPublisher();
   });
   verifyPublisher();
 })();
