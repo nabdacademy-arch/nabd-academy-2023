@@ -6,8 +6,8 @@ const fakeModule=String.raw`
 export function createClient(){
  return {
   auth:{
-   getUser:async()=>({data:{user:{id:"mock-founder"}},error:null}),
-   signInWithPassword:async()=>({data:{user:{id:"mock-founder"}},error:null}),
+   getUser:async()=>({data:{user:null},error:null}),
+   signInWithPassword:async()=>{throw Error("GUEST_MUST_NOT_SIGN_IN")},
    signOut:async()=>({error:null})
   },
   from:()=>({
@@ -33,6 +33,7 @@ export function createClient(){
   await page.goto("http://127.0.0.1:8123/open-doors-masters.html",{waitUntil:"domcontentloaded"});
   await page.locator("#masterApp").waitFor({state:"visible",timeout:20000});
   assert.equal(await page.locator("#mastersAuth").isVisible(),false);
+  assert.equal(await page.locator("#mastersLoginForm").count(),0);
   assert.equal(await page.locator("#masterSubjectCards [data-subject]").count(),3);
   assert.equal(await page.locator("#masterBankCount").innerText(),"81");
   // Subject cards change the master's track, not the bachelor's question bank.
@@ -91,6 +92,6 @@ export function createClient(){
   assert.ok(overflow<=5,"Master's mobile horizontal overflow: "+overflow);
   await page.screenshot({path:"masters-browser-results/masters-mobile.png",fullPage:true});
   assert.deepEqual(errors,[],"No browser JavaScript runtime errors");
-  console.log("PASS: Master's founder authentication, subjects, bilingual single/multiple/written training, detailed feedback, official sources, curriculum, 43+oral timed mock, mobile and navigation.");
+  console.log("PASS: Masters guest training with no sign-in, bilingual practice, self-review, sources and 44-task mock.");
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
