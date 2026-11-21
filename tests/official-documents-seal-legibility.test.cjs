@@ -28,12 +28,12 @@ test("all six document headers print a clear translated English title",()=>{
 });
 test("large vivid Academy-only blue ink seal replaces the small gold medallion",()=>{
  assert.match(html,/class="academy-blue-seal"/);
- assert.match(html,/role="img" aria-label="ختم أكاديمية نبض المؤسسي الإلكتروني باللون الأزرق/);
+ assert.match(html,/role="img" aria-label="ختم مؤسسي أزرق لأكاديمية نبض/);
  assert.match(html,/NABD ACADEMY/);
- assert.match(html,/INSTITUTIONAL DIGITAL SEAL/);
+ assert.match(html,/DIGITAL ACADEMY SEAL/);
  assert.match(html,/أكاديمية نبض/);
  assert.match(css,/\.signature-stack \.institution-seal\s*\{\s*width:156px/);
- assert.match(html,/stroke="#1256a0"/);
+ assert.match(html,/stroke="#1557a4"/);
  assert.ok(html.indexOf('class="institution-seal"')<html.indexOf('class="issue-signature"'));
 });
 test("larger print fonts for both languages, readable course labels, safe mobile zoom",()=>{
@@ -56,6 +56,6 @@ test("QR, barcode, official issue dates and authorization logic remain unchanged
  assert.match(js,/\$\("sheet-signatory"\)\.textContent=signatory/);
  assert.match(html,/اعتماد مسجل إلكترونيًا، وليس توقيعًا بخط اليد/);
  assert.match(verifier,/\.eq\("verify_token",token\)/);
- assert.match(html,/official-documents\.js\?v=4/);
- assert.match(html,/official-documents\.css\?v=3/);
+ assert.match(html,/official-documents\.js\?v=5/);
+ assert.match(html,/official-documents\.css\?v=4/);
 });

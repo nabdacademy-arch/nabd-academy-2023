@@ -85,6 +85,16 @@ const docName=id=>defs.find(t=>t.id===id)?.name||"مستند غير معروف";
 const kinds={student:"طالب",member:"عضو مجلس",other:"حساب بالأكاديمية"};
 const db=window.nabdSupabase;
 const state={allowed:[],admin:false,type:"statement",person:null,issuer:null,items:[],doc:null,ready:false,busy:false};
+function validEnglishName(name){
+ const normalized=String(name||"").trim().replace(/\s+/g," ");
+ return /^[A-Za-z][A-Za-z .'-]{2,159}$/.test(normalized)&&/[A-Za-z]{2}/.test(normalized)?normalized:null;
+}
+function canIssueSelected(){
+ return Boolean(state.person && state.allowed.includes(state.type)
+  && validEnglishName($("subject-name-en").value)
+  && $("english-name-confirmed").checked);
+}
+function updateIssueButton(){$("issue").disabled=!canIssueSelected()||state.busy;}
 function message(m="",error=false){const n=$("feedback");n.textContent=m;n.classList.toggle("error",error);n.hidden=!m;}
 // The public interface should not show raw internal server identifiers to members or administrators.
 const serviceMessages={
@@ -100,7 +110,11 @@ const serviceMessages={
  issue_failed:"تعذر إصدار المستند. لم يتم تأكيد إصدار مستند جديد.",
  subject_profile_missing:"الحساب المختار ليس له ملف شخصي صالح. اختر حسابًا آخر.",
  list_failed:"تعذّر تحميل سجل المستندات.",
- cannot_save_permission:"تعذر حفظ التفويض. حاول مجددًا."
+ cannot_save_permission:"تعذر حفظ التفويض. حاول مجددًا.",
+ english_name_required:"يجب إدخال الاسم الإنجليزي كما أكّده صاحب المستند والموافقة على صحة تهجئته.",
+ english_name_already_recorded:"الاسم الإنجليزي مثبت بالفعل في هذه الوثيقة ولا يمكن تغييره تلقائيًا.",
+ english_name_save_failed:"تعذر حفظ تهجئة الاسم الإنجليزي. حاول مجددًا.",
+ document_void:"لا يمكن تعديل وثيقة ملغاة."
 };
 function userFriendlyError(code,fallback){
  return serviceMessages[code]||fallback||"حدث خطأ أثناء الاتصال بمركز المستندات.";
@@ -116,7 +130,7 @@ function chooseType(id){
  if(!state.allowed.includes(id))return;
  state.type=id;
  $("template-grid").querySelectorAll("[data-type]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.type===id)));
- $("issue").disabled=!state.person;
+ updateIssueButton();
 }
 function renderTypes(){
  $("template-grid").innerHTML=defs.map(t=>{
@@ -138,7 +152,12 @@ function selectPerson(p,issuer=false){
  $("selected-name").textContent=p.name||"—";
  $("selected-kind").textContent=p.role==="student"?"حساب طالب":"حساب مرتبط بالأكاديمية";
  $("selected-subject").hidden=false;
- $("issue").disabled=!state.allowed.includes(state.type);
+ $("english-name-fields").hidden=false;
+ // A Latin profile name may already be the person's chosen English spelling;
+ // otherwise request confirmation instead of guessing an Arabic transliteration.
+ $("subject-name-en").value=/^[A-Za-z][A-Za-z .'-]{2,159}$/.test(String(p.name||"").trim())?p.name:"";
+ $("english-name-confirmed").checked=false;
+ updateIssueButton();
  $("search-results").replaceChildren();
 }
 async function doSearch(issuer=false){
@@ -165,11 +184,12 @@ function englishDate(date){
  try{return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Hebron",year:"numeric",month:"long",day:"numeric"}).format(new Date(date));}
  catch{return "—";}
 }
-function textSection(lang,caption,lines){
+function textSection(lang,lines){
  const section=document.createElement("section");
  section.className="bilingual-text bilingual-text--"+lang;
  section.lang=lang;section.dir=lang==="en"?"ltr":"rtl";
- const h=document.createElement("h3");h.textContent=caption;section.append(h);
+ // The bilingual document titles are already above; start both sections directly
+ // with the formal statement, without distracting "Arabic text / English version" labels.
  lines.forEach(line=>{const p=document.createElement("p");p.textContent=line;section.append(p);});
  return section;
 }
@@ -239,6 +259,8 @@ function printDoc(row){
  $("sheet-title").textContent=t.name;
  $("sheet-subtitle").textContent=t.en.toUpperCase();
  $("sheet-name").textContent=row.subject_name;
+ $("sheet-name-en").textContent=row.subject_name_en||"ENGLISH NAME NOT YET RECORDED";
+ $("sheet-name-en").classList.toggle("name-not-recorded",!row.subject_name_en);
  $("sheet-date").textContent=fmt(row.issued_at);
  $("sheet-date-en").textContent=englishDate(row.issued_at);
  $("sheet-issuer").textContent="المُصدر المسجل · Registered issuer: "+row.issuer_name;
@@ -255,8 +277,8 @@ function printDoc(row){
  document.querySelector(".official-sheet")?.classList.toggle("document-dense",evidenceCount>5);
  const body=$("sheet-body");
  body.replaceChildren(
-  textSection("ar","النص العربي الرسمي · ARABIC TEXT",t.lines),
-  textSection("en","OFFICIAL ENGLISH VERSION · النص الإنجليزي",bilingualTemplates[row.doc_type]||[])
+  textSection("ar",t.lines),
+  textSection("en",bilingualTemplates[row.doc_type]||[])
  );
  $("sheet-note").textContent=row.doc_type==="complaint"?
   "تسجيل نموذج الشكوى لا يُثبت صحة الوقائع. / Registering a complaint does not validate allegations.":
@@ -266,21 +288,46 @@ function printDoc(row){
  $("verify-document").href=link;
  const qrReady=qr($("sheet-qr"),link);
  const barcodeReady=linearBarcode(row);
- $("print-button").disabled=!valid||!qrReady||!barcodeReady;
+ $("print-button").disabled=!valid||!qrReady||!barcodeReady||!row.subject_name_en;
+ $("legacy-english-name-editor").hidden=Boolean(row.subject_name_en)||!valid;
+ $("legacy-subject-name-en").value="";
+ $("legacy-english-name-confirmed").checked=false;
  $("workspace").hidden=true;
  $("print-area").hidden=false;
  window.scrollTo(0,0);
  message(!valid?"هذه الوثيقة ملغاة ولا يجوز طباعتها على أنها سارية.":
+  !row.subject_name_en?"هذا المستند قديم ولا يحفظ الاسم الإنجليزي. اعتمد الاسم بالإنجليزية من الخانة أسفل الورقة لتفعيل الطباعة دون إصدار رقم جديد.":
   (!qrReady||!barcodeReady)?"بيانات المستند جاهزة لكن رمز التحقق أو الباركود لم يُحمّل؛ تأكد من الإنترنت قبل الطباعة.":
-  "المستند الثنائي اللغة جاهز للطباعة مع توقيع الاعتماد، ورقم الإصدار، وQR والباركود.",!valid||!qrReady||!barcodeReady);
+  "المستند ثنائي اللغة وجاهز للطباعة، مع الاسم والتاريخ باللغتين والختم ورمز QR والباركود.",
+  !valid||!qrReady||!barcodeReady||!row.subject_name_en);
 }
 async function issue(){
- if(state.busy||!state.person||!state.allowed.includes(state.type))return;
+ if(state.busy||!canIssueSelected()){
+  message("يرجى كتابة الاسم بالإنجليزية كما أكّده صاحب الحساب، ثم تأكيد صحة تهجئته قبل الإصدار.",true);
+  return;
+ }
  state.busy=true;$("issue").disabled=true;
  message("جارٍ إصدار المستند برقم وتاريخ معتمدين...");
- try{const result=await call("issue",{doc_type:state.type,subject_user_id:state.person.id});if(!result.document)throw Error("لم يؤكد الخادم الإصدار");printDoc(result.document);await loadHistory(true);}
+ try{const result=await call("issue",{doc_type:state.type,subject_user_id:state.person.id,subject_name_en:validEnglishName($("subject-name-en").value),english_name_confirmed:true});if(!result.document)throw Error("لم يؤكد الخادم الإصدار");printDoc(result.document);await loadHistory(true);}
  catch(e){message("تعذر إصدار المستند: "+e.message,true);}
- finally{state.busy=false;$("issue").disabled=!state.person;}
+ finally{state.busy=false;updateIssueButton();}
+}
+async function confirmLegacyEnglishName(){
+ const row=state.doc;
+ if(!row||row.status!=="issued"||row.subject_name_en)return;
+ const english=validEnglishName($("legacy-subject-name-en").value);
+ if(!english||!$("legacy-english-name-confirmed").checked){
+  message("أدخل الاسم بالإنجليزية وأكد أن صاحبه راجع صحة التهجئة قبل اعتمادها.",true);return;
+ }
+ const button=$("save-legacy-english-name");button.disabled=true;
+ try{
+  const result=await call("add_english_name",{id:row.id,subject_name_en:english,english_name_confirmed:true});
+  if(!result.document)throw Error("لم يؤكد الخادم تحديث الاسم");
+  printDoc(result.document);
+  await loadHistory(true);
+  message("تم حفظ الاسم الإنجليزي في السجل الأصلي دون تغيير رقم المستند أو تاريخ إصداره.");
+ }catch(e){message("تعذر استكمال الاسم الإنجليزي: "+e.message,true);}
+ finally{button.disabled=false;}
 }
 async function loadHistory(silent=false){
  try{
@@ -337,6 +384,10 @@ function init(){
  $("subject-query").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();doSearch(false);}});
  $("issuer-query").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();doSearch(true);}});
  $("issue").addEventListener("click",issue);
+ ["subject-name-en","english-name-confirmed"].forEach(id=>{
+  $(id).addEventListener(id==="subject-name-en"?"input":"change",updateIssueButton);
+ });
+ $("save-legacy-english-name").addEventListener("click",confirmLegacyEnglishName);
  $("refresh-list").addEventListener("click",()=>loadHistory());
  $("save-issuer").addEventListener("click",grant);
  $("print-button").addEventListener("click",()=>{if(state.doc?.status==="issued"&&!$("print-button").disabled)window.print();});

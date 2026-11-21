@@ -15,6 +15,8 @@ on:
       - 'tests/official-documents.test.cjs'
       - 'tests/official-documents-bilingual.test.cjs'
       - 'tests/official-documents-seal-legibility.test.cjs'
+      - 'tests/official-documents-english-name-ink.test.cjs'
+      - 'supabase/migrations/20261121_documents_english_spelling_addendum.sql'
       - 'supabase/migrations/20261121_official_document_evidence_signature.sql'
       - 'tests/document-service-grants.test.cjs'
       - 'supabase/migrations/20261121_restore_service_role_document_grants.sql'
@@ -113,7 +115,7 @@ jobs:
           node --check assets/js/nabd-signature.js
       - name: Validate eight councils, protected routes and design assets
         run: |
-          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs tests/council-identity-verification.test.cjs tests/official-documents.test.cjs tests/document-service-grants.test.cjs tests/official-documents-bilingual.test.cjs tests/official-documents-seal-legibility.test.cjs
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs tests/council-identity-verification.test.cjs tests/official-documents.test.cjs tests/document-service-grants.test.cjs tests/official-documents-bilingual.test.cjs tests/official-documents-seal-legibility.test.cjs tests/official-documents-english-name-ink.test.cjs
       - name: Verify local SVG artwork XML
         run: |
           python3 - <<'PY'
