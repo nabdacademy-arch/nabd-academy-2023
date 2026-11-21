@@ -307,6 +307,7 @@
   }
   async function signOut(){
     ++state.authEpoch;
+    state.deepLinkApplied=false;
     $("#workspace").hidden=true;
     state.user=null;state.profile=null;state.isAdmin=false;state.memberships=[];state.records=[];
     try{await state.db?.auth.signOut();}catch(_){}
