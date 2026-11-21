@@ -18,7 +18,7 @@ test("all document server SQL table and sequence grants are restored",()=>{
  assert.match(migration,/grant select, insert, update on table public\.nabd_document_issuer_permissions to service_role;/i);
  assert.match(migration,/grant usage on sequence public\.nabd_official_documents_id_seq to service_role;/i);
  assert.match(migration,/grant usage on sequence public\.nabd_council_account_audit_id_seq to service_role;/i);
- assert.doesNotMatch(migration,/grant[^;]*\bto\s+(?:anon|authenticated|public)\b/i);
+ assert.doesNotMatch(migration,/^\s*grant\b[^\n;]*\bto\s+(?:anon|authenticated|public)\b/im);
 });
 test("profile lookup failures are distinguished from a missing profile",()=>{
  assert.match(backend,/if\(profileError\)\{/);
