@@ -86,6 +86,7 @@
     $("#view-title").textContent=T(...titles[tab]);
     if(tab==="records")renderRecords();
     if(tab==="members")renderMembers();
+    if(tab==="identity")renderMemberDocuments();
   }
   function addOptions(selector,items,all=false) {
     const el=$(selector);if(!el)return;
