@@ -19,7 +19,7 @@ const num=(id:number)=>"NABD-DOC-"+String(id).padStart(7,"0");
 // spelling rather than inventing a transliteration or suggesting it is passport-verified.
 function validatedEnglishName(raw:unknown,confirmed:unknown){
   if(confirmed!==true||typeof raw!=="string")return null;
-  const name=raw.trim().replace(/\\s+/g," ");
+  const name=raw.trim().replace(/\s+/g," ");
   if(name.length<3||name.length>160||!/^[A-Za-z][A-Za-z .'-]{2,159}$/.test(name))return null;
   if(!/[A-Za-z]{2}/.test(name))return null;
   return name;
