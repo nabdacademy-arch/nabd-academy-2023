@@ -46,7 +46,7 @@ assert.match(html,/id="essayAnswer"/,"Text answer field");
 assert.match(html,/id="essayConsent"/,"Explicit privacy consent");
 assert.match(html,/id="essayFeedback"/);
 assert.match(html,/open-doors-essay-bank\.js\?v=1/);
-assert.match(html,/open-doors-essay\.js\?v=2/);
+assert.match(html,/open-doors-essay\.js\?v=3/);
 assert.match(html,/'patterns','essayLab'/,"Old trainer tab switches hide essay panel");
 assert.match(client,/\.eq\("kind","written"\)/,"Existing protected written database bank loaded");
 assert.match(client,/origin:"NABD_EXISTING_DATABASE"/,"Prior questions labeled as archive");
