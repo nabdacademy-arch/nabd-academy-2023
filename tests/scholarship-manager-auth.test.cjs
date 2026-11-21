@@ -90,3 +90,38 @@ for(const outcome of ['active','inactive','signed-out']){
     assert.equal(signOuts,outcome==='inactive'?1:0);
   });
 }
+
+test('recovery requests can be retried after an uncertain response without overlapping sends',async()=>{
+  const pending=[];
+  const get=manager(()=>({auth:{
+    getUser:async()=>({data:{user:null}}),onAuthStateChange(){},
+    resetPasswordForEmail:()=>new Promise((resolve,reject)=>pending.push({resolve,reject}))
+  }}));
+  await new Promise(setImmediate);
+  const email=get('sch-email'), button=get('sch-reset-password'), status=get('sch-auth-status');
+  email.value='';
+  await button.handlers.click();
+  assert.equal(pending.length,0);
+  email.value='staff@example.invalid';
+  const first=button.handlers.click();
+  await button.handlers.click();
+  assert.equal(pending.length,1);
+  pending.shift().reject(Error('offline'));
+  await first;
+  assert.equal(button.disabled,false);
+  assert.match(status.textContent,/تفقد بريدك/);
+  const retry=button.handlers.click();
+  pending.shift().resolve({error:{status:503}});
+  await retry;
+  assert.match(status.textContent,/قبل إعادة المحاولة/);
+  const changed=button.handlers.click();
+  email.value='other@example.invalid';email.handlers.input();
+  pending.shift().resolve({error:null});
+  await changed;
+  assert.equal(status.textContent,'');
+  const last=button.handlers.click();
+  pending.shift().resolve({error:null});
+  await last;
+  assert.match(status.textContent,/إذا كان البريد مسجلًا/);
+  assert.equal(button.disabled,false);
+});
