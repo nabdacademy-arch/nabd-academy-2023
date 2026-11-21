@@ -202,15 +202,34 @@
     const email=document.getElementById("sch-email").value.trim();
     const password=document.getElementById("sch-password").value;
     const button=document.getElementById("sch-login-button");
-    if(!email || !password)return;
-    verification++;retryRole.hidden=true;
+    if(button.disabled || !email || !password)return;
+    const attempt=++verification;
+    retryRole.hidden=true;
     button.disabled=true;
+    const passwordField=document.getElementById("sch-password");
+    passwordField.value="";
     setStatus(authStatus,"جارٍ التحقق من الحساب…");
-    const {error}=await client.auth.signInWithPassword({email,password});
-    button.disabled=false;
-    document.getElementById("sch-password").value="";
-    if(error){setStatus(authStatus,"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني.", "error");return;}
-    await verifyPublisher();
+    try{
+      let result;
+      try{
+        result=await client.auth.signInWithPassword({email,password});
+      }catch{
+        if(attempt===verification)setStatus(authStatus,"تعذر الاتصال بخدمة الدخول. تحقق من الاتصال وحاول مجددًا. · Check your connection and try again.","error");
+        return;
+      }
+      if(attempt!==verification)return;
+      if(result.error){
+        const error=result.error;
+        const interrupted=error.name==="AuthRetryableFetchError" || error.status===0 || error.status>=500;
+        setStatus(authStatus,interrupted
+          ?"تعذر الاتصال بخدمة الدخول. تحقق من الاتصال وحاول مجددًا. · Check your connection and try again."
+          :"تعذر تسجيل الدخول. تحقق من البريد وكلمة المرور ومن تأكيد البريد الإلكتروني. · Check your sign-in details.","error");
+        return;
+      }
+      await verifyPublisher();
+    }finally{
+      button.disabled=false;
+    }
   });
   const resetButton=document.getElementById("sch-reset-password");
   document.getElementById("sch-email").addEventListener("input",()=>{
