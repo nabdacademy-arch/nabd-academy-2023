@@ -1329,9 +1329,8 @@ async function handleSignIn(event) {
       .toLowerCase() || "";
 
 
-  const password =
-    $("#signInPassword")
-      ?.value || "";
+  const passwordField = $("#signInPassword");
+  const password = passwordField?.value || "";
 
 
   const button =
@@ -1340,6 +1339,8 @@ async function handleSignIn(event) {
   const status =
     $("#signInStatus");
 
+
+  if (button?.disabled) return;
 
   setStatus(status, "");
 
@@ -1384,6 +1385,8 @@ async function handleSignIn(event) {
       );
     }
 
+
+    if (passwordField.value === password) passwordField.value = "";
 
     await loadDashboard(
       data.user
