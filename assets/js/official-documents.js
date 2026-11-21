@@ -11,6 +11,58 @@ const defs=[
  {id:"consultation_request",name:"نموذج طلب استشارة",en:"Consultation Request",icon:"✧",hint:"طلب تنسيق استشارة، دون رأي علاجي.",lines:["تسجل أكاديمية نبض بموجب هذا النموذج طلب استشارة مؤسسية أو تعليمية لصاحب المستند المذكور، ويُحال الطلب عند الحاجة إلى القسم المختص وفق الصلاحيات المتاحة.","لا يتضمن هذا النموذج أي استشارة طبية فعلية أو توصية علاجية، ولا يمثل رأيًا صادرًا عن طبيب أو مختص مرخص."]},
  {id:"complaint",name:"استمارة تقديم شكوى",en:"Complaint Form",icon:"☷",hint:"استمارة موحدة لتقديم الملاحظات والشكاوى.",lines:["استمارة إدارية موحدة لتوثيق رغبة صاحب الاسم المذكور أعلاه في تقديم شكوى أو ملاحظة إلى أكاديمية نبض للعلوم الطبية؛ ويُستكمل وصف الموضوع من مقدم الشكوى عند التسليم إلى الجهة المختصة.","موضوع الشكوى: ................................................................................","الجهة أو القسم المعني: .........................................................................","توقيع مقدم الشكوى عند التسليم (اختياري): ......................................................"]}
 ];
+const bilingualTemplates={
+ statement:[
+  "NABD Academy for Medical Sciences confirms that the individual identified above has an account on the Academy’s institutional platform, according to the records available on the issue date.",
+  "Any council appointments or completed courses listed on this statement are drawn only from active membership records or valid Academy certificates. This internal statement is not a government accreditation, degree, or professional licence."
+ ],
+ permit:[
+  "NABD Academy issues this internal participation permission to the person named above for Academy-organized activities authorized by its administration, subject to applicable internal procedures.",
+  "This document is for Academy coordination only. It is not a travel, entry, professional-practice, or medical-treatment permit."
+ ],
+ report:[
+  "This administrative report confirms that the person named above has an account on NABD Academy's institutional platform as of the document's issue date.",
+  "Any listed verified memberships or certified training records are derived from the Academy's registers. This is not a clinical report, medical diagnosis, or external academic evaluation."
+ ],
+ treatment_request:[
+  "This administrative form records a request to coordinate a referral for the person named above to an appropriate healthcare provider, subject to consent and applicable procedures.",
+  "It is not a diagnosis, prescription, treatment order, or approval to dispense medication. All clinical decisions remain the responsibility of an appropriately licensed healthcare practitioner."
+ ],
+ consultation_request:[
+  "This form documents a request for institutional or educational consultation for the person named above. The request may be referred to the responsible Academy team.",
+  "This form does not constitute a medical consultation, clinical diagnosis, or treatment advice from a licensed practitioner."
+ ],
+ complaint:[
+  "This standardized form records the named individual's intention to submit a complaint or feedback to NABD Academy. The complainant provides the particulars separately through authorized channels.",
+  "Complaint subject: ................................................................",
+  "Relevant department: ...............................................................",
+  "Complainant's signature on submission (optional): ........................................"
+ ]
+};
+const roleLabels={
+ admin:["إدارة الأكاديمية","Academy administration"],
+ student:["طالب مسجل في المنصة","Registered Academy student"],
+ lecturer:["محاضر في المنصة","Academy lecturer"],
+ instructor:["محاضر في المنصة","Academy instructor"],
+ member:["عضو مجلس","Council member"]
+};
+const councilLabels={
+ trustees:["المجلس الأعلى للأمناء","Board of Trustees"],
+ academic:["المجلس العلمي والأكاديمي","Scientific and Academic Council"],
+ research:["مجلس البحث العلمي والابتكار","Research and Innovation Council"],
+ students:["المجلس الطلابي الأعلى","Student Council"],
+ international:["مجلس العلاقات والشراكات الدولية","International Relations Council"],
+ quality:["مجلس الجودة والنزاهة الأكاديمية","Quality and Academic Integrity Council"],
+ digital:["مجلس الذكاء الاصطناعي والتحول الرقمي","AI and Digital Transformation Council"],
+ humanitarian:["مجلس العمل الإنساني والاستدامة","Humanitarian and Sustainability Council"]
+};
+const positionLabels={
+ member:["عضو مجلس","Member"],
+ chair:["رئيس المجلس","Chair"],
+ vice_chair:["نائب رئيس المجلس","Vice Chair"],
+ secretary:["مقرر المجلس","Council Secretary"]
+};
+
 const docName=id=>defs.find(t=>t.id===id)?.name||"مستند غير معروف";
 const kinds={student:"طالب",member:"عضو مجلس",other:"حساب بالأكاديمية"};
 const db=window.nabdSupabase;
@@ -91,6 +143,71 @@ function qr(parent,url){
  if(typeof QRCode!=="function")return false;
  try{new QRCode(parent,{text:url,width:180,height:180,correctLevel:QRCode.CorrectLevel?.M});return true;}catch(_){return false;}
 }
+function englishDate(date){
+ try{return new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Hebron",year:"numeric",month:"long",day:"numeric"}).format(new Date(date));}
+ catch{return "—";}
+}
+function textSection(lang,caption,lines){
+ const section=document.createElement("section");
+ section.className="bilingual-text bilingual-text--"+lang;
+ section.lang=lang;section.dir=lang==="en"?"ltr":"rtl";
+ const h=document.createElement("h3");h.textContent=caption;section.append(h);
+ lines.forEach(line=>{const p=document.createElement("p");p.textContent=line;section.append(p);});
+ return section;
+}
+function addEvidenceRow(root,titleAr,titleEn,valueAr,valueEn){
+ const entry=document.createElement("div");entry.className="evidence-row";
+ const labels=document.createElement("div");
+ const ar=document.createElement("b");ar.textContent=titleAr;
+ const en=document.createElement("small");en.lang="en";en.dir="ltr";en.textContent=titleEn;
+ labels.append(ar,en);
+ const vals=document.createElement("div");vals.className="evidence-value";
+ const va=document.createElement("strong");va.textContent=valueAr;
+ const ve=document.createElement("small");ve.lang="en";ve.dir="ltr";ve.textContent=valueEn;
+ vals.append(va,ve);entry.append(labels,vals);root.append(entry);
+}
+function renderVerifiedDetails(row){
+ const root=$("sheet-verified-details");
+ root.replaceChildren();
+ const d=row.subject_details;
+ if(!d||typeof d!=="object"||!d.role){root.hidden=true;return;}
+ const role=roleLabels[d.role]||[String(d.role).slice(0,60),String(d.role).slice(0,60)];
+ addEvidenceRow(root,"صفة الحساب المثبتة","Verified account role",role[0],role[1]);
+ const members=Array.isArray(d.memberships)?d.memberships:[];
+ members.slice(0,2).forEach(m=>{
+  const c=councilLabels[m.council_code]||[m.council_code||"—",m.council_code||"—"];
+  const pos=positionLabels[m.position]||[m.position||"—",m.position||"—"];
+  addEvidenceRow(root,"تكليف مجلس موثق","Verified council appointment",
+   pos[0]+" — "+c[0],pos[1]+" — "+c[1]+(m.member_code?" · "+m.member_code:""));
+ });
+ if(members.length>2)addEvidenceRow(root,"عضويات إضافية","Other appointments",
+  "توجد عضويات أخرى مثبتة في السجل","Additional memberships on record");
+ const certified=Array.isArray(d.certified_courses)?d.certified_courses:[];
+ certified.slice(0,3).forEach((c,i)=>{
+  const hours=typeof c.hours==="number"&&c.hours>0?" ("+c.hours+" ساعة)":"";
+  const hoursEn=typeof c.hours==="number"&&c.hours>0?" ("+c.hours+" hours)":"";
+  addEvidenceRow(root,"دورة بشهادة صالحة "+(i+1),"Course with valid certificate "+(i+1),
+   String(c.title_ar||c.title_en||"—")+hours,
+   String(c.title_en||c.title_ar||"—")+hoursEn);
+ });
+ if(certified.length>3)addEvidenceRow(root,"دورات إضافية موثقة","Other certified courses",
+   "توجد شهادات صالحة أخرى في السجل","Additional valid certificates on record");
+ const ongoing=Array.isArray(d.ongoing_courses)?d.ongoing_courses:[];
+ ongoing.slice(0,2).forEach((c,i)=>addEvidenceRow(root,"دورة مسجل بها حاليًا "+(i+1),"Enrolled course (not completed) "+(i+1),
+  String(c.title_ar||c.title_en||"—")+" — لم يُثبت إتمامها",
+  String(c.title_en||c.title_ar||"—")+" — completion not certified"));
+ root.hidden=false;
+}
+function linearBarcode(row){
+ const svg=$("sheet-barcode");
+ while(svg.firstChild)svg.removeChild(svg.firstChild);
+ if(typeof JsBarcode!=="function")return false;
+ try{
+  JsBarcode(svg,row.number,{format:"CODE128",width:1.25,height:38,fontSize:10,
+    textMargin:3,displayValue:true,margin:1,background:"#fffdfa",lineColor:"#173848"});
+  return true;
+ }catch(_){return false;}
+}
 function printDoc(row){
  state.doc=row;
  const t=defs.find(x=>x.id===row.doc_type);
@@ -100,21 +217,37 @@ function printDoc(row){
  $("sheet-subtitle").textContent=t.en.toUpperCase();
  $("sheet-name").textContent=row.subject_name;
  $("sheet-date").textContent=fmt(row.issued_at);
- $("sheet-issuer").textContent=row.issuer_name;
+ $("sheet-date-en").textContent=englishDate(row.issued_at);
+ $("sheet-issuer").textContent="المُصدر المسجل: "+row.issuer_name;
  $("sheet-number").textContent=row.number;
- const body=$("sheet-body");body.replaceChildren(...t.lines.map(line=>{const p=document.createElement("p");p.textContent=line;return p;}));
+ const signatory=String(row.signatory_name||row.issuer_name||"إدارة أكاديمية نبض");
+ const isDirector=row.signatory_kind==="director";
+ $("sheet-signatory").textContent=signatory;
+ $("sheet-signature-role").textContent=isDirector?"توقيع المدير العام · اعتماد إلكتروني":
+  "توقيع المُصدر المفوّض · اعتماد إلكتروني";
+ $("sheet-signatory-en").textContent=isDirector?"GENERAL DIRECTOR · DIGITAL AUTHORIZATION":
+  "AUTHORIZED ISSUER · DIGITAL APPROVAL";
+ renderVerifiedDetails(row);
+ const body=$("sheet-body");
+ body.replaceChildren(
+  textSection("ar","النص الرسمي باللغة العربية",t.lines),
+  textSection("en","Official English text",bilingualTemplates[row.doc_type]||[])
+ );
  $("sheet-note").textContent=row.doc_type==="complaint"?
-    "يُقدّم هذا النموذج في القنوات الداخلية للأكاديمية. لا تُدرج بيانات صحية أو تفاصيل خاصة عند مشاركة رمز التحقق.":
-    "تُعتمد هذه الصيغة الرسمية كما هي في سجل أكاديمية نبض. أي تغيير في محتوى المستند يتطلب إصدار نسخة جديدة من القالب المعتمد.";
+  "إفادة استلام نموذج شكوى لا تؤكد صحة الوقائع. Complaint intake does not validate allegations.":
+  "الأوصاف والدورات المذكورة، إن وجدت، مستخرجة وقت الإصدار من سجلات الأكاديمية المعتمدة. All listed information was verified from Academy records at issuance.";
  const valid=row.status==="issued";
  const link=viewUrl(row.verify_token);
  $("verify-document").href=link;
- const ok=qr($("sheet-qr"),link);
- $("print-button").disabled=!valid||!ok;
+ const qrReady=qr($("sheet-qr"),link);
+ const barcodeReady=linearBarcode(row);
+ $("print-button").disabled=!valid||!qrReady||!barcodeReady;
  $("workspace").hidden=true;
  $("print-area").hidden=false;
  window.scrollTo(0,0);
- message(valid?(ok?"المستند جاهز للطباعة.":"تعذر تحميل QR؛ الطباعة معطلة حتى يصبح المستند قابلًا للتحقق."):"هذا المستند ملغى ولا يجوز طباعته على أنه ساري.",!valid||!ok);
+ message(!valid?"هذه الوثيقة ملغاة ولا يجوز طباعتها على أنها سارية.":
+  (!qrReady||!barcodeReady)?"بيانات المستند جاهزة لكن رمز التحقق أو الباركود لم يُحمّل؛ تأكد من الإنترنت قبل الطباعة.":
+  "المستند الثنائي اللغة جاهز للطباعة مع توقيع الاعتماد، ورقم الإصدار، وQR والباركود.",!valid||!qrReady||!barcodeReady);
 }
 async function issue(){
  if(state.busy||!state.person||!state.allowed.includes(state.type))return;
