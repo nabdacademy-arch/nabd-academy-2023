@@ -5,13 +5,13 @@
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#082336">
 <title>مركز المستندات الرسمية | أكاديمية نبض</title>
-<link rel="stylesheet" href="assets/css/official-documents.css?v=2">
+<link rel="stylesheet" href="assets/css/official-documents.css?v=3">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
 <script defer src="assets/js/config.js"></script>
 <script defer src="assets/js/supabase-client.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script defer src="assets/js/official-documents.js?v=3"></script>
+<script defer src="assets/js/official-documents.js?v=4"></script>
 </head>
 <body>
 <header class="doc-head no-print">
@@ -60,30 +60,48 @@
       <div class="sheet-frame">
         <header class="sheet-header">
           <div class="sheet-logo"><span class="sheet-logo-mark">✦</span><span><strong>أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY FOR MEDICAL SCIENCES</small></span></div>
-          <span class="sheet-official">INSTITUTIONAL DOCUMENT</span>
+          <span class="sheet-official"><span>وثيقة مؤسسية معتمدة</span><small lang="en" dir="ltr">AUTHORIZED INSTITUTIONAL DOCUMENT</small></span>
         </header>
         <div class="sheet-ornament" aria-hidden="true">✦ ✧ ✦</div>
         <div class="sheet-document-header">
-          <span id="sheet-kicker">NABD OFFICIAL RECORD</span>
+          <span id="sheet-kicker">سجل صادر عن أكاديمية نبض · NABD VERIFIED RECORD</span>
           <h2 id="sheet-title">—</h2>
           <p id="sheet-subtitle" lang="en" dir="ltr">—</p>
-          <span class="sheet-bilingual-mark">عربي <span aria-hidden="true">◆</span> ENGLISH · ONE CERTIFIED RECORD</span>
+          <span class="sheet-bilingual-mark">النسخة العربية <span aria-hidden="true">◆</span> ENGLISH VERSION · SAME DOCUMENT NUMBER</span>
         </div>
         <div class="sheet-person">
           <div><span>اسم صاحب المستند <em lang="en" dir="ltr">Document holder</em></span><strong id="sheet-name">—</strong></div>
           <div><span>تاريخ الإصدار <em lang="en" dir="ltr">Issue date</em></span><strong id="sheet-date">—</strong><small id="sheet-date-en" lang="en" dir="ltr">—</small></div>
         </div>
-        <div class="sheet-verified-details" id="sheet-verified-details" hidden aria-label="البيانات الأكاديمية والمؤسسية المثبتة"></div>
+        <div class="sheet-verified-details" id="sheet-verified-details" hidden aria-label="البيانات الأكاديمية والمؤسسية المثبتة">
+          </div>
         <div class="sheet-body" id="sheet-body">—</div>
         <div class="sheet-note" id="sheet-note"></div>
         <div class="sheet-footer">
           <div class="signature-stack">
-            <div class="institution-seal" aria-label="الختم الإلكتروني الرسمي لأكاديمية نبض">
-              <span>✦</span><strong>NABD ACADEMY</strong><small>ACADEMY DIGITAL SEAL</small>
-              <small>الختم المؤسسي المعتمد إلكترونيًا</small>
+            <div class="institution-seal" role="img" aria-label="ختم أكاديمية نبض المؤسسي الإلكتروني باللون الأزرق، غير حكومي">
+              <svg class="academy-blue-seal" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" aria-hidden="true" focusable="false">
+                <defs>
+                  <path id="nabd-seal-top-arc" d="M 30 111 A 80 80 0 0 1 190 111"/>
+                  <path id="nabd-seal-bottom-arc" d="M 31 113 A 79 79 0 0 0 189 113"/>
+                  <pattern id="nabd-seal-ink-grain" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".55" fill="#07539a" opacity=".18"/><circle cx="7" cy="8" r=".4" fill="#07539a" opacity=".12"/></pattern>
+                </defs>
+                <circle cx="110" cy="110" r="104" fill="none" stroke="#1256a0" strokeWidth="5"/>
+                <circle cx="110" cy="110" r="96" fill="url(#nabd-seal-ink-grain)" stroke="#1a61aa" strokeWidth="1.6"/>
+                <circle cx="110" cy="110" r="69" fill="none" stroke="#1256a0" strokeWidth="3"/>
+                <circle cx="110" cy="110" r="65" fill="none" stroke="#4382bf" strokeWidth="1" strokeDasharray="3 5"/>
+                <text fill="#104f99" fontFamily="Georgia,serif" fontWeight="900" fontSize="14.5" letterSpacing="1.2"><textPath href="#nabd-seal-top-arc" startOffset="50%" textAnchor="middle">NABD ACADEMY</textPath></text>
+                <text fill="#104f99" fontFamily="Arial,sans-serif" fontWeight="800" fontSize="11" letterSpacing=".7"><textPath href="#nabd-seal-bottom-arc" startOffset="50%" textAnchor="middle">INSTITUTIONAL DIGITAL SEAL</textPath></text>
+                <text x="110" y="87" textAnchor="middle" fill="#104f99" fontSize="30" fontWeight="900" fontFamily="Georgia,serif">✦</text>
+                <text x="110" y="113" textAnchor="middle" fill="#104f99" fontSize="15" fontWeight="900" fontFamily="Tahoma,Arial,sans-serif">أكاديمية نبض</text>
+                <text x="110" y="131" textAnchor="middle" fill="#1359a1" fontSize="10.5" fontWeight="800" fontFamily="Tahoma,Arial,sans-serif">للعلوم الطبية</text>
+                <path d="M 78 143 L 142 143" stroke="#14579e" strokeWidth="1.7"/>
+                <text x="110" y="155" textAnchor="middle" fill="#14579e" fontSize="8.5" fontWeight="900" fontFamily="Arial,sans-serif">NABD · DIGITAL</text>
+                <circle cx="29" cy="110" r="4" fill="#175aa3"/><circle cx="191" cy="110" r="4" fill="#175aa3"/>
+              </svg>
             </div>
             <div class="issue-signature">
-              <span id="sheet-signature-role">توقيع واعتماد المُصدر</span>
+              <span id="sheet-signature-role">اعتماد المدير العام إلكترونيًا · General Director Authorization</span>
               <strong id="sheet-signatory">—</strong>
               <small id="sheet-signatory-en" lang="en" dir="ltr">Electronic authorization</small>
               <small id="sheet-issuer">—</small>
@@ -95,7 +113,7 @@
             <div class="sheet-linear-code"><svg id="sheet-barcode" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="باركود المستند برمز CODE128"></svg></div>
           </div>
         </div>
-        <div class="sheet-bottom"><div><strong id="sheet-number" dir="ltr">—</strong><small>رقم المستند / DOCUMENT NO.</small></div><span>وثيقة مؤسسية داخلية قابلة للتحقق؛ ليست اعتمادًا حكوميًا أو ترخيصًا طبيًا.<span lang="en" dir="ltr">Internal Academy document · Not a government certificate or medical licence.</span></span></div>
+        <div class="sheet-bottom"><div><strong id="sheet-number" dir="ltr">—</strong><small>الرقم المرجعي الرسمي / OFFICIAL REFERENCE NO.</small></div><span>وثيقة مؤسسية داخلية قابلة للتحقق؛ ليست اعتمادًا حكوميًا أو ترخيصًا طبيًا.<span lang="en" dir="ltr">Internal Academy document · Not a government certificate or medical licence.</span></span></div>
       </div>
     </article>
     <div class="print-actions no-print">
