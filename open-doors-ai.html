@@ -275,7 +275,7 @@ const GUEST_ATTEMPTS_KEY='nabd-open-doors-public-local-attempts-v1';
 function localAttempts(){
  try{
   const data=JSON.parse(localStorage.getItem(GUEST_ATTEMPTS_KEY)||'[]');
-  return Array.isArray(data)?data.filter(x=>x&&typeof x==='object'&&Number.isFinite(Number(x.question_id))).slice(0,1000):[];
+  return Array.isArray(data)?data.filter(x=>x&&typeof x==='object'&&((typeof x.question_id==='string'&&x.question_id.length<=80)||Number.isSafeInteger(x.question_id))).slice(0,1000):[];
  }catch{return []}
 }
 function persistGuestAttempts(){
