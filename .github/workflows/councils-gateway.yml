@@ -3,6 +3,13 @@ on:
   push:
     paths:
       - 'councils.html'
+      - 'admin.html'
+      - 'assets/js/nabd-councils-director.js'
+      - 'assets/css/nabd-councils-director.css'
+      - 'supabase/functions/nabd-council-provision/index.ts'
+      - 'supabase/migrations/20261121_guard_profile_roles_for_councils.sql'
+      - 'supabase/migrations/20261121_council_account_provisioning_audit.sql'
+      - 'tests/council-director-provisioning.test.cjs'
       - 'assets/js/councils.js'
       - 'assets/css/councils.css'
       - 'assets/images/councils/**'
@@ -19,6 +26,13 @@ on:
   pull_request:
     paths:
       - 'councils.html'
+      - 'admin.html'
+      - 'assets/js/nabd-councils-director.js'
+      - 'assets/css/nabd-councils-director.css'
+      - 'supabase/functions/nabd-council-provision/index.ts'
+      - 'supabase/migrations/20261121_guard_profile_roles_for_councils.sql'
+      - 'supabase/migrations/20261121_council_account_provisioning_audit.sql'
+      - 'tests/council-director-provisioning.test.cjs'
       - 'assets/js/councils.js'
       - 'assets/css/councils.css'
       - 'assets/images/councils/**'
@@ -45,11 +59,12 @@ jobs:
       - name: Parse gateway scripts
         run: |
           node --check assets/js/councils.js
+          node --check assets/js/nabd-councils-director.js
           node --check assets/js/academic-core.js
           node --check assets/js/nabd-signature.js
       - name: Validate eight councils, protected routes and design assets
         run: |
-          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs tests/councils-homepage.test.cjs tests/council-director-provisioning.test.cjs
       - name: Verify local SVG artwork XML
         run: |
           python3 - <<'PY'
