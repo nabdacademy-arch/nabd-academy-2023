@@ -28,17 +28,31 @@ function normaliseArchive(q){
   ],origin:"NABD_EXISTING_DATABASE",source:bank.SOURCES[q.subject].page,max_points:10,
   originalRubric:rubric.slice(0,750)};
 }
+let archivePromise=null;
 async function loadArchive(){
- if(state.cacheLoaded)return;state.cacheLoaded=true;
- try{
-  // The practice archive is now publicly readable. Auth is reserved for paid AI grading.
-  const db=await dbPromise;if(!db)throw Error("BANK_UNAVAILABLE");
-  const {data,error}=await db.from("open_doors_questions").select("id,subject,kind,topic,question,explanation,rubric,origin,source_note")
-   .eq("kind","written").in("subject",allSubjects).limit(100);
-  if(error)throw Error(error.message);
-  state.archive=(data||[]).map(normaliseArchive).filter(Boolean);
-  $("essayBankSize").textContent=String(state.archive.length+bank.QUESTIONS.length);
- }catch(e){status("الأسئلة الجديدة متاحة؛ تعذّر جلب أرشيف الأسئلة الحالي.","New tasks are available; the existing protected archive could not be loaded.",true)}
+ if(state.cacheLoaded)return;
+ if(archivePromise)return archivePromise;
+ archivePromise=(async()=>{
+  try{
+   // Online archive is optional. The 18 local original essays remain usable without it.
+   // Only mark the archive loaded after success so a later click can retry after an outage.
+   const db=await dbPromise;
+   if(!db)throw Error("BANK_UNAVAILABLE");
+   const {data,error}=await Promise.race([
+    db.from("open_doors_questions").select("id,subject,kind,topic,question,explanation,rubric,origin,source_note")
+     .eq("kind","written").in("subject",allSubjects).limit(100),
+    new Promise((_,reject)=>setTimeout(()=>reject(Error("BANK_TIMEOUT")),8000))
+   ]);
+   if(error)throw Error(error.message);
+   state.archive=(data||[]).map(normaliseArchive).filter(Boolean);
+   state.cacheLoaded=true;
+   $("essayBankSize").textContent=String(state.archive.length+bank.QUESTIONS.length);
+  }catch(_){
+   status("الأسئلة الأصلية متاحة؛ تعذر تحديث الأرشيف. يمكنك المحاولة مجددًا بالضغط على قسم المقالي.",
+    "Original essays are available; archive refresh failed. Reopen the essay tab to retry.",true);
+  }
+ })().finally(()=>{archivePromise=null});
+ return archivePromise;
 }
 function langUI(){
  const lang=state.lang;
