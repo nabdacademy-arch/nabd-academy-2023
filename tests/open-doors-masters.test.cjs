@@ -89,7 +89,7 @@ for(const v of ["home","single","multi","written","oral","simulation","curriculu
 for(const subject of ["chemistry","biology","medicine"])
  assert.ok(html.includes('data-subject="'+subject+'"'));
 assert.match(html,/open-doors-masters-bank\.js\?v=1/);
-assert.match(html,/open-doors-masters\.js\?v=1/);
+assert.match(html,/open-doors-masters\.js\?v=2/);
 assert.match(html,/open-doors-masters\.css\?v=1/);
 assert.match(bachelor,/href="open-doors-masters\.html"/,"One-click link in existing bachelor trainer");
 assert.match(app,/launchPublicMasters\(\)/,"Public guest launch");
