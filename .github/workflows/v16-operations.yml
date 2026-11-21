@@ -41,7 +41,8 @@ jobs:
           node --check assets/js/operations-suite.js
           node tests/operations-v16-integrity.test.mjs
   browser:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 does not support the new Ubuntu 26.04 runner.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
