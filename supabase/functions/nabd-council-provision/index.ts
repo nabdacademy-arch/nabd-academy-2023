@@ -67,7 +67,15 @@ Deno.serve(async (req:Request)=>{
         .select("id,email,full_name,role").ilike(field,"%"+query+"%")
         .order("created_at",{ascending:false}).limit(15);
       if(error)return fail("Could not search Academy accounts",500);
-      return reply({accounts:data||[]});
+      // Profile email is editable: show and match only the canonical verified Auth email.
+      const verified=await Promise.all((data||[]).map(async p=>{
+        const {data:identity,error:identityError}=await admin.auth.admin.getUserById(p.id);
+        if(identityError||!identity.user)return null;
+        const realEmail=String(identity.user.email||"").toLowerCase();
+        if(field==="email" && !realEmail.includes(query.toLowerCase()))return null;
+        return {id:p.id,email:realEmail,full_name:p.full_name,role:p.role};
+      }));
+      return reply({accounts:verified.filter(Boolean)});
     }
 
     if(action==="list"){
