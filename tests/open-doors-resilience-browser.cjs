@@ -31,7 +31,7 @@ const fs=require("node:fs");
   assert.match(await page.locator("#prompt").innerText(),/.{14,}/);
   await page.locator("#translateBtn").click();
   assert.equal(await page.locator("#promptTranslation").isVisible(),true,"local authored Arabic translation should work");
-  await page.locator("#options input[type=radio]").first().check();
+  await page.locator("#options input[type=radio],#options input[type=checkbox]").first().check();
   await page.locator("#checkBtn").click();
   assert.equal(await page.locator("#feedback").isVisible(),true);
   assert.equal(await page.locator("#kAnswered").innerText(),"1");
