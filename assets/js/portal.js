@@ -1188,6 +1188,7 @@ async function handleSignUp(event) {
     $("#signUpStatus");
 
 
+  if (button?.disabled) return;
   setStatus(status, "");
 
 
@@ -1265,10 +1266,11 @@ async function handleSignUp(event) {
     }
 
 
-    if (
-      data?.session &&
-      data?.user
-    ) {
+    if (!data?.user) {
+      throw new Error("Could not confirm the registration request. Check your inbox before trying again.");
+    }
+
+    if (data.session) {
       await loadDashboard(
         data.user
       );
@@ -1279,7 +1281,7 @@ async function handleSignUp(event) {
 
     setStatus(
       status,
-      "Account created successfully.",
+      "Check your inbox for a confirmation link if email verification is required.",
       "success"
     );
 
