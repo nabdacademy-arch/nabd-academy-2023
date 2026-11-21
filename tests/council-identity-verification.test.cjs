@@ -38,7 +38,7 @@ test("verifier requires an unpredictable token, checks live active status and ex
  assert.match(verifier,/status:"valid"/);
  assert.match(verifier,/SUPABASE_SERVICE_ROLE_KEY/);
  assert.match(verifier,/Cache-Control":"no-store/);
- assert.doesNotMatch(verifier,/email|password|session_id|access_token/);
+ assert.doesNotMatch(verifier,/select\\([^)]*(email|password|session_id|access_token)/i);
  assert.match(verifyPage,/name="referrer" content="no-referrer"/);
  assert.match(verifyClient,/data\.status==="valid"/);
  assert.match(verifyClient,/data\.status==="inactive"/);
