@@ -19,7 +19,8 @@ const routes=[
 ["volunteer","✦","متابعة طلبات التطوع","Volunteer Applications","متابعة الطلبات المؤسسية","Institutional application status","application-status.html","leadership"],
 ["scholarships-manager","✦","مدير المنح الخارجية والدولية","International Scholarships Manager","بوابة خاصة للموظف المخوّل بنشر المنح الدولية وتعديلها","Restricted staff portal for international scholarship publishing","scholarship-manager.html","leadership"],
 ["scholarships-news","🌍","أخبار المنح الخارجية والدولية","International Scholarship News","المنح المنشورة وروابط التقديم الرسمية","Published opportunities and official application links","scholarships.html","student leadership research"],
-["partners","⌬","مركز الشراكات والأثر","Partnerships & Impact","مبادرات تعاون ودعم مقترحة","Proposed academic support initiatives","nabd-partners.html","leadership research"]
+["partners","⌬","مركز الشراكات والأثر","Partnerships & Impact","مبادرات تعاون ودعم مقترحة","Proposed academic support initiatives","nabd-partners.html","leadership research"],
+["councils","♛","بوابة المجالس الثمانية","Eight Councils Network","بوابة خاصة بالأعضاء المعيّنين في مجالس نبض","Private workspace for appointed NABD council members","councils.html","leadership"]
 ];
 const tracks=[
 {value:"foundations",ar:"أساسيات العلوم الطبية",en:"Medical foundations",url:"atlas/",arSteps:["حدد مفهومًا أساسيًا في التشريح أو الفسيولوجيا.","دوّن سؤالين قبل المحاضرة، واربطهما بدرس من أطلس نبض.","بعدها راجع المصدر واكتب ما فهمته وما لم يتضح بعد."],enSteps:["Choose a core anatomy or physiology topic.","Prepare two questions linked to an ATLAS lesson.","Afterward, review the source and record remaining questions."]},
