@@ -70,3 +70,24 @@ The browser cannot send custom unverified role, course, title, name or issue dat
 The Academy's **digital institutional seal is positioned above the named electronic signatory**. When the sole director/admin account issues a document, the system records a printed director attribution (`محمد خالد العرجا` when the current director profile display name is empty). Delegated issuers are attributed by their own registered profile names and never automatically given the director's signature. This is **typed electronic authorization**, not an imitation of a handwritten personal signature. Uploading a genuine signature graphic would require the director's explicit provision and consent. Do not present the mark as a government-issued cryptographic signature.
 
 QR and CODE128 are encoded in-browser with pinned scripts; if either is unavailable, the print action stays disabled rather than silently producing an unverifiable certificate. The printable layout remains fully bilingual even when shown on a small phone; choose Print → Save as PDF to create an A4 original.
+
+## Bilingual names and blue ink seal (v5)
+
+This update answers user feedback on an actual NABD statement printout without changing the six institutional templates, the issue numbers, the timestamp source, the digital issuer's identity, or the QR/CODE128 verification system.
+
+- **Both names on one paper**: the Arabic registered name comes unchanged from the Academy account; the English spelling must be **confirmed by the account holder or supported by a document** and entered by the authorized issuer. NABD has no independent English legal-name field and therefore does not guess/transliterate names into an official document.
+- **Both dates on one paper**: the same database `issued_at` appears in Arabic and English at an enlarged, legible size, using Palestine's timezone (`Asia/Hebron`). A print never changes its original issue date.
+- The big Arabic and English titles stay in the heading. The actual Arabic and English paragraphs begin immediately with their institutional attestations; no repeated `ARABIC TEXT` or `ENGLISH VERSION` headings interrupt the letter.
+- The Academy-specific seal is large, blue, circular, and uses a lightly irregular ink-style impression with readable Arabic and English lettering. It is **an Academy digital stamp, not a government seal**. It remains above the issuer/director's typed electronic authorization.
+- PDF and paper print retain the original reference number, QR link, barcode, and verified course/role evidence.
+
+### Issuing a new document
+After selecting the account, enter the **confirmed English spelling** in the new field, check the confirmation box, then issue. The backend validates the spelling and confirmation, snapshots it alongside the original Arabic account name, and records the authenticated issuer's ID/time. The field is deliberately not generated from an unverified English guess.
+
+### Reprinting an existing document
+Open the historic document from the register. If it was issued before English names were supported, a one-time **Add English name** editor appears under the preview. The original authorized issuer or an administrator can enter the holder-confirmed spelling once. After saving, the bilingual print button is available. The original reference number, Arabic name, issue date, QR token, and academic evidence do **not** change. Once set, the English spelling cannot be silently overwritten; correction requires a new appropriately authorized document.
+
+The public QR verification remains anonymous, showing only document number, type, timestamp and status, **never names or course details**.
+
+### Release checks
+The project CI runs `tests/official-documents-english-name-ink.test.cjs` alongside existing document and gateway tests. Complete a manual mobile screenshot and physical QR/barcode scan with a consenting test record before bulk issuing.
