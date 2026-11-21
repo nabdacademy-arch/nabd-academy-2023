@@ -34,7 +34,7 @@
     {value:"closed",ar:"مغلق",en:"Closed"}
   ];
   const titles = {
-    overview:["لوحة القيادة","Leadership dashboard"],
+    overview:["لوحة قيادة المجالس","Councils leadership dashboard"],
     records:["سجل أعمال المجالس","Councils work register"],
     compose:["إنشاء سجل جديد","Create council record"],
     members:["إدارة عضويات المجالس","Manage council members"]
@@ -94,16 +94,42 @@
   }
   function renderCouncilGrid(){
     const target=$("#council-grid");
-    target.innerHTML=councils.map((c,i)=>{
+    target.innerHTML=councils.map(c=>{
       const allowed=canAccess(c.code);
       const own=ownMemberships().find(m=>m.council_code===c.code);
-      const foot=allowed?(state.isAdmin&&!own?T("إشراف الإدارة ←","Administrator access →"):positionName(own?.position||"member")+" ↗"):T("غير مكلّف · وصول مقيد","Not appointed · restricted");
-      return '<button type="button" class="council-card" style="--accent:'+c.color+';--glow:'+c.color+'22" '+(allowed?'data-council="'+c.code+'"':'disabled aria-disabled="true"')+'><span class="council-icon">'+c.icon+'</span><h3>'+esc(state.lang==="ar"?c.ar:c.en)+'</h3><p>'+esc(state.lang==="ar"?c.arDesc:c.enDesc)+'</p><small>'+esc(foot)+'</small></button>';
+      const councilName=state.lang==="ar"?c.ar:c.en;
+      const summary=state.lang==="ar"?c.arDesc:c.enDesc;
+      const label=allowed
+        ? (state.isAdmin&&!own?T("إشراف الإدارة","Administration"):T("فتح المجلس","Open council"))
+        : T("غير مكلّف","Restricted access");
+      // Each council illustration is local, lightweight and decorative.
+      // Records still load through authenticated Supabase requests with RLS.
+      const art="assets/images/councils/"+c.code+".svg";
+      return '<button type="button" class="council-card" style="--accent:'+c.color+'" '
+        +(allowed?'data-council="'+c.code+'"':'disabled aria-disabled="true"')
+        +' aria-label="'+esc(councilName+(allowed?"":T(" - دخول مقيد"," - Restricted")))+'">'
+        +'<span class="council-art" aria-hidden="true"><img loading="lazy" decoding="async" width="760" height="340" alt="" src="'+art+'"></span>'
+        +'<span class="council-content"><span class="council-icon" aria-hidden="true">'+esc(c.icon)+'</span>'
+        +'<span class="council-text"><h3>'+esc(councilName)+'</h3><p>'+esc(summary)+'</p>'
+        +'<span class="council-foot">'+esc(label)+' <span aria-hidden="true">←</span></span></span></span>'
+        +'<span class="council-arrow" aria-hidden="true">‹</span>'
+        +'</button>';
     }).join("");
-    $$("[data-council]").forEach(btn=>btn.addEventListener("click",()=>{state.councilFilter=btn.dataset.council;$("#filter-council").value=state.councilFilter;setTab("records");}));
+    $$("[data-council]").forEach(btn=>btn.addEventListener("click",()=>{
+      state.councilFilter=btn.dataset.council;
+      $("#filter-council").value=state.councilFilter;
+      setTab("records");
+    }));
   }
   function renderStats(){
-    $("#stat-memberships").textContent=state.isAdmin ? String(visibleCouncils().length) : String(ownMemberships().length);
+    // Show real active appointments, not the number of councils available to admins.
+    const count=state.isAdmin
+      ? state.memberships.filter(m=>m.active).length
+      : ownMemberships().length;
+    $("#stat-memberships").textContent=String(count);
+    $("#stat-memberships-label").textContent=state.isAdmin
+      ? T("العضويات النشطة","Active appointments")
+      : T("عضوياتك النشطة","Your active appointments");
     $("#stat-records").textContent=String(state.records.length);
     $("#stat-tasks").textContent=String(state.records.filter(r=>r.kind==="task"&&["open","in_progress"].includes(r.status)).length);
   }
