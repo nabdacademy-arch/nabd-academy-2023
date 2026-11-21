@@ -444,10 +444,9 @@ async function loadCertificates(user) {
    LOAD CLAIMS
    ========================================================= */
 
-async function loadClaims(user) {
-  if (!window.nabdSupabase || !user?.id) {
-    return [];
-  }
+async function loadClaims(user, fallback = []) {
+  if (!user?.id) return [];
+  if (!window.nabdSupabase) return fallback;
 
   try {
     const { data, error } =
@@ -462,16 +461,16 @@ async function loadClaims(user) {
 
     if (error) {
       console.warn(error);
-      return [];
+      return fallback;
     }
 
     return Array.isArray(data)
       ? data
-      : [];
+      : fallback;
 
   } catch (error) {
     console.error(error);
-    return [];
+    return fallback;
   }
 }
 
@@ -1073,8 +1072,15 @@ async function handleCertificateClaim(event) {
     );
 
 
-    const claims = await loadClaims(owner);
-    if (!isCurrent()) return;
+    // The insert succeeded even if the following list refresh loses its connection.
+    state.claims = [
+      { certificate_id: certificateId, status: "pending" },
+      ...state.claims.filter(claim => normalizeCertificateId(claim.certificate_id) !== certificateId)
+    ];
+    renderClaims();
+
+    const claims = await loadClaims(owner, state.claims);
+    if (!isCurrent() || claims === state.claims) return;
     state.claims = claims;
 
 
