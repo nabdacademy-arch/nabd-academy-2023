@@ -178,6 +178,7 @@ function init(){
  renderCouncils();mode("new");
  $("ncg-create-form").addEventListener("submit",create);
  $("ncg-generate").addEventListener("click",generate);
+ $("ncg-toggle-password").addEventListener("click",()=>{const el=$("ncg-password");const show=el.type==="password";el.type=show?"text":"password";$("ncg-toggle-password").textContent=show?"إخفاء كلمة المرور":"إظهار كلمة المرور";$("ncg-toggle-password").setAttribute("aria-pressed",String(show));});
  $("ncg-search").addEventListener("click",search);
  $("ncg-assign").addEventListener("click",assign);
  $("ncg-refresh").addEventListener("click",()=>refreshMembers());
