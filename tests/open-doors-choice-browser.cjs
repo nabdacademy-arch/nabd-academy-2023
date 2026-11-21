@@ -36,7 +36,7 @@ export function createClient(){
  const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
  const page=await browser.newPage({viewport:{width:1180,height:780},acceptDownloads:true});
  const errors=[];page.on("pageerror",e=>errors.push(String(e)));
- await page.route("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm",r=>
+ await page.route("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2*/+esm",r=>
   r.fulfill({status:200,contentType:"text/javascript",headers:{"Access-Control-Allow-Origin":"*"},body:fakeModule}));
  await page.route(/https?:\/\/(?!127\.0\.0\.1:8123|cdn\.jsdelivr\.net)/,r=>r.abort());
  try{

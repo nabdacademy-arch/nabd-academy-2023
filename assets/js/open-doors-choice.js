@@ -2,9 +2,9 @@
  * Original NABD bank + public read-only Supabase question bank. Official samples are linked,
  * never passed off as official reused questions. Selection and grading are local.
  */
-import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const db=createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
- {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const dbPromise=import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/+esm")
+ .then(({createClient})=>createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
+ {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})).catch(()=>null);
 const BANK=window.OpenDoorsChoiceBank;
 const $=id=>document.getElementById(id);
 const SUBJECTS=["chemistry","biology","medicine"];
@@ -41,6 +41,8 @@ async function readExisting(){
  if(loading)return loading;
  loading=(async()=>{
   // Public read-only Open Doors bank: no email, password, or user session required.
+  const db=await dbPromise;
+  if(!db)throw Error("BANK_UNAVAILABLE");
   const res=await db.from("open_doors_questions")
    .select("id,subject,kind,topic,difficulty,question,options,answers,explanation,origin,source_note")
    .in("kind",["single","multi"]).in("subject",SUBJECTS).limit(400);
@@ -136,6 +138,7 @@ async function switchTranslation(ctx){
  const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ تحميل الترجمة العربية المحفوظة…");
  try{
   // Cached database translations are public read-only; paid AI translation is admin-only.
+  const db=await dbPromise;if(!db)throw Error("TRANSLATIONS_OFFLINE");
   const {data:t,error}=await db.from("open_doors_question_translations")
    .select("question_ar,options_ar,explanation_ar,rubric_ar").eq("question_id",q.dbId).maybeSingle();
   if(error||!t)throw Error("SAVED_TRANSLATION_MISSING");
@@ -253,13 +256,18 @@ function exportReport(ctx){
 }
 async function start(ctx){
  const btn=$(ctx.id+"Start");btn.disabled=true;
- setStatus(ctx,"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
- let archiveAllowed=true;
- try{await readExisting()}catch(err){archiveAllowed=false;
-  setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
- }
  const subject=$(ctx.id+"Subject").value,source=$(ctx.id+"Source").value;
  const countOption=$(ctx.id+"Count").value;
+ setStatus(ctx,source==="new"||source==="generated"
+  ?"يجري إعداد جولة محلية من أسئلة نبض دون انتظار الشبكة…"
+  :"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
+ // Purely local original or generated questions must never wait for the network.
+ let archiveAllowed=source==="archive"||source==="mixed";
+ if(archiveAllowed){
+  try{await readExisting()}catch(err){archiveAllowed=false;
+   setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
+  }
+ }
  let pool=[];
  if(source==="new"||source==="mixed")pool.push(...BANK.sample(ctx.kind,subject));
  if(archiveAllowed&&(source==="archive"||source==="mixed"))pool.push(...existing.filter(x=>x.kind===ctx.kind&&(subject==="all"||x.subject===subject)));
