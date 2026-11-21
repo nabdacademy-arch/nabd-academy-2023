@@ -133,11 +133,12 @@ async function switchTranslation(ctx){
  const cached=trans(ctx,q);
  if(cached){renderChoices(ctx);renderResult(ctx);return}
  if(!q.dbId){setStatus(ctx,"هذه المسألة بالإنجليزية فقط حاليًا؛ الأسئلة الجديدة متاحة باللغتين.",true);return}
- const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ ترجمة السؤال والاختيارات والشرح إلى العربية…");
+ const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ تحميل الترجمة العربية المحفوظة…");
  try{
-  const {data,error}=await db.functions.invoke("open-doors-translate",{body:{question_id:q.dbId}});
-  if(error||!data?.ok||!data.translation)throw Error("TRANSLATION_UNAVAILABLE");
-  const t=data.translation;
+  // Cached database translations are public read-only; paid AI translation is admin-only.
+  const {data:t,error}=await db.from("open_doors_question_translations")
+   .select("question_ar,options_ar,explanation_ar,rubric_ar").eq("question_id",q.dbId).maybeSingle();
+  if(error||!t)throw Error("SAVED_TRANSLATION_MISSING");
   if(!Array.isArray(t.options_ar)||t.options_ar.length!==q.options.length||
      typeof t.question_ar!=="string"||!t.question_ar.trim())throw Error("INCOMPLETE_TRANSLATION");
   ctx.translation.set(q.id,t);
@@ -146,7 +147,7 @@ async function switchTranslation(ctx){
   setStatus(ctx,"تمت الترجمة. عند اختلاف مصطلح علمي راجع السؤال الإنجليزي الأصلي.");
  }catch(err){
   if(current(ctx)?.q.id===q.id){
-   setStatus(ctx,"تعذرت الترجمة الآلية حاليًا. السؤال الإنجليزي والتصحيح يستمران بالعمل.",true);
+   setStatus(ctx,"لا توجد ترجمة عربية محفوظة لهذا السؤال؛ استخدم بنك الأسئلة الجديدة المؤلفة باللغتين.",true);
   }
  }finally{btn.disabled=false}
 }
