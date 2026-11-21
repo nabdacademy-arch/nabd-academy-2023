@@ -3,10 +3,10 @@
  * Static 81-question master's bank + parameterized generators, free guest access,
  * timed 43 written + one oral simulation, true-key single/multi scoring.
  */
-import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const db=createClient("https://zsmmmljgguycrvyrmakl.supabase.co",
+const dbPromise=import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/+esm")
+ .then(({createClient})=>createClient("https://zsmmmljgguycrvyrmakl.supabase.co",
  "sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",
- {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+ {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})).catch(()=>null);
 const B=window.NabdOpenDoorsMasters;
 if(!B)throw Error("MASTERS_BANK_NOT_LOADED");
 const $=id=>document.getElementById(id);
@@ -384,6 +384,7 @@ async function AIgrade(qw,requireConsent){
  const q=qw.q;
  if(requireConsent!==true)throw Error("CONSENT_REQUIRED");
  if(qw.text.trim().length<12&&!qw.photo)throw Error("ANSWER_REQUIRED");
+ const db=await dbPromise;if(!db)throw Error("AI_UNAVAILABLE_OFFLINE");
  const user=await db.auth.getUser();
  if(user.error||!user.data?.user)throw Error("AUTH_REQUIRED");
  const image=qw.photo?await imageData(qw.photo):null;
