@@ -108,14 +108,14 @@ function showDashboard() {
 }
 
 
-function normalizeProgress(value) {
+function normalizeProgress(value, allowFraction = false) {
   let progress = Number(value);
 
   if (!Number.isFinite(progress)) {
     progress = 0;
   }
 
-  if (progress > 0 && progress <= 1) {
+  if (allowFraction && progress > 0 && progress <= 1) {
     progress *= 100;
   }
 
@@ -129,13 +129,14 @@ function normalizeProgress(value) {
 
 
 function enrollmentProgress(enrollment) {
-  return normalizeProgress(
-    enrollment.progress_percent ??
-    enrollment.progress ??
-    enrollment.completion_percent ??
-    enrollment.percentage ??
-    0
-  );
+  if (enrollment.progress_percent != null) {
+    return normalizeProgress(enrollment.progress_percent);
+  }
+  if (enrollment.progress != null) {
+    // Older records may store progress as a fraction of the course.
+    return normalizeProgress(enrollment.progress, true);
+  }
+  return normalizeProgress(enrollment.completion_percent ?? enrollment.percentage ?? 0);
 }
 
 
