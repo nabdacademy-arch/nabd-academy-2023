@@ -233,3 +233,352 @@ main{max-width:1230px;padding:25px 17px 70px;margin:auto}.doc-hero{position:rela
  .sheet-linear-code{max-width:200px;}
  .sheet-bottom{margin-top:7px;padding-top:7px;}
 }
+
+
+/* NABD Official Documents v4 — legible bilingual A4 typography, credible blue digital Academy seal.
+   Existing content, issuance numbers, signatures, QR and CODE128 remain unchanged. */
+.official-sheet{
+  background:#fffdf8;
+  color:#172e3a;
+}
+.sheet-frame{
+  background:
+    linear-gradient(170deg,rgba(231,238,242,.21),rgba(255,255,255,0) 18%),
+    #fffdf8;
+  border-color:#af925d;
+  outline-color:#d1b685;
+}
+.sheet-frame:before{
+  color:rgba(15,67,109,.035);
+  font-size:250px;
+}
+.sheet-frame:after{border-color:rgba(29,83,126,.23)}
+.sheet-header{
+  border-bottom:2px solid rgba(26,74,111,.24);
+  padding-bottom:13px;
+}
+.sheet-logo strong{font-size:21px;font-weight:900;color:#102c3e;}
+.sheet-logo small{font-size:11px;font-weight:800;color:#4f6270;letter-spacing:.04em}
+.sheet-official{
+  display:grid;
+  gap:3px;
+  text-align:left;
+  color:#31506a;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:0;
+}
+.sheet-official small{
+  display:block;
+  font:700 10px/1.45 Arial,system-ui,sans-serif;
+  letter-spacing:.045em;
+  color:#596d77;
+}
+.sheet-ornament{margin:11px 0 7px;color:#9b824c;}
+.sheet-document-header{
+  border-bottom:1px solid rgba(180,149,92,.34);
+  padding-bottom:12px;
+}
+.sheet-document-header>span#sheet-kicker{
+  font-size:12px;
+  letter-spacing:.02em;
+  font-weight:850;
+  color:#78613a;
+}
+.sheet-document-header h2{
+  font-size:clamp(36px,4.6vw,44px);
+  color:#102d40;
+  line-height:1.42;
+  margin:6px 0 0;
+  font-weight:900;
+}
+.sheet-document-header>p#sheet-subtitle{
+  font:800 17px/1.5 Georgia,Arial,sans-serif;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+  color:#173c53;
+  margin:1px 0 5px;
+}
+.sheet-bilingual-mark{
+  font:750 10.5px/1.5 Tahoma,Arial,sans-serif;
+  color:#6d5739;
+  letter-spacing:.025em;
+}
+.sheet-person{
+  gap:16px;
+  border-top:0;
+  border-bottom:2px solid rgba(188,156,101,.55);
+  padding:12px 0 14px;
+  margin-top:0;
+}
+.sheet-person div>span{
+  font-size:13px;
+  color:#335568;
+}
+.sheet-person em{
+  font:700 12px/1.3 Arial,sans-serif;
+  color:#547084;
+}
+.sheet-person strong{font-size:21px;color:#123245;}
+.sheet-person small{
+  font:650 12px/1.4 Georgia,Arial,sans-serif;
+  color:#38596b;
+}
+.sheet-verified-details{
+  gap:0;
+  margin-top:12px;
+  padding:11px 15px;
+  background:linear-gradient(90deg,rgba(237,242,244,.75),rgba(245,248,249,.85));
+  border-inline-start:4px solid #3272a3;
+  border-radius:5px;
+}
+.evidence-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:8px;
+  padding-bottom:7px;
+  margin-bottom:2px;
+  border-bottom:1px solid #afc5d4;
+}
+.evidence-heading strong{
+  color:#173e59;
+  font-size:14px;
+  font-weight:900;
+}
+.evidence-heading small{
+  color:#3a607a;
+  font:750 11px/1.4 Arial,system-ui,sans-serif;
+  letter-spacing:.02em;
+}
+.evidence-row{
+  grid-template-columns:minmax(125px,.46fr) minmax(0,1fr);
+  gap:12px;
+  border-color:rgba(94,126,151,.23);
+  padding:6px 0;
+}
+.evidence-row b{font-size:12px;color:#234860;}
+.evidence-row small{
+  font:650 11px/1.6 Arial,system-ui,sans-serif;
+  color:#416074;
+}
+.evidence-value strong{
+  font-size:13px;
+  line-height:1.5;
+  color:#183746;
+}
+.evidence-value small{font-size:12px;color:#345767;}
+.sheet-body{
+  margin:15px 0 10px;
+  gap:15px;
+  line-height:1.95;
+  font-size:15px;
+}
+.bilingual-text{
+  padding:2px 14px 6px;
+  break-inside:avoid;
+}
+.bilingual-text--ar{
+  border-inline-start:4px solid #b49259;
+  color:#263e47;
+  text-align:justify;
+  background:rgba(244,239,226,.23);
+}
+.bilingual-text--en{
+  border-left:4px solid #2c6f9f;
+  background:#f0f5f8;
+  color:#263f51;
+  font-family:Georgia,"Times New Roman",serif;
+  text-align:left;
+}
+.bilingual-text h3{
+  margin:0 0 8px;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:0;
+}
+.bilingual-text--en h3{
+  color:#24516d;
+  font:800 13px/1.5 Georgia,Arial,serif;
+}
+.bilingual-text p{
+  font-size:15px;
+  line-height:1.94;
+  margin:0 0 10px;
+  font-weight:500;
+}
+.bilingual-text--en p{
+  font-size:15px;
+  line-height:1.8;
+}
+.sheet-note{
+  font-size:11px;
+  line-height:1.65;
+  color:#52656f;
+  padding-top:9px;
+  border-top:1px solid rgba(70,98,114,.19);
+}
+.sheet-footer{
+  grid-template-columns:minmax(0,1fr) 205px;
+  gap:20px;
+  padding-top:12px;
+  align-items:end;
+}
+.signature-stack{gap:1px;}
+.signature-stack .institution-seal{
+  width:156px;
+  height:156px;
+  flex-shrink:0;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:none;
+  transform:rotate(-8deg);
+  color:#14599f;
+  opacity:.97;
+  filter:contrast(1.09);
+  margin-bottom:-9px;
+  position:relative;
+  z-index:2;
+}
+.academy-blue-seal{
+  width:100%;
+  height:100%;
+  display:block;
+  overflow:visible;
+  color:#1259a0;
+}
+.signature-stack .issue-signature{
+  border-top:1px solid #255b86;
+  gap:3px;
+  padding-top:9px;
+}
+.issue-signature>span{
+  font-size:12px;
+  font-weight:900;
+  color:#1a4566;
+}
+.issue-signature>strong{
+  font-size:25px;
+  line-height:1.42;
+  color:#103f6d;
+  font-weight:900;
+}
+.issue-signature small{
+  font-size:10px;
+  line-height:1.5;
+  color:#436278;
+}
+.issue-signature #sheet-signatory-en{
+  font:800 10px/1.4 Arial,sans-serif;
+  letter-spacing:.025em;
+}
+.sheet-verification{gap:8px;}
+.sheet-qr-wrap>div{width:105px;height:105px;border:2px solid #b2c5ce;}
+.sheet-qr-wrap small{font-size:10px;color:#304f62;}
+.sheet-linear-code{
+  max-width:204px;
+  width:100%;
+  border:1px solid #a0b4bf;
+  background:#fff;
+}
+.sheet-bottom{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:2px solid #bfa779;
+}
+.sheet-bottom strong{font-size:14px;color:#173b52;}
+.sheet-bottom small{font-size:10px;font-weight:700;}
+.sheet-bottom>span{font-size:10.5px;color:#435864;line-height:1.6;}
+.sheet-bottom>span span{font-size:10.5px;}
+/* Keep phone's full-page view; enable full-size horizontal scrolling on demand. */
+.print-area.doc-preview-zoom{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  padding-bottom:15px;
+}
+.print-area.doc-preview-zoom .official-sheet{
+  width:210mm;
+  max-width:none;
+  min-width:210mm;
+  margin-inline:0;
+}
+@media(max-width:580px){
+ .sheet-logo strong{font-size:13px;}
+ .sheet-logo small{font-size:8px;}
+ .sheet-official{font-size:8px;}
+ .sheet-official small{font-size:7px;}
+ .sheet-document-header h2{font-size:27px;}
+ .sheet-document-header>p#sheet-subtitle{font-size:12px;}
+ .sheet-document-header>span#sheet-kicker{font-size:9px;}
+ .sheet-person strong{font-size:14px;}
+ .sheet-person em{font-size:8px;}
+ .sheet-person small{font-size:9px;}
+ .evidence-heading strong{font-size:10px;}
+ .evidence-heading small{font-size:8px;}
+ .evidence-row{grid-template-columns:1fr 1.3fr;gap:4px;padding:3px 0;}
+ .evidence-row b{font-size:9px;}
+ .evidence-row small{font-size:8px;}
+ .evidence-value strong{font-size:10px;}
+ .evidence-value small{font-size:9px;}
+ .bilingual-text p,.bilingual-text--en p{font-size:12px;line-height:1.65;}
+ .bilingual-text h3,.bilingual-text--en h3{font-size:10px;}
+ .sheet-body{gap:9px;}
+ .sheet-note{font-size:9px;}
+ .sheet-footer{grid-template-columns:minmax(0,1fr) 115px;gap:7px;}
+ .signature-stack .institution-seal{width:112px;height:112px;margin-bottom:-5px;}
+ .issue-signature>strong{font-size:16px;}
+ .issue-signature>span{font-size:9px;}
+ .issue-signature small{font-size:7.5px;}
+ .sheet-qr-wrap>div{width:85px;height:85px;}
+ .sheet-bottom>span,.sheet-bottom>span span{font-size:8px;}
+}
+/* Print dimensions are kept at real A4 sizes regardless of the mobile screen. */
+@media print{
+ @page{size:A4 portrait;margin:0}
+ .print-area.doc-preview-zoom{width:210mm;max-width:none;overflow:visible;padding:0;}
+ .print-area.doc-preview-zoom .official-sheet{width:210mm;max-width:none;min-width:0;margin:0;}
+ .official-sheet{height:297mm;min-height:297mm;overflow:hidden;}
+ .sheet-frame{
+   height:281mm;min-height:281mm;
+   padding:9mm 10mm 7mm;
+   overflow:hidden;
+ }
+ .sheet-logo strong{font-size:19px;}
+ .sheet-logo small{font-size:10px;}
+ .sheet-official{font-size:10px;}
+ .sheet-document-header h2{font-size:36px;}
+ .sheet-document-header>p#sheet-subtitle{font-size:17px;}
+ .sheet-person strong{font-size:18px;}
+ .sheet-person em,.sheet-person small{font-size:11px;}
+ .sheet-verified-details{margin-top:8px;padding:8px 12px;}
+ .evidence-heading strong{font-size:12px;}
+ .evidence-heading small{font-size:10px;}
+ .evidence-row{padding:4px 0;gap:9px;}
+ .evidence-row b{font-size:11px;}
+ .evidence-row small{font-size:10px;}
+ .evidence-value strong{font-size:12px;}
+ .evidence-value small{font-size:11px;}
+ .sheet-body{gap:11px;margin:10px 0 7px;}
+ .bilingual-text p,.bilingual-text--en p{font-size:13.5px;line-height:1.7;margin-bottom:7px;}
+ .bilingual-text h3,.bilingual-text--en h3{font-size:12px;}
+ .sheet-note{font-size:10px;}
+ .sheet-footer{grid-template-columns:minmax(0,1fr) 205px;gap:15px;padding-top:8px;}
+ .signature-stack .institution-seal{width:140px;height:140px;margin-bottom:-7px;}
+ .issue-signature>span{font-size:11px;}
+ .issue-signature>strong{font-size:22px;}
+ .issue-signature small{font-size:9px;}
+ .sheet-qr-wrap>div{width:100px;height:100px;}
+ .sheet-bottom{margin-top:8px;padding-top:9px;}
+ .sheet-bottom>span,.sheet-bottom>span span{font-size:9px;}
+ /* On a very rich record, prioritize fitting the entire verified statement on one page. */
+ .official-sheet.document-dense .evidence-row{padding:2px 0;}
+ .official-sheet.document-dense .bilingual-text p,
+ .official-sheet.document-dense .bilingual-text--en p{font-size:12.5px;line-height:1.55;margin-bottom:4px;}
+ .official-sheet.document-dense .sheet-verified-details{padding:5px 10px;}
+ .official-sheet.document-dense .sheet-footer{padding-top:4px;}
+}
