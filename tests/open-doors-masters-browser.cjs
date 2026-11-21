@@ -25,7 +25,7 @@ export function createClient(){
  const page=await browser.newPage({viewport:{width:1280,height:900},acceptDownloads:true});
  const errors=[];
  page.on("pageerror",e=>errors.push(String(e)));
- await page.route("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm",route=>route.fulfill({
+ await page.route("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2*/+esm",route=>route.fulfill({
   status:200,contentType:"text/javascript",headers:{"Access-Control-Allow-Origin":"*"},body:fakeModule
  }));
  await page.route(/https?:\/\/(?!127\.0\.0\.1:8123|cdn\.jsdelivr\.net)/,route=>route.abort());
