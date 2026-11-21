@@ -63,7 +63,7 @@ test("homepage has a clearly discoverable bilingual no-login card with both link
  assert.match(homepage,/assets\/css\/open-doors-public-home\.css\?v=1/);
  assert.match(homeStyle,/\.nabd-od-home-container/);
  assert.match(homeStyle,/@media\(max-width:660px\)/);
- assert.match(bachelor,/open-doors-choice\.js\?v=2/);
- assert.match(bachelor,/open-doors-essay\.js\?v=2/);
- assert.match(masters,/open-doors-masters\.js\?v=2/);
+ assert.match(bachelor,/open-doors-choice\.js\?v=3/);
+ assert.match(bachelor,/open-doors-essay\.js\?v=3/);
+ assert.match(masters,/open-doors-masters\.js\?v=3/);
 });
