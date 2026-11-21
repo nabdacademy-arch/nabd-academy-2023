@@ -8,7 +8,7 @@ const source = fs.readFileSync(require.resolve('../assets/js/scholarship-center.
 function manager(createClient) {
   const nodes = new Map();
   function get(id) {
-    if (!nodes.has(id)) nodes.set(id, {handlers:{}, replaceChildren(){}, append(){}, classList:{add(){},remove(){}},
+    if (!nodes.has(id)) nodes.set(id, {handlers:{}, hidden:true, reset(){}, replaceChildren(){}, append(){}, classList:{add(){},remove(){}},
       addEventListener(event, fn){this.handlers[event]=fn}});
     return nodes.get(id);
   }
@@ -195,4 +195,35 @@ test('staff sign-in unlocks after an interruption and verifies the publisher bef
   assert.equal(roleReads,1);
   assert.equal(get('sch-dashboard').hidden,false);
   assert.equal(button.disabled,false);
+});
+
+for(const signal of [false,true])test('logout confirmation via '+(signal?'auth event':'successful response'),async()=>{
+  const pending=[];
+  let notify;
+  const get=manager(()=>({auth:{
+    getUser:async()=>({data:{user:{id:'staff',email:'fixture@example.invalid'}}}),
+    onAuthStateChange(fn){notify=fn;},signOut:()=>new Promise((resolve,reject)=>pending.push({resolve,reject}))
+  },from(){return {select(){return this;},eq(){return this;},order(){return this;},
+    maybeSingle:async()=>({data:{active:true}}),limit:async()=>({data:[]})};}}));
+  await new Promise(setImmediate);
+  const logout=get('sch-logout'),retry=get('sch-retry-logout'),form=get('sch-login-form');
+  assert.equal(get('sch-dashboard').hidden,false);
+  const first=logout.handlers.click();
+  await logout.handlers.click();
+  assert.equal(pending.length,1);
+  assert.equal(get('sch-dashboard').hidden,true);
+  assert.equal(form.hidden,true);
+  pending.shift().resolve({error:Error('unconfirmed')});await first;
+  assert.equal(retry.hidden,false);
+  assert.match(get('sch-auth-status').textContent,/تعذر تأكيد/);
+  const second=retry.handlers.click();pending.shift().reject(Error('offline'));await second;
+  assert.equal(form.hidden,true);
+  const third=retry.handlers.click();
+  if(signal){notify('SIGNED_OUT');pending.shift().reject(Error('late response'));}
+  else pending.shift().resolve({error:null});
+  await third;
+  assert.equal(form.hidden,false);
+  assert.equal(retry.hidden,true);
+  assert.equal(get('sch-current-email').textContent,'');
+  assert.match(get('sch-auth-status').textContent,/Signed out/);
 });
