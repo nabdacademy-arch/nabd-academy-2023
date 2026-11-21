@@ -79,7 +79,7 @@ for(const sub of ["chemistry","biology","medicine"]){
 }
 assert.ok(B.SUBJECTS.biology.archive.length===2);
 assert.equal(B.SUBJECTS.medicine.degrees[0],"32.04.01 Public health");
-const tags=["mastersAuth","mastersLoginForm","masterApp","masterSubjectCards","masterPractice",
+const tags=["mastersAuth","masterApp","masterSubjectCards","masterPractice",
  "masterPracticeQuestion","masterPracticeCheck","masterPracticeModel","masterSimulation",
  "masterExamStart","masterExamWorkspace","masterExamOral","masterExamResults",
  "masterCurriculum","masterSources","masterProgress"];
@@ -89,10 +89,12 @@ for(const v of ["home","single","multi","written","oral","simulation","curriculu
 for(const subject of ["chemistry","biology","medicine"])
  assert.ok(html.includes('data-subject="'+subject+'"'));
 assert.match(html,/open-doors-masters-bank\.js\?v=1/);
-assert.match(html,/open-doors-masters\.js\?v=1/);
+assert.match(html,/open-doors-masters\.js\?v=2/);
 assert.match(html,/open-doors-masters\.css\?v=1/);
 assert.match(bachelor,/href="open-doors-masters\.html"/,"One-click link in existing bachelor trainer");
-assert.match(app,/\.from\("open_doors_questions"\)\.select\("id"\)\.limit\(1\)/,"Private academy authorization check");
+assert.match(app,/launchPublicMasters\(\)/,"Public guest launch");
+assert.doesNotMatch(html,/mastersLoginForm|mastersEmail|mastersPassword/,"No public login fields");
+assert.doesNotMatch(app,/signInWithPassword|authorize\(\)/,"No guest sign-in requirement");
 assert.match(app,/db\.functions\.invoke\("open-doors-essay-grade"/,"Existing secure essay grader");
 assert.match(app,/CONSENT_REQUIRED/,"No AI without opt in");
 assert.match(app,/readable===false/,"No fabricated grading for unreadable photo");
@@ -103,4 +105,4 @@ assert.doesNotMatch(app,/service_role|SUPABASE_SERVICE_ROLE_KEY|GROQ_API_KEY|GEM
 assert.match(css,/@media\(max-width:530px\)/);
 assert.match(css,/focus-visible/);
 assert.match(css,/prefers-reduced-motion/);
-console.log("PASS Master's lab: 81 bilingual authored questions, verified master's official links, parameter generators, independent 44-task mocks, 175+5 minute timings, explicit AI consent, guarded login, mobile and previous bachelor link.");
+console.log("PASS Master's lab: 81 bilingual authored questions, verified master's official links, parameter generators, independent 44-task mocks, 175+5 minute timings, self-assessment with protected AI disabled for guests, no login, mobile and previous bachelor link.");

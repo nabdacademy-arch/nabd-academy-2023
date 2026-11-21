@@ -1,0 +1,83 @@
+/* NABD Open Doors — free public scholarship practice entry from homepage. */
+.nabd-open-doors-public-home{
+  position:relative;
+  isolation:isolate;
+  padding:clamp(32px,5vw,58px) max(16px,calc((100vw - 1200px)/2));
+  background:linear-gradient(135deg,#072234,#103c4f 57%,#071e2c);
+  border-block:1px solid rgba(211,178,113,.45);
+  overflow:hidden;
+  color:#f7f4e9;
+}
+.nabd-open-doors-public-home:before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(circle at 8% 12%,rgba(218,174,91,.14),transparent 35%),
+    radial-gradient(circle at 96% 92%,rgba(66,189,175,.13),transparent 35%);
+  pointer-events:none;
+}
+.nabd-od-home-container{
+  width:min(100%,1200px);
+  margin:0 auto;
+  padding:clamp(21px,3.6vw,40px);
+  display:grid;
+  grid-template-columns:120px minmax(0,1fr);
+  gap:clamp(19px,3vw,38px);
+  align-items:center;
+  background:linear-gradient(125deg,rgba(7,27,43,.87),rgba(12,50,64,.73));
+  border:1px solid rgba(234,204,141,.66);
+  border-radius:24px;
+  box-shadow:0 26px 64px rgba(0,10,18,.28),inset 0 1px rgba(255,238,199,.14);
+}
+.nabd-od-home-seal{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  align-self:start;gap:7px;
+  width:112px;aspect-ratio:1;
+  color:#f1d392;
+  border:2px solid rgba(231,190,111,.9);
+  border-radius:50%;
+  background:rgba(10,31,44,.9);
+  box-shadow:0 0 0 8px rgba(214,175,99,.12),0 0 24px rgba(214,175,99,.15);
+  text-align:center;
+}
+.nabd-od-home-seal span{font-size:33px;line-height:1}
+.nabd-od-home-seal small{font:850 11px/1.35 system-ui,sans-serif;letter-spacing:.08em}
+.nabd-od-home-content{min-width:0}
+.nabd-od-home-eyebrow{color:#e6c58b;font:800 11px/1.5 system-ui,sans-serif;letter-spacing:.11em}
+.nabd-open-doors-public-home h2{
+  font-size:clamp(24px,3.4vw,36px);
+  line-height:1.45;
+  margin:8px 0 12px;
+  color:#fff3d8;
+}
+.nabd-open-doors-public-home p{
+  font-size:clamp(13px,1.4vw,16px);
+  line-height:1.95;margin:0;color:#dae9e9;
+}
+.nabd-od-home-pills,.nabd-od-home-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.nabd-od-home-pills span{
+  font-size:12px;line-height:1.65;
+  color:#f4dbb0;border-radius:30px;
+  border:1px solid rgba(231,195,126,.48);padding:5px 12px;
+  background:rgba(3,21,33,.46)
+}
+.nabd-od-home-button{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:50px;padding:11px 20px;border-radius:11px;
+  text-decoration:none!important;font-weight:900!important;font-size:14px;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.nabd-od-home-button:hover{transform:translateY(-2px)}
+.nabd-od-home-button:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.nabd-od-home-button.main{color:#122f40!important;border:1px solid #f6dca7;background:linear-gradient(120deg,#f6dda6,#d9b671);box-shadow:0 8px 20px rgba(15,24,31,.3)}
+.nabd-od-home-button.sub{color:#e5f9f5!important;border:1px solid #79d6c8;background:rgba(26,102,108,.41)}
+.nabd-open-doors-public-home .nabd-od-home-disclaimer{font-size:11px;line-height:1.85;color:#b8ced2;margin-top:14px}
+@media(max-width:660px){
+ .nabd-open-doors-public-home{padding:25px 12px}
+ .nabd-od-home-container{grid-template-columns:1fr;gap:17px;padding:24px 18px;border-radius:16px}
+ .nabd-od-home-seal{width:68px;height:68px;gap:0}
+ .nabd-od-home-seal span{font-size:23px}
+ .nabd-od-home-seal small{font-size:7px;letter-spacing:0}
+ .nabd-od-home-actions{flex-direction:column;align-items:stretch}
+ .nabd-od-home-button{width:100%;padding:13px}
+ .nabd-open-doors-public-home h2{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){.nabd-od-home-button{transition:none}}

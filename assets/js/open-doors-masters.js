@@ -1,6 +1,6 @@
 /* NABD Open Doors Master's Research Coach — independent practice only.
- * No fake official questions; no AI grading without explicit consent.
- * Static 81-question master's bank + parameterized generators, protected studio login,
+ * No fake official questions; public self-review does not invoke paid AI grading.
+ * Static 81-question master's bank + parameterized generators, free guest access,
  * timed 43 written + one oral simulation, true-key single/multi scoring.
  */
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -431,8 +431,8 @@ async function checkPractice(){
  const consent=el("label",undefined,"answer-option"),check=el("input");check.type="checkbox";
  consent.append(check,el("span",T("أوافق على إرسال إجابتي والصورة الاختيارية إلى مزود ذكاء اصطناعي خارجي للتدريب فقط.","I consent to sending the answer and optional image to a third-party AI provider for practice marking only.")));controls.append(consent);
  const gradeBtn=el("button",T("🤖 صحح تلقائيًا حسب المعايير","🤖 Grade with AI rubric"),"button gold");
- gradeBtn.type="button";controls.append(gradeBtn);
- const hint=append(controls,"p",T("عند عدم توفر خدمة AI يمكنك متابعة الحل بالمراجعة الذاتية، دون اختراع علامة.","If AI is unavailable you can use self-review; no mark is fabricated."),"warn");
+ gradeBtn.type="button";gradeBtn.disabled=true;gradeBtn.hidden=true;controls.append(gradeBtn);consent.hidden=true;
+ const hint=append(controls,"p",T("التصحيح الآلي المدفوع غير متاح في البوابة العامة؛ راجع النموذج وقيم إجابتك بنفسك مجانًا.","Paid AI grading is unavailable in the public portal. Use the worked solution and free self-review."),"warn");
  host.append(controls);
  gradeBtn.addEventListener("click",async()=>{
   if(!check.checked){hint.textContent=T("وافق أولًا على إرسال الإجابة إلى المزوّد.","Provide explicit consent first.");return}
@@ -617,7 +617,7 @@ function renderExamResults(){
    const consent=el("label",undefined,"answer-option");const checkbox=el("input");checkbox.type="checkbox";
    consent.append(checkbox,el("span",T("أوافق على معالجة الإجابة والصورة الاختيارية عبر مزود AI.","I consent to AI processing of this answer and optional image.")));section.append(consent);
    const ai=el("button",T("🤖 تصحيح تقديري","🤖 Provisional AI grading"),"button gold");
-   ai.type="button";
+   ai.type="button";ai.disabled=true;ai.hidden=true;consent.hidden=true;
    ai.addEventListener("click",async()=>{
     if(!checkbox.checked){note.textContent=T("يجب الموافقة صراحة على إرسال بيانات الإجابة.","Explicit consent is required.");return}
     ai.disabled=true;note.textContent=T("يجري تصحيح الخطوات…","Evaluating solution reasoning…");
@@ -647,31 +647,12 @@ function renderExamResults(){
  });
  root.append(downloadBtn);
 }
-async function authorize(){
- $("mastersLoginStatus").textContent=T("جارٍ التحقق من الحساب والصلاحيات...","Checking account and permissions...");
- const {data:{user},error}=await db.auth.getUser();
- if(error||!user){$("mastersAuth").hidden=false;$("masterApp").hidden=true;
-  $("masterLogout").hidden=true;$("mastersLoginStatus").textContent=T("سجّل الدخول إلى حساب الأكاديمية.","Sign in with your Academy account.");return false}
- const {data,error:check}=await db.from("open_doors_questions").select("id").limit(1);
- if(check||!data?.length){
-  $("mastersAuth").hidden=false;$("masterApp").hidden=true;$("masterLogout").hidden=true;
-  $("mastersLoginStatus").textContent=T("هذا الحساب لا يملك صلاحية بوابة تدريب المدير الحالية.","This account is not authorized for the founder's training portal.");return false}
- state.loggedIn=true;$("mastersAuth").hidden=true;$("masterApp").hidden=false;$("masterLogout").hidden=false;
+function launchPublicMasters(){
+ state.loggedIn=true;
+ $("mastersAuth").hidden=true;
+ $("masterApp").hidden=false;
  $("masterBankCount").textContent=String(B.questions.length);
- showView("home");return true;
+ showView("home");
 }
-$("mastersLoginForm").addEventListener("submit",async e=>{
- e.preventDefault();const email=$("mastersEmail").value.trim(),password=$("mastersPassword").value;
- $("mastersLoginStatus").textContent=T("تسجيل الدخول...","Signing in...");
- const {error}=await db.auth.signInWithPassword({email,password});
- $("mastersPassword").value="";
- if(error){$("mastersLoginStatus").textContent=T("فشل الدخول. راجع بيانات الحساب.","Sign-in failed; check the account credentials.");return}
- await authorize();
-});
-$("masterLogout").addEventListener("click",async()=>{
- stopExam();await db.auth.signOut();state.loggedIn=false;$("masterApp").hidden=true;
- $("mastersAuth").hidden=false;$("masterLogout").hidden=true;$("mastersPassword").value="";
- $("mastersLoginStatus").textContent=T("تم تسجيل الخروج.","Signed out.");
-});
 setLanguage("ar");
-authorize().catch(()=>{$("mastersLoginStatus").textContent=T("تعذر الاتصال حاليًا. أعد فتح الصفحة عند توفر الإنترنت.","Connection unavailable. Retry when online.")});
+launchPublicMasters();

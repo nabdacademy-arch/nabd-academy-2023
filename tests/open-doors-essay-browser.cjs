@@ -27,9 +27,9 @@ function query(table){
 export function createClient(){
  return {
   auth:{
-   getUser:async()=>({data:{user:{id:"mock-founder"}},error:null}),
+   getUser:async()=>({data:{user:null},error:null}),
    signOut:async()=>({error:null}),
-   signInWithPassword:async()=>({data:{user:{id:"mock-founder"}},error:null})
+   signInWithPassword:async()=>{throw Error("GUEST_MUST_NOT_SIGN_IN") }
   },
   from:query,
   functions:{invoke:async(name,{body})=>{
@@ -84,50 +84,34 @@ export function createClient(){
   assert.equal(await page.locator("#essayQuestionAr").isVisible(),true);
   await page.locator("#essayTranslate").click();
   assert.equal(await page.locator("#essayQuestionAr").isVisible(),false);
-  // Typed answer: opt in explicitly to grading; full four-criterion feedback.
-  await page.locator("#essayAnswer").fill("First compute moles using the balanced reaction. Then use molar mass 18 g/mol and explain the result.");
-  await page.locator("#essayGrade").click();
-  assert.match(await page.locator("#essayStatus").innerText(),/Consent|وافق/);
-  assert.equal(await page.evaluate(()=>window.__essayMockInvocations||0),0);
-  await page.locator("#essayConsent").check();
-  await page.locator("#essayGrade").click();
-  await page.locator("#essayFeedback").waitFor({state:"visible"});
-  assert.match(await page.locator("#essayFeedback").innerText(),/7\/10/);
-  assert.equal(await page.locator("#essayFeedback .essay-grade-breakdown>div").count(),4);
-  assert.equal(await page.evaluate(()=>window.__essayMockInvocations),1);
-  assert.equal(await page.evaluate(()=>Boolean(window.__essayMockBody?.image)),false);
-  const [download]=await Promise.all([
-    page.waitForEvent("download"),page.locator("#essayFeedback button").click()
-  ]);
-  assert.match(download.suggestedFilename(),/nabd-open-doors-essay-.*\.txt/);
-  // Photo from device and auto-transcription should not vanish when chosen.
-  await page.locator("#essayStart").click();
-  const image=await page.evaluate(()=>{
-   const canvas=document.createElement("canvas");canvas.width=600;canvas.height=350;
-   const c=canvas.getContext("2d");c.fillStyle="#fff";c.fillRect(0,0,600,350);
-   c.fillStyle="#111";c.font="bold 26px serif";c.fillText("H2 + O2 gives water",50,120);
-   c.fillText("n(H2O) x 18 g/mol",50,180);
-   return canvas.toDataURL("image/png").split(",")[1];
-  });
-  await page.locator("#essayImage").setInputFiles({name:"handwriting.png",mimeType:"image/png",buffer:Buffer.from(image,"base64")});
-  assert.equal(await page.locator("#essayPreview").isVisible(),true);
-  assert.match(await page.locator("#essayPhotoInfo").innerText(),/handwriting.png/);
-  await page.locator("#essayAnswer").fill("");
-  await page.locator("#essayConsent").check();
-  await page.locator("#essayGrade").click();
-  await page.locator("#essayFeedback").waitFor({state:"visible"});
-  assert.match(await page.locator("#essayFeedback").innerText(),/Handwritten student answer sample|AI transcription/);
-  assert.equal(await page.evaluate(()=>window.__essayMockBody?.image?.mime),"image/jpeg");
-  await page.screenshot({path:"essay-browser-results/essay-desktop.png"});
-  // Self-review works locally and never sends input to a provider.
-  const oldN=await page.evaluate(()=>window.__essayMockInvocations||0);
-  await page.locator("#essayStart").click();
+  // Public guest may use typed and photographed answers for self-review.
+  // No paid AI grading call is sent from the public portal.
+  assert.equal(await page.locator("#essayGrade").isVisible(),false);
+  await page.locator("#essayAnswer").fill("Balance the chemistry equation and show stoichiometric units and reasoning.");
   await page.locator("#essayReveal").click();
   assert.equal(await page.locator("#essaySelfRubric input[type=checkbox]").count(),4);
   await page.locator("#essaySelfRubric input[type=checkbox]").first().check();
   await page.locator("#essaySelfRubric button").click();
   assert.match(await page.locator("#essayFeedback").innerText(),/3\/10/);
-  assert.equal(await page.evaluate(()=>window.__essayMockInvocations||0),oldN);
+  assert.equal(await page.evaluate(()=>window.__essayMockInvocations||0),0);
+  const [download]=await Promise.all([
+    page.waitForEvent("download"),page.locator("#essayFeedback button").click()
+  ]);
+  assert.match(download.suggestedFilename(),/nabd-open-doors-essay-.*\.txt/);
+  await page.locator("#essayStart").click();
+  const image=await page.evaluate(()=>{
+   const canvas=document.createElement("canvas");canvas.width=600;canvas.height=350;
+   const c=canvas.getContext("2d");c.fillStyle="#fff";c.fillRect(0,0,600,350);
+   c.fillStyle="#111";c.font="bold 26px serif";c.fillText("H2 + O2 gives water",50,120);
+   return canvas.toDataURL("image/png").split(",")[1];
+  });
+  await page.locator("#essayImage").setInputFiles({name:"handwriting.png",mimeType:"image/png",buffer:Buffer.from(image,"base64")});
+  assert.equal(await page.locator("#essayPreview").isVisible(),true);
+  assert.match(await page.locator("#essayPhotoInfo").innerText(),/handwriting.png/);
+  await page.locator("#essayReveal").click();
+  assert.equal(await page.locator("#essaySelfRubric input[type=checkbox]").count(),4);
+  assert.equal(await page.evaluate(()=>window.__essayMockInvocations||0),0);
+  await page.screenshot({path:"essay-browser-results/essay-desktop.png"});
   // Multi-task question navigation and rounds.
   await page.locator("#essayMode").selectOption("three");
   await page.locator("#essayStart").click();
@@ -141,6 +125,6 @@ export function createClient(){
   assert.ok(overflow<=3,"Mobile layout horizontal overflow: "+overflow);
   await page.screenshot({path:"essay-browser-results/essay-mobile.png"});
   assert.deepEqual(errors,[],"No runtime errors in the existing Open Doors page or new essay lab");
-  console.log("PASS: Open Doors essay browser smoke — original tabs, official links, source-backed archives, translation, consent, typed/file answer, AI rubric, transcripts, local review, multi-round and mobile.");
+  console.log("PASS: Open Doors public essay practice — guest, archive, bilingual questions, typed/photo self-review, no paid AI requests and mobile.");
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

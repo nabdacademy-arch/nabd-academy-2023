@@ -1,4 +1,4 @@
-/* NABD Open Doors advanced written coach — founder's independent training studio.
+/* NABD Open Doors advanced written coach — public independent training studio.
  * Text/image graded by an authenticated Edge Function only with explicit consent.
  * No grade stored on the academy servers. Local typed drafts persist per-tab only. */
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -31,8 +31,7 @@ function normaliseArchive(q){
 async function loadArchive(){
  if(state.cacheLoaded)return;state.cacheLoaded=true;
  try{
-  const u=await db.auth.getUser();
-  if(u.error||!u.data?.user){status("سجل الدخول أولًا إلى بوابة نبض.","Sign in to NABD first.",true);return}
+  // The practice archive is now publicly readable. Auth is reserved for paid AI grading.
   const {data,error}=await db.from("open_doors_questions").select("id,subject,kind,topic,question,explanation,rubric,origin,source_note")
    .eq("kind","written").in("subject",allSubjects).limit(100);
   if(error)throw Error(error.message);

@@ -83,11 +83,12 @@ for(const name of ["choiceSingleQuick","choiceMultiQuick"]){
 }
 assert.match(html,/'essayLab','choiceSingle','choiceMulti'/,"All new tabs handled in original selectTab()");
 assert.match(html,/open-doors-choice-bank\.js\?v=1/);
-assert.match(html,/open-doors-choice\.js\?v=1/);
+assert.match(html,/open-doors-choice\.js\?v=2/);
 assert.match(html,/open-doors-choice\.css\?v=1/);
 assert.match(appJS,/\.from\("open_doors_questions"\)/);
 assert.match(appJS,/\.in\("kind",\["single","multi"\]\)/);
-assert.match(appJS,/db\.functions\.invoke\("open-doors-translate"/);
+assert.match(appJS,/\.from\("open_doors_question_translations"\)/,"Guests can view stored translations");
+assert.doesNotMatch(appJS,/functions\.invoke\("open-doors-translate"/,"Guest trainer must not invoke paid translations");
 assert.match(appJS,/renderResult\(ctx\)/);
 assert.match(appJS,/function exportReport/);
 assert.match(appJS,/if\(ctx\.kind==="single"\)/);

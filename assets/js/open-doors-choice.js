@@ -1,5 +1,5 @@
 /* NABD Open Doors — dedicated single-choice and multiple-choice practice, no new AI billing.
- * Original NABD bank + founder-only Supabase question bank. Official samples are linked,
+ * Original NABD bank + public read-only Supabase question bank. Official samples are linked,
  * never passed off as official reused questions. Selection and grading are local.
  */
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
@@ -40,13 +40,12 @@ function translateText(ctx,english,arabic){
 async function readExisting(){
  if(loading)return loading;
  loading=(async()=>{
-  const auth=await db.auth.getUser();
-  if(auth.error||!auth.data?.user)throw Error("SIGN_IN_REQUIRED");
+  // Public read-only Open Doors bank: no email, password, or user session required.
   const res=await db.from("open_doors_questions")
    .select("id,subject,kind,topic,difficulty,question,options,answers,explanation,origin,source_note")
    .in("kind",["single","multi"]).in("subject",SUBJECTS).limit(400);
   if(res.error)throw Error("BANK_UNAVAILABLE");
-  if(!res.data?.length)throw Error("NOT_AUTHORIZED");
+  if(!res.data?.length)throw Error("BANK_EMPTY");
   existing=res.data.map(BANK.normalizeDatabase).filter(Boolean);
   return existing;
  })().catch(err=>{loading=null;throw err});
@@ -134,11 +133,12 @@ async function switchTranslation(ctx){
  const cached=trans(ctx,q);
  if(cached){renderChoices(ctx);renderResult(ctx);return}
  if(!q.dbId){setStatus(ctx,"هذه المسألة بالإنجليزية فقط حاليًا؛ الأسئلة الجديدة متاحة باللغتين.",true);return}
- const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ ترجمة السؤال والاختيارات والشرح إلى العربية…");
+ const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ تحميل الترجمة العربية المحفوظة…");
  try{
-  const {data,error}=await db.functions.invoke("open-doors-translate",{body:{question_id:q.dbId}});
-  if(error||!data?.ok||!data.translation)throw Error("TRANSLATION_UNAVAILABLE");
-  const t=data.translation;
+  // Cached database translations are public read-only; paid AI translation is admin-only.
+  const {data:t,error}=await db.from("open_doors_question_translations")
+   .select("question_ar,options_ar,explanation_ar,rubric_ar").eq("question_id",q.dbId).maybeSingle();
+  if(error||!t)throw Error("SAVED_TRANSLATION_MISSING");
   if(!Array.isArray(t.options_ar)||t.options_ar.length!==q.options.length||
      typeof t.question_ar!=="string"||!t.question_ar.trim())throw Error("INCOMPLETE_TRANSLATION");
   ctx.translation.set(q.id,t);
@@ -147,7 +147,7 @@ async function switchTranslation(ctx){
   setStatus(ctx,"تمت الترجمة. عند اختلاف مصطلح علمي راجع السؤال الإنجليزي الأصلي.");
  }catch(err){
   if(current(ctx)?.q.id===q.id){
-   setStatus(ctx,"تعذرت الترجمة الآلية حاليًا. السؤال الإنجليزي والتصحيح يستمران بالعمل.",true);
+   setStatus(ctx,"لا توجد ترجمة عربية محفوظة لهذا السؤال؛ استخدم بنك الأسئلة الجديدة المؤلفة باللغتين.",true);
   }
  }finally{btn.disabled=false}
 }
@@ -256,7 +256,7 @@ async function start(ctx){
  setStatus(ctx,"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
  let archiveAllowed=true;
  try{await readExisting()}catch(err){archiveAllowed=false;
-  setStatus(ctx,"تعذر تحميل الأرشيف الخاص؛ ستظل الأسئلة الجديدة المؤلفة متاحة. تأكد من تسجيل الدخول.",true);
+  setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
  }
  const subject=$(ctx.id+"Subject").value,source=$(ctx.id+"Source").value;
  const countOption=$(ctx.id+"Count").value;

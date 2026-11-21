@@ -116,9 +116,12 @@ Deno.serve(async(req:Request)=>{
   auth:{persistSession:false,autoRefreshToken:false}});
  const {data:{user},error}=await client.auth.getUser(token.substring(7));
  if(error||!user)return respond({error:"AUTH_EXPIRED"},401);
- // Founder-only RLS: the existing private training bank must be readable by caller.
- const {data:probe,error:probeErr}=await client.from("open_doors_questions").select("id").limit(1);
- if(probeErr||!probe?.length)return respond({error:"NOT_AUTHORIZED"},403);
+ // Paid AI marking remains founder-only. Public question READ access must never
+ // be usable as an authorization check for a costly provider API.
+ // This authenticated UID is the same immutable identity formerly enforced by
+ // the founder-only RLS policy, not a secret passed by the browser.
+ const FOUNDER_USER_ID="ad3221e5-c309-4e50-868c-bad27839ef36";
+ if(user.id!==FOUNDER_USER_ID)return respond({error:"NOT_AUTHORIZED"},403);
  if(throttle(user.id))return respond({error:"TOO_MANY_REQUESTS"},429);
  const raw=await req.text();if(raw.length>3_000_000)return respond({error:"TOO_LARGE"},413);
  let value:unknown;try{value=JSON.parse(raw)}catch{return respond({error:"INVALID_JSON"},400)}
