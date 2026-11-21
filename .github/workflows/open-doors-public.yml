@@ -37,7 +37,6 @@ jobs:
           node --check assets/js/open-doors-choice.js
           node --check assets/js/open-doors-essay.js
           node --check assets/js/open-doors-masters.js
-          node --check supabase/functions/open-doors-essay-grade/index.ts || true
       - name: Check the public no-login user journeys and immutable privacy boundary
         run: node --test tests/open-doors-public-access.test.cjs
       - name: Verify original question banks, scoring and written rubrics
