@@ -15,7 +15,7 @@ test("Public guest coach is explicitly login-free and contains independent bank 
  assert.match(main,/function localTranslations\(questions\)/);
  assert.match(main,/function bankStatus\(text,refresh\)/);
  assert.match(main,/function withDeadline\(promise,ms=8500\)/);
- assert.match(main,/\$\("retryBankBtn"\)\.onclick=loadPortal/);
+ assert.match(main,/\$\(['"]retryBankBtn['"]\)\.onclick=loadPortal/);
  assert.doesNotMatch(main,/<input[^>]*type=["'](?:email|password)["']/i);
  assert.doesNotMatch(main,/signInWithPassword|auth\.getUser\(/);
  assert.match(home,/open-doors-ai\.html/);
