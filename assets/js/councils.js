@@ -169,6 +169,8 @@
   }
   async function verifyAccess(){
     const epoch=++state.authEpoch;
+    // Never display records retained from a previous account while a new session is checked.
+    state.user=null;state.profile=null;state.isAdmin=false;state.memberships=[];state.records=[];
     $("#gate").hidden=false;$("#workspace").hidden=true;
     notice(T("جارٍ التحقق من الحساب والعضوية...","Verifying account and membership..."),false,"#gate-message");
     if(!state.db){setGate(T("الاتصال الآمن غير متاح حاليًا. حاول لاحقًا.","Secure service is unavailable. Please try again later."),true);return;}
@@ -193,7 +195,7 @@
         return;
       }
       $("#gate").hidden=true;$("#workspace").hidden=false;
-      notice("");notice("");
+      notice("");
       renderDashboard();
       await loadRecords(epoch);
     }catch(_){
