@@ -52,3 +52,21 @@ Issuance function `nabd-official-documents` has `verify_jwt=true`; verifier has 
 - QR page: `official-document-verify.html`, `assets/js/official-document-verification.js`
 
 Verify: `node --test tests/official-documents.test.cjs` plus NABD Councils CI workflow.
+
+
+## Bilingual institutional issuance (v3)
+Every **new** document displays Arabic and English together on a single A4 page. Each template keeps fixed, institutional wording in both languages. The document retains one server-generated number (`NABD-DOC-0000001` format), server-issued Palestine-local date, UUID-based QR verification, and a scannable CODE128 linear barcode. Reprinting an existing document uses the **same registered number, QR token and issue date**; requesting a new issuance creates a new number and token.
+
+For statements, organizational permissions and administrative reports, the server additionally snapshots **only verified Academy data**, if available:
+- The person's actual profile role, without inferring an undocumented title.
+- Active council appointments, positions and membership numbers.
+- Courses backed by `certificates.status = 'valid'`, labeled as certified.
+- Courses marked `enrollments.status = 'active'`, **clearly labeled as ongoing / not certified**, not as completed.
+- The issued document retains this record-time snapshot; editing a student's account after issuance cannot silently alter an already-issued statement.
+
+The browser cannot send custom unverified role, course, title, name or issue date values. All evidence is loaded inside the authorized Edge Function using server-role **SELECT-only** grants to the relevant certificate, course and enrollment tables. Those fields are not included in the public QR response. Existing historical documents keep their original stored content and are **not** backfilled with later claims.
+
+### Electronic director sign-off
+The Academy's **digital institutional seal is positioned above the named electronic signatory**. When the sole director/admin account issues a document, the system records a printed director attribution (`محمد خالد العرجا` when the current director profile display name is empty). Delegated issuers are attributed by their own registered profile names and never automatically given the director's signature. This is **typed electronic authorization**, not an imitation of a handwritten personal signature. Uploading a genuine signature graphic would require the director's explicit provision and consent. Do not present the mark as a government-issued cryptographic signature.
+
+QR and CODE128 are encoded in-browser with pinned scripts; if either is unavailable, the print action stays disabled rather than silently producing an unverifiable certificate. The printable layout remains fully bilingual even when shown on a small phone; choose Print → Save as PDF to create an A4 original.
