@@ -15,8 +15,8 @@ test("one A4 institutional document has BOTH Arabic and English content",()=>{
  for(const doc of ["statement","permit","report","treatment_request","consultation_request","complaint"]){
   assert.ok(js.includes(doc+":["),doc+" must have English text");
  }
- assert.match(js,/textSection\("ar","النص الرسمي باللغة العربية",t\.lines\)/);
- assert.match(js,/textSection\("en","Official English text",bilingualTemplates\[row\.doc_type\]/);
+ assert.match(js,/textSection\("ar","النص العربي الرسمي · ARABIC TEXT",t\.lines\)/);
+ assert.match(js,/textSection\("en","OFFICIAL ENGLISH VERSION · النص الإنجليزي",bilingualTemplates\[row\.doc_type\]/);
  assert.match(page,/lang="en" dir="ltr"/);
  assert.match(page,/id="sheet-date-en"/);
  assert.match(css,/@page\{size:A4 portrait/);
