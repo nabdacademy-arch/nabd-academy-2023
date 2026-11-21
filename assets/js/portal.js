@@ -1381,18 +1381,15 @@ async function handleSignIn(event) {
     }
 
 
-    if (!data?.user) {
-      throw new Error(
-        "Login failed."
-      );
+    const sessionUser = data?.session?.user;
+    if (!sessionUser?.id || sessionUser.id !== data?.user?.id) {
+      throw new Error("Could not confirm your sign-in session. Please try again.");
     }
 
 
     if (passwordField.value === password) passwordField.value = "";
 
-    await loadDashboard(
-      data.user
-    );
+    await loadDashboard(sessionUser);
 
 
   } catch (error) {
