@@ -253,13 +253,18 @@ function exportReport(ctx){
 }
 async function start(ctx){
  const btn=$(ctx.id+"Start");btn.disabled=true;
- setStatus(ctx,"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
- let archiveAllowed=true;
- try{await readExisting()}catch(err){archiveAllowed=false;
-  setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
- }
  const subject=$(ctx.id+"Subject").value,source=$(ctx.id+"Source").value;
  const countOption=$(ctx.id+"Count").value;
+ setStatus(ctx,source==="new"||source==="generated"
+  ?"يجري إعداد جولة محلية من أسئلة نبض دون انتظار الشبكة…"
+  :"جارٍ تحميل بنك التدريب وتوليد جولة عشوائية…");
+ // Purely local original or generated questions must never wait for the network.
+ let archiveAllowed=source==="archive"||source==="mixed";
+ if(archiveAllowed){
+  try{await readExisting()}catch(err){archiveAllowed=false;
+   setStatus(ctx,"تعذر تحميل بنك الأسئلة المؤرشف؛ ستظل الأسئلة الجديدة متاحة. حاول لاحقًا.",true);
+  }
+ }
  let pool=[];
  if(source==="new"||source==="mixed")pool.push(...BANK.sample(ctx.kind,subject));
  if(archiveAllowed&&(source==="archive"||source==="mixed"))pool.push(...existing.filter(x=>x.kind===ctx.kind&&(subject==="all"||x.subject===subject)));
