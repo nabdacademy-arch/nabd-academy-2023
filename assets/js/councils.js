@@ -38,7 +38,8 @@
     records:["سجل أعمال المجالس","Councils work register"],
     compose:["إنشاء سجل جديد","Create council record"],
     members:["إدارة عضويات المجالس","Manage council members"],
-    security:["أمان الحساب","Account security"]
+    security:["أمان الحساب","Account security"],
+    identity:["بطاقتي وشهادتي","My membership documents"]
   };
   const state = {db:null,user:null,profile:null,isAdmin:false,memberships:[],records:[],lang:"ar",tab:"overview",councilFilter:"all",authEpoch:0,loading:false,deepLinkApplied:false};
   const T = (ar,en) => state.lang === "ar" ? ar : en;
