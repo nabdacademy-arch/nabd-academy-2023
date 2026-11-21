@@ -8,14 +8,14 @@ const source = fs.readFileSync(require.resolve('../assets/js/scholarship-center.
 function manager(createClient) {
   const nodes = new Map();
   function get(id) {
-    if (!nodes.has(id)) nodes.set(id, {handlers:{}, classList:{add(){},remove(){}},
+    if (!nodes.has(id)) nodes.set(id, {handlers:{}, replaceChildren(){}, append(){}, classList:{add(){},remove(){}},
       addEventListener(event, fn){this.handlers[event]=fn}});
     return nodes.get(id);
   }
   const window = {NABD_CONFIG:{supabaseUrl:'https://test.invalid',supabaseAnonKey:'test'},supabase:{createClient}};
   Object.defineProperty(window, 'nabdSupabase', {get(){throw new Error('Unexpected access to student session')}});
   vm.runInNewContext(source, {window, URL, location:{href:'https://test.invalid/scholarship-manager.html'},
-    document:{querySelector:key=>key==='[data-scholarship-manager]'?{}:null,getElementById:get}});
+    document:{querySelector:key=>key==='[data-scholarship-manager]'?{}:null,getElementById:get,createElement:()=>({})}});
   return get;
 }
 
@@ -52,3 +52,41 @@ test('unavailable or failed staff client prevents login and recovery',()=>{
     assert.ok(prevented);
   }
 });
+
+for(const outcome of ['active','inactive','signed-out']){
+  test('publisher verification after an interrupted lookup: '+outcome,async()=>{
+    let calls=0, signOuts=0, privateReads=0, finish, authChange;
+    const get=manager(()=>({
+      auth:{getUser:async()=>({data:{user:{id:'fixture'}}}),
+        onAuthStateChange(fn){authChange=fn;},signOut:async()=>{signOuts++;return {};}},
+      from(table){
+        if(table==='nabd_scholarship_opportunities')privateReads++;
+        return {select(){return this;},eq(){return this;},order(){return this;},limit:async()=>({data:[]}),
+          async maybeSingle(){
+            calls++;
+            if(calls===1)return {error:{message:'unavailable'}};
+            if(calls===2)throw Error('connection lost');
+            return new Promise(resolve=>{finish=resolve;});
+          }};
+      }
+    }));
+    await new Promise(setImmediate);
+    const retry=get('sch-retry-role'), dashboard=get('sch-dashboard');
+    assert.equal(dashboard.hidden,true);
+    assert.equal(retry.hidden,false);
+    await retry.handlers.click();
+    assert.equal(signOuts,0);
+    assert.equal(privateReads,0);
+    assert.equal(retry.hidden,false);
+    const waiting=retry.handlers.click();
+    await retry.handlers.click();
+    await new Promise(setImmediate);
+    assert.equal(calls,3);
+    if(outcome==='signed-out')authChange('SIGNED_OUT');
+    finish({data:{active:outcome!=='inactive'}});
+    await waiting;
+    assert.equal(dashboard.hidden,outcome!=='active');
+    assert.equal(privateReads,outcome==='active'?1:0);
+    assert.equal(signOuts,outcome==='inactive'?1:0);
+  });
+}
