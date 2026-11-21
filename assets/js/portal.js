@@ -1154,6 +1154,14 @@ async function loadDashboard(user) {
    SIGN UP
    ========================================================= */
 
+function confirmedSessionUser(data) {
+  const sessionUser = data?.session?.user;
+  if (!sessionUser?.id || sessionUser.id !== data?.user?.id) {
+    throw new Error("Could not confirm your sign-in session. Please try again.");
+  }
+  return sessionUser;
+}
+
 async function handleSignUp(event) {
   event.preventDefault();
 
@@ -1266,14 +1274,12 @@ async function handleSignUp(event) {
     }
 
 
-    if (!data?.user) {
+    if (!data?.user?.id) {
       throw new Error("Could not confirm the registration request. Check your inbox before trying again.");
     }
 
     if (data.session) {
-      await loadDashboard(
-        data.user
-      );
+      await loadDashboard(confirmedSessionUser(data));
 
       return;
     }
@@ -1381,10 +1387,7 @@ async function handleSignIn(event) {
     }
 
 
-    const sessionUser = data?.session?.user;
-    if (!sessionUser?.id || sessionUser.id !== data?.user?.id) {
-      throw new Error("Could not confirm your sign-in session. Please try again.");
-    }
+    const sessionUser = confirmedSessionUser(data);
 
 
     if (passwordField.value === password) passwordField.value = "";
