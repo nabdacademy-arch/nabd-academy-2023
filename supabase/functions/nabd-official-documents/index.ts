@@ -12,9 +12,18 @@ const reply=(body:Record<string,unknown>,status=200)=>new Response(JSON.stringif
 const fail=(code:string,status=400)=>reply({error:code},status);
 const db=URL&&SERVICE?createClient(URL,SERVICE,{auth:{persistSession:false,autoRefreshToken:false}}):null;
 const safeText=(value:unknown)=>String(value||"").trim();
-const fields="id,verify_token,doc_type,subject_user_id,subject_name,subject_kind,issuer_user_id,issuer_name,issued_at,status,voided_at,subject_details,signatory_name,signatory_kind";
+const fields="id,verify_token,doc_type,subject_user_id,subject_name,subject_name_en,english_name_added_by,english_name_added_at,subject_kind,issuer_user_id,issuer_name,issued_at,status,voided_at,subject_details,signatory_name,signatory_kind";
 const publicFields=["id","doc_type","status","issued_at"];
 const num=(id:number)=>"NABD-DOC-"+String(id).padStart(7,"0");
+// There is no verified English-name column on Academy profiles. Require a human-confirmed
+// spelling rather than inventing a transliteration or suggesting it is passport-verified.
+function validatedEnglishName(raw:unknown,confirmed:unknown){
+  if(confirmed!==true||typeof raw!=="string")return null;
+  const name=raw.trim().replace(/\\s+/g," ");
+  if(name.length<3||name.length>160||!/^[A-Za-z][A-Za-z .'-]{2,159}$/.test(name))return null;
+  if(!/[A-Za-z]{2}/.test(name))return null;
+  return name;
+}
 // All claims come from authoritative Academy tables, not client-submitted form fields.
 // Limit the snapshot so that the A4 statement stays readable.
 async function verifiedSubjectDetails(id:string,role:string,withEducation:boolean){
@@ -122,6 +131,8 @@ Deno.serve(async req=>{
    const doc_type=safeText(body.doc_type);
    const subject_user_id=safeText(body.subject_user_id);
    if(!types.has(doc_type)||!allowed.includes(doc_type))return fail("template_not_authorized",403);
+   const english_name=validatedEnglishName(body.subject_name_en,body.english_name_confirmed);
+   if(!english_name)return fail("english_name_required",400);
    if(!uuid.test(subject_user_id))return fail("invalid_subject");
    const {data:person,error:personError}=await db.from("profiles")
      .select("full_name,role").eq("id",subject_user_id).maybeSingle();
@@ -145,6 +156,8 @@ Deno.serve(async req=>{
    const {data:row,error:issueError}=await db.from("nabd_official_documents").insert({
     doc_type,subject_user_id,subject_name:safeText(person.full_name).slice(0,160),
     subject_kind,issuer_user_id:actor,issuer_name,
+    subject_name_en:english_name,english_name_added_by:actor,
+    english_name_added_at:new Date().toISOString(),
     subject_details:details,signatory_name,signatory_kind
    }).select(fields).single();
    if(issueError||!row)return fail("issue_failed",503);
@@ -168,6 +181,30 @@ Deno.serve(async req=>{
    if(error||!doc)return fail("document_not_found",404);
    if(!isAdmin&&doc.issuer_user_id!==actor)return fail("document_forbidden",403);
    return reply({document:{...doc,number:num(doc.id)}});
+  }
+
+  // Legacy print records may be annotated ONCE with an attested English spelling,
+  // without issuing a new number or changing any substantive Academy record.
+  if(action==="add_english_name"){
+   if(!canIssue)return fail("issuer_not_authorized",403);
+   const id=Number(body.id);
+   if(!Number.isSafeInteger(id)||id<1)return fail("invalid_id");
+   const englishName=validatedEnglishName(body.subject_name_en,body.english_name_confirmed);
+   if(!englishName)return fail("english_name_required",400);
+   const {data:existing,error:lookupError}=await db.from("nabd_official_documents")
+     .select("id,issuer_user_id,subject_name_en,status").eq("id",id).maybeSingle();
+   if(lookupError||!existing)return fail("document_not_found",404);
+   if(!isAdmin&&existing.issuer_user_id!==actor)return fail("document_forbidden",403);
+   if(existing.status!=="issued")return fail("document_void",409);
+   if(existing.subject_name_en)return fail("english_name_already_recorded",409);
+   const {data:updated,error:updateError}=await db.from("nabd_official_documents")
+     .update({subject_name_en:englishName,english_name_added_by:actor,
+       english_name_added_at:new Date().toISOString()})
+     .eq("id",id).eq("status","issued").is("subject_name_en",null)
+     .select(fields).maybeSingle();
+   if(updateError)return fail("english_name_save_failed",503);
+   if(!updated)return fail("english_name_already_recorded",409);
+   return reply({document:{...updated,number:num(updated.id)}});
   }
 
   if(action==="void"){
