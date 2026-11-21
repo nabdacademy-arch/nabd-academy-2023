@@ -153,21 +153,40 @@
   const posts = document.getElementById("sch-managed-posts");
   let signedInUser = null;
   let ownItems = [];
+  let verification = 0;
+  const retryRole = document.getElementById("sch-retry-role");
   const showLogin = () => {
     signedInUser=null;
     loginPanel.hidden=false;
     dashboard.hidden=true;
   };
   async function verifyPublisher(){
-    if(!client){showLogin();setStatus(authStatus,"خدمة الدخول غير متاحة حاليًا.", "error");return;}
-    const {data:{user},error:userError}=await client.auth.getUser();
-    if(userError || !user){showLogin();return;}
-    const {data:role,error:roleError}=await client.from("nabd_scholarship_publishers")
-      .select("active").eq("user_id",user.id).maybeSingle();
-    if(roleError || !role?.active){
-      showLogin();
+    const attempt=++verification;
+    showLogin();
+    retryRole.hidden=true;
+    let user,role;
+    try{
+      const identity=await client.auth.getUser();
+      if(attempt!==verification)return;
+      if(identity.error?.name==="AuthSessionMissingError"||(!identity.error&&!identity.data?.user)){
+        setStatus(authStatus,"");return;
+      }
+      if(identity.error||!identity.data?.user)throw Error("IDENTITY_UNAVAILABLE");
+      user=identity.data.user;
+      const result=await client.from("nabd_scholarship_publishers")
+        .select("active").eq("user_id",user.id).maybeSingle();
+      if(attempt!==verification)return;
+      if(result.error)throw result.error;
+      role=result.data;
+    }catch{
+      if(attempt!==verification)return;
+      retryRole.hidden=false;
+      setStatus(authStatus,"تعذر التحقق من الصلاحية. تحقق من الاتصال ثم أعد المحاولة. · Unable to verify access. Check your connection and retry.","error");
+      return;
+    }
+    if(role?.active!==true){
+      setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.","error");
       await client.auth.signOut();
-      setStatus(authStatus,"الحساب غير مخوّل لإدارة المنح. اطلب من إدارة الأكاديمية تفعيل صلاحية مدير المنح.", "error");
       return;
     }
     signedInUser=user;
@@ -177,12 +196,14 @@
     document.getElementById("sch-current-email").textContent=user.email || "";
     await refreshOwnPosts();
   }
+  retryRole.addEventListener("click",()=>{if(!retryRole.hidden)return verifyPublisher();});
   loginForm?.addEventListener("submit",async (e)=>{
     e.preventDefault();
     const email=document.getElementById("sch-email").value.trim();
     const password=document.getElementById("sch-password").value;
     const button=document.getElementById("sch-login-button");
     if(!email || !password)return;
+    verification++;retryRole.hidden=true;
     button.disabled=true;
     setStatus(authStatus,"جارٍ التحقق من الحساب…");
     const {error}=await client.auth.signInWithPassword({email,password});
@@ -282,8 +303,9 @@
     await refreshOwnPosts();
   });
   client.auth.onAuthStateChange((event)=>{
-    if(event==="SIGNED_OUT")showLogin();
+    if(event==="SIGNED_OUT"){verification++;retryRole.hidden=true;showLogin();}
     if(event==="PASSWORD_RECOVERY"){
+      verification++;retryRole.hidden=true;
       const resetPanel=document.getElementById("sch-new-password-panel");
       if(resetPanel){resetPanel.hidden=false;loginPanel.hidden=true;dashboard.hidden=true;}
     }
