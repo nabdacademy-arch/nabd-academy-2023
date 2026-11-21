@@ -1,0 +1,75 @@
+"use strict";
+const test=require("node:test"),assert=require("node:assert/strict");
+const fs=require("node:fs"),path=require("node:path");
+const read=p=>fs.readFileSync(path.resolve(__dirname,"..",p),"utf8");
+const page=read("official-documents.html"),client=read("assets/js/official-documents.js");
+const css=read("assets/css/official-documents.css");
+const sql=read("supabase/migrations/20261121_documents_english_spelling_addendum.sql");
+const backend=read("supabase/functions/nabd-official-documents/index.ts");
+const verifier=read("supabase/functions/nabd-document-verify/index.ts");
+test("the document states the subject's name and date in BOTH languages in enlarged fields",()=>{
+ assert.match(page,/id="sheet-name"/);
+ assert.match(page,/id="sheet-name-en"[^>]*lang="en" dir="ltr"/);
+ assert.match(page,/id="sheet-date"/);
+ assert.match(page,/id="sheet-date-en"[^>]*lang="en" dir="ltr"/);
+ assert.match(client,/\$\("sheet-name-en"\)\.textContent=row\.subject_name_en/);
+ assert.match(client,/\$\("sheet-date-en"\)\.textContent=englishDate\(row\.issued_at\)/);
+ assert.match(css,/\.sheet-person \.sheet-name-english/);
+ assert.match(css,/\.sheet-person \.sheet-date-english/);
+});
+test("both official language paragraphs start with the statement, not a repeated section title",()=>{
+ assert.match(client,/textSection\("ar",t\.lines\)/);
+ assert.match(client,/textSection\("en",bilingualTemplates\[row\.doc_type\]\|\|\[\]\)/);
+ const section=client.slice(client.indexOf("function textSection("),client.indexOf("function addEvidenceRow("));
+ assert.doesNotMatch(section,/createElement\("h3"\)/);
+ assert.match(client,/تفيد أكاديمية نبض للعلوم الطبية/);
+ assert.match(client,/NABD Academy for Medical Sciences confirms/);
+ assert.match(page,/id="sheet-title"/);
+ assert.match(page,/id="sheet-subtitle" lang="en" dir="ltr"/);
+});
+test("blue ink impression is large, legible, and restricted to the Academy identity",()=>{
+ assert.match(page,/class="academy-blue-seal"/);
+ assert.match(page,/baseFrequency="0\.047"/);
+ assert.match(page,/أكاديمية نبض للعلوم الطبية/);
+ assert.match(page,/NABD ACADEMY/);
+ assert.match(page,/DIGITAL ACADEMY SEAL/);
+ assert.doesNotMatch(page,/<textPath/);
+ assert.match(css,/\.signature-stack \.institution-seal\{\s*width:178px/);
+ assert.match(css,/mix-blend-mode:multiply/);
+});
+test("new English spelling is human-confirmed and saved by a verified issuer",()=>{
+ assert.match(page,/id="subject-name-en"/);
+ assert.match(page,/id="english-name-confirmed"/);
+ assert.match(client,/canIssueSelected/);
+ assert.match(backend,/validatedEnglishName\(body\.subject_name_en,body\.english_name_confirmed\)/);
+ assert.match(backend,/if\(!english_name\)return fail\("english_name_required",400\)/);
+ assert.match(backend,/db\.auth\.getUser\(token\)/);
+ assert.match(backend,/allowed\.includes\(doc_type\)/);
+ assert.match(backend,/subject_name_en:english_name,english_name_added_by:actor/);
+ assert.match(sql,/subject_name_en text/);
+ assert.match(sql,/english_name_added_by uuid references auth\.users/);
+ assert.match(sql,/english_name_added_at timestamptz/);
+});
+test("legacy records can receive one attributed English-name addendum without reissuing",()=>{
+ assert.match(page,/id="legacy-english-name-editor"/);
+ assert.match(client,/call\("add_english_name"/);
+ assert.match(backend,/if\(action==="add_english_name"\)/);
+ assert.match(backend,/if\(!isAdmin&&existing\.issuer_user_id!==actor\)/);
+ assert.match(backend,/\.is\("subject_name_en",null\)/);
+ assert.match(backend,/english_name_added_at:new Date\(\)\.toISOString\(\)/);
+ assert.match(client,/!row\.subject_name_en/);
+ assert.match(client,/\$\("print-button"\)\.disabled=!valid\|\|!qrReady\|\|!barcodeReady\|\|!row\.subject_name_en/);
+ assert.match(verifier,/\.select\("id,doc_type,status,issued_at"\)/);
+ assert.doesNotMatch(sql,/update\s+public\.nabd_official_documents\s+set/i);
+});
+test("the original PDF A4, QR, CODE128 and typed director approval remain",()=>{
+ assert.match(css,/@page\{size:A4 portrait/);
+ assert.match(client,/JsBarcode\(svg,row\.number/);
+ assert.match(client,/qr\(\$\("sheet-qr"\),link\)/);
+ assert.match(client,/\$\("sheet-number"\)\.textContent=row\.number/);
+ assert.match(client,/\$\("sheet-signatory"\)\.textContent=signatory/);
+ assert.match(page,/اعتماد مسجل إلكترونيًا، وليس توقيعًا بخط اليد/);
+ assert.match(page,/official-documents\.js\?v=5/);
+ assert.match(page,/official-documents\.css\?v=4/);
+ assert.doesNotThrow(()=>new Function(client));
+});
