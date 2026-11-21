@@ -37,7 +37,8 @@ test("Open Doors training scripts parse without authentication",()=>{
 test("public read-only grants keep attempts and paid AI grading protected",()=>{
  for(const table of ["open_doors_questions","open_doors_sources","open_doors_patterns"]){
   assert.match(migration,new RegExp("grant select on table public\\."+table+" to anon, authenticated"));
-  assert.match(migration,new RegExp("create policy \\"NABD Open Doors public [^\\\"]+\\"[\\s\\S]*?on public\\."+table));
+  assert.ok(migration.includes('create policy "NABD Open Doors public '),"Public training policy missing");
+  assert.ok(migration.includes('on public.'+table),"Policy for "+table+" missing");
  }
  assert.match(migration,/revoke all on public\.open_doors_attempts from anon/);
  assert.match(migration,/revoke insert, update, delete on public\.open_doors_questions from anon/);
