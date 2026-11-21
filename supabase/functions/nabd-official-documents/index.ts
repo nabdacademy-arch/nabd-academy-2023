@@ -28,7 +28,13 @@ Deno.serve(async req=>{
   if(authError||!auth.user)return fail("invalid_session",401);
   const actor=auth.user.id;
   const {data:profile,error:profileError}=await db.from("profiles").select("role,full_name").eq("id",actor).maybeSingle();
-  if(profileError||!profile)return fail("account_profile_missing",403);
+  // A profile query error (e.g. a missing SQL GRANT) is NOT a missing user profile.
+  // Separating these cases prevents misleading 403 messages during service failures.
+  if(profileError){
+    console.error("nabd-official-documents profile lookup failed",profileError.code||"unknown");
+    return fail("profile_lookup_failed",503);
+  }
+  if(!profile)return fail("account_profile_missing",403);
   const isAdmin=profile.role==="admin";
   const {data:permit,error:permitError}=await db.from("nabd_document_issuer_permissions")
     .select("active,allowed_types").eq("user_id",actor).maybeSingle();
