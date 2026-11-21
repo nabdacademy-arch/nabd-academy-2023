@@ -99,7 +99,7 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
   <button type="button" class="choice-btn primary" id="choiceSingleQuick">🔘 اختيار إجابة واحدة | Single Answer</button>
   <button type="button" class="choice-btn gold" id="choiceMultiQuick">☑️ اختيار أكثر من إجابة | Multiple Answers</button>
  </div>
-</div><div class="essay-shortcuts"><strong>✍️ تدريب مستقل على الجزء المقالي فقط</strong><p class="small" style="margin:7px 0">كيمياء · أحياء · طب — كتابة الإجابة أو تصوير ورقة الحل، مع تقدير بالذكاء الاصطناعي وشرح تفصيلي للأخطاء. تدريب خارج جلسة Open Doors الرسمية.</p><button type="button" id="essayHeroJump">✍️ افتح مدرب الأسئلة المقالية الآن ←</button></div><div id="examSetup">
+</div><div class="essay-shortcuts"><strong>✍️ تدريب مستقل على الجزء المقالي فقط</strong><p class="small" style="margin:7px 0">كيمياء · أحياء · طب — اكتب الإجابة أو صوّر الحل ثم قارنه بالنموذج مع مراجعة ذاتية مجانية؛ التصحيح المدفوع بالذكاء الاصطناعي غير متاح للضيوف. تدريب خارج جلسة Open Doors الرسمية.</p><button type="button" id="essayHeroJump">✍️ افتح مدرب الأسئلة المقالية الآن ←</button></div><div id="examSetup">
 <h2>ابدأ جولة جديدة</h2>
 <p class="muted">اختر التخصص والمستوى ونوع التدريب. الأسئلة من بنك نبض المفتوح، ويتم تسجيل تقدّمك على هذا الجهاز فقط.</p>
 <div class="formrow">
@@ -238,10 +238,10 @@ footer{padding-top:22px;margin-top:30px;border-top:1px solid var(--edge);font-si
     <label for="essayCamera"><span data-essay-ar="📷 أو افتح الكاميرا لتصوير الحل الآن" data-essay-en="📷 Or open your camera to photograph the page">📷 Or open your camera to photograph the page</span>
      <input id="essayCamera" type="file" accept="image/png,image/jpeg,image/webp" capture="environment"></label>
     <img id="essayPreview" class="essay-picture-preview" alt="Preview of your handwritten answer" hidden><span id="essayPhotoInfo" class="essay-helper"></span>
-    <p class="essay-helper" data-essay-ar="التصوير اختياري؛ الصورة لا تُخزن في قاعدة بيانات الأكاديمية، بل تُرسل مباشرة إلى مزود AI عند طلب التصحيح والموافقة. اجعل خطك واضحًا وتجنب البيانات الشخصية." data-essay-en="Optional photo: no academy database storage; the image is sent to an AI provider only after grading request and consent. Ensure legible handwriting, no personal data.">Optional photo: no academy database storage; the image is sent to an AI provider only after grading request and consent. Ensure legible handwriting, no personal data.</p>
-    <label class="essay-consent"><input id="essayConsent" type="checkbox">
+    <p class="essay-helper" data-essay-ar="التصوير اختياري للمراجعة الذاتية فقط. تظل الصورة في متصفحك ولا تُرسل إلى خدمة تصحيح مدفوعة في البوابة العامة." data-essay-en="Optional photo for self-review only. In the free public portal, images stay in your browser and are not sent to paid AI grading.">Optional photo: no academy database storage; the image is sent to an AI provider only after grading request and consent. Ensure legible handwriting, no personal data.</p>
+    <label class="essay-consent" hidden style="display:none"><input id="essayConsent" type="checkbox">
      <span data-essay-ar="أوافق على معالجة نص إجابتي والصورة التي أرفقتها (إن وجدت) عبر مزود ذكاء اصطناعي خارجي لأغراض التدريب والتصحيح التقديري، دون بيانات شخصية أو معلومات مرضى." data-essay-en="I agree to send my typed answer and any attached photo to a third-party AI provider for provisional practice grading. I will not include personal or patient information.">I agree to send my typed answer and any attached photo to a third-party AI provider for provisional practice grading. I will not include personal or patient information.</span></label>
-    <div class="essay-actions"><button id="essayGrade" type="button" class="essay-btn gold" data-essay-ar="🤖 صحّح إجابتي تلقائيًا" data-essay-en="🤖 Grade my answer with AI">🤖 Grade my answer with AI</button>
+    <div class="essay-actions"><button id="essayGrade" type="button" hidden style="display:none" class="essay-btn gold" data-essay-ar="🤖 صحّح إجابتي تلقائيًا" data-essay-en="🤖 Grade my answer with AI">🤖 Grade my answer with AI</button>
      <button id="essayReveal" type="button" class="essay-btn" data-essay-ar="📚 حل نموذجي + مراجعة ذاتية" data-essay-en="📚 Worked solution + self-review">📚 Worked solution + self-review</button>
      <button id="essayNext" type="button" class="essay-btn primary" hidden data-essay-ar="السؤال التالي ← / إنهاء" data-essay-en="Next essay → / Finish">Next essay → / Finish</button></div>
     <p id="essayStatus" class="essay-message" role="status" aria-live="polite"></p>
