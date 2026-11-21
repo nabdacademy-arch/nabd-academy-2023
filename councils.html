@@ -7,19 +7,19 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="description" content="NABD Councils Network — private collaborative workspace for approved council members.">
   <title>مجالس نبض | NABD Councils Network</title>
-  <link rel="stylesheet" href="assets/css/councils.css?v=1">
+  <link rel="stylesheet" href="assets/css/councils.css?v=2">
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
   <script defer src="assets/js/config.js"></script>
   <script defer src="assets/js/supabase-client.js"></script>
-  <script defer src="assets/js/councils.js?v=1"></script>
+  <script defer src="assets/js/councils.js?v=2"></script>
 </head>
 <body>
 <a class="skip-link" href="#main" data-ar="تجاوز إلى المحتوى" data-en="Skip to content">تجاوز إلى المحتوى</a>
 <div class="ambient ambient-a" aria-hidden="true"></div><div class="ambient ambient-b" aria-hidden="true"></div>
 <header class="topbar">
   <a class="brand" href="academy.html" aria-label="NABD Academy">
-    <span class="brand-mark">N<span class="brand-pulse">✦</span></span>
-    <span><strong>NABD <em>COUNCILS</em></strong><small data-ar="شبكة المجالس المؤسسية" data-en="Institutional Councils Network">شبكة المجالس المؤسسية</small></span>
+    <span class="brand-mark" aria-hidden="true"><span class="brand-pulse">✦</span> N </span>
+    <span><strong data-ar="أكاديمية نبض" data-en="NABD ACADEMY">أكاديمية نبض</strong><small data-ar="بوابة المجالس المؤسسية" data-en="INSTITUTIONAL COUNCILS PORTAL">بوابة المجالس المؤسسية</small></span>
   </a>
   <div class="topbar-tools">
     <span class="security-tag"><i aria-hidden="true"></i><span data-ar="بوابة أعضاء معتمدين" data-en="Approved members only">بوابة أعضاء معتمدين</span></span>
@@ -59,29 +59,33 @@
   </section>
   <section id="workspace" class="workspace" hidden>
     <aside class="sidebar" aria-label="Council navigation">
-      <div class="sidebar-heading"><span class="pill">NABD / NCN</span><h2 data-ar="مركز المجالس" data-en="Councils hub">مركز المجالس</h2><p data-ar="عمل جماعي. مسؤولية واضحة." data-en="Shared work. Clear accountability.">عمل جماعي. مسؤولية واضحة.</p></div>
+      <div class="sidebar-heading"><div class="sidebar-crest" aria-hidden="true">♛</div><span class="pill">NABD / NCN</span><h2 data-ar="مركز المجالس" data-en="Councils hub">مركز المجالس</h2><p data-ar="عمل مؤسسي • مسؤولية وقيادة" data-en="Institutional work • responsible leadership">عمل مؤسسي • مسؤولية وقيادة</p></div>
       <nav class="side-nav" aria-label="Workspace sections">
         <button class="side-button active" type="button" data-tab="overview"><span>◈</span><span data-ar="نظرة عامة" data-en="Overview">نظرة عامة</span></button>
         <button class="side-button" type="button" data-tab="records"><span>▤</span><span data-ar="محاضر وقرارات ومهام" data-en="Records & tasks">محاضر وقرارات ومهام</span></button>
         <button class="side-button" type="button" data-tab="compose"><span>✎</span><span data-ar="إضافة سجل جديد" data-en="Create record">إضافة سجل جديد</span></button>
         <button class="side-button" id="membership-tab-button" type="button" data-tab="members" hidden><span>♙</span><span data-ar="إدارة العضويات" data-en="Manage members">إدارة العضويات</span></button>
       </nav>
+      <div class="sidebar-security"><span class="sidebar-lock" aria-hidden="true">♜</span><p data-ar="مساحة خاصة بأعضاء المجالس فقط" data-en="Private space for council members only">مساحة خاصة بأعضاء المجالس فقط</p><small>MEMBERS ONLY · NABD</small></div>
       <div class="sidebar-bottom"><div class="account-chip"><span class="account-avatar" aria-hidden="true">N</span><div><strong id="account-name">—</strong><small id="account-role">—</small></div></div><button id="signout" type="button" class="signout-button" data-ar="تسجيل الخروج" data-en="Sign out">تسجيل الخروج</button></div>
     </aside>
     <div class="workspace-main">
-      <div class="workspace-top"><div><div class="eyebrow">NABD COUNCILS NETWORK</div><h1 id="view-title" data-ar="لوحة القيادة" data-en="Leadership dashboard">لوحة القيادة</h1></div><div class="workspace-actions"><button id="refresh" type="button" class="ghost-button" data-ar="تحديث ↻" data-en="Refresh ↻">تحديث ↻</button><span id="current-date" class="date-chip"></span></div></div>
+      <div class="workspace-top">
+        <div class="welcome-copy"><span class="eyebrow" data-ar="بوابة المجالس الخاصة بأكاديمية نبض" data-en="THE PRIVATE NABD COUNCILS NETWORK">بوابة المجالس الخاصة بأكاديمية نبض</span><h1 id="view-title" data-ar="لوحة قيادة المجالس" data-en="Councils leadership dashboard">لوحة قيادة المجالس</h1><p data-ar="حوكمة مؤسسية، تعاون علمي، ومسؤوليات موثقة في مساحة واحدة." data-en="Institutional governance, scientific collaboration and documented accountability in one space.">حوكمة مؤسسية، تعاون علمي، ومسؤوليات موثقة في مساحة واحدة.</p></div>
+        <div class="workspace-actions"><button id="refresh" type="button" class="ghost-button" data-ar="تحديث ↻" data-en="Refresh ↻">تحديث ↻</button><span id="current-date" class="date-chip"></span></div>
+      </div>
       <p id="workspace-message" class="notice" role="status" aria-live="polite"></p>
       <section id="overview-view" class="view">
         <div class="stats-grid">
-          <article class="stat"><span data-ar="المجالس المعتمدة" data-en="Institutional councils">المجالس المعتمدة</span><strong>08</strong><small>NABD / GOVERNANCE</small></article>
-          <article class="stat"><span data-ar="مجالسك النشطة" data-en="Your active councils">مجالسك النشطة</span><strong id="stat-memberships">—</strong><small>ACTIVE MEMBERSHIPS</small></article>
-          <article class="stat"><span data-ar="السجلات المحمّلة" data-en="Loaded records">السجلات المحمّلة</span><strong id="stat-records">—</strong><small>LIVE / RLS PROTECTED</small></article>
-          <article class="stat"><span data-ar="المهام المفتوحة" data-en="Open tasks">المهام المفتوحة</span><strong id="stat-tasks">—</strong><small>OPEN / IN PROGRESS</small></article>
+          <article class="stat stat-trust"><span class="stat-icon" aria-hidden="true">♛</span><span data-ar="المجالس المؤسسية" data-en="Institutional councils">المجالس المؤسسية</span><strong>08</strong><small>NABD / GOVERNANCE</small></article>
+          <article class="stat stat-members"><span class="stat-icon" aria-hidden="true">♧</span><span id="stat-memberships-label" data-ar="العضويات النشطة" data-en="Active appointments">العضويات النشطة</span><strong id="stat-memberships">—</strong><small>ACTIVE MEMBERSHIPS</small></article>
+          <article class="stat stat-records"><span class="stat-icon" aria-hidden="true">▤</span><span data-ar="السجلات المحمّلة" data-en="Loaded records">السجلات المحمّلة</span><strong id="stat-records">—</strong><small>RLS / PRIVATE RECORDS</small></article>
+          <article class="stat stat-tasks"><span class="stat-icon" aria-hidden="true">◇</span><span data-ar="المهام المفتوحة" data-en="Open tasks">المهام المفتوحة</span><strong id="stat-tasks">—</strong><small>OPEN / IN PROGRESS</small></article>
         </div>
         <div class="section-heading"><div><span class="eyebrow">EIGHT COUNCILS / ONE NETWORK</span><h2 data-ar="مجالس الأكاديمية" data-en="Academy councils">مجالس الأكاديمية</h2></div><p data-ar="اضغط على أحد مجالسك لاستعراض سجلاته." data-en="Select one of your councils to see its records.">اضغط على أحد مجالسك لاستعراض سجلاته.</p></div>
         <div id="council-grid" class="council-grid"></div>
-        <div class="section-heading"><div><span class="eyebrow">LATEST ACTIVITY</span><h2 data-ar="آخر مستجدات المجالس" data-en="Latest council updates">آخر مستجدات المجالس</h2></div></div>
-        <div id="recent-list" class="record-list"></div>
+        <div class="activity-shell"><div class="section-heading"><div><span class="eyebrow">LATEST ACTIVITY</span><h2 data-ar="آخر مستجدات المجالس" data-en="Latest council updates">آخر مستجدات المجالس</h2></div><button class="activity-link" type="button" data-tab="records" data-ar="عرض جميع الأنشطة ←" data-en="See all activity →">عرض جميع الأنشطة ←</button></div>
+        <div id="recent-list" class="record-list"></div></div>
       </section>
       <section id="records-view" class="view" hidden>
         <div class="section-heading"><div><span class="eyebrow">INSTITUTIONAL RECORDS</span><h2 data-ar="سجل الأعمال" data-en="Work register">سجل الأعمال</h2></div></div>
@@ -112,6 +116,6 @@
     </div>
   </section>
 </main>
-<footer class="footer"><span>NABD ACADEMY OF MEDICAL SCIENCES © 2026</span><span data-ar="بوابة داخلية مستقلة · الصلاحيات تتحقق في الخادم" data-en="Private workspace · server-side access enforcement">بوابة داخلية مستقلة · الصلاحيات تتحقق في الخادم</span></footer>
+<footer class="footer"><span class="footer-brand">✦ NABD ACADEMY <small>COUNCILS PORTAL</small></span><span data-ar="بوابة مجالس أكاديمية نبض · خصوصية مستقلة وحماية للبيانات" data-en="NABD Councils Network · Private workspace and protected records">بوابة مجالس أكاديمية نبض · خصوصية مستقلة وحماية للبيانات</span><span class="footer-secure">♜ SECURE ENVIRONMENT</span></footer>
 </body>
 </html>

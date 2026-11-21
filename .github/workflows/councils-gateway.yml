@@ -5,22 +5,26 @@ on:
       - 'councils.html'
       - 'assets/js/councils.js'
       - 'assets/css/councils.css'
+      - 'assets/images/councils/**'
       - 'assets/js/academic-core.js'
       - 'assets/js/nabd-signature.js'
       - 'academy.html'
       - 'supabase/migrations/20261121_nabd_councils_network.sql'
       - 'tests/councils-gateway.test.cjs'
+      - 'tests/councils-design.test.cjs'
       - '.github/workflows/councils-gateway.yml'
   pull_request:
     paths:
       - 'councils.html'
       - 'assets/js/councils.js'
       - 'assets/css/councils.css'
+      - 'assets/images/councils/**'
       - 'assets/js/academic-core.js'
       - 'assets/js/nabd-signature.js'
       - 'academy.html'
       - 'supabase/migrations/20261121_nabd_councils_network.sql'
       - 'tests/councils-gateway.test.cjs'
+      - 'tests/councils-design.test.cjs'
       - '.github/workflows/councils-gateway.yml'
 jobs:
   verify:
@@ -37,5 +41,17 @@ jobs:
           node --check assets/js/councils.js
           node --check assets/js/academic-core.js
           node --check assets/js/nabd-signature.js
-      - name: Validate eight councils and protected routes
-        run: node --test tests/councils-gateway.test.cjs
+      - name: Validate eight councils, protected routes and design assets
+        run: |
+          node --test tests/councils-gateway.test.cjs tests/councils-design.test.cjs
+      - name: Verify local SVG artwork XML
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          assets=list(Path("assets/images/councils").glob("*.svg"))
+          assert len(assets)==9, f"Expected 9 local illustrations, got {len(assets)}"
+          for image in assets:
+              ET.parse(image)
+          print("Verified 9 local SVG illustrations")
+          PY
