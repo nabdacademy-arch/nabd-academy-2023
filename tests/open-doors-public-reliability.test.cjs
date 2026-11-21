@@ -27,7 +27,7 @@ test("all public question modules parse and local single/multi practice stays av
   assert.doesNotThrow(()=>execFileSync(process.execPath,["--check",path.resolve(__dirname,"..",file)]));
  }
  assert.match(choice,/function init\(kind\)/);
- assert.match(bank,/window\.OpenDoorsChoiceBank/);
+ assert.match(bank,/root\.OpenDoorsChoiceBank/);
 });
 test("guests can self-review without an email and are not asked to upload to founder-only AI grading",()=>{
  assert.match(essay,/if\(!access\.data\?\.user\)/);
