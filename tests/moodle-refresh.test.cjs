@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
-function setup(history) {
+function setup(history, browser = {}) {
   function element() {
     return {children: [], dataset: {}, addEventListener(event, cb) { this[event] = cb; },
       replaceChildren() { this.children = []; }, append(...items) { this.children.push(...items); }};
@@ -23,8 +23,9 @@ function setup(history) {
     rpc(name) {return name==='nabd_quality_student_history'?history():Promise.resolve({data:[{id:'e',title:'Exam'}]});}
   };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/js/nabd-moodle.js'),'utf8'),{
-    window:{nabdSupabase:db},setInterval(){},document:{getElementById:el,documentElement:{},
-      querySelector:()=>true,querySelectorAll:()=>[],addEventListener(){},createElement:element}
+    window:{nabdSupabase:db,navigator:browser,addEventListener(name,cb){browser[name]=cb;}},Date:browser.clock||Date,
+    setInterval(cb,ms){if(ms===60000)browser.poll=cb;},document:{get visibilityState(){return browser.visibility;},getElementById:el,documentElement:{},
+      querySelector:()=>true,querySelectorAll:()=>[],addEventListener(name,cb){browser[name]=cb;},createElement:element}
   });
   return el;
 }
@@ -58,4 +59,33 @@ test('a late result cannot render after sign-out', async () => {
   await tick();
   assert.equal(el('mdl-app').hidden,true);
   assert.doesNotMatch(JSON.stringify(el('mdl-grade-rows').children),/old result/);
+});
+
+test('only refresh stale visible dashboards automatically, and resume on reconnection',async()=>{
+  let rounds=0, now=0;
+  const browser={visibility:'visible',onLine:true,clock:class extends Date {static now(){return now;}}};
+  const el=setup(async()=>{rounds++;return {data:[]};},browser);
+  await tick();
+  await browser.visibilitychange();
+  await browser.poll();
+  assert.equal(rounds,1);
+  await el('mdl-refresh').click();
+  assert.equal(rounds,2);
+  now+=31000;
+  await browser.visibilitychange();
+  assert.equal(rounds,3);
+  now+=61000;
+  browser.onLine=false;
+  await browser.poll();
+  assert.equal(rounds,3);
+  browser.visibility='hidden';
+  browser.onLine=true;
+  browser.online();
+  assert.equal(rounds,3);
+  browser.visibility='visible';
+  await browser.visibilitychange();
+  assert.equal(rounds,4);
+  browser.online();
+  await tick();
+  assert.equal(rounds,5);
 });
