@@ -16,7 +16,7 @@ async function main(){
    const page=await context.newPage();
    await page.goto(base+"/academy.html",{waitUntil:"domcontentloaded"});
    await page.locator("#nc-route-grid .ncore-card").first().waitFor();
-   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),15,"Academy shows all 15 current service routes");
+   assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),16,"Academy shows all 16 current service routes");
    await page.locator("#nc-route-role").selectOption("student");
    const studentCount=await page.locator("#nc-route-grid .ncore-card").count();assert.ok(studentCount>=4&&studentCount<15,"Student filter works");
    await page.locator("#nc-route-query").fill("Skill Passport");
