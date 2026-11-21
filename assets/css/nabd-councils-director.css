@@ -55,3 +55,10 @@
 @media(max-width:1050px){#councilAccounts .ncg-councils{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){#councilAccounts .ncg-councils{grid-template-columns:1fr 1fr}#councilAccounts .ncg-fields{grid-template-columns:1fr}#councilAccounts .ncg-result,#councilAccounts .ncg-member{align-items:stretch;flex-direction:column}#councilAccounts .ncg-council{min-height:100px;padding:10px}#councilAccounts .ncg-council strong{font-size:12px}}
 @media(prefers-reduced-motion:reduce){#councilAccounts .ncg-council{transition:none}}
+
+/* Verifiable council member cards and certificates. */
+#councilAccounts .ncg-member-info{min-width:0;overflow-wrap:anywhere}
+#councilAccounts .ncg-member-code{display:inline-block!important;margin:7px 0;color:#8b662c!important;background:#fff6e5;border:1px solid #ddbf8c;padding:6px 10px;border-radius:8px;font-size:11px!important;font-weight:900;direction:ltr}
+#councilAccounts .ncg-document-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#councilAccounts .ncg-document-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:10px;font-size:12px}
+@media(max-width:680px){#councilAccounts .ncg-document-actions{width:100%;flex-direction:column;align-items:stretch}#councilAccounts .ncg-document-actions>*{text-align:center}}
