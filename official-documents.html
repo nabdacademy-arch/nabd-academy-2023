@@ -10,7 +10,8 @@
 <script defer src="assets/js/config.js"></script>
 <script defer src="assets/js/supabase-client.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script defer src="assets/js/official-documents.js?v=2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script defer src="assets/js/official-documents.js?v=3"></script>
 </head>
 <body>
 <header class="doc-head no-print">
@@ -21,7 +22,7 @@
   <section class="doc-hero no-print">
     <span class="eyebrow">INSTITUTIONAL PRINT & VERIFICATION CENTER</span>
     <h1>مركز إصدار وطباعة المستندات</h1>
-    <p>ستة قوالب رسمية ثابتة، اختيار صاحب المستند من حسابات نبض، رقم إصدار وتاريخ تلقائي، واعتماد إلكتروني مع رمز تحقق QR.</p>
+    <p>ستة قوالب رسمية ثنائية اللغة (عربي / English)، تتضمن المنصب والدورات المثبتة إن وجدت، مع رقم وتاريخ إصدار معتمدين، وختم إلكتروني وتوقيع باسم المُصدر وQR وباركود.</p>
     <div class="doc-hero-chips"><span>إصدار مؤسسي</span><span>قوالب ثابتة</span><span>صلاحيات مقيّدة</span><span>تحقق إلكتروني</span></div>
   </section>
   <p class="feedback no-print" id="feedback" role="status" aria-live="polite">جارٍ التحقق من صلاحية إصدار المستندات…</p>
@@ -65,22 +66,36 @@
         <div class="sheet-document-header">
           <span id="sheet-kicker">NABD OFFICIAL RECORD</span>
           <h2 id="sheet-title">—</h2>
-          <p id="sheet-subtitle">—</p>
+          <p id="sheet-subtitle" lang="en" dir="ltr">—</p>
+          <span class="sheet-bilingual-mark">عربي <span aria-hidden="true">◆</span> ENGLISH · ONE CERTIFIED RECORD</span>
         </div>
         <div class="sheet-person">
-          <div><span>اسم صاحب المستند</span><strong id="sheet-name">—</strong></div>
-          <div><span>تاريخ الإصدار</span><strong id="sheet-date">—</strong></div>
+          <div><span>اسم صاحب المستند <em lang="en" dir="ltr">Document holder</em></span><strong id="sheet-name">—</strong></div>
+          <div><span>تاريخ الإصدار <em lang="en" dir="ltr">Issue date</em></span><strong id="sheet-date">—</strong><small id="sheet-date-en" lang="en" dir="ltr">—</small></div>
         </div>
+        <div class="sheet-verified-details" id="sheet-verified-details" hidden aria-label="البيانات الأكاديمية والمؤسسية المثبتة"></div>
         <div class="sheet-body" id="sheet-body">—</div>
         <div class="sheet-note" id="sheet-note"></div>
         <div class="sheet-footer">
-          <div class="issue-signature"><span>المُصدر المعتمد إلكترونيًا</span><strong id="sheet-issuer">—</strong><small>اعتماد إلكتروني مسجل في النظام، وليس توقيعًا بخط اليد</small></div>
-          <div class="institution-seal" aria-label="ختم إلكتروني مؤسسي">
-            <span>✦</span><strong>NABD ACADEMY</strong><small>ختم إلكتروني · DIGITAL SEAL</small>
+          <div class="signature-stack">
+            <div class="institution-seal" aria-label="الختم الإلكتروني الرسمي لأكاديمية نبض">
+              <span>✦</span><strong>NABD ACADEMY</strong><small>ACADEMY DIGITAL SEAL</small>
+              <small>الختم المؤسسي المعتمد إلكترونيًا</small>
+            </div>
+            <div class="issue-signature">
+              <span id="sheet-signature-role">توقيع واعتماد المُصدر</span>
+              <strong id="sheet-signatory">—</strong>
+              <small id="sheet-signatory-en" lang="en" dir="ltr">Electronic authorization</small>
+              <small id="sheet-issuer">—</small>
+              <small>اعتماد مسجل إلكترونيًا، وليس توقيعًا بخط اليد</small>
+            </div>
           </div>
-          <div class="sheet-qr-wrap"><div id="sheet-qr" aria-label="QR للتحقق من الوثيقة"></div><small>SCAN TO VERIFY</small></div>
+          <div class="sheet-verification">
+            <div class="sheet-qr-wrap"><div id="sheet-qr" aria-label="QR للتحقق من الوثيقة"></div><small>SCAN TO VERIFY · تحقق من المستند</small></div>
+            <div class="sheet-linear-code"><svg id="sheet-barcode" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="باركود المستند برمز CODE128"></svg></div>
+          </div>
         </div>
-        <div class="sheet-bottom"><div><strong id="sheet-number">—</strong><small>رقم المستند / DOCUMENT NO.</small></div><span>هذه وثيقة داخلية صادرة من منصة أكاديمية نبض، وليست وثيقة حكومية أو ترخيصًا طبيًا.</span></div>
+        <div class="sheet-bottom"><div><strong id="sheet-number" dir="ltr">—</strong><small>رقم المستند / DOCUMENT NO.</small></div><span>وثيقة مؤسسية داخلية قابلة للتحقق؛ ليست اعتمادًا حكوميًا أو ترخيصًا طبيًا.<span lang="en" dir="ltr">Internal Academy document · Not a government certificate or medical licence.</span></span></div>
       </div>
     </article>
     <div class="print-actions no-print">
