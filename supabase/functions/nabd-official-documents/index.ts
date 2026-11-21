@@ -12,9 +12,69 @@ const reply=(body:Record<string,unknown>,status=200)=>new Response(JSON.stringif
 const fail=(code:string,status=400)=>reply({error:code},status);
 const db=URL&&SERVICE?createClient(URL,SERVICE,{auth:{persistSession:false,autoRefreshToken:false}}):null;
 const safeText=(value:unknown)=>String(value||"").trim();
-const fields="id,verify_token,doc_type,subject_user_id,subject_name,subject_kind,issuer_user_id,issuer_name,issued_at,status,voided_at";
+const fields="id,verify_token,doc_type,subject_user_id,subject_name,subject_kind,issuer_user_id,issuer_name,issued_at,status,voided_at,subject_details,signatory_name,signatory_kind";
 const publicFields=["id","doc_type","status","issued_at"];
 const num=(id:number)=>"NABD-DOC-"+String(id).padStart(7,"0");
+// All claims come from authoritative Academy tables, not client-submitted form fields.
+// Limit the snapshot so that the A4 statement stays readable.
+async function verifiedSubjectDetails(id:string,role:string,withEducation:boolean){
+  const {data:appointments,error:appointmentError}=await db!.from("nabd_council_memberships")
+    .select("council_code,position,member_code").eq("user_id",id).eq("active",true)
+    .order("appointed_at",{ascending:true}).limit(8);
+  if(appointmentError)throw new Error("verified_memberships_unavailable");
+  const memberships=(appointments||[]).map(m=>({
+    council_code:String(m.council_code||"").slice(0,32),
+    position:String(m.position||"").slice(0,32),
+    member_code:String(m.member_code||"").slice(0,50)
+  }));
+  const details:{role:string;memberships:unknown[];certified_courses:unknown[];ongoing_courses:unknown[];evidence_at:string}={
+    role, memberships,certified_courses:[],ongoing_courses:[],evidence_at:new Date().toISOString()
+  };
+  if(!withEducation)return details;
+  const [completed,enrolled]=await Promise.all([
+    db!.from("certificates").select("course_id,course_title,hours,issue_date")
+      .eq("student_id",id).eq("status","valid")
+      .order("issue_date",{ascending:false}).limit(8),
+    db!.from("enrollments").select("course_id,status")
+      .eq("student_id",id).eq("status","active")
+      .order("enrolled_at",{ascending:false}).limit(8)
+  ]);
+  if(completed.error||enrolled.error)throw new Error("verified_courses_unavailable");
+  const valid=completed.data||[];
+  const active=enrolled.data||[];
+  const ids=[...new Set([...valid.map(c=>c.course_id),...active.map(c=>c.course_id)].filter(Boolean))];
+  const courses:Record<string,{title_ar:string;title_en:string}>={};
+  if(ids.length){
+    const {data:titles,error}=await db!.from("courses")
+      .select("id,title_ar,title_en").in("id",ids);
+    if(error)throw new Error("verified_course_titles_unavailable");
+    (titles||[]).forEach(c=>{courses[c.id]={
+      title_ar:String(c.title_ar||"").slice(0,150),
+      title_en:String(c.title_en||"").slice(0,150)
+    };});
+  }
+  const completedIds=new Set<string>();
+  details.certified_courses=valid.reduce((list:Array<Record<string,unknown>>,c)=>{
+    const key=String(c.course_id||c.course_title||"");
+    if(!key||completedIds.has(key)||list.length>=5)return list;
+    completedIds.add(key);
+    const translated=c.course_id?courses[c.course_id]:null;
+    list.push({
+      title_ar:String(translated?.title_ar||c.course_title||"").slice(0,150),
+      title_en:String(translated?.title_en||c.course_title||"").slice(0,150),
+      hours:Number.isFinite(c.hours)?c.hours:null
+    });
+    return list;
+  },[]);
+  details.ongoing_courses=active.reduce((list:Array<Record<string,unknown>>,c)=>{
+    const id=String(c.course_id||"");
+    if(!id||completedIds.has(id)||!courses[id]||list.some(v=>v.course_id===id)||list.length>=3)return list;
+    list.push({course_id:id,title_ar:courses[id].title_ar,title_en:courses[id].title_en});
+    return list;
+  },[]);
+  return details;
+}
+
 Deno.serve(async req=>{
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
  if(req.method!=="POST")return fail("method_not_allowed",405);
@@ -66,13 +126,26 @@ Deno.serve(async req=>{
    const {data:person,error:personError}=await db.from("profiles")
      .select("full_name,role").eq("id",subject_user_id).maybeSingle();
    if(personError||!person||safeText(person.full_name).length<2)return fail("subject_profile_missing",404);
-   const {data:membership,error:memberError}=await db.from("nabd_council_memberships")
-     .select("user_id").eq("user_id",subject_user_id).eq("active",true).limit(1);
-   if(memberError)return fail("membership_lookup_failed",503);
-   const subject_kind=(membership?.length||0)>0?"member":person.role==="student"?"student":"other";
+   let details;
+   try{
+     details=await verifiedSubjectDetails(
+       subject_user_id,String(person.role||"student").slice(0,50),
+       ["statement","permit","report"].includes(doc_type)
+     );
+   }catch(error){
+     console.error("nabd-official-documents evidence snapshot failed",error instanceof Error?error.message:"unknown");
+     return fail("verified_evidence_unavailable",503);
+   }
+   const subject_kind=details.memberships.length?"member":person.role==="student"?"student":"other";
    const issuer_name=safeText(profile.full_name)||"إدارة أكاديمية نبض";
+   // Current sole director requested their typed institutional sign-off. Do NOT
+   // fabricate a handwritten signature. Delegates sign with their own profile.
+   const signatory_name=isAdmin?(safeText(profile.full_name)||"محمد خالد العرجا"):issuer_name;
+   const signatory_kind=isAdmin?"director":"issuer";
    const {data:row,error:issueError}=await db.from("nabd_official_documents").insert({
-    doc_type,subject_user_id,subject_name:safeText(person.full_name).slice(0,160),subject_kind,issuer_user_id:actor,issuer_name
+    doc_type,subject_user_id,subject_name:safeText(person.full_name).slice(0,160),
+    subject_kind,issuer_user_id:actor,issuer_name,
+    subject_details:details,signatory_name,signatory_kind
    }).select(fields).single();
    if(issueError||!row)return fail("issue_failed",503);
    return reply({document:{...row,number:num(row.id)}},201);

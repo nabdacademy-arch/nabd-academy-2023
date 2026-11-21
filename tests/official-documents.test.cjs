@@ -19,7 +19,7 @@ test("six fixed official templates and protected medical request phrasing",()=>{
  assert.equal((js.match(/\{id:"(?:statement|permit|report|treatment_request|consultation_request|complaint)"/g)||[]).length,6);
  assert.match(js,/ليست? وصفة|ليس وصفة|ليس وصفة دوائية|ليس وصفة علاجية|ليس وصفة/);
  assert.match(js,/ممارس صحي مرخّص/);
- assert.match(page,/اعتماد إلكتروني مسجل في النظام، وليس توقيعًا بخط اليد/);
+ assert.match(page,/اعتماد مسجل إلكترونيًا، وليس توقيعًا بخط اليد/);
 });
 
 test("director panel, council staff access and A4 print functionality",()=>{

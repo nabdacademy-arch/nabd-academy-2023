@@ -31,6 +31,6 @@ test("document UI reports readable Arabic errors and busts stale script",()=>{
  assert.match(client,/profile_lookup_failed:"تعذر قراءة ملف الحساب/);
  assert.match(client,/account_profile_missing:"هذا الحساب غير مرتبط/);
  assert.match(client,/serviceMessages\[code\]/);
- assert.match(page,/assets\/js\/official-documents\.js\?v=2/);
+ assert.match(page,/assets\/js\/official-documents\.js\?v=[3-9][0-9]*/);
  assert.doesNotThrow(()=>new Function(client));
 });
