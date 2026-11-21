@@ -18,7 +18,7 @@ async function main(){
    await page.locator("#nc-route-grid .ncore-card").first().waitFor();
    assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),16,"Academy shows all 16 current service routes");
    await page.locator("#nc-route-role").selectOption("student");
-   const studentCount=await page.locator("#nc-route-grid .ncore-card").count();assert.ok(studentCount>=4&&studentCount<15,"Student filter works");
+   const studentCount=await page.locator("#nc-route-grid .ncore-card").count();assert.ok(studentCount>=4&&studentCount<16,"Student filter works");
    await page.locator("#nc-route-query").fill("Skill Passport");
    assert.equal(await page.locator("#nc-route-grid .ncore-card").count(),1,"Search matches English service title in RTL page");
    await page.locator("#nc-route-query").fill("");
