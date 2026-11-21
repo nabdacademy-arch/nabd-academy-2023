@@ -1464,6 +1464,16 @@ body.portal-body{
     const raw=node.nodeValue;
     const t=raw.trim();
     if(!t) return;
+    const paragraph = node.parentElement.closest(".student-certificate-card p");
+    if (paragraph) {
+      if (node.parentElement !== paragraph) return;
+      const labels = lang() === "ar"
+        ? {"Certificate ID:":"رقم الشهادة:", "Issue date:":"تاريخ الإصدار:"}
+        : {"رقم الشهادة:":"Certificate ID:", "تاريخ الإصدار:":"Issue date:"};
+      const label = Object.keys(labels).find(prefix => t.startsWith(prefix));
+      if (label) node.nodeValue = raw.replace(label, labels[label]);
+      return;
+    }
     const target = lang()==="ar" ? pairs.get(t) : reverse.get(t);
     if(target && target!==t) node.nodeValue = raw.replace(t,target);
   }
@@ -1479,13 +1489,7 @@ body.portal-body{
       translateTextNode(node);
     });
 
-    if(lang()==="ar"){
-      root.querySelectorAll?.(".student-certificate-card p").forEach(p=>{
-        p.innerHTML=p.innerHTML
-          .replace(/Certificate ID:/g,"رقم الشهادة:")
-          .replace(/Issue date:/g,"تاريخ الإصدار:");
-      });
-    }
+
   }
 
   function apply(){
