@@ -4,12 +4,12 @@
 const $=id=>document.getElementById(id);
 const E=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const defs=[
- {id:"statement",name:"إفادة قيد بيانات",en:"Institutional Statement",icon:"▤",hint:"إثبات قيد الاسم داخل منصة نبض.",lines:["تفيد أكاديمية نبض للعلوم الطبية بأن صاحب المستند الموضح اسمه أعلاه مُدرج في سجل حسابات المنصة المؤسسية التابعة للأكاديمية، وذلك وفق بيانات الحساب المتاحة بتاريخ إصدار هذه الإفادة.","تُعرض أي عضويات أو دورات مذكورة أدناه فقط إذا وُجد لها تكليف نشط أو شهادة صالحة في سجلات نبض بتاريخ الإصدار. هذه الإفادة وثيقة داخلية ولا تُعد اعتمادًا حكوميًا أو مؤهلًا جامعيًا أو ترخيصًا مهنيًا."]},
- {id:"permit",name:"تصريح مشاركة تنظيمي",en:"Participation Permission",icon:"♙",hint:"تصريح مؤسسي محدود لأنشطة الأكاديمية.",lines:["تُصدر أكاديمية نبض هذا التصريح التنظيمي لصاحب الاسم الموضح أعلاه للمشاركة في الأنشطة الداخلية التي توافق عليها إدارة الأكاديمية، شريطة الالتزام بالتعليمات والأنظمة المؤسسية ذات الصلة.","هذا التصريح صالح لأغراض التنظيم الداخلي فقط، ولا يُعد تصريح سفر أو دخول رسمي أو مزاولة مهنة أو ممارسة طبية."]},
+ {id:"statement",name:"إفادة قيد بيانات",en:"Statement of Account Registration",icon:"▤",hint:"إثبات قيد الاسم داخل منصة نبض.",lines:["تفيد أكاديمية نبض للعلوم الطبية بأن صاحب المستند الموضح اسمه أعلاه مُدرج في سجل حسابات المنصة المؤسسية التابعة للأكاديمية، وذلك وفق بيانات الحساب المتاحة بتاريخ إصدار هذه الإفادة.","تُعرض أي عضويات أو دورات مذكورة أدناه فقط إذا وُجد لها تكليف نشط أو شهادة صالحة في سجلات نبض بتاريخ الإصدار. هذه الإفادة وثيقة داخلية ولا تُعد اعتمادًا حكوميًا أو مؤهلًا جامعيًا أو ترخيصًا مهنيًا."]},
+ {id:"permit",name:"تصريح مشاركة تنظيمي",en:"Internal Participation Authorization",icon:"♙",hint:"تصريح مؤسسي محدود لأنشطة الأكاديمية.",lines:["تُصدر أكاديمية نبض هذا التصريح التنظيمي لصاحب الاسم الموضح أعلاه للمشاركة في الأنشطة الداخلية التي توافق عليها إدارة الأكاديمية، شريطة الالتزام بالتعليمات والأنظمة المؤسسية ذات الصلة.","هذا التصريح صالح لأغراض التنظيم الداخلي فقط، ولا يُعد تصريح سفر أو دخول رسمي أو مزاولة مهنة أو ممارسة طبية."]},
  {id:"report",name:"تقرير إداري",en:"Administrative Report",icon:"▥",hint:"تقرير سجل مؤسسي غير طبي.",lines:["يُثبت هذا التقرير الإداري أن صاحب المستند الموضح أعلاه مسجل في قاعدة حسابات أكاديمية نبض، وقد أُنشئ السجل الإلكتروني بتاريخ الإصدار لغرض التوثيق المؤسسي.","لا يتضمن هذا التقرير تشخيصًا أو نتائج طبية أو تقييمًا أكاديميًا، ولا يُستخدم بدلًا عن التقارير المهنية الصادرة من الجهات المؤهلة."]},
- {id:"treatment_request",name:"نموذج طلب علاج / إحالة",en:"Treatment Request Form",icon:"♡",hint:"طلب تنسيق فقط، ليس وصفة دوائية.",lines:["يُصدر هذا النموذج الإداري لتوثيق طلب تنسيق إحالة صاحب الاسم المذكور أعلاه إلى الجهة الطبية المختصة، وفق الإجراءات المتبعة وبموافقة صاحب العلاقة.","هذا النموذج ليس وصفة علاجية أو تشخيصًا طبيًا ولا يجيز صرف دواء أو إجراء تدخل طبي. يُترك القرار الطبي والتقييم والعلاج حصريًا لممارس صحي مرخّص ومستقل عن نظام الطباعة."]},
+ {id:"treatment_request",name:"نموذج طلب علاج / إحالة",en:"Treatment / Referral Request Form",icon:"♡",hint:"طلب تنسيق فقط، ليس وصفة دوائية.",lines:["يُصدر هذا النموذج الإداري لتوثيق طلب تنسيق إحالة صاحب الاسم المذكور أعلاه إلى الجهة الطبية المختصة، وفق الإجراءات المتبعة وبموافقة صاحب العلاقة.","هذا النموذج ليس وصفة علاجية أو تشخيصًا طبيًا ولا يجيز صرف دواء أو إجراء تدخل طبي. يُترك القرار الطبي والتقييم والعلاج حصريًا لممارس صحي مرخّص ومستقل عن نظام الطباعة."]},
  {id:"consultation_request",name:"نموذج طلب استشارة",en:"Consultation Request",icon:"✧",hint:"طلب تنسيق استشارة، دون رأي علاجي.",lines:["تسجل أكاديمية نبض بموجب هذا النموذج طلب استشارة مؤسسية أو تعليمية لصاحب المستند المذكور، ويُحال الطلب عند الحاجة إلى القسم المختص وفق الصلاحيات المتاحة.","لا يتضمن هذا النموذج أي استشارة طبية فعلية أو توصية علاجية، ولا يمثل رأيًا صادرًا عن طبيب أو مختص مرخص."]},
- {id:"complaint",name:"استمارة تقديم شكوى",en:"Complaint Form",icon:"☷",hint:"استمارة موحدة لتقديم الملاحظات والشكاوى.",lines:["استمارة إدارية موحدة لتوثيق رغبة صاحب الاسم المذكور أعلاه في تقديم شكوى أو ملاحظة إلى أكاديمية نبض للعلوم الطبية؛ ويُستكمل وصف الموضوع من مقدم الشكوى عند التسليم إلى الجهة المختصة.","موضوع الشكوى: ................................................................................","الجهة أو القسم المعني: .........................................................................","توقيع مقدم الشكوى عند التسليم (اختياري): ......................................................"]}
+ {id:"complaint",name:"استمارة تقديم شكوى",en:"Complaint Submission Form",icon:"☷",hint:"استمارة موحدة لتقديم الملاحظات والشكاوى.",lines:["استمارة إدارية موحدة لتوثيق رغبة صاحب الاسم المذكور أعلاه في تقديم شكوى أو ملاحظة إلى أكاديمية نبض للعلوم الطبية؛ ويُستكمل وصف الموضوع من مقدم الشكوى عند التسليم إلى الجهة المختصة.","موضوع الشكوى: ................................................................................","الجهة أو القسم المعني: .........................................................................","توقيع مقدم الشكوى عند التسليم (اختياري): ......................................................"]}
 ];
 const bilingualTemplates={
  statement:[
@@ -39,6 +39,24 @@ const bilingualTemplates={
   "Complainant's signature on submission (optional): ........................................"
  ]
 };
+// These are verified names from the Academy's bilingual course catalogue, not inferred achievements.
+// A title unknown in Arabic is explicitly marked as recorded in English rather than silently mistranslated.
+const confirmedCourseTitles={
+ "Medical Terminology":["المصطلحات الطبية","Medical Terminology"],
+ "General Anatomy":["التشريح العام","General Anatomy"],
+ "Physiology":["علم وظائف الأعضاء","Physiology"],
+ "Biochemistry":["الكيمياء الحيوية","Biochemistry"],
+ "Pathology":["علم الأمراض","Pathology"]
+};
+function localizedCourse(course){
+ const ar=String(course.title_ar||"").trim(),en=String(course.title_en||"").trim();
+ const known=confirmedCourseTitles[en]||confirmedCourseTitles[ar];
+ const arabicScript=/[\u0600-\u06FF]/;
+ return {
+  ar:arabicScript.test(ar)?ar:(known?.[0]||"عنوان الدورة كما في السجل: "+(ar||en||"—")),
+  en:en||known?.[1]||ar||"—"
+ };
+}
 const roleLabels={
  admin:["إدارة الأكاديمية","Academy administration"],
  student:["طالب مسجل في المنصة","Registered Academy student"],
@@ -171,6 +189,11 @@ function renderVerifiedDetails(row){
  root.replaceChildren();
  const d=row.subject_details;
  if(!d||typeof d!=="object"||!d.role){root.hidden=true;return;}
+ const heading=document.createElement("div");
+ heading.className="evidence-heading";
+ const har=document.createElement("strong");har.textContent="البيانات والمناصب والدورات المثبتة";
+ const hen=document.createElement("small");hen.textContent="VERIFIED ROLES, APPOINTMENTS & TRAINING";hen.lang="en";hen.dir="ltr";
+ heading.append(har,hen);root.append(heading);
  const role=roleLabels[d.role]||[String(d.role).slice(0,60),String(d.role).slice(0,60)];
  addEvidenceRow(root,"صفة الحساب المثبتة","Verified account role",role[0],role[1]);
  const members=Array.isArray(d.memberships)?d.memberships:[];
@@ -187,15 +210,15 @@ function renderVerifiedDetails(row){
   const hours=typeof c.hours==="number"&&c.hours>0?" ("+c.hours+" ساعة)":"";
   const hoursEn=typeof c.hours==="number"&&c.hours>0?" ("+c.hours+" hours)":"";
   addEvidenceRow(root,"دورة بشهادة صالحة "+(i+1),"Course with valid certificate "+(i+1),
-   String(c.title_ar||c.title_en||"—")+hours,
-   String(c.title_en||c.title_ar||"—")+hoursEn);
+   localizedCourse(c).ar+hours,
+   localizedCourse(c).en+hoursEn);
  });
  if(certified.length>3)addEvidenceRow(root,"دورات إضافية موثقة","Other certified courses",
    "توجد شهادات صالحة أخرى في السجل","Additional valid certificates on record");
  const ongoing=Array.isArray(d.ongoing_courses)?d.ongoing_courses:[];
  ongoing.slice(0,2).forEach((c,i)=>addEvidenceRow(root,"دورة مسجل بها حاليًا "+(i+1),"Enrolled course (not completed) "+(i+1),
-  String(c.title_ar||c.title_en||"—")+" — لم يُثبت إتمامها",
-  String(c.title_en||c.title_ar||"—")+" — completion not certified"));
+  localizedCourse(c).ar+" — لم يُثبت إتمامها",
+  localizedCourse(c).en+" — completion not certified"));
  root.hidden=false;
 }
 function linearBarcode(row){
@@ -218,24 +241,24 @@ function printDoc(row){
  $("sheet-name").textContent=row.subject_name;
  $("sheet-date").textContent=fmt(row.issued_at);
  $("sheet-date-en").textContent=englishDate(row.issued_at);
- $("sheet-issuer").textContent="المُصدر المسجل: "+row.issuer_name;
+ $("sheet-issuer").textContent="المُصدر المسجل · Registered issuer: "+row.issuer_name;
  $("sheet-number").textContent=row.number;
  const signatory=String(row.signatory_name||row.issuer_name||"إدارة أكاديمية نبض");
  const isDirector=row.signatory_kind==="director";
  $("sheet-signatory").textContent=signatory;
- $("sheet-signature-role").textContent=isDirector?"توقيع المدير العام · اعتماد إلكتروني":
-  "توقيع المُصدر المفوّض · اعتماد إلكتروني";
+ $("sheet-signature-role").textContent=isDirector?"اعتماد المدير العام · General Director":
+  "اعتماد المُصدر المفوّض · Authorized Issuer";
  $("sheet-signatory-en").textContent=isDirector?"GENERAL DIRECTOR · DIGITAL AUTHORIZATION":
   "AUTHORIZED ISSUER · DIGITAL APPROVAL";
  renderVerifiedDetails(row);
  const body=$("sheet-body");
  body.replaceChildren(
-  textSection("ar","النص الرسمي باللغة العربية",t.lines),
-  textSection("en","Official English text",bilingualTemplates[row.doc_type]||[])
+  textSection("ar","النص العربي الرسمي · ARABIC TEXT",t.lines),
+  textSection("en","OFFICIAL ENGLISH VERSION · النص الإنجليزي",bilingualTemplates[row.doc_type]||[])
  );
  $("sheet-note").textContent=row.doc_type==="complaint"?
-  "إفادة استلام نموذج شكوى لا تؤكد صحة الوقائع. Complaint intake does not validate allegations.":
-  "الأوصاف والدورات المذكورة، إن وجدت، مستخرجة وقت الإصدار من سجلات الأكاديمية المعتمدة. All listed information was verified from Academy records at issuance.";
+  "تسجيل نموذج الشكوى لا يُثبت صحة الوقائع. / Registering a complaint does not validate allegations.":
+  "الصفات والدورات الواردة، إن وجدت، مستخرجة من سجلات أكاديمية نبض عند الإصدار. / Any listed roles or courses were verified against the Academy records when this document was issued." ;
  const valid=row.status==="issued";
  const link=viewUrl(row.verify_token);
  $("verify-document").href=link;
