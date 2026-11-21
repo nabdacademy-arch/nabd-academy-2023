@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#082336">
+<title>مركز المستندات الرسمية | أكاديمية نبض</title>
+<link rel="stylesheet" href="assets/css/official-documents.css?v=1">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
+<script defer src="assets/js/config.js"></script>
+<script defer src="assets/js/supabase-client.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="assets/js/official-documents.js?v=1"></script>
+</head>
+<body>
+<header class="doc-head no-print">
+  <a class="doc-brand" href="index.html"><span class="doc-crest">✦</span><span><strong>أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY · DOCUMENTS CENTER</small></span></a>
+  <div class="doc-links"><a href="admin.html">لوحة المدير العام</a><a href="councils.html">المجالس الثمانية</a></div>
+</header>
+<main>
+  <section class="doc-hero no-print">
+    <span class="eyebrow">INSTITUTIONAL PRINT & VERIFICATION CENTER</span>
+    <h1>مركز إصدار وطباعة المستندات</h1>
+    <p>ستة قوالب رسمية ثابتة، اختيار صاحب المستند من حسابات نبض، رقم إصدار وتاريخ تلقائي، واعتماد إلكتروني مع رمز تحقق QR.</p>
+    <div class="doc-hero-chips"><span>إصدار مؤسسي</span><span>قوالب ثابتة</span><span>صلاحيات مقيّدة</span><span>تحقق إلكتروني</span></div>
+  </section>
+  <p class="feedback no-print" id="feedback" role="status" aria-live="polite">جارٍ التحقق من صلاحية إصدار المستندات…</p>
+  <section id="workspace" class="doc-workspace no-print" hidden>
+    <div class="doc-section-head"><div><span class="eyebrow">01 · DOCUMENT TEMPLATE</span><h2>اختر نوع المستند</h2></div><small>تنسيق موحد ثابت لكل نوع</small></div>
+    <div id="template-grid" class="template-grid" role="group" aria-label="أنواع المستندات"></div>
+    <div class="doc-panel">
+      <div class="doc-section-head"><div><span class="eyebrow">02 · IDENTITY FROM NABD</span><h2>اختر صاحب المستند من حسابات الأكاديمية</h2></div></div>
+      <label for="subject-query">ابحث بالاسم الكامل المسجل في نبض</label>
+      <div class="search-line"><input id="subject-query" type="search" minlength="2" maxlength="70" placeholder="ابحث عن اسم الطالب أو العضو…"><button id="search-subject" type="button" class="secondary">بحث عن حساب</button></div>
+      <div class="doc-search-results" id="search-results" aria-live="polite"></div>
+      <div id="selected-subject" class="selected-subject" hidden><span>المستفيد المختار</span><strong id="selected-name">—</strong><small id="selected-kind">—</small></div>
+      <p class="muted">يُستخدم اسم صاحب المستند من حسابه المسجل فقط. التاريخ ورقم المستند يُحددهما الخادم عند الإصدار ولا يُعدّلان يدويًا.</p>
+      <button id="issue" class="issue-button" type="button" disabled>إصدار المستند بالبيانات المعتمدة</button>
+    </div>
+    <div class="doc-panel">
+      <div class="doc-section-head"><div><span class="eyebrow">03 · ISSUE REGISTER</span><h2>السجل الإلكتروني للمستندات الصادرة</h2></div><button id="refresh-list" type="button" class="secondary">تحديث السجل ↻</button></div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+    <div class="doc-panel" id="permissions-panel" hidden>
+      <div class="doc-section-head"><div><span class="eyebrow">ADMINISTRATOR AUTHORIZATION</span><h2>تفويض إصدار المستندات</h2></div></div>
+      <p class="muted">للمدير فقط: يمكنك تحديد أي حساب في نبض ومنحه صلاحية إصدار أنواع معينة من المستندات. الحساب العادي لا يملك أي صلاحية حتى يُعتمد رسميًا.</p>
+      <label for="issuer-query">ابحث عن الموظف أو العضو لتفويضه بالاسم</label>
+      <div class="search-line"><input id="issuer-query" type="search" minlength="2" maxlength="70" placeholder="اسم العضو المكلّف…"><button type="button" class="secondary" id="issuer-search-button">بحث</button></div>
+      <div id="issuer-results" class="doc-search-results"></div>
+      <div id="issuer-selected" class="selected-subject" hidden><span>المُصدر المخوّل</span><strong id="issuer-name">—</strong></div>
+      <div class="issuer-scopes" id="issuer-scopes"></div>
+      <label class="check-line"><input type="checkbox" id="issuer-enabled" checked> تفعيل التفويض</label>
+      <button id="save-issuer" type="button" class="issue-button" disabled>حفظ صلاحيات الإصدار</button>
+      <div id="issuer-roster" class="history-list"></div>
+    </div>
+  </section>
+  <section id="print-area" class="print-area" hidden aria-label="المستند الرسمي النهائي">
+    <article class="official-sheet">
+      <div class="sheet-frame">
+        <header class="sheet-header">
+          <div class="sheet-logo"><span class="sheet-logo-mark">✦</span><span><strong>أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY FOR MEDICAL SCIENCES</small></span></div>
+          <span class="sheet-official">INSTITUTIONAL DOCUMENT</span>
+        </header>
+        <div class="sheet-ornament" aria-hidden="true">✦ ✧ ✦</div>
+        <div class="sheet-document-header">
+          <span id="sheet-kicker">NABD OFFICIAL RECORD</span>
+          <h2 id="sheet-title">—</h2>
+          <p id="sheet-subtitle">—</p>
+        </div>
+        <div class="sheet-person">
+          <div><span>اسم صاحب المستند</span><strong id="sheet-name">—</strong></div>
+          <div><span>تاريخ الإصدار</span><strong id="sheet-date">—</strong></div>
+        </div>
+        <div class="sheet-body" id="sheet-body">—</div>
+        <div class="sheet-note" id="sheet-note"></div>
+        <div class="sheet-footer">
+          <div class="issue-signature"><span>المُصدر المعتمد إلكترونيًا</span><strong id="sheet-issuer">—</strong><small>اعتماد إلكتروني مسجل في النظام، وليس توقيعًا بخط اليد</small></div>
+          <div class="institution-seal" aria-label="ختم إلكتروني مؤسسي">
+            <span>✦</span><strong>NABD ACADEMY</strong><small>ختم إلكتروني · DIGITAL SEAL</small>
+          </div>
+          <div class="sheet-qr-wrap"><div id="sheet-qr" aria-label="QR للتحقق من الوثيقة"></div><small>SCAN TO VERIFY</small></div>
+        </div>
+        <div class="sheet-bottom"><div><strong id="sheet-number">—</strong><small>رقم المستند / DOCUMENT NO.</small></div><span>هذه وثيقة داخلية صادرة من منصة أكاديمية نبض، وليست وثيقة حكومية أو ترخيصًا طبيًا.</span></div>
+      </div>
+    </article>
+    <div class="print-actions no-print">
+      <button id="print-button" type="button" class="issue-button" disabled>طباعة أو حفظ PDF</button>
+      <a id="verify-document" href="official-document-verify.html" target="_blank" rel="noopener noreferrer" class="secondary">التحقق من المستند ↗</a>
+      <button id="back-to-workspace" type="button" class="secondary">العودة للمركز</button>
+    </div>
+  </section>
+</main>
+<footer class="no-print">NABD ACADEMY · DOCUMENTS CENTER · جميع الإصدارات مسجلة وقابلة للإلغاء من المدير</footer>
+</body>
+</html>
