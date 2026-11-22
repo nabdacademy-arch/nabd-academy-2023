@@ -7,6 +7,9 @@ on:
       - 'assets/js/academy-directory.js'
       - 'assets/css/nabd-institutional-nav.css'
       - 'assets/css/academy-directory.css'
+      - 'assets/css/nabd-workspaces-organized.css'
+      - 'assets/js/nabd-admin-module-finder.js'
+      - 'tests/nabd-workspaces-organization.test.cjs'
       - 'tests/nabd-institutional-*'
       - '*.html'
       - 'atlas/*.html'
@@ -24,6 +27,9 @@ on:
       - 'assets/js/academy-directory.js'
       - 'assets/css/nabd-institutional-nav.css'
       - 'assets/css/academy-directory.css'
+      - 'assets/css/nabd-workspaces-organized.css'
+      - 'assets/js/nabd-admin-module-finder.js'
+      - 'tests/nabd-workspaces-organization.test.cjs'
       - 'tests/nabd-institutional-*'
       - '.github/workflows/nabd-institutional-navigation.yml'
   workflow_dispatch:
@@ -43,6 +49,8 @@ jobs:
         run: |
           node --check assets/js/nabd-institutional-nav.js
           node --check assets/js/academy-directory.js
+          node --check assets/js/nabd-admin-module-finder.js
+          node --test tests/nabd-workspaces-organization.test.cjs
           node --check tests/nabd-institutional-browser.cjs
           node --test tests/nabd-institutional-navigation.test.cjs
       - name: Install pinned Playwright

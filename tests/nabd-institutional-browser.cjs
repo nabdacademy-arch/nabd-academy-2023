@@ -58,6 +58,34 @@ async function main(){
    results.push({page:pagePath,navigation:"passed"});
    await page.close();
   }
+  // The section finder operates on existing tab buttons without needing credentials.
+  const adminPage=await browser.newPage({viewport:{width:390,height:844}});
+  await adminPage.goto(url("admin.html"),{waitUntil:"domcontentloaded"});
+  const initialCount=await adminPage.evaluate(()=>[...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length);
+  assert.equal(initialCount,6,"Director dashboard must start with a short essential navigation");
+  const allCount=await adminPage.evaluate(()=>{
+   const area=document.getElementById("nabdAdminCategory");
+   area.value="all";area.dispatchEvent(new Event("change",{bubbles:true}));
+   return [...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length;
+  });
+  assert.ok(allCount>=17,"Director must still access every original module");
+  const searchCount=await adminPage.evaluate(()=>{
+   const search=document.getElementById("nabdAdminSearch");
+   search.value="شهادات";search.dispatchEvent(new Event("input",{bubbles:true}));
+   return [...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length;
+  });
+  assert.ok(searchCount>=1&&searchCount<allCount,"Arabic module search must filter the full list");
+  await adminPage.close();
+  const studentPage=await browser.newPage({viewport:{width:390,height:844}});
+  await studentPage.goto(url("portal.html"),{waitUntil:"domcontentloaded"});
+  assert.equal(await studentPage.locator("details.portal-more-actions").count(),1);
+  assert.equal(await studentPage.locator("details.portal-more-actions .portal-more-links a").count(),3);
+  assert.equal(await studentPage.locator("#logoutButton").count(),1);
+  await studentPage.close();
+  const facultyPage=await browser.newPage({viewport:{width:390,height:844}});
+  await facultyPage.goto(url("lecturers.html"),{waitUntil:"domcontentloaded"});
+  assert.equal(await facultyPage.locator("#studio-workspace .nabd-faculty-shortcuts a").count(),2);
+  await facultyPage.close();
  }finally{await browser.close();}
  console.log(JSON.stringify(results));
 }
