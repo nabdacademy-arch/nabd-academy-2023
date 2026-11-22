@@ -30,7 +30,7 @@ const url=pathToFileURL(path.join(__dirname,"..","index.html")).href;
    assert.ok(horizontal<=1||vertical<=1,"Logo and actions overlap at "+width+"px: "+JSON.stringify(check));
    assert.ok(check.p.width>55,"Language selector too small at "+width);
    assert.ok(check.h.left>=-3&&check.h.right<=check.windowWidth+3,"Header exceeds viewport "+JSON.stringify(check));
-   if(width<=1399){
+   if(width<=1599){
     assert.equal(check.navDisplay,"none","Header navigation must collapse at "+width);
     assert.notEqual(check.menuDisplay,"none","Mobile menu missing at "+width);
     await page.click("#neoMenu");
@@ -49,7 +49,7 @@ const url=pathToFileURL(path.join(__dirname,"..","index.html")).href;
    await page.selectOption("#neoLang","ar");
    assert.equal(await page.locator("#nabdNeoHome").getAttribute("dir"),"rtl");
    assert.deepEqual(errors,[],"Homepage i18n script error at "+width);
-   console.log(JSON.stringify({width,header:"no overlap",menu:width<=1399?"collapsed":"desktop",fr:"translated",ur:"rtl",ar:"restored"}));
+   console.log(JSON.stringify({width,header:"no overlap",menu:width<=1599?"collapsed":"desktop",fr:"translated",ur:"rtl",ar:"restored"}));
    await page.close();
   }
   const page=await browser.newPage({viewport:{width:980,height:850}});
