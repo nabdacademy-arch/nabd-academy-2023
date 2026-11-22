@@ -70,6 +70,7 @@
               <button type="button" class="kind" data-kind="fellowship" aria-pressed="false"><span class="kind-icon">✳</span><strong data-ar="زمالة" data-en="Fellowship">زمالة</strong><small>Fellowship</small></button>
               <button type="button" class="kind" data-kind="other" aria-pressed="false"><span class="kind-icon">＋</span><strong data-ar="فرصة أخرى" data-en="Other">فرصة أخرى</strong><small>Custom</small></button>
             </div>
+            <p class="kind-context" id="kindContext" aria-live="polite" role="status">للمنح: اربط خلفيتك بالبرنامج، وادعم جدارتك بتجربة حقيقية وهدف واضح.</p>
             <input type="hidden" name="kind" id="kindInput" value="scholarship">
             <div class="field-block is-hidden" id="otherKindBlock"><label for="typeOther" data-ar="نوع الفرصة الأخرى" data-en="Other opportunity type">نوع الفرصة الأخرى</label><input id="typeOther" name="typeOther" maxlength="100" placeholder="مثال: مسابقة ريادة أعمال"></div>
             <div class="fields two">
@@ -118,6 +119,7 @@
         <h3 data-ar="ملامح رسالتك" data-en="Your letter profile">ملامح رسالتك</h3>
         <p data-ar="نساعدك تجمع عناصر رسالة أقوى، دون الحكم على فرص قبولك." data-en="We help strengthen the draft—not predict admission.">نساعدك تجمع عناصر رسالة أقوى، دون الحكم على فرص قبولك.</p>
         <div class="progress-top"><span data-ar="اكتمال المعلومات" data-en="Information completeness">اكتمال المعلومات</span><b id="qualityValue">0%</b></div><div class="progress-track"><span id="qualityBar"></span></div>
+        <p class="quality-advice" id="qualityAdvice" aria-live="polite">أولًا: اذكر اسم الفرصة المحددة التي تكتب لها.</p>
         <div class="check-list" id="checkList"><div class="check-item" data-check="opportunity"><span class="check-circle">·</span><span data-ar="فرصة محددة" data-en="Specific opportunity">فرصة محددة</span></div><div class="check-item" data-check="about"><span class="check-circle">·</span><span data-ar="قصة شخصية واضحة" data-en="Clear personal story">قصة شخصية واضحة</span></div><div class="check-item" data-check="achievements"><span class="check-circle">·</span><span data-ar="أمثلة وإنجازات حقيقية" data-en="Concrete achievements">أمثلة وإنجازات حقيقية</span></div><div class="check-item" data-check="why"><span class="check-circle">·</span><span data-ar="سبب مقنع ومحدد" data-en="Specific motivation">سبب مقنع ومحدد</span></div><div class="check-item" data-check="fit"><span class="check-circle">·</span><span data-ar="ملاءمة واضحة للفرصة" data-en="Evidence of fit">ملاءمة واضحة للفرصة</span></div><div class="check-item" data-check="future"><span class="check-circle">·</span><span data-ar="أثر أو هدف مستقبلي" data-en="A future goal">أثر أو هدف مستقبلي</span></div></div>
         <div class="quote-block"><span class="quote-mark">“</span><p data-ar="أقوى رسالة ليست الأعلى صوتًا؛ بل الأكثر صدقًا ووضوحًا وتحديدًا." data-en="The strongest letter isn't the loudest. It's the most authentic and specific.">أقوى رسالة ليست الأعلى صوتًا؛ بل الأكثر صدقًا ووضوحًا وتحديدًا.</p><small>THE NABD PRINCIPLE</small></div>
       </aside>
