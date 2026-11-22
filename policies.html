@@ -18,6 +18,7 @@
 .p-lang-en{display:none}html[lang="en"] .p-lang-en{display:initial}html[lang="en"] .p-lang-ar{display:none}
 :focus-visible{outline:3px solid #fff;outline-offset:3px}@media(max-width:680px){.p-grid{grid-template-columns:1fr}.p-hero{padding-top:42px}.p-card{padding:20px}}
 </style>
+<link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
 </head>
 <body>
 <a href="#main" class="p-lang-ar" style="position:absolute;top:-100px" onfocus="this.style.top='0'" onblur="this.style.top='-100px'">تجاوز إلى المحتوى</a>
@@ -43,5 +44,6 @@
 <script>
 (function(){var root=document.documentElement,btn=document.getElementById("policyLang");function set(l){root.lang=l;root.dir=l==="ar"?"rtl":"ltr";btn.textContent=l==="ar"?"English":"العربية";document.title=l==="ar"?"السياسات والشفافية | أكاديمية نبض العلوم الطبية":"Policies & Transparency | NABD Academy of Medical Sciences";try{localStorage.setItem("nabd_lang",l)}catch(_){}}var saved="ar";try{saved=localStorage.getItem("nabd_lang")==="en"?"en":"ar"}catch(_){}set(saved);btn.addEventListener("click",function(){set(root.lang==="ar"?"en":"ar")});})();
 </script>
+<script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 </body>
 </html>

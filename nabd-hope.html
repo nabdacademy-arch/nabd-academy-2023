@@ -97,6 +97,7 @@
 
 <link rel="stylesheet" href="assets/css/nabd-gateway-system.css?v=1">
 <script defer src="assets/js/nabd-gateway-system.js?v=1"></script>
+<link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
 </head>
 <body>
   <a class="skip" href="#content" data-t="skip">تجاوز إلى المحتوى</a>
@@ -273,5 +274,6 @@ document.getElementById("language").addEventListener("change",local);local();
 document.getElementById("hopeCopyButton").addEventListener("click",async function(){const current=dict[document.documentElement.lang]||dict.ar;const box=document.getElementById("hopeCopyStatus");try{await navigator.clipboard.writeText(address);box.textContent=current[18];}catch(e){box.textContent=current[19];let r=document.createRange();r.selectNodeContents(document.getElementById("hopeWalletAddress"));let sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}});
 })();
 </script>
+<script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 </body>
 </html>

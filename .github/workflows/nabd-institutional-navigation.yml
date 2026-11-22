@@ -1,0 +1,53 @@
+name: NABD Internal Institutional Navigation
+on:
+  pull_request:
+    paths:
+      - 'academy-directory.html'
+      - 'assets/js/nabd-institutional-nav.js'
+      - 'assets/js/academy-directory.js'
+      - 'assets/css/nabd-institutional-nav.css'
+      - 'assets/css/academy-directory.css'
+      - 'tests/nabd-institutional-*'
+      - '*.html'
+      - 'atlas/*.html'
+      - 'learning/*.html'
+      - 'impact-lab/*.html'
+      - 'infinity/*.html'
+      - 'v11/*.html'
+      - 'mohammed-ai-twin/*.html'
+      - '.github/workflows/nabd-institutional-navigation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'academy-directory.html'
+      - 'assets/js/nabd-institutional-nav.js'
+      - 'assets/js/academy-directory.js'
+      - 'assets/css/nabd-institutional-nav.css'
+      - 'assets/css/academy-directory.css'
+      - 'tests/nabd-institutional-*'
+      - '.github/workflows/nabd-institutional-navigation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  navigation-and-mobile:
+    name: Institutional directory safety and responsive browser tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate syntax, links, privacy, homepage preservation
+        run: |
+          node --check assets/js/nabd-institutional-nav.js
+          node --check assets/js/academy-directory.js
+          node --check tests/nabd-institutional-browser.cjs
+          node --test tests/nabd-institutional-navigation.test.cjs
+      - name: Install pinned Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test desktop and mobile navigation
+        run: node tests/nabd-institutional-browser.cjs

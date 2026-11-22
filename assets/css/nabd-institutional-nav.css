@@ -1,0 +1,80 @@
+/* NABD Academy institutional navigation — isolated, responsive, no homepage styles. */
+#nabdInstitutionalLauncher,
+.nabd-institutional-panel,
+.nabd-institutional-backdrop {
+  box-sizing: border-box;
+  font-family: system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+}
+#nabdInstitutionalLauncher *, .nabd-institutional-panel * {box-sizing:border-box}
+#nabdInstitutionalLauncher {
+  position:fixed;inset-block-end:max(16px,env(safe-area-inset-bottom));inset-inline-start:16px;
+  z-index:2147482000;display:inline-flex;align-items:center;gap:9px;
+  background:#102f3b!important;color:#e9f9f5!important;border:1px solid #6bbaa8!important;
+  border-radius:999px!important;box-shadow:0 8px 28px #071b26ad!important;
+  padding:7px 14px 7px 8px;min-height:43px;max-width:min(75vw,230px);
+  font-weight:750;font-size:12px;line-height:1.4;white-space:nowrap;
+  cursor:pointer;direction:inherit;opacity:.98;transition:transform .18s,background-color .18s;
+}
+#nabdInstitutionalLauncher:hover{transform:translateY(-2px);background:#194253!important}
+#nabdInstitutionalLauncher:focus-visible,.nabd-institutional-panel :focus-visible{
+ outline:3px solid #f0d7a1!important;outline-offset:3px!important;
+}
+.nabd-launcher-mark{display:grid;place-items:center;flex:none;
+ width:28px;height:28px;border-radius:50%;font-size:15px;font-weight:900;
+ background:#bc9a61;color:#112635;font-family:Georgia,serif}
+.nabd-launcher-label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.nabd-institutional-backdrop:not([hidden]){position:fixed;inset:0;display:block;
+ background:#020b14af;z-index:2147482001;backdrop-filter:blur(2px)}
+.nabd-institutional-panel:not([hidden]){position:fixed;display:flex;flex-direction:column;
+ inset-block:0;inset-inline-start:0;z-index:2147482002;
+ width:min(440px,100vw);max-height:100dvh;padding:21px 18px 12px;
+ background:#0c2734!important;color:#f4f9f8!important;
+ border-inline-end:1px solid #5c999b;box-shadow:0 14px 60px #05131aba;
+ line-height:1.55;text-align:start;overflow:hidden;direction:inherit;
+}
+.nabd-institutional-panel[hidden],.nabd-institutional-backdrop[hidden]{display:none!important}
+.nabd-institutional-head{display:flex;align-items:start;justify-content:space-between;gap:8px;margin-bottom:14px}
+.nabd-institutional-heading{display:grid;gap:4px}
+.nabd-institutional-heading strong{font-size:1.1rem;font-weight:800;color:#f4f2e9}
+.nabd-institutional-heading small{font-size:.75rem;color:#bed0d1}
+.nabd-institutional-close{width:35px;height:35px;display:grid;place-items:center;
+ border:1px solid #65918a;border-radius:10px;background:#183744;color:#fff;
+ font-size:1.6rem;cursor:pointer}
+.nabd-institutional-search{width:100%;min-height:43px!important;border-radius:11px!important;
+ padding:8px 14px!important;margin:0 0 11px!important;background:#173947!important;
+ color:#fff!important;border:1px solid #4f7e83!important;font:500 14px system-ui,sans-serif!important;
+ box-shadow:none!important}
+.nabd-institutional-search::placeholder{color:#c6d8d7}
+.nabd-institutional-toplinks{display:flex;gap:7px;flex-wrap:wrap}
+.nabd-institutional-toplinks a{font-size:12px;color:#ddf9eb!important;
+ text-decoration:none!important;padding:6px 10px!important;
+ border:1px solid #426e75;border-radius:8px;background:#173943;
+ display:inline-block;box-shadow:none!important}
+.nabd-institutional-context{margin:12px 0 10px!important;color:#c3e0d5!important;
+ font-size:12px!important;line-height:1.5!important}
+.nabd-institutional-sections{overflow:auto;min-height:0;flex:1;
+ padding:0 4px 18px 0;overscroll-behavior:contain;scrollbar-color:#538e8c #0c2734}
+.nabd-institutional-section{border-top:1px solid #3b5c64;padding:11px 0 9px}
+.nabd-institutional-section h3{color:#e2eee9!important;font-size:13px!important;
+ font-weight:800!important;line-height:1.6!important;margin:0 0 8px!important}
+.nabd-institutional-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.nabd-institutional-link,.nabd-institutional-local{display:flex;align-items:center;text-align:start;
+ color:#c9e6dc!important;text-decoration:none!important;
+ background:#153642!important;border:1px solid #3b626b!important;
+ font:600 12px/1.6 system-ui,sans-serif!important;border-radius:8px!important;
+ padding:9px 11px!important;min-width:0;min-height:40px;box-shadow:none!important;
+ overflow-wrap:anywhere;cursor:pointer}
+.nabd-institutional-link:hover,.nabd-institutional-local:hover{background:#24514c!important}
+.nabd-institutional-link.current{background:#255a50!important;border-color:#82ceae!important;color:#fff!important}
+.nabd-institutional-link[title]::after{content:"⌁";margin-inline-start:auto;color:#efdaaa}
+.nabd-institutional-local{width:100%}
+.nabd-institutional-foot{font-size:11px!important;color:#b6cbd0!important;
+ border-top:1px solid #30565d;padding-top:10px;margin:0!important}
+.nabd-institutional-sections [hidden]{display:none!important}
+@media(max-width:480px){
+ #nabdInstitutionalLauncher{inset-inline-start:11px;inset-block-end:max(11px,env(safe-area-inset-bottom));min-height:40px;font-size:11px;padding:5px 10px 5px 6px}
+ .nabd-institutional-panel:not([hidden]){padding:16px 12px 12px;width:min(100vw,390px)}
+ .nabd-institutional-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){#nabdInstitutionalLauncher{transition:none!important}}
+@media print{#nabdInstitutionalLauncher,.nabd-institutional-panel,.nabd-institutional-backdrop{display:none!important}}
