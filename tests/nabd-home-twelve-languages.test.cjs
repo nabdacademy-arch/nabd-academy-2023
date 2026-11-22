@@ -27,7 +27,7 @@ test("12-language real options and accessible mobile dropdown are wired",()=>{
  assert.match(home,/id="neoLanguageNotice" role="status"/);
  assert.match(home,/assets\/css\/nabd-neo-header-languages\.css\?v=1/);
  assert.match(home,/assets\/js\/nabd-home-i18n\.js\?v=1/);
- assert.match(read("assets/css/nabd-neo-header-languages.css"),/max-width:1399px/);
+ assert.match(read("assets/css/nabd-neo-header-languages.css"),/max-width:1599px/);
  assert.match(read("assets/css/nabd-neo-header-languages.css"),/\.neo-site\[dir="ltr"\]/);
  assert.match(base,/script\.src="assets\/js\/nabd-neo-"/);
  assert.doesNotMatch(base,/translate\.google|translat(e|or)\.googleapis|sendBeacon|fetch\(/);
