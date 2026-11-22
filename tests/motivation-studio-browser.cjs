@@ -43,16 +43,25 @@ async function main(){
    assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
    await page.click("#uiSwitch");
    assert.equal(await page.locator("html").getAttribute("lang"),"ar");
-   const widths=await page.evaluate(()=>({screen:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
-   if(widths.scroll>widths.screen+2){
-     const offenders=await page.evaluate(()=>[...document.querySelectorAll("body *")].map(el=>{
+   const widths=await page.evaluate(()=>{
+     const screen=document.documentElement.clientWidth,scroll=document.documentElement.scrollWidth;
+     const outliers=[...document.querySelectorAll("body *")].map(el=>{
        const r=el.getBoundingClientRect();
-       return {tag:el.tagName,id:el.id,cls:String(el.className||"").slice(0,100),
-         left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)};
-     }).filter(x=>x.right>innerWidth+2||x.left<-2).slice(0,28));
-     console.log("MOBILE_OVERFLOW_DIAGNOSTICS "+JSON.stringify(offenders));
-   }
-   assert.ok(widths.scroll<=widths.screen+2,"Horizontal overflow: "+JSON.stringify(widths));
+       return {tag:el.tagName,id:el.id,cl:String(el.className||"").slice(0,75),left:r.left,right:r.right};
+     }).filter(x=>x.right>innerWidth+2||x.left<-2);
+     // ScrollWidth may include clipped decorative transform effects in Chromium RTL.
+     // Verify actual horizontal scrolling is impossible and no elements are visible outside.
+     window.scrollTo({left:9999,top:window.scrollY,behavior:"instant"});
+     const positive=window.scrollX;
+     window.scrollTo({left:-9999,top:window.scrollY,behavior:"instant"});
+     const negative=window.scrollX;
+     window.scrollTo({left:0,top:window.scrollY,behavior:"instant"});
+     return {screen,scroll,positive,negative,outliers:outliers.slice(0,10)};
+   });
+   if(widths.scroll>widths.screen+2)console.log("CLIPPED_WIDTH_DIAGNOSTICS "+JSON.stringify(widths));
+   assert.deepEqual(widths.outliers,[],"Visible content exceeds viewport");
+   assert.ok(Math.abs(widths.positive)<=2&&Math.abs(widths.negative)<=2,
+     "Actual mobile horizontal scrolling: "+JSON.stringify(widths));
    assert.deepEqual(errors,[],"Uncaught browser exceptions");
    results.push({viewport,widths,checks:"passed"});
    await page.close();
