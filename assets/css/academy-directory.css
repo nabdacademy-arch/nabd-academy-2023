@@ -53,3 +53,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f0d3
 @media(max-width:750px){.directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.directory-hero{padding-top:27px}}
 @media(max-width:530px){.directory-header{align-items:flex-start}.directory-brand small{letter-spacing:0;font-size:.53rem}.directory-grid{grid-template-columns:1fr}.directory-item{min-height:140px}.directory-filters{gap:6px}.directory-filter{padding:8px 9px;min-height:36px;font-size:.72rem}.directory-hero{padding-top:24px}.directory-home{display:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Keep branding and actions readable at narrow mobile widths. */
+.directory-brand{flex:1 1 220px}
+.directory-brand strong{overflow-wrap:anywhere;line-height:1.5}
+.directory-header{flex-wrap:wrap}
+.directory-item[hidden]{display:none!important}
+@media(max-width:530px){
+ .directory-header{gap:11px;align-items:center;padding:14px 0}
+ .directory-brand{flex:1 1 100%;max-width:100%}
+ .directory-header-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}
+ .directory-home{display:inline-flex;align-items:center}
+ .directory-brand strong{font-size:.86rem}
+}
