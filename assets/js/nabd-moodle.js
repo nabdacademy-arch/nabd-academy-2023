@@ -114,29 +114,39 @@ $("mdl-sign-out").addEventListener("click",signOut);
 $("mdl-change-account").addEventListener("click",signOut);
 $("mdl-refresh").addEventListener("click",()=>refreshAll(true));
 $("mdl-language").addEventListener("click",()=>applyLanguage(state.language==="ar"?"en":"ar"));
+let lastSuccessfulRefresh=null;
 async function refreshAll(manual=false){
  if(!state.user||state.loading)return;
  const owner=state.user;
  state.loading=true;$("mdl-refresh").disabled=true;
  if(manual)notice("mdl-load-message",t("جارٍ تحديث بيانات حسابك…","Refreshing your account data…"));
- const [courses,enrollments,exams,grades]=await Promise.all([
+ try{
+  const results=await Promise.allSettled([
    db.from("courses").select("id,slug,code,title_ar,title_en,description_ar,description_en,hours,status")
      .eq("status","active").order("title_ar").limit(50),
    db.from("enrollments").select("id,course_id,status,progress,enrolled_at")
-     .eq("student_id",state.user.id).limit(100),
+     .eq("student_id",owner.id).limit(100),
    db.rpc("nabd_quality_active_exams"),
    db.rpc("nabd_quality_student_history")
- ]);
- if(state.user!==owner)return;
- const failures=[];
- if(courses.error){state.courses=null;failures.push(t("الدورات","Courses"));}else state.courses=courses.data||[];
- if(enrollments.error){state.enrollments=null;failures.push(t("التسجيلات","Enrollments"));}else state.enrollments=enrollments.data||[];
- if(exams.error){state.exams=null;failures.push(t("الامتحانات","Exams"));}else state.exams=exams.data||[];
- if(grades.error){state.grades=null;failures.push(t("الدرجات","Grades"));}else state.grades=grades.data||[];
- if(failures.length)notice("mdl-load-message",t("تعذر تحميل: ","Unable to load: ")+failures.join("، ")+".", "error");
- else notice("mdl-load-message","");
- state.loading=false;$("mdl-refresh").disabled=false;
- render();
+  ]);
+  if(state.user!==owner)return;
+  const keys=["courses","enrollments","exams","grades"],labels=[
+   t("الدورات","Courses"),t("التسجيلات","Enrollments"),
+   t("الامتحانات","Exams"),t("الدرجات","Grades")
+  ];
+  const failures=[];
+  results.forEach((result,index)=>{
+   const value=result.status==="fulfilled"?result.value:null;
+   if(!value||value.error||!Array.isArray(value.data)){
+    state[keys[index]]=null;failures.push(labels[index]);
+   }else state[keys[index]]=value.data;
+  });
+  lastSuccessfulRefresh=failures.length?null:Date.now();
+  notice("mdl-load-message",failures.length?t("تعذر تحميل: ","Unable to load: ")+failures.join(state.language==="ar"?"، ":", ")+".":"",failures.length?"error":"");
+  render();
+ }finally{
+  if(state.user===owner){state.loading=false;$("mdl-refresh").disabled=false;}
+ }
 }
 function stat(id,value){$(id).textContent=value===null?"—":String(value)}
 function render(){
@@ -171,7 +181,9 @@ function renderExams(){
      node("span","",String(exam.duration_minutes||60)+" "+t("دقيقة","min")),
      node("span","",exam.course_title||t("جميع الدورات","All courses")));
    card.append(meta);
-   if(gradeIds.has(exam.id)){
+   if(state.grades===null){
+     card.append(node("p","mdl-empty",t("تعذّر التحقق من التسليم السابق. حدّث البيانات.","Could not verify previous submissions. Refresh your data.")));
+   }else if(gradeIds.has(exam.id)){
      card.append(node("p","mdl-pill pending",t("سبق تسليم هذا الامتحان — راجع درجاتي","Already submitted — see My grades")));
      const gradesLink=node("a","mdl-outline",t("عرض نتيجتي","View my result"));
      gradesLink.href="#mdl-grades-section";card.append(gradesLink);
@@ -289,6 +301,12 @@ $("mdl-language").textContent=startLang==="ar"?"EN":"عربي";
 applyLanguage(startLang);
 authenticate();
 setInterval(()=>{if(state.user&&document.visibilityState==="visible")updateTimers()},1000);
-setInterval(()=>{if(state.user&&document.visibilityState==="visible")refreshAll()},60000);
-document.addEventListener("visibilitychange",()=>{if(state.user&&document.visibilityState==="visible")refreshAll()});
+function refreshWhenVisible(){
+ if(document.visibilityState!=="visible"||window.navigator?.onLine===false)return;
+ if(lastSuccessfulRefresh!==null&&Date.now()-lastSuccessfulRefresh<30000)return;
+ return refreshAll();
+}
+setInterval(refreshWhenVisible,60000);
+document.addEventListener("visibilitychange",refreshWhenVisible);
+window.addEventListener("online",()=>{lastSuccessfulRefresh=null;refreshWhenVisible()});
 })();
