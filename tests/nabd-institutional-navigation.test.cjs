@@ -9,14 +9,14 @@ const nav=read("assets/js/nabd-institutional-nav.js");
 const dirJS=read("assets/js/academy-directory.js");
 const navCSS=read("assets/css/nabd-institutional-nav.css");
 const dirHTML=read("academy-directory.html");
-const routes=["academy.html","portal.html","admin.html","nabd-moodle.html","student-exams.html","course.html","lecturers.html","quality-exams.html","research.html","research-office.html","research-news.html","research-manager.html","scholarships.html","scholarship-manager.html","councils.html","official-documents.html","nabd-campus.html","nabd-university-360.html","nabd-global-research.html","motivation-studio.html","nabd-connect.html","policies.html","nabd-hope.html","atlas/index.html","learning/index.html","learning/zero.html","global-lectures.html","nabd-360-lecturers.html","research-starter-lab.html","nabd-partners.html","nabd-2050.html","nabd-next-frontier.html","impact-lab/index.html","nabd-medical-knowledge.html","enroll.html","skill-passport.html","medical-consultations.html","application-status.html","council-documents.html","official-document-verify.html","council-verify.html","nabd-one.html","nabd-v10.html","nabd-science-immune.html","nabd-ai-executive.html","open-doors-ai.html","open-doors-masters.html","atlas/clinical-hub.html","atlas/heart-lab.html","atlas/hospital-3d.html","learning/crisis-evidence.html","campus.html","university-os.html","infinity/index.html","v11/index.html","mohammed-ai-twin/index.html"];
+const routes=["academy.html","portal.html","admin.html","nabd-moodle.html","student-exams.html","course.html","lecturers.html","quality-exams.html","research.html","research-office.html","research-news.html","research-manager.html","scholarships.html","scholarship-manager.html","councils.html","official-documents.html","nabd-campus.html","nabd-university-360.html","nabd-global-research.html","motivation-studio.html","nabd-connect.html","policies.html","nabd-hope.html","atlas/index.html","learning/index.html","learning/zero.html","global-lectures.html","nabd-360-lecturers.html","research-starter-lab.html","nabd-partners.html","nabd-2050.html","nabd-next-frontier.html","impact-lab/index.html","nabd-health-impact.html","nabd-medical-knowledge.html","enroll.html","skill-passport.html","medical-consultations.html","application-status.html","council-documents.html","official-document-verify.html","council-verify.html","nabd-one.html","nabd-v10.html","nabd-science-immune.html","nabd-ai-executive.html","open-doors-ai.html","open-doors-masters.html","atlas/clinical-hub.html","atlas/heart-lab.html","atlas/hospital-3d.html","learning/crisis-evidence.html","campus.html","university-os.html","infinity/index.html","v11/index.html","mohammed-ai-twin/index.html"];
 const catalog=JSON.parse(nav.match(/const catalog=(\[[\s\S]+?\]);\nconst categories=/)?.[1]||"null");
 test("no alteration to the existing academy homepage",()=>{
  assert.ok(!read("index.html").includes("data-nabd-institutional-nav"));
  assert.ok(!read("academy-full.html").includes("data-nabd-institutional-nav"));
 });
 test("exactly targeted internal pages load the isolated navigation assets",()=>{
- assert.equal(routes.length,56);
+ assert.equal(routes.length,57);
  for(const page of routes){
   assert.ok(fs.existsSync(path.join(root,page)),page+" missing");
   const s=read(page);
@@ -28,7 +28,7 @@ test("exactly targeted internal pages load the isolated navigation assets",()=>{
 });
 test("the complete directory catalog links to real pages and has unique targets",()=>{
  assert.ok(Array.isArray(catalog));
- assert.equal(catalog.length,39);
+ assert.equal(catalog.length,40);
  const seen=new Set();
  for(const entry of catalog){
   const [page,ar,en,descAr,descEn,group,restricted,essential]=entry;
