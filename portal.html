@@ -983,8 +983,9 @@ body.portal-body{
 <script defer src="assets/js/nabd-gateway-system.js?v=1"></script>
 <link rel="stylesheet" href="assets/css/quality-feed.css?v=1">
 <link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
+<link rel="stylesheet" href="assets/css/nabd-workspaces-organized.css?v=1">
 </head>
-<body class="portal-body">
+<body class="portal-body nabd-student-workspace">
 <!-- =====================================================
        HEADER
        ===================================================== -->
@@ -1223,18 +1224,19 @@ body.portal-body{
 </h1>
 <p class="student-email" id="studentEmail"></p>
 </div>
-<div class="dashboard-actions">
+<div class="dashboard-actions" aria-label="خدمات الطالب الأساسية">
 <a class="btn" href="nabd-moodle.html">◈ مودل نبض · دوراتي وامتحاناتي ودرجاتي</a>
 <a class="btn" href="learning/">عالمي التعليمي · Student Universe</a>
-<a class="btn btn-ghost" href="lecturers.html">موارد المحاضرين · Teaching resources</a>
-<a class="btn btn-ghost" href="academy.html">مسارات نبض · Pathways</a>
 <a class="btn" href="university-os.html">◈ نظام الدراسة V22 · UNIVERSITY OS</a>
-<a class="btn btn-light" href="index.html#courses">
-            Explore Courses
-          </a>
-<button class="btn logout-btn" id="logoutButton" type="button">
-            Sign out
-          </button>
+<button class="btn logout-btn" id="logoutButton" type="button">Sign out</button>
+<details class="portal-more-actions">
+  <summary>خدمات إضافية <span lang="en">/ More services</span></summary>
+  <nav class="portal-more-links" aria-label="خدمات طالب إضافية">
+    <a class="btn btn-ghost" href="lecturers.html">موارد المحاضرين · Teaching resources</a>
+    <a class="btn btn-ghost" href="academy.html">مسارات نبض · Pathways</a>
+    <a class="btn btn-light" href="index.html#courses">Explore Courses</a>
+  </nav>
+</details>
 </div>
 </div>
 <!-- =================================================
