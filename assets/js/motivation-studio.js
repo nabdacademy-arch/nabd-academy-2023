@@ -274,7 +274,7 @@
  const briefIds=["fullName","typeOther","specialty","opportunity","organization",
    "about","achievements","why","fit","future","requirements","challenges",
    "avoid","region","moment","mustInclude","wordLimit","language","tone","length"];
- const kinds=["scholarship","university","job","internship","research",
+ const supportedKinds=["scholarship","university","job","internship","research",
    "volunteer","exchange","fellowship","other"];
  function clearWorkspace(){
    form.reset();
@@ -306,7 +306,7 @@
      if(file.size>25000)throw Error("large");
      const data=JSON.parse(await file.text());
      if(data?.format!=="NABD_MOTIVATION_BRIEF"||data.version!==1||
-       !kinds.includes(data.kind)||!data.fields||typeof data.fields!=="object"||
+       !supportedKinds.includes(data.kind)||!data.fields||typeof data.fields!=="object"||
        Array.isArray(data.fields))throw Error("invalid");
      const restore={};
      for(const id of briefIds){
