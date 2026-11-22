@@ -6,6 +6,7 @@
  const form=$("letterForm"),status=$("status"),resultPanel=$("resultPanel"),output=$("generatedLetter");
  if(!form||!status||!resultPanel||!output)return;
  let ui="ar",step=1,variant=1,busy=false,captchaId=null;
+ const drafts=[];let selectedDraft=-1; // Personal drafts exist only in this browser tab.
  const feedback={
   ar:{opportunity:"اكتب اسم الفرصة أو البرنامج أولًا.",about:"احكِ لنا عن نفسك بما لا يقل عن 35 حرفًا، حتى تصبح الرسالة شخصية فعلًا.",
       why:"اشرح سبب رغبتك في هذه الفرصة بصورة أوضح (18 حرفًا على الأقل).",
@@ -165,7 +166,7 @@
    }
    $("uiSwitch").textContent=ui==="ar"?"EN / عربي":"عربي / EN";
    $("uiSwitch").setAttribute("aria-label",ui==="ar"?"Switch to English":"التبديل إلى العربية");
-   updateContext();updateQuality();
+   updateContext();updateQuality();countWords();renderDrafts();
    clearNotice();
  }
  $("uiSwitch").addEventListener("click",switchUI);
@@ -194,8 +195,9 @@
  }
  function buildPayload(token){
    const keys=["fullName","typeOther","specialty","opportunity","organization","about","achievements","why","fit","future",
-    "requirements","challenges","avoid","region"];
+    "requirements","challenges","avoid","region","moment","mustInclude"];
    const obj={kind:value("kind"),language:value("language"),tone:value("tone"),length:value("length"),
+     wordLimit:value("wordLimit")===""?0:Number(value("wordLimit")),
      variation:variant,aiConsent:$("aiConsent").checked,turnstileToken:token};
    for(const key of keys)obj[key]=value(key);
    return obj;
@@ -206,15 +208,146 @@
      const li=document.createElement("li");li.textContent=String(text);ul.appendChild(li);
    }
  }
+
+ function wordTotal(str){const s=str.trim();return s?s.split(/\s+/u).length:0;}
  function countWords(){
-   const s=output.value.trim();$("wordCount").textContent=(s?s.split(/\s+/u).length:0)+" words";
+   const str=output.value,words=wordTotal(str),cap=Number(value("wordLimit"));
+   const hasCap=Number.isInteger(cap)&&cap>=150&&cap<=900;
+   $("wordCount").textContent=words+(ui==="ar"?" كلمة":" words");
+   const status=$("wordLimitStatus");
+   status.textContent=(ui==="ar"?"الكلمات: ":"Words: ")+words+(hasCap?" / "+cap:"");
+   status.classList.toggle("over-limit",hasCap&&words>cap);
+   const note=$("genericWarning");
+   note.textContent=/since (i was|my) (a child|childhood)|i have always been passionate|منذ نعومة أظفاري|فرصة العمر|لطالما حلمت|depuis mon enfance/i.test(str)?
+    (ui==="ar"?"تنبيه أسلوبي: توجد عبارة شائعة؛ استبدلها بمثال شخصي إن أمكن.":"Style note: consider replacing a common phrase with a personal example."):"";
+   note.classList.toggle("letter-warning",Boolean(note.textContent));
  }
- output.addEventListener("input",countWords);
+ function clearChecks(){for(const id of ["checkFacts","checkFit","checkVoice"])$(id).checked=false;}
+ function renderDrafts(){
+   const tabs=$("draftTabs");tabs.replaceChildren();
+   $("draftHistory").hidden=drafts.length===0;
+   drafts.forEach((d,i)=>{
+     const btn=document.createElement("button");btn.type="button";btn.className="draft-tab";
+     btn.textContent=(ui==="ar"?"مسودة ":"Draft ")+(i+1);
+     btn.setAttribute("aria-pressed",String(i===selectedDraft));
+     btn.addEventListener("click",()=>showDraft(i));tabs.appendChild(btn);
+   });
+   $("compareBtn").hidden=drafts.length<2;
+ }
+ function showDraft(i){
+   if(i<0||i>=drafts.length)return;
+   selectedDraft=i;
+   const d=drafts[i];
+   output.value=d.letter;output.dir=d.language==="ar"?"rtl":"ltr";output.lang=d.language;
+   listInto("strengthList",d.notes,ui==="ar"?"راجع النص مع شخص تثق به.":"Review the text with someone you trust.");
+   listInto("missingList",d.missing,msg("noMissing"));
+   countWords();clearChecks();renderDrafts();resultPanel.hidden=false;
+ }
+ function rememberDraft(data,language){
+   if(drafts.length===4){drafts.shift();if(selectedDraft>=0)selectedDraft--;}
+   drafts.push({letter:String(data.letter||"").trim(),language,
+     notes:Array.isArray(data.notes)?data.notes.slice(0,5):[],
+     missing:Array.isArray(data.missing)?data.missing.slice(0,5):[]});
+   showDraft(drafts.length-1);
+ }
+ function compareDrafts(){
+   const panel=$("comparePanel"),columns=$("compareColumns");
+   if(drafts.length<2){panel.hidden=true;return;}
+   if(!panel.hidden){panel.hidden=true;return;}
+   columns.replaceChildren();
+   drafts.slice(-2).forEach((draft,i)=>{
+     const section=document.createElement("section");section.className="compare-draft";
+     const name=document.createElement("b");name.textContent=(ui==="ar"?"مسودة ":"Draft ")+(drafts.length-1+i);
+     const text=document.createElement("pre");text.dir=draft.language==="ar"?"rtl":"ltr";
+     text.textContent=draft.letter;
+     section.append(name,text);columns.appendChild(section);
+   });
+   panel.hidden=false;panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+ }
+ $("compareBtn").addEventListener("click",compareDrafts);
+ $("closeCompareBtn").addEventListener("click",()=>{$("comparePanel").hidden=true;});
+ $("wordLimit").addEventListener("input",countWords);
+ output.addEventListener("input",()=>{
+   if(selectedDraft>=0&&drafts[selectedDraft])drafts[selectedDraft].letter=output.value;
+   clearChecks();countWords();
+ });
+ const briefIds=["fullName","typeOther","specialty","opportunity","organization",
+   "about","achievements","why","fit","future","requirements","challenges",
+   "avoid","region","moment","mustInclude","wordLimit","language","tone","length"];
+ const kinds=["scholarship","university","job","internship","research",
+   "volunteer","exchange","fellowship","other"];
+ function clearWorkspace(){
+   form.reset();
+   const defaultKind=document.querySelector('[data-kind="scholarship"]');
+   if(defaultKind)defaultKind.click();
+   drafts.length=0;selectedDraft=-1;variant=1;output.value="";
+   resultPanel.hidden=true;$("comparePanel").hidden=true;
+   $("briefFile").value="";clearChecks();renderDrafts();updateQuality();countWords();setStep(1);
+ }
+ function downloadText(text,name,mime){
+   const url=URL.createObjectURL(new Blob([text],{type:mime}));
+   const a=document.createElement("a");a.href=url;a.download=name;
+   document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),1500);
+ }
+ $("saveBrief").addEventListener("click",()=>{
+   if(!window.confirm(ui==="ar"?
+    "سيحتوي ملف JSON على معلوماتك الشخصية. سيُحفظ على جهازك فقط، فاحتفظ به في مكان آمن. تنزيل؟":
+    "The JSON file will contain your personal details. It is saved only on your device. Keep it secure. Download?"))return;
+   const fields={};for(const id of briefIds)fields[id]=value(id);
+   const data={format:"NABD_MOTIVATION_BRIEF",version:1,kind:value("kind"),fields};
+   downloadText(JSON.stringify(data,null,2),"NABD-Application-Brief.json","application/json;charset=utf-8");
+   notify(ui==="ar"?"نُزّل ملف الطلب إلى جهازك دون حفظه على خادم نبض.":"Brief downloaded to your device; nothing stored by NABD.","success");
+ });
+ $("loadBrief").addEventListener("click",()=>$("briefFile").click());
+ $("briefFile").addEventListener("change",async()=>{
+   const file=$("briefFile").files?.[0];if(!file)return;
+   try{
+     if(file.size>25000)throw Error("large");
+     const data=JSON.parse(await file.text());
+     if(data?.format!=="NABD_MOTIVATION_BRIEF"||data.version!==1||
+       !kinds.includes(data.kind)||!data.fields||typeof data.fields!=="object"||
+       Array.isArray(data.fields))throw Error("invalid");
+     const restore={};
+     for(const id of briefIds){
+       const field=form.elements.namedItem(id),raw=data.fields[id]??"";
+       if(typeof raw!=="string"||raw.length>(field?.maxLength>0?field.maxLength:1800))
+         throw Error("field");
+       restore[id]=raw;
+     }
+     if(restore.wordLimit!==""&&(!/^\d{1,3}$/.test(restore.wordLimit)||
+       Number(restore.wordLimit)<150||Number(restore.wordLimit)>900))throw Error("cap");
+     if(!["ar","en","fr"].includes(restore.language)||!["authentic","confident","formal"].includes(restore.tone)||
+       !["short","standard","detailed"].includes(restore.length))throw Error("choices");
+     clearWorkspace();
+     document.querySelector('[data-kind="'+data.kind+'"]').click();
+     for(const id of briefIds)form.elements.namedItem(id).value=restore[id];
+     // Never inherit AI consent from a previously exported file.
+     $("aiConsent").checked=false;
+     updateContext();updateQuality();countWords();
+     notify(ui==="ar"?"تم استيراد الملف محليًا. يجب الموافقة مجددًا إذا أردت استخدام الذكاء الاصطناعي.":"Brief loaded locally. Fresh AI consent is still required.","success");
+   }catch{
+     notify(ui==="ar"?"تعذر استيراد الملف. استخدم ملف NABD Brief أصليًا أقل من 25 كيلوبايت.":"Could not import this file. Use an original NABD Brief under 25 KB.");
+   }finally{$("briefFile").value="";}
+ });
+ $("resetBrief").addEventListener("click",()=>{
+   if(window.confirm(ui==="ar"?"مسح بياناتك والمسودات من هذه الجلسة؟ لا يمكن التراجع.":"Clear all application inputs and drafts from this session? This cannot be undone."))clearWorkspace();
+ });
+ $("printBtn").addEventListener("click",()=>{
+   if(!output.value.trim())return;
+   const paper=$("printLetter");paper.textContent=output.value;paper.dir=output.dir;paper.lang=output.lang;
+   window.print();
+ });
  form.addEventListener("submit",async event=>{
    event.preventDefault();
    if(busy)return;
    if(step!==3){setStep(3);return;}
    if(!verifyStep(1)||!verifyStep(2)||!verifyStep(3))return;
+   if(value("wordLimit")!==""&&(!/^\d{1,3}$/.test(value("wordLimit"))||
+       Number(value("wordLimit"))<150||Number(value("wordLimit"))>900)){
+     notify(ui==="ar"?"أدخل حد كلمات صحيحًا بين 150 و900.":"Please enter a word limit between 150 and 900.");
+     $("wordLimit").focus();return;
+   }
    const token=captchaToken();
    if(!token){notify("captcha");loadCaptcha();return;}
    busy=true;const btn=$("generateBtn");
@@ -229,11 +362,7 @@
      let data={};try{data=await response.json();}catch{}
      if(!response.ok||data.ok!==true||typeof data.letter!=="string")
        throw Error(data.code||"server");
-     output.value=data.letter.trim();
-     output.dir=value("language")==="ar"?"rtl":"ltr";
-     listInto("strengthList",data.notes,ui==="ar"?"راجع التعبير وقوّته مع شخص موثوق.":"Review the writing with someone you trust.");
-     listInto("missingList",data.missing,msg("noMissing"));
-     countWords();resultPanel.hidden=false;
+     rememberDraft(data,value("language"));
      // All 9 writing strategies remain available; never get stuck on seed 9.
      // Choose a different next seed so consecutive requests have distinct guidance.
      const random=new Uint32Array(1);
@@ -256,11 +385,7 @@
  });
  $("downloadBtn").addEventListener("click",()=>{
    if(!output.value.trim())return;
-   const blob=new Blob([output.value],{type:"text/plain;charset=utf-8"});
-   const url=URL.createObjectURL(blob);
-   const anchor=document.createElement("a");anchor.href=url;anchor.download="NABD-Motivation-Letter.txt";
-   document.body.appendChild(anchor);anchor.click();anchor.remove();
-   setTimeout(()=>URL.revokeObjectURL(url),1500);
+   downloadText("\ufeff"+output.value,"NABD-Motivation-Letter.txt","text/plain;charset=utf-8");
    notify("save","success");
  });
  $("newVariantBtn").addEventListener("click",()=>{
