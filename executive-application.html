@@ -114,7 +114,20 @@ const roles=[
 ["Deputy Director General","نائب المدير العام"],["Academic Affairs Director","مدير الشؤون الأكاديمية"],["Research Director","مدير البحث العلمي"],["Operations Director","مدير العمليات"],["Partnerships Director","مدير العلاقات والشراكات"],["Scholarships & Student Support Director","مدير المنح ودعم الطلبة"],["Fundraising & Development Director","مدير التمويل وتنمية الموارد"],["Media & PR Director","مدير الإعلام والعلاقات العامة"],["Technology & Digital Transformation Director","مدير التقنية والتحول الرقمي"],["HR & Volunteers Director","مدير الموارد البشرية والمتطوعين"],["Executive Secretary","أمين سر المجلس التنفيذي"]
 ];
 let lang="ar";const $=id=>document.getElementById(id);
-function fillRoles(){["position_applied","alternative_position"].forEach(id=>{const s=$(id),first=s.options[0];s.innerHTML="";s.appendChild(first);roles.forEach(([en,ar])=>{const o=document.createElement("option");o.value=en;o.textContent=lang==="ar"?ar:en;s.appendChild(o)})})}
+function fillRoles(){
+  for(const id of ["position_applied","alternative_position"]){
+    const select=$(id);
+    roles.forEach(([value,arabic],index)=>{
+      let option=select.options[index+1];
+      if(!option){
+        option=document.createElement("option");
+        option.value=value;
+        select.appendChild(option);
+      }
+      option.textContent=lang==="ar"?arabic:value;
+    });
+  }
+}
 function setLang(next){lang=next;document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-ar][data-en]").forEach(el=>el.textContent=el.dataset[lang]);$("langBtn").textContent=lang==="ar"?"English":"العربية";fillRoles()}
 $("langBtn").onclick=()=>setLang(lang==="ar"?"en":"ar");fillRoles();
 function val(id){return $(id).value.trim()||null}function num(id){return $(id).value?Number($(id).value):null}
