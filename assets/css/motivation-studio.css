@@ -3,3 +3,8 @@
 html{overflow-x:clip}
 body{width:100%;max-width:100%;overflow-x:clip}
 @media (max-width:620px){.hero,.hero-visual,.form-card,.insight-card,.studio-layout,.workspace,.shell{max-width:100%;min-width:0}.hero-visual{overflow:clip}.hero-visual .orbit{pointer-events:none}}
+
+/* Purpose-adaptive advice: accessible and readable from 320px up. */
+.kind-context{border:1px solid rgba(119,228,184,.25);border-inline-start:3px solid var(--mint);background:rgba(51,134,111,.12);color:#d1f4e4;font-size:.78rem;line-height:1.9;padding:11px 15px;border-radius:11px;margin:-10px 0 23px}
+.quality-advice{margin:11px 0 4px;color:#b4d8ce;font-size:.74rem;line-height:1.8;min-height:34px}
+@media(max-width:620px){.kind-context{font-size:.74rem;padding:10px 12px}.quality-advice{min-height:0}}

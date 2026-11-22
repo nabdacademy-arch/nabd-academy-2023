@@ -26,6 +26,14 @@ async function main(){
    await page.click('[data-next="2"]');
    assert.equal(await page.locator('[data-step="1"]').isVisible(),true,"required opportunity should block next");
    await page.fill("#opportunity","Computer Science Scholarship 2027");
+   // Every application goal changes actual guidance and relevant examples.
+   const uniqueHints=new Set();
+   for(const kind of ["scholarship","university","job","internship","research",
+     "volunteer","exchange","fellowship","other"]){
+     await page.click('[data-kind="'+kind+'"]');
+     uniqueHints.add(await page.locator("#kindContext").textContent());
+   }
+   assert.equal(uniqueHints.size,9,"Nine goals must offer distinct advice");
    await page.click('[data-kind="university"]');
    assert.equal(await page.locator("#kindInput").inputValue(),"university");
    await page.click('[data-next="2"]');
@@ -38,9 +46,12 @@ async function main(){
    await page.fill("#why","This specific opportunity would help me study software engineering and create useful tools for learners.");
    await page.fill("#fit","My previous software projects align with its community impact goals.");
    assert.equal(await page.locator("#qualityValue").textContent(),"100%");
+   assert.match(await page.locator("#qualityAdvice").textContent(),/اكتمال|العناصر/);
    await page.click("#uiSwitch");
    assert.equal(await page.locator("html").getAttribute("lang"),"en");
    assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
+   assert.match(await page.locator("#kindContext").textContent(),/For admission/);
+   assert.match(await page.locator("#qualityAdvice").textContent(),/not an admission score/);
    await page.click("#uiSwitch");
    assert.equal(await page.locator("html").getAttribute("lang"),"ar");
    const widths=await page.evaluate(()=>{

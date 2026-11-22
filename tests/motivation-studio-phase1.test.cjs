@@ -63,3 +63,26 @@ test("editable result includes download, copy and fresh variant controls",()=>{
  assert.match(js,/new Blob\(/);
  assert.match(js,/output\.addEventListener\("input"/);
 });
+
+test("every opportunity type drives purpose-specific hints and server writing criteria",()=>{
+ for(const kind of ["scholarship","university","job","internship","research",
+   "volunteer","exchange","fellowship","other"]){
+   assert.match(js,new RegExp('\\b'+kind+':\\['),
+     "Missing tailored UI hints for "+kind);
+   assert.match(edge,new RegExp('\\b'+kind+':"'),
+     "Missing tailored AI instructions for "+kind);
+ }
+ assert.match(html,/id="kindContext"[^>]*aria-live="polite"/);
+ assert.match(html,/id="qualityAdvice"[^>]*aria-live="polite"/);
+ assert.match(js,/function updateContext\(/);
+ assert.match(js,/function updateAdvice\(/);
+});
+
+test("variation strategies change without changing application facts",()=>{
+ assert.match(edge,/const structures=\[/);
+ assert.match(edge,/const writingAngle=structures\[/);
+ assert.match(edge,/Never use a rigid template/);
+ assert.match(js,/const jump=1\+\(random\[0\]%8\)/);
+ assert.match(js,/variant=\(\(variant-1\+jump\)%9\)\+1/);
+ assert.doesNotMatch(js,/localStorage|sessionStorage|sb_secret_/i);
+});
