@@ -6,7 +6,7 @@ const fs=require("node:fs");
 test("archive and republish require a confirmed change by the current publisher",async()=>{
   function element(){
     return {children:[],classList:{add(){},remove(){}},addEventListener(name,cb){this[name]=cb;},
-      replaceChildren(){this.children=[];},append(...children){this.children.push(...children);}};
+      reset(){},replaceChildren(){this.children=[];},append(...children){this.children.push(...children);}};
   }
   const nodes=new Map();
   function get(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);}
@@ -30,7 +30,7 @@ test("archive and republish require a confirmed change by the current publisher"
         }};
     }};
   vm.runInNewContext(fs.readFileSync(require.resolve("../assets/js/scholarship-center.js"),"utf8"),{
-    window:{nabdSupabase:db},document:{querySelector:key=>key==="[data-scholarship-manager]",getElementById:get,createElement:element}
+    window:{nabdSupabase:db,NABD_CONFIG:{supabaseUrl:"https://example.test",supabaseAnonKey:"public"},supabase:{createClient:()=>db}},document:{querySelector:key=>key==="[data-scholarship-manager]",getElementById:get,createElement:element}
   });
   await new Promise(resolve=>setImmediate(resolve));
   const action=()=>get("sch-managed-posts").children[0].children[1].children[1];
