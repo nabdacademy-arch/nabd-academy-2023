@@ -1,0 +1,65 @@
+name: NABD Motivation Studio - phase 1
+on:
+  pull_request:
+    paths:
+      - 'motivation-studio.html'
+      - 'assets/css/motivation-studio.css'
+      - 'assets/js/motivation-studio.js'
+      - 'supabase/functions/nabd-motivation-studio/**'
+      - 'supabase/migrations/*nabd_motivation*'
+      - 'tests/motivation-studio*'
+      - '.github/workflows/nabd-motivation-studio.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'motivation-studio.html'
+      - 'assets/css/motivation-studio.css'
+      - 'assets/js/motivation-studio.js'
+      - 'tests/motivation-studio*'
+      - '.github/workflows/nabd-motivation-studio.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-and-browser:
+    name: Static integrity and real Chromium interactions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax and targeted integrity tests
+        run: |
+          node --check assets/js/motivation-studio.js
+          node --check tests/motivation-studio-browser.cjs
+          node --test tests/motivation-studio-phase1.test.cjs
+      - name: Verify live AI endpoint health safely (no generation)
+        run: |
+          node - <<'NODE'
+          (async()=>{
+            const url='https://zsmmmljgguycrvyrmakl.supabase.co/functions/v1/nabd-motivation-studio';
+            const r=await fetch(url,{headers:{Origin:'https://nabdacademy-arch.github.io'}});
+            if(r.status!==200)throw Error('Motivation AI health endpoint status: '+r.status);
+            const j=await r.json();
+            console.log('NABD MOTIVATION API',JSON.stringify(j));
+            if(j.status!=='ok')throw Error('Health endpoint response invalid');
+            if(j.ready!==true)console.warn('Deployment exists but provider / rate / Turnstile credentials need configuration; AI generation is not yet available.');
+            const denied=await fetch(url,{headers:{Origin:'https://evil.example'}});
+            if(denied.status!==403)throw Error('Origin guard was not enforced');
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - name: Install pinned headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Simulate desktop and mobile form steps without submitting personal data
+        run: node tests/motivation-studio-browser.cjs
+      - name: Upload browser test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nabd-motivation-studio-browser-audit
+          path: audit/motivation-studio-browser.json
+          if-no-files-found: ignore
