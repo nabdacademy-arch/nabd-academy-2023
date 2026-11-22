@@ -111,7 +111,7 @@ test("word limits and grounded evidence pass defensible bounds",()=>{
  assert.match(edge,/Evidence-first editing/);
  assert.match(edge,/Distinguish aspirations from completed accomplishments/);
  assert.match(edge,/actual>input\.wordLimit/);
- assert.match(js,/requested/); // prose is anchored to the current applicant's requested limits
+ assert.match(js,/wordLimitStatus/);
  assert.match(js,/classList\.toggle\("over-limit"/);
  assert.match(js,/letter-warning/);
 });
