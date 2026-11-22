@@ -1463,13 +1463,29 @@ body.portal-body{
 
   const reverse = new Map(Array.from(pairs.entries()).map(([en,ar])=>[ar,en]));
 
-  function lang(){ return localStorage.getItem("nabd_lang")==="ar" ? "ar" : "en"; }
+  const languageKey = "nabd_lang";
+  let language = "en";
+  try {
+    if (localStorage.getItem(languageKey) === "ar") language = "ar";
+  } catch {
+    // Storage can be unavailable on shared or restricted devices.
+  }
 
   function translateTextNode(node){
     const raw=node.nodeValue;
     const t=raw.trim();
     if(!t) return;
-    const target = lang()==="ar" ? pairs.get(t) : reverse.get(t);
+    const paragraph = node.parentElement.closest(".student-certificate-card p");
+    if (paragraph) {
+      if (node.parentElement !== paragraph) return;
+      const labels = language === "ar"
+        ? {"Certificate ID:":"رقم الشهادة:", "Issue date:":"تاريخ الإصدار:"}
+        : {"رقم الشهادة:":"Certificate ID:", "تاريخ الإصدار:":"Issue date:"};
+      const label = Object.keys(labels).find(prefix => t.startsWith(prefix));
+      if (label) node.nodeValue = raw.replace(label, labels[label]);
+      return;
+    }
+    const target = language==="ar" ? pairs.get(t) : reverse.get(t);
     if(target && target!==t) node.nodeValue = raw.replace(t,target);
   }
 
@@ -1484,17 +1500,11 @@ body.portal-body{
       translateTextNode(node);
     });
 
-    if(lang()==="ar"){
-      root.querySelectorAll?.(".student-certificate-card p").forEach(p=>{
-        p.innerHTML=p.innerHTML
-          .replace(/Certificate ID:/g,"رقم الشهادة:")
-          .replace(/Issue date:/g,"تاريخ الإصدار:");
-      });
-    }
+
   }
 
   function apply(){
-    const ar=lang()==="ar";
+    const ar=language==="ar";
     document.documentElement.lang=ar?"ar":"en";
     document.documentElement.dir=ar?"rtl":"ltr";
     document.title=ar?"بوابة الطالب | أكاديمية نبض":"Student Portal | NABD Academy";
@@ -1508,8 +1518,24 @@ body.portal-body{
   }
 
   document.addEventListener("DOMContentLoaded",()=>{
+    window.addEventListener("storage", event => {
+      if (event.key !== languageKey && event.key !== null) return;
+      try {
+        if (event.storageArea !== localStorage) return;
+        language = localStorage.getItem(languageKey) === "ar" ? "ar" : "en";
+      } catch {
+        return;
+      }
+      apply();
+    });
+
     document.getElementById("portalLangBtn")?.addEventListener("click",()=>{
-      localStorage.setItem("nabd_lang",lang()==="ar"?"en":"ar");
+      language = language === "ar" ? "en" : "ar";
+      try {
+        localStorage.setItem(languageKey, language);
+      } catch {
+        // The selected language still applies for this page visit.
+      }
       apply();
     });
 
