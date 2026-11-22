@@ -55,3 +55,14 @@
  .neo-site .neo-language-select{max-width:86px;font-size:.69rem}
 }
 @media(prefers-reduced-motion:reduce){.neo-site .neo-nav{scroll-behavior:auto}}
+
+.neo-site[dir="ltr"]{direction:ltr!important}
+.neo-site[dir="rtl"]{direction:rtl!important}
+.neo-site .neo-actions{position:relative}
+.neo-site #neoLanguageNotice:not([hidden]){position:absolute;top:calc(100% + 9px);inset-inline-end:0;
+  z-index:1005;display:block;width:min(275px,85vw);padding:9px 12px;
+  background:#193f49;color:#fff3de;border:1px solid #edcb91;
+  border-radius:10px;font-size:.76rem;line-height:1.6;box-shadow:0 12px 35px #07141c7e}
+.neo-site #neoLanguageNotice[hidden]{display:none!important}
+.neo-site .neo-brand>span:last-child strong{line-height:1.35}
+.neo-site .neo-nav.neo-open{max-height:min(65vh,530px);overflow-y:auto}
