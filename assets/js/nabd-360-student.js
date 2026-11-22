@@ -70,7 +70,15 @@ function planControls(){
   const option=node("option","",course?local(course.title_ar,course.title_en):tr("المقرر المسجل","Enrolled course")+" "+e.course_id.slice(0,8));
   option.value=e.course_id;sel.append(option)
  }
- sel.value=state.plans?.course_id||"";
+ const savedCourse=state.plans?.course_id;
+ if(savedCourse&&!(state.enrollments||[]).some(e=>e.course_id===savedCourse)){
+  const option=node("option");
+  option.dataset.ar="المقرر المحفوظ في خطتك";
+  option.dataset.en="Course saved in your plan";
+  option.textContent=option.dataset[state.lang];
+  option.value=savedCourse;sel.append(option)
+ }
+ sel.value=savedCourse||"";
  $("n360-minutes").value=String(state.plans?.weekly_goal_minutes??180);
  $("n360-focus").value=state.plans?.focus_note||"";
 }
@@ -98,11 +106,13 @@ async function loadStudent(){
 async function savePlan(e){
  e.preventDefault();if(state.busy||!state.user||!state.db)return;
  const userId=state.user.id,courseId=$("n360-course").value||null,goal=Number($("n360-minutes").value),focus=$("n360-focus").value.trim();
- if(!Number.isInteger(goal)||goal<30||goal>900||focus.length>240||(courseId&&!(state.enrollments||[]).some(x=>x.course_id===courseId))){note("n360-plan-status","تحقق من المقرر والهدف الأسبوعي.","Verify the selected course and weekly goal.",true);return}
+ const keepCourse=state.plans?.user_id===userId&&courseId===state.plans.course_id;
+ if(!Number.isInteger(goal)||goal<30||goal>900||focus.length>240||(courseId&&!keepCourse&&!(state.enrollments||[]).some(x=>x.course_id===courseId))){note("n360-plan-status","تحقق من المقرر والهدف الأسبوعي.","Verify the selected course and weekly goal.",true);return}
  if(privatePattern.test(focus)){note("n360-plan-status","لا تضع معلومات شخصية أو بيانات مرضى في هدفك.","Don't include personal or patient information in a study goal.",true);return}
  state.busy=true;$("n360-save-plan").disabled=true;
  try{
-  const payload={course_id:courseId,weekly_goal_minutes:goal,focus_note:focus,updated_at:new Date().toISOString()};
+  const payload={weekly_goal_minutes:goal,focus_note:focus,updated_at:new Date().toISOString()};
+  if(!keepCourse)payload.course_id=courseId;
   const query=state.plans?state.db.from("nabd_360_study_plans").update(payload).eq("user_id",userId).select("user_id,course_id,weekly_goal_minutes,focus_note").maybeSingle():state.db.from("nabd_360_study_plans").insert({user_id:userId,...payload}).select("user_id,course_id,weekly_goal_minutes,focus_note").single();
   const {data,error}=await query;if(error||!data||data.user_id!==userId)throw error||Error("No row returned");
   state.plans=data;note("n360-plan-status","حُفظ هدفك في حسابك فعلًا.","Your private study goal was saved.");renderRecommendations()
