@@ -2636,7 +2636,7 @@
       ? "أكاديمية نبض العلوم الطبية"
       : "NABD Academy of Medical Sciences";
 
-    var wantedDir = ar ? "rtl" : "ltr";
+    var wantedDir = /^(ar|ur)(-|$)/i.test(document.documentElement.getAttribute("lang")||"") ? "rtl" : "ltr";
     if (document.documentElement.getAttribute("dir") !== wantedDir) {
       document.documentElement.setAttribute("dir", wantedDir);
     }
