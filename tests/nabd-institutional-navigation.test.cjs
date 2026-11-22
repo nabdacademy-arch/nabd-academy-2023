@@ -62,3 +62,15 @@ test("navigation is privacy-preserving, accessible, and staff access is not impl
  assert.doesNotMatch(nav,/localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon|document\.cookie|eval\(/);
  assert.doesNotMatch(dirJS,/localStorage|sessionStorage|indexedDB|fetch\(|sendBeacon|document\.cookie|eval\(/);
 });
+
+test("inner navigation defaults to essential services with full catalog on demand",()=>{
+ assert.equal(catalog.filter(e=>e[7]===1).length,8);
+ assert.match(nav,/let showAll=false/);
+ assert.match(nav,/a\.dataset\.essential=entry\.essential/);
+ assert.match(nav,/Boolean\(query\)\|\|showAll\|\|a\.dataset\.essential==="1"/);
+ assert.match(nav,/essentialsMode\.addEventListener\("click"/);
+ assert.match(nav,/allMode\.addEventListener\("click"/);
+ assert.match(nav,/resultStatus\.setAttribute\("aria-live","polite"\)/);
+ assert.match(navCSS,/\.nabd-institutional-mode\[aria-pressed="true"\]/);
+ assert.match(dirJS,/const active=!query&&button\.dataset\.filter===filter/);
+});

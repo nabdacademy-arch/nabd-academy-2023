@@ -14,7 +14,7 @@ const textElement=(name,cl,txt)=>{
  const node=document.createElement(name);
  if(cl)node.className=cl;if(txt!==undefined)node.textContent=txt;return node;
 };
-const normalize=str=>String(str||"").toLowerCase().normalize("NFKD").replace(/[\u064b-\u065f\u0670]/g,"");
+const normalize=str=>String(str||"").toLowerCase().normalize("NFKD").replace(/[\u064b-\u065f\u0670\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي");
 const cards=entries.map(entry=>{
  const link=textElement("a","directory-item");
  link.href=d.href(entry.path);link.dataset.group=entry.group;link.dataset.essential=String(entry.essential);
@@ -59,11 +59,10 @@ function render(){
   const visible=matchQuery&&matchGroup;
   link.hidden=!visible;if(visible)shown++;
  }
- grid.querySelectorAll(".directory-item[hidden]").forEach(node=>{node.style.display="none"});
- grid.querySelectorAll(".directory-item:not([hidden])").forEach(node=>{node.style.display=""});
+ // CSS honors the hidden attribute, including with the flex card layout.
  const buttons=document.querySelectorAll(".directory-filter");
  for(const button of buttons){
-  const active=button.dataset.filter===filter;
+  const active=!query&&button.dataset.filter===filter;
   button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));
  }
  const head=$("directoryHeading");

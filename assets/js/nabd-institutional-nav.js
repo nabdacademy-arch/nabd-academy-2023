@@ -21,6 +21,7 @@ const entries=catalog.map(([path,ar,en,descAr,descEn,group,restricted,essential]
 const pagePath=decodeURIComponent(location.pathname.replace(root.pathname,""))||"index.html";
 const lang=()=>document.documentElement.lang.toLowerCase().startsWith("en")?"en":"ar";
 const text=(ar,en)=>lang()==="ar"?ar:en;
+const normalize=value=>String(value||"").toLowerCase().normalize("NFKD").replace(/[\u064b-\u065f\u0670\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي");
 const href=path=>new URL(path,root).href;
 const el=(tag,classes,content)=>{
  const n=document.createElement(tag);if(classes)n.className=classes;
@@ -60,6 +61,17 @@ const link=(path,label,cls)=>{
 };
 toplinks.append(link("index.html",text("الرئيسية","Home")),link("academy-directory.html",text("كل الخدمات","All services")),
  link("policies.html",text("السياسات","Policies")));
+const modes=el("div","nabd-institutional-modes");
+modes.setAttribute("role","group");
+modes.setAttribute("aria-label",text("عرض الخدمات","Service view"));
+const essentialsMode=el("button","nabd-institutional-mode",text("الأساسية","Essentials"));
+const allMode=el("button","nabd-institutional-mode",text("جميع الخدمات","All services"));
+essentialsMode.type=allMode.type="button";
+modes.append(essentialsMode,allMode);
+const resultStatus=el("p","nabd-institutional-result-status");
+resultStatus.setAttribute("role","status");
+resultStatus.setAttribute("aria-live","polite");
+let showAll=false;
 const current=entries.find(e=>e.path===pagePath);
 const context=el("p","nabd-institutional-context",
  current?text("أنت الآن في: "+current.ar,"Current: "+current.en):
@@ -79,6 +91,7 @@ if(headings.length>=2){
    hide();node.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth",block:"start"});
   });items.append(button);
  });
+ local.dataset.local="1";
  local.append(items);sections.append(local);
 }
 for(const [category,meta] of Object.entries(categories)){
@@ -90,7 +103,8 @@ for(const [category,meta] of Object.entries(categories)){
  const items=el("div","nabd-institutional-links");
  group.forEach(entry=>{
   const a=link(entry.path,text(entry.ar,entry.en),"nabd-institutional-link");
-  a.dataset.keywords=[entry.ar,entry.en,entry.descAr,entry.descEn].join(" ").toLowerCase();
+  a.dataset.keywords=normalize([entry.ar,entry.en,entry.descAr,entry.descEn,categories[entry.group].ar,categories[entry.group].en].join(" "));
+  a.dataset.essential=entry.essential?"1":"0";
   if(entry.path===pagePath){a.setAttribute("aria-current","page");a.classList.add("current");}
   if(entry.restricted)a.title=text("تتطلب صلاحية مناسبة","Requires authorization");
   items.append(a);
@@ -99,19 +113,29 @@ for(const [category,meta] of Object.entries(categories)){
 }
 const foot=el("p","nabd-institutional-foot",
  text("عرض الروابط لا يمنح صلاحيات؛ الدخول المقيّد يخضع لنظام كل بوابة.","Listing a service does not grant access; each portal enforces authorization."));
-panel.append(header,toplinks,context,search,sections,foot);
+panel.append(header,toplinks,context,search,modes,resultStatus,sections,foot);
 document.body.append(backdrop,panel);
 let previousFocus=null,previousOverflow="";
 function renderFilter(){
- const query=search.value.trim().toLowerCase();
+ const query=normalize(search.value.trim());
+ let total=0;
  for(const section of sections.querySelectorAll(".nabd-institutional-section[data-group]")){
   let visible=0;
   for(const a of section.querySelectorAll("a")){
-   const show=!query||a.dataset.keywords.includes(query);
-   a.hidden=!show;if(show)visible++;
+   const matches=!query||a.dataset.keywords.includes(query);
+   const show=matches&&(Boolean(query)||showAll||a.dataset.essential==="1");
+   a.hidden=!show;if(show){visible++;total++;}
   }
   section.hidden=visible===0;
  }
+ for(const local of sections.querySelectorAll(".nabd-institutional-section[data-local]")){
+  local.hidden=Boolean(query)||!showAll;
+ }
+ essentialsMode.setAttribute("aria-pressed",String(!showAll&&!query));
+ allMode.setAttribute("aria-pressed",String(showAll&&!query));
+ resultStatus.textContent=query
+  ?(total?text(total+" نتيجة بحث",total+" search result"+(total===1?"":"s")):text("لا توجد نتائج؛ جرّب كلمة أخرى.","No services found. Try another term."))
+  :text(total+" خدمة متاحة للعرض",total+" service"+(total===1?"":"s")+" shown");
 }
 function open(){
  previousFocus=document.activeElement;previousOverflow=document.body.style.overflow;
@@ -126,6 +150,8 @@ function hide(){
 launcher.addEventListener("click",()=>panel.hidden?open():hide());
 close.addEventListener("click",hide);backdrop.addEventListener("click",hide);
 search.addEventListener("input",renderFilter);
+essentialsMode.addEventListener("click",()=>{showAll=false;search.value="";renderFilter();});
+allMode.addEventListener("click",()=>{showAll=true;search.value="";renderFilter();});
 panel.addEventListener("keydown",event=>{
  if(event.key==="Escape"){event.preventDefault();hide();return;}
  if(event.key!=="Tab")return;
@@ -145,6 +171,12 @@ const refreshLanguage=()=>{
  search.setAttribute("aria-label",text("ابحث عن خدمة أو بوابة","Search services and portals"));
  title.querySelector("strong").textContent=text("دليل خدمات الأكاديمية","Academy Services");
  title.querySelector("small").textContent=text("تصفح واضح دون تغيير صفحتك الحالية","Find what you need without leaving this page");
+ modes.setAttribute("aria-label",text("عرض الخدمات","Service view"));
+ essentialsMode.textContent=text("الأساسية","Essentials");
+ allMode.textContent=text("جميع الخدمات","All services");
+ const localTitle=sections.querySelector("[data-local] h3");
+ if(localTitle)localTitle.textContent=text("داخل هذه الصفحة","On this page");
+ renderFilter();
  const top=toplinks.querySelectorAll("a");
  top[0].textContent=text("الرئيسية","Home");top[1].textContent=text("كل الخدمات","All services");top[2].textContent=text("السياسات","Policies");
  context.textContent=current?text("أنت الآن في: "+current.ar,"Current: "+current.en):text("تنقّل بين الأقسام دون فقدان بيانات الصفحة","Move between services without changing this page");

@@ -44,6 +44,11 @@ async function main(){
    await launcher.click();
    await page.locator("#nabdInstitutionalPanel").waitFor({state:"visible"});
    assert.equal(await launcher.getAttribute("aria-expanded"),"true");
+   assert.equal(await page.locator(".nabd-institutional-link:visible").count(),8,"Only essential shortcuts should be visible by default");
+   await page.locator(".nabd-institutional-mode").nth(1).click();
+   assert.equal(await page.locator(".nabd-institutional-link:visible").count(),39,"All services reveals the full catalog");
+   await page.locator(".nabd-institutional-mode").nth(0).click();
+   assert.equal(await page.locator(".nabd-institutional-link:visible").count(),8,"Essentials returns to the compact view");
    await page.fill(".nabd-institutional-search","Motivation");
    assert.equal(await page.locator('.nabd-institutional-link[href$="/motivation-studio.html"]').isVisible(),true);
    assert.equal(await page.locator('.nabd-institutional-link[href$="/admin.html"]').isVisible(),false);
