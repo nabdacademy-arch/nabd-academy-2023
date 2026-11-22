@@ -41,15 +41,40 @@ async function openTicket(id){
  $("nc-reply").value=replyDrafts.get(id)||"";const serial=++S.serial;
  $("nc-thread-title").textContent=ticket.subject;$("nc-thread-status").textContent=status(ticket.status);$("nc-reply-form").hidden=ticket.status==="resolved";renderTickets();
  const host=$("nc-messages");host.replaceChildren(make("p","nc-empty",tr("جارٍ تحميل الرسائل…","Loading messages…")));
- try{
-  const {data,error}=await S.db.from("nabd_support_messages").select("id,ticket_id,sender_id,body,created_at").eq("ticket_id",ticket.id).order("created_at",{ascending:true}).limit(150);
-  if(serial!==S.serial||S.ticket?.id!==ticket.id)return;
-  if(error)throw error;
-  host.replaceChildren();
-  if(!data?.length)host.append(make("p","nc-empty",tr("لا توجد رسائل بعد.","No messages yet.")));
-  else for(const row of data)host.append(showMsg(row));
-  notify("");
- }catch(err){if(serial!==S.serial)return;host.replaceChildren(make("p","nc-empty",tr("لم يُسمح بجلب الرسائل أو فشل الاتصال.","Messages are unavailable or access was denied.")));notify(tr("تعذّر تحميل الرسائل.","Could not load messages."),true)}
+ const pageSize=150;
+ const current=()=>serial===S.serial&&S.ticket?.id===ticket.id;
+ async function loadPage(before,button){
+  if(button?.disabled)return;
+  if(button)button.disabled=true;
+  try{
+   let query=S.db.from("nabd_support_messages").select("id,ticket_id,sender_id,body,created_at").eq("ticket_id",ticket.id);
+   if(before){
+    // The timestamp and UUID are database values from the oldest displayed row.
+    query=query.or("created_at.lt."+before.created_at+",and(created_at.eq."+before.created_at+",id.lt."+before.id+")");
+   }
+   const {data,error}=await query.order("created_at",{ascending:false}).order("id",{ascending:false}).limit(pageSize+1);
+   if(!current())return;
+   if(error)throw error;
+   const rows=(data||[]).slice(0,pageSize).reverse();
+   if(button)button.remove();else host.replaceChildren();
+   if(!rows.length&&!before)host.append(make("p","nc-empty",tr("لا توجد رسائل بعد.","No messages yet.")));
+   host.prepend(...rows.map(showMsg));
+   if(data?.length>pageSize){
+    const older=make("button","one-btn secondary");older.type="button";
+    older.dataset.ar="عرض رسائل أقدم";older.dataset.en="Show older messages";
+    older.textContent=older.dataset[S.lang];
+    older.addEventListener("click",()=>{void loadPage(rows[0],older)});
+    host.prepend(older)
+   }
+   notify("");
+  }catch(err){
+   if(!current())return;
+   if(button)button.disabled=false;
+   else host.replaceChildren(make("p","nc-empty",tr("لم يُسمح بجلب الرسائل أو فشل الاتصال.","Messages are unavailable or access was denied.")));
+   notify(tr("تعذّر تحميل الرسائل.","Could not load messages."),true)
+  }
+ }
+ await loadPage(null,null);
 }
 async function loadTickets(preferred){
  if(!S.db||!S.user)return;
