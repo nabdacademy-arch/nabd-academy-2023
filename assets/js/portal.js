@@ -279,6 +279,7 @@ function openForgotPassword() {
 
 
 function openResetPassword() {
+  dashboardRequest++;
   state.recoveryMode = true;
 
   showAuth();
@@ -443,16 +444,15 @@ async function loadCertificates(user) {
    LOAD CLAIMS
    ========================================================= */
 
-async function loadClaims(user) {
-  if (!window.nabdSupabase || !user) {
-    return [];
-  }
+async function loadClaims(user, fallback = []) {
+  if (!user?.id) return [];
+  if (!window.nabdSupabase) return fallback;
 
   try {
     const { data, error } =
       await window.nabdSupabase
         .from("certificate_claims")
-        .select("*")
+        .select("certificate_id,status")
         .eq("student_id", user.id)
         .order(
           "created_at",
@@ -461,16 +461,16 @@ async function loadClaims(user) {
 
     if (error) {
       console.warn(error);
-      return [];
+      return fallback;
     }
 
     return Array.isArray(data)
       ? data
-      : [];
+      : fallback;
 
   } catch (error) {
     console.error(error);
-    return [];
+    return fallback;
   }
 }
 
@@ -873,8 +873,19 @@ function renderClaims() {
    CLAIM CERTIFICATE
    ========================================================= */
 
+let activeClaim = null;
+
+function resetClaimForm() {
+  activeClaim = null;
+  const input = $("#claimCertificateId");
+  if (input) input.value = "";
+  setStatus($("#claimCertificateStatus"), "");
+  setButtonLoading($("#claimCertificateButton"), false, "", "Submit Claim");
+}
+
 async function handleCertificateClaim(event) {
   event.preventDefault();
+  if (activeClaim) return;
 
 
   const input =
@@ -934,6 +945,11 @@ async function handleCertificateClaim(event) {
   }
 
 
+  const owner = state.user;
+  const request = {};
+  activeClaim = request;
+  const isCurrent = () => activeClaim === request && state.user?.id === owner.id;
+
   setButtonLoading(
     button,
     true,
@@ -953,6 +969,7 @@ async function handleCertificateClaim(event) {
       );
 
 
+    if (!isCurrent()) return;
     if (error) {
       throw error;
     }
@@ -1026,7 +1043,7 @@ async function handleCertificateClaim(event) {
         .insert([
           {
             student_id:
-              state.user.id,
+              owner.id,
 
             certificate_id:
               certificateId,
@@ -1037,6 +1054,7 @@ async function handleCertificateClaim(event) {
         ]);
 
 
+    if (!isCurrent()) return;
     if (insertError) {
       throw insertError;
     }
@@ -1054,16 +1072,23 @@ async function handleCertificateClaim(event) {
     );
 
 
-    state.claims =
-      await loadClaims(
-        state.user
-      );
+    // The insert succeeded even if the following list refresh loses its connection.
+    state.claims = [
+      { certificate_id: certificateId, status: "pending" },
+      ...state.claims.filter(claim => normalizeCertificateId(claim.certificate_id) !== certificateId)
+    ];
+    renderClaims();
+
+    const claims = await loadClaims(owner, state.claims);
+    if (!isCurrent() || claims === state.claims) return;
+    state.claims = claims;
 
 
     renderClaims();
 
 
   } catch (error) {
+    if (!isCurrent()) return;
     console.error(
       "Claim error:",
       error
@@ -1077,12 +1102,10 @@ async function handleCertificateClaim(event) {
     );
 
   } finally {
-    setButtonLoading(
-      button,
-      false,
-      "Submitting claim…",
-      "Submit Claim"
-    );
+    if (activeClaim === request) {
+      activeClaim = null;
+      setButtonLoading(button, false, "", "Submit Claim");
+    }
   }
 }
 
@@ -1091,13 +1114,21 @@ async function handleCertificateClaim(event) {
    LOAD DASHBOARD
    ========================================================= */
 
+let dashboardRequest = 0;
+
 async function loadDashboard(user) {
+  const request = ++dashboardRequest;
+  const isCurrent = () => request === dashboardRequest && state.user === user && !state.recoveryMode;
   if (!user) {
     openSignIn();
     return;
   }
 
 
+  if (state.user?.id !== user.id) {
+    resetClaimForm();
+    $("#dashboardSection")?.classList.remove("active");
+  }
   state.user = user;
 
   showLoader(true);
@@ -1119,6 +1150,8 @@ async function loadDashboard(user) {
     ]);
 
 
+    if (!isCurrent()) return;
+
     state.profile = profile;
     state.courses = courses;
     state.enrollments = enrollments;
@@ -1137,15 +1170,18 @@ async function loadDashboard(user) {
 
 
   } catch (error) {
+    if (!isCurrent()) return;
     console.error(
       "Dashboard load error:",
       error
     );
 
-    showDashboard();
+    state.user = null;
+    openSignIn();
+    setStatus($("#signInStatus"), "The portal could not load your session. Please try again.", "error");
 
   } finally {
-    showLoader(false);
+    if (isCurrent()) showLoader(false);
   }
 }
 
@@ -1662,6 +1698,7 @@ async function handleLogout() {
   }
 
 
+  resetClaimForm();
   state.user = null;
   state.profile = null;
   state.courses = [];
@@ -1771,6 +1808,7 @@ function listenForAuthChanges() {
           event ===
           "PASSWORD_RECOVERY"
         ) {
+          resetClaimForm();
           state.recoveryMode = true;
 
           openResetPassword();
@@ -1783,6 +1821,8 @@ function listenForAuthChanges() {
           event ===
           "SIGNED_OUT"
         ) {
+          resetClaimForm();
+          state.user = null;
           if (!state.recoveryMode) {
             openSignIn();
           }
