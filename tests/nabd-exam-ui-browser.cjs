@@ -60,6 +60,7 @@ function mockClient(role){
     }
     if(name==="nabd_quality_active_exams")return {data:[{id:examId,title:"QA 20-question exam",
       course_title:"QA",question_count:20,duration_minutes:60,closes_at:new Date(Date.now()+3600000).toISOString()}],error:null};
+    if(name==="nabd_quality_proctor_student_state")return {data:{open:true,enabled:false},error:null};
     if(name==="nabd_quality_student_questions")return {data:{id:examId,title:"QA 20-question exam",questions:state.questions,
       closes_at:new Date(Date.now()+3600000).toISOString()},error:null};
     if(name==="nabd_quality_student_history_v2")return {data:state.submissions.map(s=>({...s,
