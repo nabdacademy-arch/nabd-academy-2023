@@ -6,7 +6,7 @@ const pages=[
  "index.html","portal.html","admin.html","nabd-moodle.html",
  "scholarships.html","scholarship-manager.html","quality-exams.html",
  "student-exams.html","open-doors-masters.html","learning/index.html",
- "nabd-university-360.html","nabd-connect.html","research.html","course.html"
+ "nabd-university-360.html","nabd-connect.html","research.html","course.html","motivation-studio.html"
 ];
 async function main(){
  const browser=await chromium.launch({headless:true});
@@ -42,7 +42,7 @@ async function main(){
    await page.close();
   }
   const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-  for(const route of ["index.html","portal.html","nabd-moodle.html","scholarships.html","open-doors-masters.html"]){
+  for(const route of ["index.html","portal.html","nabd-moodle.html","scholarships.html","open-doors-masters.html","motivation-studio.html"]){
    const response=await mobile.goto(new URL(route,base).href,{waitUntil:"domcontentloaded",timeout:30000});
    const content=await mobile.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth,body:document.body?.innerText.length||0}));
    console.log("MOBILE "+route+" "+JSON.stringify({status:response?.status(),...content}));
