@@ -36,6 +36,7 @@
       offset+=rows.length;
       more.hidden=rows.length<pageSize;
       render();
+      status('تم تحميل السجلات المتاحة وفق صلاحيات حسابك.');
     }catch(error){
       if(token===generation)throw error;
     }finally{
@@ -97,7 +98,9 @@
     const d=row.starts_at?new Date(row.starts_at):null;form.elements.starts_at.value=d?new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16):'';el('editor-title').textContent='تعديل السجل';el('studio-editor').scrollIntoView({block:'start'});form.elements.title.focus();});
   el('studio-cancel').onclick=()=>{el('studio-record').reset();el('studio-record').elements.id.value='';el('editor-title').textContent='صمّم جلسة أو موردًا'};
   el('studio-refresh').onclick=()=>busy(el('studio-refresh'),refresh);
-  el('studio-more').onclick=()=>busy(el('studio-more'),()=>loadPage());
+  // loadPage owns its own lock. Wrapping it in busy() would disable the
+  // button before loadPage checks it, preventing pagination entirely.
+  el('studio-more').onclick=()=>loadPage().catch(report);
   el('studio-logout').onclick=()=>busy(el('studio-logout'),async()=>{const result=await db.auth.signOut();if(result.error)throw result.error;await refresh()});
   el('studio-search').oninput=render;el('studio-filter').onchange=render;
   function clearAccount(){
