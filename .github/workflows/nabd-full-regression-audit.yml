@@ -1,0 +1,55 @@
+name: NABD non-destructive full regression audit
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax-and-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax of all JavaScript modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+            count=$((count+1))
+          done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) ! -path './node_modules/*' ! -path './.git/*' -print0)
+          echo "Syntax checked: $count JavaScript files"
+      - name: Run all native Node regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/*.test.cjs tests/*.test.mjs
+  deployed-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Verify actual GitHub Pages HTTP responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://nabdacademy-arch.github.io/nabd-academy-2023"
+          missing=0
+          pages=(
+            "index.html" "portal.html" "admin.html" "nabd-moodle.html"
+            "scholarships.html" "scholarship-manager.html" "quality-exams.html"
+            "student-exams.html" "open-doors-masters.html" "learning/index.html"
+            "nabd-university-360.html" "nabd-connect.html" "research.html" "course.html"
+          )
+          for page in "${pages[@]}"; do
+            code=$(curl --retry 2 --retry-delay 2 --max-time 25 -sSL -o /dev/null -w '%{http_code}' "$base/$page") || code=000
+            printf '%-32s %s\n' "$page" "$code"
+            if [[ "$code" != "200" ]]; then missing=$((missing+1)); fi
+          done
+          echo "Unavailable production pages: $missing / ${#pages[@]}"
+          test "$missing" -eq 0
