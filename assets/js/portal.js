@@ -1721,25 +1721,16 @@ function setupPasswordButtons() {
    ========================================================= */
 
 function detectRecoveryURL() {
-  const hash =
-    window.location.hash || "";
-
-  const query =
-    window.location.search || "";
-
-
-  if (
-    hash.includes("type=recovery") ||
-    query.includes("type=recovery")
-  ) {
-    state.recoveryMode = true;
-    openResetPassword();
-
-    return true;
+  const { search, hash } = window.location;
+  if (!search && !hash) return false;
+  const query = new URLSearchParams(search);
+  const fragment = new URLSearchParams((hash || "").slice(1));
+  if (query.get("type") !== "recovery" && fragment.get("type") !== "recovery") {
+    return false;
   }
 
-
-  return false;
+  openResetPassword();
+  return true;
 }
 
 
