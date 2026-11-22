@@ -1327,6 +1327,7 @@
 @media(prefers-reduced-motion:reduce){.neo-site *, .neo-site *:before,.neo-site *:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
 </style>
+<link rel="stylesheet" href="assets/css/nabd-neo-mobile-languages.css?v=1">
 </head>
 <body class="nfs-home">
 
@@ -1349,7 +1350,25 @@
         <a href="#neo-directory" data-neo-ar="المنصات والخدمات" data-neo-en="Explore all">المنصات والخدمات</a>
       </nav>
       <div class="neo-actions">
-        <button id="neoLang" class="neo-language" type="button" aria-label="Switch to English / تبديل اللغة" aria-pressed="false">🌐 <span id="neoLangLabel">English</span></button>
+        <div class="neo-locale">
+          <button id="neoLang" class="neo-language" type="button" aria-label="اختر لغة العرض / Choose display language" aria-haspopup="true" aria-controls="neoLangMenu" aria-expanded="false">🌐 <span id="neoLangLabel">AR</span><span class="neo-lang-chevron" aria-hidden="true">▾</span></button>
+          <div id="neoLangMenu" class="neo-lang-menu" role="group" aria-label="لغات العرض / Display languages" hidden>
+            <button type="button" data-home-lang="ar" lang="ar" aria-pressed="true">العربية</button>
+            <button type="button" data-home-lang="en" lang="en" aria-pressed="false">English</button>
+            <button type="button" data-home-lang="fr" lang="fr" aria-pressed="false">Français</button>
+            <button type="button" data-home-lang="es" lang="es" aria-pressed="false">Español</button>
+            <button type="button" data-home-lang="tr" lang="tr" aria-pressed="false">Türkçe</button>
+            <button type="button" data-home-lang="ru" lang="ru" aria-pressed="false">Русский</button>
+            <button type="button" data-home-lang="de" lang="de" aria-pressed="false">Deutsch</button>
+            <button type="button" data-home-lang="it" lang="it" aria-pressed="false">Italiano</button>
+            <button type="button" data-home-lang="id" lang="id" aria-pressed="false">Bahasa Indonesia</button>
+            <button type="button" data-home-lang="pt" lang="pt" aria-pressed="false">Português</button>
+            <button type="button" data-home-lang="zh" lang="zh" aria-pressed="false">简体中文</button>
+            <button type="button" data-home-lang="ur" lang="ur" aria-pressed="false">اردو</button>
+            <p class="neo-lang-hint">ترجمة لصفحة الأكاديمية الرئيسية · Translation for the homepage</p>
+          </div>
+          <span id="neoLangLoading" class="neo-lang-loading" aria-live="polite" hidden></span>
+        </div>
         <a class="neo-signin" href="portal.html" data-neo-ar="دخول الطالب ↗" data-neo-en="Student portal ↗">دخول الطالب ↗</a>
         <button id="neoMenu" class="neo-menu" type="button" aria-label="افتح القائمة / Open menu" aria-controls="neoNav" aria-expanded="false">☰</button>
       </div>
@@ -2657,29 +2676,85 @@
 </script>
 </div>
 
+<script src="assets/js/nabd-neo-locale-data.js?v=1"></script>
 <script id="nabd-neo-home-script">
 (function(){
 "use strict";
-const root=document.getElementById("nabdNeoHome"),switcher=document.getElementById("neoLang"),langLabel=document.getElementById("neoLangLabel");
+const root=document.getElementById("nabdNeoHome");
+const switcher=document.getElementById("neoLang"),label=document.getElementById("neoLangLabel");
+const menu=document.getElementById("neoLangMenu"),loadNotice=document.getElementById("neoLangLoading");
 const nav=document.getElementById("neoNav"),toggle=document.getElementById("neoMenu");
-if(!root||!switcher||!nav||!toggle)return;
-function applyLanguage(lang){
-  const en=lang==="en";
-  root.lang=en?"en":"ar";root.dir=en?"ltr":"rtl";switcher.setAttribute("aria-pressed",String(en));
-  langLabel.textContent=en?"العربية":"English";
-  root.querySelectorAll("[data-neo-ar][data-neo-en]").forEach(el=>{const text=el.getAttribute("data-neo-"+(en?"en":"ar"));if(text!==null)el.textContent=text;});
-  try{localStorage.setItem("nabdCompactHomeLanguage",en?"en":"ar")}catch(_){}
+const service=window.NABD_HOME_LOCALES;
+if(!root||!switcher||!menu||!nav||!toggle||!service)return;
+const supported=new Set(service.locales.map(l=>l.code));
+const abbreviations={ar:"AR",en:"EN",fr:"FR",es:"ES",tr:"TR",ru:"RU",de:"DE",it:"IT",id:"ID",pt:"PT",zh:"中",ur:"اردو"};
+let active="ar",revision=0;
+const optionButtons=[...menu.querySelectorAll("button[data-home-lang]")];
+function closeNav(){
+ nav.classList.remove("neo-open");toggle.setAttribute("aria-expanded","false");toggle.textContent="☰";
 }
-let start="ar";try{if(localStorage.getItem("nabdCompactHomeLanguage")==="en")start="en"}catch(_){}
-applyLanguage(start);
-switcher.addEventListener("click",()=>applyLanguage(root.lang==="en"?"ar":"en"));
-function closeNav(){nav.classList.remove("neo-open");toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}
-toggle.addEventListener("click",()=>{const open=nav.classList.toggle("neo-open");toggle.setAttribute("aria-expanded",String(open));toggle.textContent=open?"✕":"☰"});
+function closeLang(){
+ menu.hidden=true;switcher.setAttribute("aria-expanded","false");
+}
+function showNotice(message){
+ loadNotice.textContent=message;loadNotice.hidden=!message;
+}
+async function applyLanguage(lang){
+ if(!supported.has(lang))return;
+ const operation=++revision;let pack=null;
+ if(lang!=="ar"&&lang!=="en"){
+  showNotice(active==="ar"?"جارٍ تحميل الترجمة…":"Loading translation…");
+  try{pack=await service.load(lang);}
+  catch(error){
+   if(operation!==revision)return;
+   showNotice("تعذّر تحميل الترجمة · Translation unavailable");
+   return;
+  }
+ }
+ if(operation!==revision)return;
+ active=lang;
+ const meta=service.locales.find(x=>x.code===lang);
+ root.lang=lang;root.dir=meta.dir;
+ label.textContent=abbreviations[lang];
+ switcher.setAttribute("aria-label","Language: "+meta.name+" / تغيير اللغة");
+ for(const el of root.querySelectorAll("[data-neo-ar][data-neo-en]")){
+  const original=el.getAttribute("data-neo-en");
+  const result=lang==="ar"?el.getAttribute("data-neo-ar"):
+    lang==="en"?original:pack.get(original);
+  if(result!==null&&result!==undefined)el.textContent=result;
+ }
+ for(const option of optionButtons)
+  option.setAttribute("aria-pressed",String(option.dataset.homeLang===lang));
+ showNotice("");
+ try{localStorage.setItem("nabdCompactHomeLanguage",lang);}catch(_){}
+}
+let saved="ar";
+try{const candidate=localStorage.getItem("nabdCompactHomeLanguage");if(supported.has(candidate))saved=candidate;}catch(_){}
+applyLanguage(saved);
+switcher.addEventListener("click",()=>{
+ const opening=menu.hidden;
+ if(opening)closeNav();
+ menu.hidden=!opening;switcher.setAttribute("aria-expanded",String(opening));
+ if(opening)menu.querySelector('[data-home-lang="'+active+'"]')?.focus();
+});
+for(const option of optionButtons)option.addEventListener("click",()=>{
+ const choice=option.dataset.homeLang;closeLang();switcher.focus();applyLanguage(choice);
+});
+toggle.addEventListener("click",()=>{
+ closeLang();const opening=nav.classList.toggle("neo-open");
+ toggle.setAttribute("aria-expanded",String(opening));toggle.textContent=opening?"✕":"☰";
+});
 nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",closeNav));
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeNav()});
-document.addEventListener("click",e=>{if(!nav.contains(e.target)&&!toggle.contains(e.target))closeNav()});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){closeLang();closeNav();}
+});
+document.addEventListener("click",e=>{
+ if(!nav.contains(e.target)&&!toggle.contains(e.target))closeNav();
+ if(!menu.contains(e.target)&&!switcher.contains(e.target))closeLang();
+});
 const shortIds=new Set(["#neo-main","#neo-welcome","#neo-programs","#neo-initiatives","#neo-about","#neo-directory","#neo-contact"]);
-if(location.hash && !shortIds.has(location.hash) && /^#[a-zA-Z0-9_-]{1,80}$/.test(location.hash))location.replace("academy-full.html"+location.hash);
+if(location.hash && !shortIds.has(location.hash) && /^#[a-zA-Z0-9_-]{1,80}$/.test(location.hash))
+ location.replace("academy-full.html"+location.hash);
 })();
 </script>
 </body>
