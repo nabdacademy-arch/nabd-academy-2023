@@ -1482,6 +1482,7 @@ async function handleForgotPassword(event) {
     $("#forgotPasswordStatus");
 
 
+  if (button?.disabled) return;
   setStatus(status, "");
 
 
@@ -1527,22 +1528,18 @@ async function handleForgotPassword(event) {
 
     setStatus(
       status,
-      "Password reset link sent. Check your email ✓",
+      "If your account is eligible, check your email for a reset link.",
       "success"
     );
 
 
   } catch (error) {
-    let message =
-      error?.message ||
-      "Could not send reset email.";
-
-
-    if (/rate limit/i.test(message)) {
-      message =
-        "Email rate limit reached. Please wait and try again later.";
-    }
-
+    const limited = error?.status === 429 ||
+      /rate.limit/i.test(error?.code || "") ||
+      /rate limit/i.test(error?.message || "");
+    const message = limited
+      ? "Too many requests. Wait before requesting another link."
+      : "Could not confirm the request. Check your inbox and connection before trying again.";
 
     setStatus(
       status,
@@ -1761,25 +1758,16 @@ function setupPasswordButtons() {
    ========================================================= */
 
 function detectRecoveryURL() {
-  const hash =
-    window.location.hash || "";
-
-  const query =
-    window.location.search || "";
-
-
-  if (
-    hash.includes("type=recovery") ||
-    query.includes("type=recovery")
-  ) {
-    state.recoveryMode = true;
-    openResetPassword();
-
-    return true;
+  const { search, hash } = window.location;
+  if (!search && !hash) return false;
+  const query = new URLSearchParams(search);
+  const fragment = new URLSearchParams((hash || "").slice(1));
+  if (query.get("type") !== "recovery" && fragment.get("type") !== "recovery") {
+    return false;
   }
 
-
-  return false;
+  openResetPassword();
+  return true;
 }
 
 
