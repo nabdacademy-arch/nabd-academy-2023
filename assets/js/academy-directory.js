@@ -6,7 +6,7 @@ if(!d)return;
 const $=id=>document.getElementById(id);
 const grid=$("directoryGrid"),search=$("directorySearch");
 if(!grid||!search)return;
-let language="ar",filter="essential";
+let language=window.NABD_SITE_LANGUAGE?.get()||"ar",filter="essential";
 const entries=d.entries,categories=d.categories;
 const t=(ar,en)=>language==="ar"?ar:en;
 const icon={learning:"◈",opportunities:"✳",research:"◉",initiatives:"✧",management:"▣",governance:"◇"};
@@ -72,7 +72,7 @@ function render(){
  $("directoryCount").textContent=t(shown+" خدمة",shown+" service"+(shown===1?"":"s"));
  $("directoryEmpty").hidden=shown>0;
 }
-$("directoryLang").addEventListener("click",()=>{language=language==="ar"?"en":"ar";updateContent()});
+$("directoryLang").addEventListener("click",()=>{language=language==="ar"?"en":"ar";window.NABD_SITE_LANGUAGE?.choose(language);updateContent()});
 search.addEventListener("input",render);
 for(const button of document.querySelectorAll(".directory-filter")){
  button.addEventListener("click",()=>{

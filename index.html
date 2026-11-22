@@ -1365,7 +1365,7 @@
             <button type="button" data-home-lang="pt" lang="pt" aria-pressed="false">Português</button>
             <button type="button" data-home-lang="zh" lang="zh" aria-pressed="false">简体中文</button>
             <button type="button" data-home-lang="ur" lang="ur" aria-pressed="false">اردو</button>
-            <p class="neo-lang-hint">ترجمة لصفحة الأكاديمية الرئيسية · Translation for the homepage</p>
+            <p class="neo-lang-hint">العربية والإنجليزية تنتقلان للبوابات الثنائية اللغة؛ اللغات الأخرى للصفحة الرئيسية · AR/EN follow you to bilingual pages</p>
           </div>
           <span id="neoLangLoading" class="neo-lang-loading" aria-live="polite" hidden></span>
         </div>
@@ -1384,6 +1384,7 @@
           <div class="neo-hero-buttons">
             <a class="neo-btn neo-btn--gold" href="#neo-programs" data-neo-ar="استكشف برامج الأكاديمية ←" data-neo-en="Explore our programs →">استكشف برامج الأكاديمية ←</a> <a class="neo-btn neo-btn--clear" href="impact-lab/" data-neo-ar="✳ ستة ابتكارات عالمية · بوابة واحدة" data-neo-en="✳ Six impact projects · One hub">✳ ستة ابتكارات عالمية · بوابة واحدة</a>
             <a class="neo-btn neo-btn--clear" href="nabd-hope.html" data-neo-ar="♥ منحة نبض الأمل" data-neo-en="♥ NABD Hope Scholarship">♥ منحة نبض الأمل</a>
+            <a class="neo-btn neo-btn--clear" href="nabd-health-impact.html" data-neo-ar="♡ مبادرة نبض للأثر الصحي" data-neo-en="♡ NABD Health Impact Initiative">♡ مبادرة نبض للأثر الصحي</a>
             <a class="neo-btn neo-btn--clear" href="scholarships.html" data-neo-ar="🌍 أخبار المنح الخارجية والدولية" data-neo-en="🌍 International Scholarship News">🌍 أخبار المنح الخارجية والدولية</a>
             <a class="neo-motivation-mini" href="motivation-studio.html" data-neo-ar="✍️ أنشئ رسالة الدافع" data-neo-en="✍️ Write a Motivation Letter" aria-label="NABD Motivation Studio — كتابة رسالة الدافع">✍️ أنشئ رسالة الدافع</a>
           </div>
@@ -1504,6 +1505,7 @@
             <span class="neo-feature-label">GLOBAL MEDICAL LECTURES</span><h3 data-neo-ar="التعلّم والتعاون الدولي" data-neo-en="Global Learning & Collaboration">التعلّم والتعاون الدولي</h3><p data-neo-ar="نعمل على تطوير لقاءات معرفية ومحاضرات علمية مع متخصصين من خارج غزة، وفق ترتيبات وشراكات لا تزال قيد التنسيق." data-neo-en="We are developing specialist talks and learning opportunities with experts beyond Gaza, subject to ongoing arrangements and partnership confirmation.">نعمل على تطوير لقاءات معرفية ومحاضرات علمية مع متخصصين من خارج غزة، وفق ترتيبات وشراكات لا تزال قيد التنسيق.</p><a class="neo-btn neo-btn--clear" href="global-lectures.html" data-neo-ar="اعرف المزيد ←" data-neo-en="Learn more →">اعرف المزيد ←</a>
           </article>
         </div>
+        <div style="text-align:center;margin-top:20px"><a class="neo-btn neo-btn--clear" href="nabd-health-impact.html" data-neo-ar="♡ اكتشف مبادرة نبض للأثر الصحي ←" data-neo-en="♡ Explore the NABD Health Impact Initiative →">♡ اكتشف مبادرة نبض للأثر الصحي ←</a></div>
       </div>
     </section>
     <section class="neo-section neo-section--white neo-about" id="neo-about" aria-labelledby="neo-about-title">
@@ -2720,16 +2722,30 @@ async function applyLanguage(lang){
  for(const el of root.querySelectorAll("[data-neo-ar][data-neo-en]")){
   const original=el.getAttribute("data-neo-en");
   const result=lang==="ar"?el.getAttribute("data-neo-ar"):
-    lang==="en"?original:pack.get(original);
+    lang==="en"?original:(pack.get(original)??original);
   if(result!==null&&result!==undefined)el.textContent=result;
  }
  for(const option of optionButtons)
   option.setAttribute("aria-pressed",String(option.dataset.homeLang===lang));
  showNotice("");
- try{localStorage.setItem("nabdCompactHomeLanguage",lang);}catch(_){}
+ try{
+  localStorage.setItem("nabdCompactHomeLanguage",lang);
+  if(lang==="ar"||lang==="en"){
+   localStorage.setItem("nabd_lang",lang);
+   document.documentElement.lang=lang;
+   document.documentElement.dir=meta.dir;
+  }
+ }catch(_){}
 }
 let saved="ar";
-try{const candidate=localStorage.getItem("nabdCompactHomeLanguage");if(supported.has(candidate))saved=candidate;}catch(_){}
+try{
+ const candidate=localStorage.getItem("nabdCompactHomeLanguage");
+ if(supported.has(candidate))saved=candidate;
+ else{
+  const common=localStorage.getItem("nabd_lang");
+  if(common==="ar"||common==="en")saved=common;
+ }
+}catch(_){}
 applyLanguage(saved);
 switcher.addEventListener("click",()=>{
  const opening=menu.hidden;
