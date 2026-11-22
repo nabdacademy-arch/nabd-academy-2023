@@ -81,6 +81,7 @@ async function main(){
    await page.fill("#generatedLetter","This edited draft must stay in memory when switching.");
    await page.click("#newVariantBtn");
    await page.click("#generateBtn");
+   await page.locator("#draftTabs button").nth(1).waitFor({state:"visible",timeout:12000});
    assert.equal(await page.locator("#draftTabs button").count(),2);
    assert.equal(await page.locator("#compareBtn").isVisible(),true);
    await page.click("#compareBtn");
