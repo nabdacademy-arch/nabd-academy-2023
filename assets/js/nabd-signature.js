@@ -6,6 +6,16 @@ const script=document.createElement("script");script.src=new URL("nabd-assistant
 script.defer=true;document.head.append(script);
 })();
 
+/* Apply the same AR/EN preference on pages that use Signature navigation without the institutional directory. */
+(()=>{
+ const source=document.currentScript?.src;
+ if(!source||document.querySelector("script[data-nabd-site-language]"))return;
+ const lang=document.createElement("script");
+ lang.dataset.nabdSiteLanguage="1";
+ lang.src=new URL("nabd-site-language.js?v=1",source).href;
+ document.head.append(lang);
+})();
+
 /* NABD SIGNATURE: accessible local navigation, shared identity and optional command search. */
 (function(){
  "use strict";
