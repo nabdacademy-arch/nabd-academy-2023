@@ -174,7 +174,7 @@ The letter must be ready to edit, never contain generic placeholders presented a
       if(validModelOutput(data)){
         const missing=data.missing.slice(0,3);
         if(input.wordLimit>0){
-          const actual=data.letter.trim().split(/\\s+/u).length;
+          const actual=data.letter.trim().split(/\s+/u).length;
           if(actual>input.wordLimit){
             const reminder=input.language==="ar"?
               "المسودة تتجاوز حد الكلمات المطلوب ("+actual+"/"+input.wordLimit+"). راجع اختصارها قبل الإرسال.":
