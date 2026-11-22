@@ -1,0 +1,82 @@
+/* NABD compact official homepage: header readability + accessible 12-language chooser.
+   Only the header is adjusted; hero, cards, academy name and identity remain unchanged. */
+.neo-site .neo-brand,.neo-site .neo-actions{flex-shrink:0}
+.neo-site .neo-headbar{min-width:0}
+.neo-site .neo-nav{min-width:0}
+.neo-site .neo-nav a{overflow-wrap:normal}
+.neo-site .neo-locale{position:relative;display:inline-flex;align-items:center;flex-shrink:0}
+.neo-site .neo-language{gap:7px}
+.neo-site .neo-lang-chevron{font-size:.73rem;opacity:.84}
+.neo-site .neo-lang-menu:not([hidden]){
+ position:absolute;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ inset-block-start:calc(100% + 9px);inset-inline-end:0;z-index:1100;
+ width:min(335px,calc(100vw - 24px));max-height:min(65vh,510px);overflow:auto;
+ background:#082736;color:#f3fbf8;border:1px solid #96c7ba80;
+ border-radius:15px;padding:8px;gap:5px;box-shadow:0 16px 40px #0007;
+ overscroll-behavior:contain;direction:inherit;
+}
+.neo-site .neo-lang-menu[hidden]{display:none!important}
+.neo-site .neo-lang-menu button{
+ display:flex;align-items:center;justify-content:space-between;gap:6px;
+ min-width:0;text-align:start;min-height:43px;padding:9px 12px;
+ border:1px solid transparent;border-radius:9px;
+ color:#e5f3f1;background:#ffffff0b;font-size:.85rem;font-weight:750;
+ white-space:normal;line-height:1.35;overflow-wrap:anywhere;
+}
+.neo-site .neo-lang-menu button:hover,.neo-site .neo-lang-menu button:focus-visible{background:#22535c}
+.neo-site .neo-lang-menu button[aria-pressed="true"]{background:#1e625c;border-color:#9cddcc;color:#fff}
+.neo-site .neo-lang-menu button[aria-pressed="true"]::after{content:"✓";margin-inline-start:4px;color:#d8f2dc}
+.neo-site .neo-lang-hint{grid-column:1/-1;font-size:.73rem;color:#bbd9d5;padding:7px 9px 5px;margin:0;line-height:1.65}
+.neo-site .neo-lang-loading{position:absolute;inset-inline-end:0;inset-block-start:calc(100% + 3px);
+ padding:3px 8px;background:#174a50;color:#fff;border-radius:6px;font-size:11px;white-space:nowrap}
+.neo-site .neo-lang-loading[hidden]{display:none!important}
+.neo-site .neo-header .neo-meta{overflow:hidden}
+.neo-site .neo-header .neo-meta .neo-shell{flex-wrap:nowrap;gap:14px}
+.neo-site .neo-header .neo-meta span,.neo-site .neo-header .neo-meta b{
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0
+}
+/* Earlier breakpoint prevents 7 desktop links and buttons from crushing each other
+   on narrow desktop-site viewports (common in Android desktop-site mode). */
+@media(max-width:1240px){
+ .neo-site .neo-menu{display:inline-flex;flex:none}
+ .neo-site .neo-headbar{position:relative;justify-content:space-between;gap:14px}
+ .neo-site .neo-nav{
+  display:none;position:absolute;inset-block-start:100%;inset-inline:0;z-index:990;
+  width:auto;max-height:min(75vh,540px);overflow-y:auto;overscroll-behavior:contain;
+  background:#072737;border:1px solid #ffffff35;border-radius:0 0 16px 16px;
+  flex-direction:column;align-items:stretch;gap:0;margin:0;padding:12px 18px;
+  box-shadow:0 18px 33px #0007;
+ }
+ .neo-site .neo-nav.neo-open{display:flex}
+ .neo-site .neo-nav a{font-size:.95rem;line-height:1.55;padding:11px 6px;
+  border-bottom:1px solid #ffffff21;white-space:normal}
+ .neo-site .neo-brand{margin-inline-end:auto;min-width:0}
+}
+@media(max-width:680px){
+ .neo-site .neo-header .neo-meta{font-size:.66rem}
+ .neo-site .neo-header .neo-meta .neo-shell{justify-content:center}
+ .neo-site .neo-header .neo-meta span{max-width:100%;text-align:center}
+ .neo-site .neo-header .neo-meta b{display:none}
+ .neo-site .neo-headbar{min-height:62px;gap:8px}
+ .neo-site .neo-brand{flex:1 1 auto;min-width:0;max-width:calc(100% - 157px);gap:7px}
+ .neo-site .neo-brand>span:last-child{min-width:0;max-width:100%;display:block}
+ .neo-site .neo-brand strong{font-size:clamp(.75rem,3.25vw,.90rem);line-height:1.42;
+  white-space:normal;overflow-wrap:normal}
+ .neo-site .neo-brand small{font-size:.57rem;letter-spacing:0}
+ .neo-site .neo-brand-mark{width:37px;height:37px;flex:0 0 37px;font-size:21px}
+ .neo-site .neo-actions{flex:0 0 auto;gap:6px}
+ .neo-site .neo-language{min-height:40px;padding:8px 10px;font-size:.77rem;gap:5px;border-radius:10px}
+ .neo-site .neo-menu{width:41px;height:41px;min-width:41px;border-radius:10px}
+ .neo-site .neo-lang-menu:not([hidden]){position:fixed;inset-inline:12px;
+  inset-block-start:calc(84px + env(safe-area-inset-top,0px));width:auto;
+  max-height:min(62vh,480px);z-index:1500}
+}
+@media(max-width:375px){
+ .neo-site .neo-headbar{gap:5px}
+ .neo-site .neo-brand{max-width:calc(100% - 138px)}
+ .neo-site .neo-brand-mark{width:34px;height:34px;flex-basis:34px}
+ .neo-site .neo-brand strong{font-size:.71rem}
+ .neo-site .neo-language{padding:7px 8px;font-size:.7rem}
+ .neo-site .neo-menu{width:38px;height:38px;min-width:38px}
+ .neo-site .neo-brand small{display:none}
+}
