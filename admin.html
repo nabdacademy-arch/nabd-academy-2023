@@ -81,10 +81,19 @@
 <link rel="stylesheet" href="assets/css/nabd-councils-director.css?v=1">
 <script defer src="assets/js/nabd-gateway-system.js?v=1"></script>
 <link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
+<link rel="stylesheet" href="assets/css/nabd-workspaces-organized.css?v=1">
 </head>
-<body><nav aria-label="Academy workspaces" style="display:flex;flex-wrap:wrap;gap:16px;padding:14px 4%;background:#071d2c;color:#64e3d3"><a href="academy.html" style="color:inherit">مسارات نبض ←</a><a href="lecturers.html" style="color:inherit">إدارة المحاضرين والتكليفات ←</a><a href="portal/" style="color:inherit">المجلس التنفيذي ←</a> <a href="university-os.html" style="color:inherit">◈ UNIVERSITY OS V22 ←</a></nav><section id="login" class="wrap"><div class="card" style="max-width:450px;margin:60px auto"><h1>Director Login</h1><form id="loginForm"><p>Email</p><input id="email" class="input" type="email" required><p>Password</p><input id="password" class="input" type="password" required><button class="btn" style="margin-top:15px;width:100%">Sign in</button></form><div id="loginMsg" class="status hidden"></div></div></section>
+<body class="nabd-admin-page"><nav aria-label="Academy workspaces" style="display:flex;flex-wrap:wrap;gap:16px;padding:14px 4%;background:#071d2c;color:#64e3d3"><a href="academy.html" style="color:inherit">مسارات نبض ←</a><a href="lecturers.html" style="color:inherit">إدارة المحاضرين والتكليفات ←</a><a href="portal/" style="color:inherit">المجلس التنفيذي ←</a> <a href="university-os.html" style="color:inherit">◈ UNIVERSITY OS V22 ←</a></nav><section id="login" class="wrap"><div class="card" style="max-width:450px;margin:60px auto"><h1>Director Login</h1><form id="loginForm"><p>Email</p><input id="email" class="input" type="email" required><p>Password</p><input id="password" class="input" type="password" required><button class="btn" style="margin-top:15px;width:100%">Sign in</button></form><div id="loginMsg" class="status hidden"></div></div></section>
 <main id="app" class="wrap hidden"><div class="hero"><h1>Control Center</h1><p>Signed in as <b id="adminName"></b> · ADMIN</p><button id="logout" class="btn secondary">Sign out</button></div><div id="msg" class="status hidden"></div>
-<div class="tabs"><button class="btn" data-tab="students">Students</button><button class="btn secondary" data-tab="enrollments">Enrollments</button><button class="btn secondary" data-tab="claims">Certificate Claims</button><button class="btn secondary" data-tab="certificates">Certificates</button><button class="btn secondary" data-tab="feedback">Feedback</button><button class="btn secondary" data-tab="applications">Executive Applications</button>
+<div class="nabd-admin-module-finder" id="nabdAdminModuleFinder" role="search" aria-label="بحث وتنظيم أقسام لوحة الإدارة">
+  <div class="nabd-admin-module-title"><strong>أقسام لوحة الإدارة <span lang="en">/ Admin workspace</span></strong><span>اختر مجال العمل أو ابحث عن قسم مباشرةً.</span></div>
+  <div class="nabd-admin-module-controls">
+    <label for="nabdAdminCategory">المجال<select id="nabdAdminCategory"><option value="essential">الأقسام الأساسية</option><option value="academic">التعليم والطلاب</option><option value="operations">التشغيل والإدارة</option><option value="governance">الوثائق والحوكمة</option><option value="all">جميع الأقسام</option></select></label>
+    <label for="nabdAdminSearch">ابحث عن قسم<input id="nabdAdminSearch" type="search" autocomplete="off" placeholder="مثال: طلاب، شهادات، منح، مهام"></label>
+  </div>
+  <p id="nabdAdminResults" role="status" aria-live="polite"></p>
+</div>
+<div class="tabs" aria-label="أقسام لوحة الإدارة"><button class="btn" data-tab="students">Students</button><button class="btn secondary" data-tab="enrollments">Enrollments</button><button class="btn secondary" data-tab="claims">Certificate Claims</button><button class="btn secondary" data-tab="certificates">Certificates</button><button class="btn secondary" data-tab="feedback">Feedback</button><button class="btn secondary" data-tab="applications">Executive Applications</button>
 <button type="button" class="btn secondary" data-tab="overview">الملخص التنفيذي</button>
 <button type="button" class="btn secondary" data-tab="councilAccounts" id="councilAccountsTab">♛ إدارة حسابات المجالس الثمانية</button>
 <a href="official-documents.html" class="btn secondary" id="officialDocumentsEntry" style="text-decoration:none;display:inline-flex;align-items:center;background:linear-gradient(110deg,#183f50,#0c2b3e);color:#f2d9a6;border:1px solid #c5a06b">▤ مركز طباعة المستندات الرسمية</a>
@@ -495,5 +504,6 @@ q('mcRequests').addEventListener('click',e=>{
 <script defer src="assets/js/nabd-frontier-admin.js?v=1"></script>
 <script defer src="assets/js/nabd-councils-director.js?v=1"></script>
 <script type="module" src="assets/js/nabd-director-exam-bot.js?v=7"></script>
+<script defer src="assets/js/nabd-admin-module-finder.js?v=1"></script>
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 </body></html>
