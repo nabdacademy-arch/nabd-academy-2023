@@ -65,8 +65,19 @@
     const url=f.get('resource_url').trim();if(url&&!safeURL(url)){status('استخدم رابطًا يبدأ بـ https:// أو http://.');return}
     const payload={course_id:course,kind:f.get('kind'),title:f.get('title').trim(),objective:f.get('objective').trim(),description:f.get('description').trim(),reference:f.get('reference').trim(),resource_url:url,starts_at:f.get('starts_at')?new Date(f.get('starts_at')).toISOString():null,status:f.get('status')};
     if(!payload.title||!payload.objective){status('أدخل العنوان وهدف التعلّم.');return}
-    if(id)await checked(db.from('nabd_teaching_records').update(payload).eq('id',id).select().single());
-    else await checked(db.from('nabd_teaching_records').insert({...payload,lecturer_id:user.id}).select().single());
+    if(id){
+      if (!original.updated_at) {
+        status('تعذّر التحقق من نسخة السجل. احتفظ بنسخة من تعديلاتك ثم حدّث القائمة.');
+        return;
+      }
+      const {data, error} = await db.from('nabd_teaching_records').update(payload)
+        .eq('id', id).eq('updated_at', original.updated_at).select('id').maybeSingle();
+      if (error) throw error;
+      if (!data) {
+        status('تعذّر حفظ هذه النسخة. ربما تغيّر السجل أو صلاحية الوصول إليه. احتفظ بنصك ثم حدّث القائمة وافتح السجل من جديد.');
+        return;
+      }
+    } else await checked(db.from('nabd_teaching_records').insert({...payload,lecturer_id:user.id}).select().single());
     await refresh();status('تم حفظ السجل بنجاح.');
   })});
   el('studio-assignment').addEventListener('submit',event=>{event.preventDefault();busy(event.submitter,async()=>{if(!admin)throw Error('Unauthorized');const f=new FormData(event.target);await checked(db.from('nabd_teaching_assignments').upsert({lecturer_id:f.get('lecturer_id').trim(),course_id:f.get('course_id'),display_name:f.get('display_name').trim(),active:f.get('active')==='true'},{onConflict:'lecturer_id,course_id'}).select());await refresh();status('تم حفظ التكليف.');})});

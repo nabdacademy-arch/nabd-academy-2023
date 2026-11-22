@@ -4,15 +4,15 @@ const assert=require('node:assert/strict');
 (async()=>{
  const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
  const errors=[];
- for(const mode of ['lecturer','student','admin','missing','guest']){
+ for(const mode of ['lecturer','conflict','student','admin','missing','guest']){
   const context=await browser.newContext({viewport:{width:390,height:844}});
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://**/*',route=>route.abort());
   await page.route('**/assets/js/supabase-client.js',route=>route.fulfill({contentType:'application/javascript',body:`
    window.testWrites=[];window.testMode=${JSON.stringify(mode)};
-   const item={id:'r1',lecturer_id:'u1',course_id:'c1',kind:'session',title:'جلسة القلب <img src=x onerror=alert(1)>',objective:'شرح الدورة الدموية',description:'تعلم موثق',reference:'مرجع',resource_url:'javascript:alert(1)',status:'published',starts_at:null};
+   const item={updated_at:'2026-01-01T00:00:00Z',id:'r1',lecturer_id:'u1',course_id:'c1',kind:'session',title:'جلسة القلب <img src=x onerror=alert(1)>',objective:'شرح الدورة الدموية',description:'تعلم موثق',reference:'مرجع',resource_url:'javascript:alert(1)',status:'published',starts_at:null};
    const tables={courses:[{id:'c1',title_ar:'القلب'}],nabd_teaching_assignments:window.testMode==='student'?[]:[{lecturer_id:'u1',course_id:'c1',display_name:'محاضر',active:true}],nabd_teaching_records:[item]};
-   window.nabdSupabase={auth:{getUser:async()=>({data:{user:window.testMode==='guest'?null:{id:'u1'}}}),onAuthStateChange:()=>{},signOut:async()=>({}),signInWithPassword:async()=>({})},rpc:async()=>({data:window.testMode==='admin',error:window.testMode==='missing'?{code:'PGRST202'}:null}),from:table=>{let write=false;const q={};['select','order','range','eq','single'].forEach(k=>q[k]=()=>q);['insert','update','upsert'].forEach(k=>q[k]=data=>{write=true;window.testWrites.push({table,kind:k,data});return q});q.then=(resolve,reject)=>Promise.resolve({data:write?item:tables[table]||[],error:null}).then(resolve,reject);return q}};
+   window.nabdSupabase={auth:{getUser:async()=>({data:{user:window.testMode==='guest'?null:{id:'u1'}}}),onAuthStateChange:()=>{},signOut:async()=>({}),signInWithPassword:async()=>({})},rpc:async()=>({data:window.testMode==='admin',error:window.testMode==='missing'?{code:'PGRST202'}:null}),from:table=>{let write=false;const q={};['select','order','range','eq','single','maybeSingle'].forEach(k=>q[k]=()=>q);['insert','update','upsert'].forEach(k=>q[k]=data=>{write=true;window.testWrites.push({table,kind:k,data});return q});q.then=(resolve,reject)=>Promise.resolve({data:write?(window.testMode==='conflict'?null:item):tables[table]||[],error:null}).then(resolve,reject);return q}};
   `}));
   await page.goto('http://127.0.0.1:8000/lecturers.html');
   if(mode==='missing'){await page.getByRole('status').filter({hasText:'تحتاج'}).waitFor();assert.equal(await page.locator('#studio-workspace').isVisible(),false)}
@@ -24,11 +24,15 @@ const assert=require('node:assert/strict');
    assert.equal(await page.locator('#studio-admin').isVisible(),mode==='admin');
    assert.equal(await page.locator('#studio-editor').isVisible(),mode!=='student');
    if(mode==='student')assert.equal(await page.locator('[data-edit]').count(),0);
-   if(mode==='lecturer'){
+   if(mode==='lecturer'||mode==='conflict'){
     await page.locator('[data-edit]').click();await page.locator('[name=title]').fill('جلسة محدّثة');await page.locator('[name=resource_url]').fill('https://example.org/lesson');
     await page.locator('#studio-record button[type=submit], #studio-record button:not([type])').first().click();
     await page.waitForFunction(()=>window.testWrites.length===1);
     assert.equal((await page.evaluate(()=>window.testWrites[0])).data.title,'جلسة محدّثة');
+    if(mode==='conflict'){
+     await page.locator('#studio-status').filter({hasText:'تعذّر حفظ هذه النسخة'}).waitFor();
+     assert.equal(await page.locator('[name=title]').inputValue(),'جلسة محدّثة');
+    }
    }
    await page.locator('#studio-search').fill('نتيجة غير موجودة');assert.equal(await page.locator('.nw-record').count(),0);
   }
