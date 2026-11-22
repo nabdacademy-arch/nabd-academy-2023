@@ -31,7 +31,7 @@ permissions:
   contents: read
 jobs:
   integrity:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
           node --check assets/js/nabd-360-admin.js
           node tests/nabd-360-integrity.test.mjs
   browser:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 17
     steps:
       - uses: actions/checkout@v4
