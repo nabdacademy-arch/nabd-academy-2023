@@ -1,0 +1,118 @@
+name: NABD Comprehensive Safety and Functionality Audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/nabd-comprehensive-audit.yml'
+      - 'assets/**'
+      - 'learning/**'
+      - 'atlas/**'
+      - 'tests/**'
+      - '*.html'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nabd-comprehensive-audit.yml'
+      - 'assets/**'
+      - 'learning/**'
+      - 'atlas/**'
+      - 'tests/**'
+      - '*.html'
+  workflow_dispatch:
+# Read-only audit: no production accounts, writes, or private credentials are used.
+permissions:
+  contents: read
+jobs:
+  syntax-and-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax of all tracked project JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z '*.js' '*.mjs' '*.cjs')
+          count=0
+          bad=0
+          for file in "${files[@]}"; do
+            case "$file" in
+              node_modules/*|vendor/*|assets/vendor/*) continue;;
+            esac
+            if ! node --check "$file" >/dev/null 2>&1; then
+              echo "::error file=$file::JavaScript syntax validation failed"
+              node --check "$file" || true
+              bad=$((bad+1))
+            fi
+            count=$((count+1))
+          done
+          echo "JavaScript files audited: $count; errors: $bad"
+          test "$bad" -eq 0
+      - name: Check relative HTML, JS, CSS, JSON and image references
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
+          const files=cp.execFileSync('git',['ls-files','-z'],{encoding:'utf8'}).split('\0').filter(Boolean);
+          const pages=files.filter(f=>f.endsWith('.html')),missing=[],seen=new Set();
+          let checked=0;
+          for(const file of pages){
+            const html=fs.readFileSync(file,'utf8');
+            for(const match of html.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)){
+              const raw=match[1].trim();
+              if(!raw||/^(?:https?:|\/\/|#|mailto:|tel:|javascript:|data:|blob:|\{|\$\{)/i.test(raw))continue;
+              const normalized=raw.split(/[?#]/)[0];
+              if(!normalized||normalized.startsWith('/'))continue;
+              if(!/\.(?:html|css|js|mjs|json|svg|png|jpe?g|webp|gif|ico|pdf|woff2?)$/i.test(normalized)&&!normalized.endsWith('/'))continue;
+              let decoded=normalized;try{decoded=decodeURIComponent(normalized)}catch{}
+              const target=path.normalize(path.join(path.dirname(file),decoded));
+              if(target.startsWith('..'))continue;
+              const key=file+' -> '+normalized;
+              if(seen.has(key))continue;seen.add(key);checked++;
+              if(!fs.existsSync(target)&&!fs.existsSync(path.join(target,'index.html')))missing.push(key);
+            }
+          }
+          console.log('HTML pages:',pages.length,'references checked:',checked,'missing:',missing.length);
+          missing.slice(0,100).forEach(f=>console.error('MISSING',f));
+          if(missing.length)process.exitCode=1;
+          NODE
+  critical-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run student, director, lecturer, scholarship, exams, and Open Doors regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          names=(
+            tests/moodle-confirm-sign-out.test.cjs
+            tests/moodle-refresh.test.cjs
+            tests/quality-attempt-verification.test.cjs
+            tests/student-exam-opening.test.cjs
+            tests/exam-submission-draft.test.cjs
+            tests/director-exam-closure.test.cjs
+            tests/director-pending-count.test.cjs
+            tests/scholarship-manager-staff-isolation.test.cjs
+            tests/scholarship-manager-draft-recovery.test.cjs
+            tests/open-doors-choice-report.test.cjs
+            tests/director-panel-authorization.test.cjs
+            tests/teaching-studio-pagination.test.cjs
+            tests/nabd-exam-proctor.test.mjs
+            tests/student-reset-request.test.cjs
+            tests/student-recovery-url.test.cjs
+            tests/skill-passport-account.test.cjs
+            tests/gateway-identity-integrity.test.mjs
+            tests/update-password.test.cjs
+          )
+          available=()
+          for file in "${names[@]}"; do
+            if [ -f "$file" ]; then available+=("$file"); else echo "::warning::Missing optional regression test $file"; fi
+          done
+          echo "Running ${#available[@]} targeted test files"
+          node --test "${available[@]}"
