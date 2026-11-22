@@ -11,7 +11,11 @@ let state={questions:[],index:0,answerMode:"typed",photo:null,photoURL:null,resu
  active:false,draftId:null,scoreTotal:0,scorePossible:0,latest:null,cacheLoaded:false};
 const ar=(a,e)=>state.lang==="ar"?a:e;
 const elem=(t,txt,cls)=>{const x=document.createElement(t);if(txt!==undefined)x.textContent=String(txt);if(cls)x.className=cls;return x};
-function status(a,e,isError=false){const x=$("essayStatus");x.textContent=ar(a,e);x.classList.toggle("error",isError)}
+function setLabel(node,a,e){
+ node.dataset.essayAr=a;node.dataset.essayEn=e;node.textContent=ar(a,e);
+ return node;
+}
+function status(a,e,isError=false){const x=setLabel($("essayStatus"),a,e);x.classList.toggle("error",isError)}
 const allSubjects=["chemistry","biology","medicine"];
 function shuffle(a){const out=a.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 function questionTitle(q){return bank.SOURCES[q.subject]?.title||q.subject}
@@ -64,7 +68,12 @@ function langUI(){
  for(const node of document.querySelectorAll("#essayLab [data-essay-ar][data-essay-en]")){
   node.textContent=node.getAttribute(lang==="ar"?"data-essay-ar":"data-essay-en");
  }
- if(state.active)renderQuestion();
+ if(!$("essaySummary").hidden){finish();return}
+ if(state.active){
+  const q=state.questions[state.index];
+  renderQuestionText(q);
+  if(state.latest)reportDetails($("essayFeedback"),q,state.latest.data,state.latest.self);
+ }
 }
 $("essayTranslate").addEventListener("click",()=>{state.lang=state.lang==="en"?"ar":"en";langUI()});
 function updateSourceLinks(subject){
@@ -97,9 +106,7 @@ function resetFeedback(){
  $("essayGrade").disabled=false;$("essayNext").hidden=true;
  $("essayConsent").checked=false;state.latest=null;
 }
-function renderQuestion(){
- const q=state.questions[state.index];if(!q)return;
- state.active=true;$("essayWorkspace").hidden=false;$("essaySummary").hidden=true;
+function renderQuestionText(q){
  const id=state.index+1,total=state.questions.length;
  $("essayQuestionMeta").textContent=questionTitle(q)+" · "+q.topic+" · "+ar("المسألة","Question")+" "+id+"/"+total;
  $("essayNumber").textContent=id+"/"+total;
@@ -108,10 +115,16 @@ function renderQuestion(){
  $("essayQuestionAr").textContent=q.prompt_ar||ar("هذا السؤال من الأرشيف القديم ويتوفر بالإنجليزية فقط؛ اقرأ الترجمة العامة للمفاهيم في الشروح.", "This archived question has only an English prompt.");
  $("essayQuestionAr").hidden=state.lang!=="ar";
  $("essayOrigin").textContent=q.origin==="NABD_EXISTING_DATABASE"?"NABD ARCHIVE · prior training":"NABD ORIGINAL · independently written";
+ updateSourceLinks(q.subject);
+}
+function renderQuestion(){
+ const q=state.questions[state.index];if(!q)return;
+ state.active=true;$("essayWorkspace").hidden=false;$("essaySummary").hidden=true;
+ renderQuestionText(q);
  $("essayAnswer").value="";
  try{const previous=JSON.parse(sessionStorage.getItem("nabd_essay_"+q.id)||"null");if(previous?.text)$("essayAnswer").value=previous.text}catch{}
  $("essayCharacters").textContent=String($("essayAnswer").value.length);
- clearPhoto();resetFeedback();updateSourceLinks(q.subject);
+ clearPhoto();resetFeedback();
  status("اكتب خطواتك أو ارفع صورة لورقة الحل. لا تعطى الدرجة حتى تطلب التصحيح.","Enter a worked answer or attach a photo. No score is assigned until you request grading.");
 }
 function buildDeck(){
@@ -174,6 +187,7 @@ function paragraph(parent,txt,cls){
  const p=elem("p",txt,cls);parent.append(p);return p;
 }
 function reportDetails(root,q,data,self=false){
+ state.latest={data,self};
  root.replaceChildren();root.hidden=false;
  const h=elem("h3",ar("تقرير التصحيح وخطوات الحل","Grading report & worked solution"));root.append(h);
  if(data?.readable===false){paragraph(root,ar("لم تتمكن أداة الرؤية من قراءة الصورة بوضوح. أعد تصوير الورقة بإضاءة جيدة أو اكتب الحل.","The image could not be read reliably. Photograph the full page clearly or type the answer."),"essay-diagnostics");return}
@@ -228,14 +242,14 @@ function downloadFeedback(q,data,self){
 function renderSelf(){
  const q=state.questions[state.index],root=$("essaySelfRubric");
  root.replaceChildren();root.hidden=false;
- paragraph(root,ar("مراجعة ذاتية: ضع علامة فقط إذا أنجزت المعيار بالكامل. مجموعك ليس نتيجة رسمية.","Self-review: check a criterion only if you fully achieved it. This is not an official score."));
+ root.append(setLabel(elem("p"),"مراجعة ذاتية: ضع علامة فقط إذا أنجزت المعيار بالكامل. مجموعك ليس نتيجة رسمية.","Self-review: check a criterion only if you fully achieved it. This is not an official score."));
  const checks=[];
  q.rubric.forEach(c=>{
   const wrap=elem("label",undefined,"essay-checkbox");
   const input=elem("input");input.type="checkbox";
-  wrap.append(input,elem("span",ar(c.ar,c.en)+" · "+c.points+"/10"));root.append(wrap);checks.push({input,points:c.points})
+  wrap.append(input,setLabel(elem("span"),c.ar+" · "+c.points+"/10",c.en+" · "+c.points+"/10"));root.append(wrap);checks.push({input,points:c.points})
  });
- const compute=elem("button",ar("احسب تقييمي الذاتي","Calculate self-review score"),"essay-btn");compute.type="button";
+ const compute=setLabel(elem("button",undefined,"essay-btn"),"احسب تقييمي الذاتي","Calculate self-review score");compute.type="button";
  compute.addEventListener("click",()=>{
   const score=checks.reduce((s,c)=>s+(c.input.checked?c.points:0),0);
   const data={score,criteria:checks.map(c=>({score:c.input.checked?c.points:0})),reason_ar:"تقييم ذاتي وفق معايير معلنة.",reason_en:"Self-scored against the published learning rubric."};
