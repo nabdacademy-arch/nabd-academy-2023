@@ -156,15 +156,38 @@ async function load(){
  message("ql-student-status","");
 }
 $("ql-refresh").addEventListener("click",load);
+let openingPaper=false;
 async function openPaper(id){
- if(!student)return;
- message("ql-student-status","جارٍ فتح نموذج الامتحان المعتمد…");
- const {data,error}=await client.rpc("nabd_quality_student_questions",{p_exam:id});
- if(error||!data||!Array.isArray(data.questions))return message("ql-student-status","لم يعد هذا الامتحان متاحًا؛ ربما انتهت مدة النشر.","error");
- // Monitoring is transparent. The browser can report attention changes, not
- // prove that a screen was captured. Students can decline to begin the paper.
- const {data:monitoring}=await client.rpc("nabd_quality_proctor_student_state",{p_exam:id});
- if(monitoring?.enabled && !window.confirm("هذا الامتحان يخضع لمراقبة إشارات المتصفح (مغادرة التبويب وفقدان التركيز وبعض اختصارات النسخ/الطباعة/التصوير). لا تستخدم الأكاديمية الكاميرا أو تسجيل الشاشة لهذا الغرض. قد تُراجع الإشارات إداريًا ولا تثبت الغش وحدها، وتُحذف بعد 30 يومًا. هل تريد بدء الامتحان؟"))return;
+ if(!student||exam||openingPaper)return;
+ openingPaper=true;
+ let data;
+ try{
+   message("ql-student-status","جارٍ فتح نموذج الامتحان المعتمد…");
+   const paper=await client.rpc("nabd_quality_student_questions",{p_exam:id});
+   if(paper.error||!Array.isArray(paper.data?.questions)){
+     message("ql-student-status","تعذّر فتح الامتحان. حدّث القائمة وحاول مجددًا. / Could not open exam. Refresh the list and retry.","error");
+     return;
+   }
+   data=paper.data;
+   const result=await client.rpc("nabd_quality_proctor_student_state",{p_exam:id});
+   const monitoring=result.data;
+   if(result.error||typeof monitoring?.open!=="boolean"||typeof monitoring.enabled!=="boolean"){
+     throw Error("Unconfirmed monitoring state");
+   }
+   if(!monitoring.open){
+     message("ql-student-status","انتهت إتاحة الامتحان. / This exam is no longer open.","error");
+     return;
+   }
+ if(monitoring.enabled && !window.confirm("هذا الامتحان يخضع لمراقبة إشارات المتصفح (مغادرة التبويب وفقدان التركيز وبعض اختصارات النسخ/الطباعة/التصوير). لا تستخدم الأكاديمية الكاميرا أو تسجيل الشاشة لهذا الغرض. قد تُراجع الإشارات إداريًا ولا تثبت الغش وحدها، وتُحذف بعد 30 يومًا. هل تريد بدء الامتحان؟")){
+     message("ql-student-status","");
+     return;
+   }
+ }catch{
+   message("ql-student-status","تعذّر تأكيد جاهزية الامتحان. تحقق من الاتصال ثم أعد المحاولة. / Could not verify exam readiness. Check your connection and retry.","error");
+   return;
+ }finally{
+   openingPaper=false;
+ }
  exam=data;questions=data.questions;autoRequested=false;autoRetries=0;
  const arabic=/[\u0600-\u06FF]/u;
  setPaperLanguage(questions.some(q=>arabic.test(q.prompt||""))?"ar":"en");
