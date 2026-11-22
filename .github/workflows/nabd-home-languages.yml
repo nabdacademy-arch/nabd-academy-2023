@@ -1,0 +1,45 @@
+name: NABD Homepage Mobile Header and 12 Languages
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-neo-header-languages.css'
+      - 'assets/js/nabd-home-i18n.js'
+      - 'assets/js/nabd-neo-*.js'
+      - 'tests/nabd-home-twelve-languages.test.cjs'
+      - 'tests/nabd-home-languages-browser.cjs'
+      - '.github/workflows/nabd-home-languages.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-neo-header-languages.css'
+      - 'assets/js/nabd-home-i18n.js'
+      - 'assets/js/nabd-neo-*.js'
+      - 'tests/nabd-home-twelve-languages.test.cjs'
+      - 'tests/nabd-home-languages-browser.cjs'
+      - '.github/workflows/nabd-home-languages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  responsive-and-i18n:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check JavaScript syntax and complete language catalogs
+        run: |
+          node --check assets/js/nabd-home-i18n.js
+          for f in assets/js/nabd-neo-{fr,es,tr,ru,id,de,pt,zh,hi,ur}.js; do node --check "$f"; done
+          node --check tests/nabd-home-languages-browser.cjs
+          node --test tests/nabd-home-twelve-languages.test.cjs
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify six viewport widths and 12 language selections
+        run: node tests/nabd-home-languages-browser.cjs
