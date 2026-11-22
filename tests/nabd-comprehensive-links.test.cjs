@@ -7,7 +7,7 @@ const root=path.resolve(__dirname,"..");
 const portals=[
  "index.html","portal.html","admin.html","nabd-moodle.html",
  "scholarships.html","scholarship-manager.html","quality-exams.html",
- "student-exams.html","open-doors-masters.html","learning/index.html",
+ "student-exams.html","open-doors-masters.html","motivation-studio.html","learning/index.html",
  "nabd-university-360.html","nabd-connect.html","research.html","course.html"
 ];
 test("all critical page entrypoints exist",()=>{
