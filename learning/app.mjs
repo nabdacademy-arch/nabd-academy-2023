@@ -116,7 +116,11 @@ async function inspectOffline(){
  }else{
   try{
    const pack=PACKS.learning,names=await caches.keys();
-   if(!names.includes(pack.cache))offlineState=t('النسخة الحالية غير محفوظة على هذا الجهاز.','The current pack is not saved on this device.');
+   const scope=new URL('./',location.href).href;
+   const registration='serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration(scope) : null;
+   if(!registration?.active || registration.scope!==scope){
+    offlineState=t('الحزمة ليست جاهزة للعمل دون اتصال حتى تفعيل خدمة التخزين لهذه الصفحة.','The offline service is not active for this page yet.');
+   }else if(!names.includes(pack.cache))offlineState=t('النسخة الحالية غير محفوظة على هذا الجهاز.','The current pack is not saved on this device.');
    else{
     const cache=await caches.open(pack.cache),base=new URL('./',location.href);
     const present=[];
