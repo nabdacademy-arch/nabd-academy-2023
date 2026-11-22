@@ -1190,6 +1190,14 @@ async function loadDashboard(user) {
    SIGN UP
    ========================================================= */
 
+function confirmedSessionUser(data) {
+  const sessionUser = data?.session?.user;
+  if (!sessionUser?.id || sessionUser.id !== data?.user?.id) {
+    throw new Error("Could not confirm your sign-in session. Please try again.");
+  }
+  return sessionUser;
+}
+
 async function handleSignUp(event) {
   event.preventDefault();
 
@@ -1207,15 +1215,10 @@ async function handleSignUp(event) {
       .toLowerCase() || "";
 
 
-  const password =
-    $("#signUpPassword")
-      ?.value || "";
-
-
-  const confirm =
-    $("#signUpPasswordConfirm")
-      ?.value || "";
-
+  const passwordField = $("#signUpPassword");
+  const confirmationField = $("#signUpPasswordConfirm");
+  const password = passwordField?.value || "";
+  const confirm = confirmationField?.value || "";
 
   const button =
     $("#signUpButton");
@@ -1224,6 +1227,7 @@ async function handleSignUp(event) {
     $("#signUpStatus");
 
 
+  if (button?.disabled) return;
   setStatus(status, "");
 
 
@@ -1301,13 +1305,16 @@ async function handleSignUp(event) {
     }
 
 
-    if (
-      data?.session &&
-      data?.user
-    ) {
-      await loadDashboard(
-        data.user
-      );
+    if (!data?.user?.id) {
+      throw new Error("Could not confirm the registration request. Check your inbox before trying again.");
+    }
+
+    const sessionUser = data.session ? confirmedSessionUser(data) : null;
+    if (passwordField.value === password) passwordField.value = "";
+    if (confirmationField.value === confirm) confirmationField.value = "";
+
+    if (sessionUser) {
+      await loadDashboard(sessionUser);
 
       return;
     }
@@ -1315,7 +1322,7 @@ async function handleSignUp(event) {
 
     setStatus(
       status,
-      "Account created successfully.",
+      "Check your inbox for a confirmation link if email verification is required.",
       "success"
     );
 
@@ -1365,9 +1372,8 @@ async function handleSignIn(event) {
       .toLowerCase() || "";
 
 
-  const password =
-    $("#signInPassword")
-      ?.value || "";
+  const passwordField = $("#signInPassword");
+  const password = passwordField?.value || "";
 
 
   const button =
@@ -1376,6 +1382,8 @@ async function handleSignIn(event) {
   const status =
     $("#signInStatus");
 
+
+  if (button?.disabled) return;
 
   setStatus(status, "");
 
@@ -1414,16 +1422,12 @@ async function handleSignIn(event) {
     }
 
 
-    if (!data?.user) {
-      throw new Error(
-        "Login failed."
-      );
-    }
+    const sessionUser = confirmedSessionUser(data);
 
 
-    await loadDashboard(
-      data.user
-    );
+    if (passwordField.value === password) passwordField.value = "";
+
+    await loadDashboard(sessionUser);
 
 
   } catch (error) {
