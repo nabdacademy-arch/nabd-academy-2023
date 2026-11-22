@@ -796,19 +796,38 @@ async function showGrading(exam){
      a.human_score!==null?String(a.human_score):a.ai_score!==null&&a.ai_score!==undefined?String(a.ai_score):"",()=>{});
    const input=score.querySelector("input");input.type="number";input.min="0";input.max=String(totalMarks);input.step="0.01";
    const notes=field("ملاحظات المصحّح (اختياري)",a.grade_notes||a.ai_notes||"",()=>{},"textarea");grade.append(score,notes);
-   wrap.append(grade,btn("اعتماد أو تعديل التصحيح يدويًا",async()=>{
+   const saveGrade=btn("اعتماد أو تعديل التصحيح يدويًا",async()=>{
+     if(saveGrade.disabled||!director)return;
      const n=Number(input.value);
      if(input.value===""||!Number.isFinite(n)||n<0||n>totalMarks)
        return status("ql-grade-status","أدخل درجة صحيحة بين 0 و"+totalMarks+" (عدد أسئلة الامتحان).","error");
-     const {error:err}=await client.from("nabd_quality_submissions")
-       .update({human_score:n,grade_notes:notes.querySelector("textarea").value.trim()||null,
-        graded_at:new Date().toISOString(),graded_by:director.id}).eq("id",a.id);
-     if(err)return status("ql-grade-status",
-       /SCORE_EXCEEDS_QUESTION_COUNT/.test(err.message||"")?
-         "لا يجوز أن تزيد الدرجة عن "+totalMarks+" علامة.":"تعذر حفظ التصحيح: "+(err.message||"خطأ غير معروف"),"error");
-     status("ql-grade-status","تم تسجيل تصحيح الطالب بنجاح.","success");
-     await showGrading(exam);await countPending();
-   }));
+     saveGrade.disabled=true;
+     try{
+       const previous=a.graded_at;
+       const nextTime=Math.max(Date.now(),previous?Date.parse(previous)+1:0);
+       let update=client.from("nabd_quality_submissions")
+         .update({human_score:n,grade_notes:notes.querySelector("textarea").value.trim()||null,
+           graded_at:new Date(nextTime).toISOString(),graded_by:director.id})
+         .eq("id",a.id).eq("exam_id",exam.id);
+       update=previous===null?update.is("graded_at",null):update.eq("graded_at",previous);
+       const {data,error}=await update.select("id").maybeSingle();
+       if(!wrap.isConnected||$("ql-grading").hidden)return;
+       if(error){
+         const message=/SCORE_EXCEEDS_QUESTION_COUNT/.test(error.message||"")?
+           "لا يجوز أن تزيد الدرجة عن "+totalMarks+" علامة.":
+           "تعذّر تأكيد حفظ الدرجة. افتح إجابات الامتحان مجددًا للتحقق.";
+         return status("ql-grade-status",message,"error");
+       }
+       if(data?.id!==a.id)return status("ql-grade-status",
+         "تعذّر اعتماد هذه النسخة من التصحيح. افتح إجابات الامتحان مجددًا وراجع آخر درجة قبل التعديل.","error");
+       status("ql-grade-status","تم تسجيل تصحيح الطالب بنجاح.","success");
+       await showGrading(exam);await countPending();
+     }catch{
+       if(wrap.isConnected&&!$("ql-grading").hidden)status("ql-grade-status",
+         "تعذّر الاتصال. افتح إجابات الامتحان مجددًا للتحقق من الدرجة المحفوظة.","error");
+     }finally{saveGrade.disabled=false;}
+   });
+   wrap.append(grade,saveGrade);
    $("ql-submissions").append(wrap);
  });
  $("ql-grading").scrollIntoView({behavior:"smooth",block:"start"});
