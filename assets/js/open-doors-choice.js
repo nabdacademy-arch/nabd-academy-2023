@@ -71,9 +71,8 @@ function showExam(ctx){
  $(ctx.id+"Summary").hidden=true;
  const deck=current(ctx);
  if(!deck)return;
- ctx.locked=false;ctx.choices.clear();ctx.showTranslation=false;
- $(ctx.id+"Translate").textContent="🌐 Show Arabic · إظهار الترجمة";
- $(ctx.id+"Translate").setAttribute("aria-pressed","false");
+ ctx.locked=false;ctx.choices.clear();setTranslationVisible(ctx,false);
+ $(ctx.id+"Translate").disabled=false;
  $(ctx.id+"Result").hidden=true;
  $(ctx.id+"Result").replaceChildren();
  $(ctx.id+"Next").hidden=true;$(ctx.id+"Check").disabled=false;
@@ -121,38 +120,48 @@ function renderChoices(ctx){
   area.append(label);
  }
 }
+function setTranslationVisible(ctx,visible){
+ ctx.showTranslation=visible;
+ const btn=$(ctx.id+"Translate");
+ btn.textContent=visible?"🌐 Hide Arabic · إخفاء الترجمة":"🌐 Show Arabic · إظهار الترجمة";
+ btn.setAttribute("aria-pressed",String(visible));
+}
 async function switchTranslation(ctx){
- const deck=current(ctx);if(!deck)return;const q=deck.q;
+ const deck=current(ctx);
+ if(!deck||$(ctx.id+"Panel").hidden)return;
+ const q=deck.q,btn=$(ctx.id+"Translate");
+ if(btn.disabled)return;
  if(ctx.showTranslation){
-  ctx.showTranslation=false;$(ctx.id+"Translate").textContent="🌐 Show Arabic · إظهار الترجمة";
-  $(ctx.id+"Translate").setAttribute("aria-pressed","false");
-  renderChoices(ctx);renderResult(ctx);return;
+  setTranslationVisible(ctx,false);renderChoices(ctx);renderResult(ctx);return;
  }
- ctx.showTranslation=true;
- $(ctx.id+"Translate").textContent="🌐 Hide Arabic · إخفاء الترجمة";
- $(ctx.id+"Translate").setAttribute("aria-pressed","true");
- if(q.question_ar){renderChoices(ctx);renderResult(ctx);return}
- const cached=trans(ctx,q);
- if(cached){renderChoices(ctx);renderResult(ctx);return}
+ if(q.question_ar||trans(ctx,q)){
+  setTranslationVisible(ctx,true);renderChoices(ctx);renderResult(ctx);return;
+ }
  if(!q.dbId){setStatus(ctx,"هذه المسألة بالإنجليزية فقط حاليًا؛ الأسئلة الجديدة متاحة باللغتين.",true);return}
- const btn=$(ctx.id+"Translate");btn.disabled=true;setStatus(ctx,"جارٍ تحميل الترجمة العربية المحفوظة…");
+ btn.disabled=true;
+ setStatus(ctx,"جارٍ تحميل الترجمة العربية المحفوظة…");
  try{
-  // Cached database translations are public read-only; paid AI translation is admin-only.
-  const db=await dbPromise;if(!db)throw Error("TRANSLATIONS_OFFLINE");
+  // Guest translations are stored and publicly readable; do not invoke the protected paid AI service.
+  const db=await dbPromise;
+  if(!db)throw Error("TRANSLATIONS_OFFLINE");
   const {data:t,error}=await db.from("open_doors_question_translations")
    .select("question_ar,options_ar,explanation_ar,rubric_ar").eq("question_id",q.dbId).maybeSingle();
+  if(current(ctx)!==deck||$(ctx.id+"Panel").hidden)return;
   if(error||!t)throw Error("SAVED_TRANSLATION_MISSING");
   if(!Array.isArray(t.options_ar)||t.options_ar.length!==q.options.length||
      typeof t.question_ar!=="string"||!t.question_ar.trim())throw Error("INCOMPLETE_TRANSLATION");
   ctx.translation.set(q.id,t);
-  if(current(ctx)?.q.id!==q.id)return;
-  renderChoices(ctx);renderResult(ctx);
+  setTranslationVisible(ctx,true);renderChoices(ctx);renderResult(ctx);
   setStatus(ctx,"تمت الترجمة. عند اختلاف مصطلح علمي راجع السؤال الإنجليزي الأصلي.");
- }catch(err){
-  if(current(ctx)?.q.id===q.id){
-   setStatus(ctx,"لا توجد ترجمة عربية محفوظة لهذا السؤال؛ استخدم بنك الأسئلة الجديدة المؤلفة باللغتين.",true);
+ }catch(error){
+  if(current(ctx)===deck&&!$(ctx.id+"Panel").hidden){
+   setTranslationVisible(ctx,false);
+   setStatus(ctx,"لم تتوفر ترجمة محفوظة بعد؛ يمكنك إعادة المحاولة عند عودة الاتصال أو استخدام الأسئلة الجديدة المترجمة.",true);
   }
  }finally{btn.disabled=false}
+}
+function answerLetters(deck,indices){
+ return indices.map(index=>String.fromCharCode(65+deck.order.indexOf(index))).join(", ")||"—";
 }
 function renderResult(ctx){
  const result=getResult(ctx),deck=current(ctx),area=$(ctx.id+"Result");
@@ -164,9 +173,8 @@ function renderResult(ctx){
  const accuracy=result.exact?"✓ Correct / إجابة صحيحة":
  result.score>0?"◔ Partially correct / صحيحة جزئيًا":"✗ Incorrect / غير صحيحة";
  area.append(make("p",accuracy));
- const letters=q.options.map((_,i)=>String.fromCharCode(65+deck.order.indexOf(i)));
- const selected=result.selected.map(i=>letters[i]).join(", ")||"—";
- const correct=result.correct.map(i=>letters[i]).join(", ");
+ const selected=answerLetters(deck,result.selected);
+ const correct=answerLetters(deck,result.correct);
  area.append(make("p","Your selection / اختيارك: "+selected+"   ·   Correct / الصحيح: "+correct));
  const ol=make("ol");
  deck.order.forEach((idx,i)=>{
@@ -243,10 +251,13 @@ function exportReport(ctx){
  const lines=["NABD Open Doors · "+ctx.kind.toUpperCase()+" choice independent practice",
  "NOT OFFICIAL · educational scoring rubric · "+new Date().toISOString()];
  for(let i=0;i<ctx.questions.length;i++){
-  const q=ctx.questions[i].q,r=ctx.reviewed[i];
+  const deck=ctx.questions[i],q=deck.q,r=ctx.reviewed[i];
   lines.push("","Question "+(i+1)+" / "+q.subject+" / "+q.topic,q.question);
-  for(let k=0;k<q.options.length;k++)lines.push(String.fromCharCode(65+k)+") "+q.options[k]+(q.correct.includes(k)?" [CORRECT]":""));
-  lines.push("Marked: "+(r?r.selected.join(","):"none"),"Points: "+(r?r.score+"/"+r.max:"not graded"),
+  deck.order.forEach((original,position)=>{
+   lines.push(String.fromCharCode(65+position)+") "+q.options[original]+(q.correct.includes(original)?" [CORRECT]":""));
+  });
+  lines.push("Your selection / اختيارك: "+answerLetters(deck,r?.selected||[]),
+   "Correct / الصحيح: "+answerLetters(deck,q.correct),"Points: "+(r?r.score+"/"+r.max:"not graded"),
    "Explanation: "+(q.explanation_en||q.explanation_ar||q.originalExplanation||"Not supplied"));
  }
  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
