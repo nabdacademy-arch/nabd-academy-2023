@@ -19,6 +19,8 @@ test("translation preserves the active essay and the completed round", async () 
     addEventListener(event, handler) { this[event] = handler; }
     append(...nodes) { this.children.push(...nodes); }
     replaceChildren(...nodes) { this.children = nodes; }
+    querySelector() { return null; }
+    prepend(...nodes) { this.children.unshift(...nodes); }
     getAttribute(key) { return key.endsWith("-ar") ? this.dataset.essayAr : this.dataset.essayEn; }
     setAttribute() {}
     removeAttribute() {}
