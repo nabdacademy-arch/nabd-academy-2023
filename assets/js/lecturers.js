@@ -34,7 +34,14 @@
     const token=++generation;records=[];assignments=[];courses=[];admin=false;
     el('studio-workspace').hidden=true;el('studio-admin').hidden=true;el('studio-editor').hidden=true;
     el('studio-record').reset();el('studio-record').elements.id.value='';el('editor-title').textContent='صمّم جلسة أو موردًا';
-    const result=await db.auth.getUser();if(token!==generation)return;user=result.data?.user;
+    let result;
+    try{result=await db.auth.getUser()}catch(error){
+      if(token!==generation)return;
+      user=null;el('studio-login').hidden=false;report(error);return;
+    }
+    if(token!==generation)return;
+    user=result.data?.user;
+    if(result.error&&!user){el('studio-login').hidden=false;status('تعذر التحقق من الجلسة. سجّل الدخول مجددًا.');return;}
     el('studio-login').hidden=!!user;
     if(!user){status('سجّل الدخول لفتح مساحتك التعليمية.');return}
     status('جارٍ تحميل مساحة التدريس…');
@@ -47,7 +54,7 @@
       el('studio-editor').hidden=!writable.length;
       el('record-course').innerHTML=options(writable);el('assignment-course').innerHTML=options(courses);
       el('studio-assignments').innerHTML=admin?assignments.map(a=>`<p>${escape(a.display_name)} · ${escape(title(a.course_id))} · ${a.active?'مفعّل':'موقوف'}</p>`).join(''):'';
-      el('studio-workspace').hidden=false;await loadPage(true);status('تم تحميل السجلات المتاحة وفق صلاحيات حسابك.');
+      el('studio-workspace').hidden=false;await loadPage(true);if(token!==generation)return;status('تم تحميل السجلات المتاحة وفق صلاحيات حسابك.');
     }catch(error){if(token!==generation)return;report(error);el('studio-login').hidden=false;el('studio-workspace').hidden=true;}
   }
   async function busy(button,action){if(button.disabled)return;button.disabled=true;try{await action()}catch(error){report(error)}finally{button.disabled=false}}
@@ -70,5 +77,36 @@
   el('studio-more').onclick=()=>busy(el('studio-more'),()=>loadPage());
   el('studio-logout').onclick=()=>busy(el('studio-logout'),async()=>{const result=await db.auth.signOut();if(result.error)throw result.error;await refresh()});
   el('studio-search').oninput=render;el('studio-filter').onchange=render;
-  if(db){db.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){generation++;user=null;records=[];assignments=[];admin=false;el('studio-workspace').hidden=true;el('studio-login').hidden=false;el('studio-auth').reset();status('تم تسجيل الخروج.');}});refresh().catch(report)}else status('تعذر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع الإدارة.');
+  function clearAccount(){
+    generation++;
+    user=null;records=[];assignments=[];courses=[];admin=false;offset=0;
+    el('studio-workspace').hidden=true;
+    el('studio-editor').hidden=true;
+    el('studio-admin').hidden=true;
+    el('studio-record').reset();
+    el('studio-record').elements.id.value='';
+    el('studio-assignment').reset();
+    el('studio-assignments').textContent='';
+    el('studio-records').textContent='';
+    el('studio-stats').textContent='';
+    el('studio-auth').reset();
+  }
+  if(db){
+    db.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_OUT'){
+        clearAccount();
+        el('studio-login').hidden=false;
+        status('تم تسجيل الخروج.');
+      }else if(event==='SIGNED_IN'&&session?.user?.id!==user?.id){
+        clearAccount();
+        el('studio-login').hidden=true;
+        status('جارٍ التحقق من صلاحيات الحساب…');
+        const token=generation;
+        setTimeout(()=>{
+          if(token===generation)refresh().catch(report);
+        },0);
+      }
+    });
+    refresh().catch(report);
+  }else status('تعذر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع الإدارة.');
 })();
