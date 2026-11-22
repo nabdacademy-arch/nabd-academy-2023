@@ -55,8 +55,9 @@
            <div class="sch-field"><label for="sch-title">1. اسم المنحة *</label><input type="text" id="sch-title" minlength="3" maxlength="180" required placeholder="مثال: منحة جامعة دولية 2027"></div>
            <div class="sch-field"><label for="sch-description">2. معلومات المنحة *</label><textarea id="sch-description" minlength="10" maxlength="12000" required placeholder="أدخل تفاصيل المنحة، التخصصات، شروط التقديم، المميزات، وآخر موعد إن وُجد..."></textarea><small>اكتب التفاصيل بوضوح، مع التأكد من شروط الجهة المعلنة.</small></div>
            <div class="sch-field"><label for="sch-url">3. رابط التقديم الرسمي *</label><input type="url" id="sch-url" maxlength="1500" required pattern="https?://.+" placeholder="https://university.edu/apply" inputmode="url" dir="ltr"><small>ضع رابط التقديم على موقع الجامعة أو الجهة المانحة، وليس رابطًا مختصرًا غير موثوق.</small></div>
-           <div class="sch-form-actions"><button id="sch-submit" type="submit" class="sch-btn sch-btn--gold">نشر المنحة الآن</button><button type="button" id="sch-cancel-edit" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><a href="scholarships.html" class="sch-btn sch-btn--muted" target="_blank" rel="noopener noreferrer">عرض أخبار المنح ↗</a></div>
+           <div class="sch-form-actions"><button id="sch-submit" type="submit" class="sch-btn sch-btn--gold">نشر المنحة الآن</button><button type="button" id="sch-cancel-edit" class="sch-btn sch-btn--muted" hidden>إلغاء التعديل</button><button type="button" id="sch-discard-draft" class="sch-btn sch-btn--muted" hidden>حذف المسودة من الجهاز</button><a href="scholarships.html" class="sch-btn sch-btn--muted" target="_blank" rel="noopener noreferrer">عرض أخبار المنح ↗</a></div>
          </form>
+         <p class="sch-alert" id="sch-draft-status" role="status" aria-live="polite" hidden></p>
          <p class="sch-alert" id="sch-publish-status" role="status" aria-live="polite" hidden></p>
        </div>
        <section class="sch-panel" aria-labelledby="sch-own-heading">
@@ -70,6 +71,6 @@
  <footer class="sch-footer">بوابة داخلية لأكاديمية نبض للعلوم الطبية · لا تشارك كلمة المرور أو بيانات الدخول مع الآخرين.</footer>
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  <script src="assets/js/config.js?v=12"></script>
-  <script src="assets/js/scholarship-center.js?v=2"></script>
+  <script src="assets/js/scholarship-center.js?v=3"></script>
 </body>
 </html>
