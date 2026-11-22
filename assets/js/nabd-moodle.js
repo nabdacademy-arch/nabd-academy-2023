@@ -65,12 +65,27 @@ $("mdl-login-form").addEventListener("submit",async e=>{
  e.preventDefault();if(!db)return;
  const email=$("mdl-email").value.trim(),password=$("mdl-password").value;
  if(!email||!password)return;
- const button=$("mdl-sign-in");button.disabled=true;
+ const button=$("mdl-sign-in");
+ if(button.disabled)return;
+ button.disabled=true;
  notice("mdl-login-message",t("جارٍ تسجيل الدخول والتحقق من الحساب…","Signing in and verifying your account…"));
- const {error}=await db.auth.signInWithPassword({email,password});
- $("mdl-password").value="";button.disabled=false;
- if(error)return notice("mdl-login-message",t("فشل تسجيل الدخول. تحقق من البريد وكلمة المرور.","Sign-in failed. Check your email and password."),"error");
- await authenticate();
+ try{
+   const {error}=await db.auth.signInWithPassword({email,password});
+   if(error){
+     const unavailable=error.name==="AuthRetryableFetchError"||error.status===0||error.status>=500;
+     notice("mdl-login-message",unavailable
+       ?t("تعذر الاتصال بخدمة الحسابات. أعد المحاولة.","Could not reach the account service. Try again.")
+       :t("فشل تسجيل الدخول. تحقق من البريد وكلمة المرور.","Sign-in failed. Check your email and password."),"error");
+     return;
+   }
+   await authenticate();
+ }catch{
+   const message=t("تعذر إكمال الطلب. تحقق من الاتصال وحاول مجددًا.","Could not complete the request. Check your connection and try again.");
+   notice($("mdl-app").hidden?"mdl-login-message":"mdl-load-message",message,"error");
+ }finally{
+   $("mdl-password").value="";
+   button.disabled=false;
+ }
 });
 async function signOut(){
  if(db)await db.auth.signOut();
