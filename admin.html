@@ -282,7 +282,39 @@
 const db=supabase.createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM"),S={u:null,p:[],c:[],e:[],cert:[],claims:[],feedback:[],apps:[]},$=x=>document.getElementById(x),esc=x=>String(x??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function note(t,e=false){$("msg").textContent=t;$("msg").className="status"+(e?" error":"");setTimeout(()=>$("msg").classList.add("hidden"),4000)}function open(h){$("modal").innerHTML=h;$("modalbg").classList.remove("hidden");document.body.style.overflow="hidden"}function close(){$("modalbg").classList.add("hidden");$("modal").innerHTML="";document.body.style.overflow=""}$("close").onclick=close;$("modalbg").addEventListener("click",e=>{if(e.target===$("modalbg"))close()});
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden")});
-async function admin(u){let{data:p}=await db.from("profiles").select("*").eq("id",u.id).maybeSingle();if(!p||p.role!=="admin"){await db.auth.signOut();$("loginMsg").textContent="Access denied. This account is not an administrator.";$("loginMsg").className="status error";return}S.u=u;$("adminName").textContent=p.full_name||p.email||u.email;$("login").classList.add("hidden");$("app").classList.remove("hidden");await load()}
+function showRoleRetry(){
+  const message=$("loginMsg");
+  message.className="status error";
+  message.textContent="تعذّر التحقق من صلاحية المدير. Could not verify director access. ";
+  const retry=document.createElement("button");
+  retry.type="button";
+  retry.className="btn secondary";
+  retry.textContent="إعادة المحاولة / Retry";
+  retry.onclick=()=>location.reload();
+  message.append(retry);
+}
+async function admin(u){
+  let profile;
+  try{
+    const {data,error}=await db.from("profiles").select("*").eq("id",u.id).maybeSingle();
+    if(error)throw error;
+    profile=data;
+  }catch{
+    showRoleRetry();
+    return;
+  }
+  if(!profile||profile.role!=="admin"){
+    await db.auth.signOut();
+    $("loginMsg").textContent="Access denied. This account is not an administrator.";
+    $("loginMsg").className="status error";
+    return;
+  }
+  S.u=u;
+  $("adminName").textContent=profile.full_name||profile.email||u.email;
+  $("login").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  await load();
+}
 $("loginForm").onsubmit=async e=>{e.preventDefault();let{data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){$("loginMsg").textContent=error.message;$("loginMsg").className="status error";return}admin(data.user)};$("logout").onclick=async()=>{await db.auth.signOut();location.reload()};
 async function load(){let [p,c,e,cert,claims,feedback,apps]=await Promise.all([db.from("profiles").select("*"),db.from("courses").select("*"),db.from("enrollments").select("*"),db.from("certificates").select("*"),db.from("certificate_claims").select("*"),db.from("feedback").select("*").order("created_at",{ascending:false}),db.from("executive_applications").select("*").order("created_at",{ascending:false})]);S.p=p.data||[];S.c=c.data||[];S.e=e.data||[];S.cert=cert.data||[];S.claims=claims.data||[];S.feedback=feedback.data||[];S.apps=apps.data||[];if(apps.error)note("Could not load executive applications: "+apps.error.message,true);render()}
 function name(id){let x=S.p.find(v=>v.id===id);return x?.full_name||x?.email||id}function course(id){let x=S.c.find(v=>String(v.id)===String(id));return x?.title_en||x?.title||x?.slug||id}
