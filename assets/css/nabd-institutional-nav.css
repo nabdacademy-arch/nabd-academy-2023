@@ -78,3 +78,11 @@
 }
 @media(prefers-reduced-motion:reduce){#nabdInstitutionalLauncher{transition:none!important}}
 @media print{#nabdInstitutionalLauncher,.nabd-institutional-panel,.nabd-institutional-backdrop{display:none!important}}
+
+/* Progressive disclosure: essential services first, full catalog on demand. */
+.nabd-institutional-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:2px 0 8px}
+.nabd-institutional-mode{min-width:0;min-height:38px;cursor:pointer;border:1px solid #517c7c!important;border-radius:9px!important;padding:8px 10px!important;background:#153844!important;color:#d7efec!important;font:700 12px/1.4 system-ui,sans-serif!important;box-shadow:none!important}
+.nabd-institutional-mode[aria-pressed="true"]{background:#9bdac7!important;color:#0b2a33!important;border-color:#9bdac7!important}
+.nabd-institutional-result-status{font:500 11px/1.5 system-ui,sans-serif!important;color:#bed8d5!important;margin:0 0 8px!important}
+.nabd-institutional-panel .nabd-institutional-section[hidden],.nabd-institutional-panel .nabd-institutional-link[hidden]{display:none!important}
+@media(max-width:380px){.nabd-institutional-panel:not([hidden]){padding-inline:11px}.nabd-institutional-links{grid-template-columns:minmax(0,1fr)}#nabdInstitutionalLauncher{max-width:52vw}.nabd-launcher-label{overflow:hidden;text-overflow:ellipsis}}
