@@ -443,9 +443,14 @@
     await refreshOwnPosts();
   });
   if (!client){showLogin();setStatus(authStatus,"إعداد Supabase غير متاح.","error");return;}
-  client.auth.onAuthStateChange((event)=>{
+  client.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_IN"&&signedInUser&&session?.user?.id!==signedInUser.id){
+      showLogin();
+      setTimeout(()=>verifyPublisher(),0);
+    }
     if(event==="SIGNED_OUT")showLogin();
     if(event==="PASSWORD_RECOVERY"){
+      showLogin();
       const resetPanel=document.getElementById("sch-new-password-panel");
       if(resetPanel){resetPanel.hidden=false;loginPanel.hidden=true;dashboard.hidden=true;}
     }
