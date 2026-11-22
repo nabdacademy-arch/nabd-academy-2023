@@ -612,6 +612,41 @@ async function deleteExam(x,trigger){
  }finally{trigger.disabled=false;}
 }
 
+const closingExams=new Set();
+async function closeExam(exam){
+ const owner=director;
+ if(!owner||closingExams.has(exam.id))return;
+ if(!window.confirm("هل تريد إغلاق الامتحان الآن؟ سيُمنع تسليم إجابات جديدة."))return;
+ closingExams.add(exam.id);
+ status("ql-list-status","جارٍ التحقق من إغلاق الامتحان…");
+ try{
+   let confirmed=false;
+   try{
+     const {data,error}=await client.from("nabd_quality_exams")
+       .update({status:"closed",updated_at:new Date().toISOString()})
+       .eq("id",exam.id).eq("created_by",owner.id).eq("status","published")
+       .select("status").maybeSingle();
+     confirmed=!error&&data?.status==="closed";
+   }catch{/* A dropped response may follow a committed update. */}
+   if(owner!==director)return;
+   if(!confirmed){
+     const {data,error}=await client.from("nabd_quality_exams").select("status")
+       .eq("id",exam.id).eq("created_by",owner.id).maybeSingle();
+     if(owner!==director)return;
+     if(error||!data)throw Error("Unconfirmed closure");
+     if(data.status!=="closed"){
+       status("ql-list-status","لم يُغلق الامتحان. حدّث القائمة قبل إعادة المحاولة.","error");
+       return;
+     }
+   }
+   status("ql-list-status","تأكّد إغلاق الامتحان.","success");
+   try{await loadExams();}catch{
+     if(owner===director)status("ql-list-status","تأكّد إغلاق الامتحان وتعذّر تحديث القائمة.","error");
+   }
+ }catch{
+   if(owner===director)status("ql-list-status","تعذّر تأكيد حالة الامتحان. تحقق من الاتصال وحدّث القائمة.","error");
+ }finally{closingExams.delete(exam.id);}
+}
 function renderExams(){
  const list=$("ql-exam-list");list.replaceChildren();
  if(!exams.length){list.append(el("p","ql-empty","لم تنشئ امتحانات بعد. ارفع محاضرة وابدأ أول مسودة."));return;}
@@ -671,11 +706,7 @@ function renderExams(){
      });publish.classList.add("ql-tag-green");actions.append(publish);
    } else {
      actions.append(btn("عرض إجابات الطلاب",()=>showGrading(x)));
-     if(isLive)actions.append(btn("إغلاق الامتحان الآن",async()=>{
-       if(!window.confirm("هل تريد إغلاق الامتحان الآن؟ سيُمنع تسليم إجابات جديدة."))return;
-       const {error}=await client.from("nabd_quality_exams").update({status:"closed",updated_at:new Date().toISOString()}).eq("id",x.id);
-       if(error)status("ql-list-status","تعذر الإغلاق.","error");else{status("ql-list-status","أُغلق الامتحان.","success");await loadExams();}
-     },"danger"));
+     if(isLive)actions.append(btn("إغلاق الامتحان الآن",()=>closeExam(x),"danger"));
    }
    // Allow the director to delete any exam status, including active exams with
    // completed student submissions, after two irreversible-action confirmations.
