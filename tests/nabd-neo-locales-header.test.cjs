@@ -30,15 +30,15 @@ test("the ten locale files actually translate every original homepage phrase",()
  assert.ok(sourceMatch,"source text manifest missing");
  const manifest=JSON.parse(sourceMatch[1]);
  assert.deepEqual(manifest,sources,"translation source manifest must not drift from homepage markup");
- assert.equal(manifest.length,133);
+ assert.equal(manifest.length,135);
  for(const lang of locales){
   const file=JSON.parse(read("assets/i18n/neo-home/"+lang+".json"));
   assert.equal(file.lang,lang);
   assert.equal(file.translations.length,manifest.length,"Incomplete "+lang);
   assert.ok(file.translations.every(t=>typeof t==="string"&&t.trim().length>0),"empty "+lang);
   assert.ok(file.translations.filter((t,i)=>t!==manifest[i]).length>=112,"Locale not genuinely translated: "+lang);
-  assert.ok(file.translations[87].includes("100"),"The proposed (not funded) 100-student goal must remain in "+lang);
-  assert.ok(file.translations[65].includes("196"),"Question count must remain intact in "+lang);
+  assert.ok(file.translations[manifest.indexOf("Our proposed goal: support 100 students across Gaza with tuition, transport, devices and learning essentials. The program is in preparation; this is not a funded award count.")].includes("100"),"The proposed (not funded) 100-student goal must remain in "+lang);
+  assert.ok(file.translations[manifest.indexOf("196 NABD bank questions")].includes("196"),"Question count must remain intact in "+lang);
   assert.doesNotMatch(file.translations.join(" "),/<script|javascript:|<iframe/i);
  }
 });
