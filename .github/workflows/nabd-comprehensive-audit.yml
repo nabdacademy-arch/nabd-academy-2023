@@ -18,6 +18,7 @@ on:
       - 'tests/**'
       - '*.html'
   workflow_dispatch:
+# Read-only audit: no production accounts, writes, or private credentials are used.
 permissions:
   contents: read
 jobs:
