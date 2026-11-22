@@ -26,7 +26,7 @@ for (const role of ["student","lecturer"]) {
     };
     vm.runInNewContext(fs.readFileSync(require.resolve("../assets/js/nabd-moodle.js"),"utf8"),{
       document:{getElementById:get,querySelector:()=>true,querySelectorAll:()=>[],documentElement:{},createElement:element,addEventListener(){}},
-      window:{nabdSupabase:db},localStorage:{getItem:()=>"en",setItem(){}},setInterval(){}
+      window:{nabdSupabase:db,addEventListener(){}},localStorage:{getItem:()=>"en",setItem(){}},setInterval(){}
     });
     await new Promise(resolve=>setImmediate(resolve));
     const trigger=get(role==="student"?"mdl-sign-out":"mdl-change-account");
