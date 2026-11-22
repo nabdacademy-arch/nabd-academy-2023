@@ -35,12 +35,6 @@ jobs:
           node --check assets/js/motivation-studio.js
           node --check tests/motivation-studio-browser.cjs
           node --test tests/motivation-studio-phase1.test.cjs
-      - name: Install pinned headless Chromium
-        run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
-      - name: Simulate desktop and mobile form steps without submitting personal data
-        run: node tests/motivation-studio-browser.cjs
       - name: Verify live AI endpoint health safely (no generation)
         run: |
           node - <<'NODE'
@@ -56,6 +50,12 @@ jobs:
             if(denied.status!==403)throw Error('Origin guard was not enforced');
           })().catch(e=>{console.error(e);process.exitCode=1});
           NODE
+      - name: Install pinned headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Simulate desktop and mobile form steps without submitting personal data
+        run: node tests/motivation-studio-browser.cjs
       - name: Upload browser test report
         if: always()
         uses: actions/upload-artifact@v4
