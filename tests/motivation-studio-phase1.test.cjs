@@ -86,3 +86,32 @@ test("variation strategies change without changing application facts",()=>{
  assert.match(js,/variant=\(\(variant-1\+jump\)%9\)\+1/);
  assert.doesNotMatch(js,/localStorage|sessionStorage|sb_secret_/i);
 });
+
+test("professional workspace remains private and export is explicit",()=>{
+ for(const id of ["saveBrief","loadBrief","resetBrief","briefFile","moment","mustInclude",
+  "wordLimit","draftHistory","draftTabs","compareBtn","compareColumns","printBtn",
+  "printLetter","checkFacts","checkFit","checkVoice","wordLimitStatus","genericWarning"])
+   assert.match(html,new RegExp('id="'+id+'"'));
+ assert.match(js,/NABD_MOTIVATION_BRIEF/);
+ assert.match(js,/window\.confirm/);
+ assert.match(js,/file\.size>25000/);
+ assert.match(js,/aiConsent"\)\.checked=false/);
+ assert.match(js,/const drafts=\[\]/);
+ assert.match(js,/selectedDraft/);
+ assert.match(js,/function renderDrafts/);
+ assert.match(js,/function rememberDraft/);
+ assert.match(js,/text\.textContent=draft\.letter/);
+ assert.doesNotMatch(js,/localStorage|sessionStorage|indexedDB|sendBeacon/);
+ assert.match(css,/@media print/);
+});
+test("word limits and grounded evidence pass defensible bounds",()=>{
+ assert.match(edge,/wordLimit=p\.wordLimit===undefined\?0:p\.wordLimit/);
+ assert.match(edge,/wordLimit<150\|\|wordLimit>900/);
+ assert.match(edge,/key==="moment"\?1100:key==="mustInclude"\?650/);
+ assert.match(edge,/Evidence-first editing/);
+ assert.match(edge,/Distinguish aspirations from completed accomplishments/);
+ assert.match(edge,/actual>input\.wordLimit/);
+ assert.match(js,/requested/); // prose is anchored to the current applicant's requested limits
+ assert.match(js,/classList\.toggle\("over-limit"/);
+ assert.match(js,/letter-warning/);
+});
