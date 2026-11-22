@@ -44,11 +44,35 @@
     if(form.dataset.la==='review')await checked(db.rpc('nabd_lms_review_submission',{p_id:form.dataset.id,p_feedback:f.get('feedback').trim(),p_grade:Number(f.get('grade'))}));
    })};
    panel.onreset=event=>{const form=event.target;if(form.elements.id)setTimeout(()=>{form.elements.id.value=''},0)};
+   async function moderatePost(button){
+    if(button.disabled||ticket!==version)return;
+    const article=button.closest('article');
+    const controls=article.querySelectorAll('[data-la-post]');
+    controls.forEach(control=>control.disabled=true);
+    status('جارٍ حفظ قرار المراجعة…');
+    try{
+     const row=await checked(db.from('nabd_learning_posts')
+      .update({status:button.dataset.decision})
+      .eq('id',button.dataset.laPost).eq('status','pending')
+      .select('id,status').maybeSingle());
+     if(ticket!==version||!panel.isConnected)return;
+     if(!row){
+      status('لم يعد هذا الطلب متاحًا للمراجعة. حدّث السجلات للاطلاع على حالته الحالية.');
+      return;
+     }
+     article.remove();
+     status(row.status==='approved'?'تم اعتماد المساهمة.':'تم رفض المساهمة.');
+    }catch(error){
+     if(ticket!==version||!panel.isConnected)return;
+     controls.forEach(control=>control.disabled=false);
+     fail(error);
+    }
+   }
    panel.onclick=event=>{const b=event.target.closest('button');if(!b)return;
     if(b.hasAttribute('data-la-refresh')){panel.dispatchEvent(new Event('nabd-refresh'));return}
     if(b.dataset.laEdit){const l=lessons.find(x=>x.id===b.dataset.laEdit),form=panel.querySelector('[data-la="lesson"]');if(!l)return;for(const k of ['id','course_id','title','objective','body','resource_url','kind','position'])form.elements[k].value=l[k]??'';form.elements.published.checked=l.published;form.scrollIntoView({block:'center'});form.elements.title.focus()}
     if(b.dataset.laRound){const r=rounds.find(x=>x.id===b.dataset.laRound),form=panel.querySelector('[data-la="round"]');if(!r)return;for(const k of ['id','title','speaker','description','meeting_url'])form.elements[k].value=r[k]||'';const d=new Date(r.starts_at);form.elements.starts_at.value=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);form.elements.published.checked=r.published;form.scrollIntoView({block:'center'})}
-    if(b.dataset.laPost)perform(b,async()=>{await checked(db.from('nabd_learning_posts').update({status:b.dataset.decision}).eq('id',b.dataset.laPost).select().single());b.closest('article').remove()});
+    if(b.dataset.laPost)return moderatePost(b);
    };
   }catch(e){if(ticket===version)fail(e)}
  }});
