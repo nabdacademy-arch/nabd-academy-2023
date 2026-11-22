@@ -1,0 +1,49 @@
+name: NABD Homepage Header and 12 Languages
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-neo-mobile-languages.css'
+      - 'assets/js/nabd-neo-locale-data.js'
+      - 'assets/i18n/neo-home/**'
+      - 'tests/nabd-neo-*'
+      - 'tests/home-portal-browser.cjs'
+      - '.github/workflows/nabd-neo-mobile-locales.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/css/nabd-neo-mobile-languages.css'
+      - 'assets/js/nabd-neo-locale-data.js'
+      - 'assets/i18n/neo-home/**'
+      - 'tests/nabd-neo-*'
+      - '.github/workflows/nabd-neo-mobile-locales.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  homepage-header-and-language:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax and all translation files
+        run: |
+          node --check assets/js/nabd-neo-locale-data.js
+          node --check tests/nabd-neo-translation-browser.cjs
+          node --test tests/nabd-neo-locales-header.test.cjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve local academy pages
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/nabd-neo-home-server.log 2>&1 &
+          for i in 1 2 3 4 5 6 7 8 9 10; do curl --fail --silent --output /dev/null http://127.0.0.1:8123/index.html && break || sleep 1; done
+      - name: Real mobile language and overlap browser verification
+        run: |
+          node tests/nabd-neo-translation-browser.cjs
+          node tests/home-portal-browser.cjs
