@@ -8,6 +8,7 @@ const kinds={mcq:"اختيار من متعدد",true_false:"صح أو خطأ",es
 const bucket="nabd-quality-lecture-pdfs";
 let director=null,questions=[],exams=[],editingId=null,editingSourcePath=null,editingSourceFilename="",selectedCourse=null;
 let importedFile=null;
+let exitStarted=false,exitPending=false;
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;}
 function status(id,msg,kind){const x=$(id);if(!x)return;x.hidden=!msg;x.textContent=msg||"";x.className="ql-status"+(kind?" "+kind:"");}
 function btn(label,fn,extra=""){const b=el("button","ql-mini "+extra,label);b.type="button";b.addEventListener("click",fn);return b;}
@@ -100,8 +101,10 @@ function resetBuilder(){
 async function authenticate(){
  if(!client){status("ql-login-status","اتصال Supabase غير متاح.","error");return;}
  const {data:{user},error}=await client.auth.getUser();
+ if(exitStarted)return;
  if(error||!user){$("ql-login-panel").hidden=false;$("ql-workspace").hidden=true;return;}
  const {data:owner,error:roleError}=await client.from("nabd_exam_owner").select("user_id").eq("user_id",user.id).maybeSingle();
+ if(exitStarted)return;
  if(roleError||owner?.user_id!==user.id){
    director=null;$("ql-login-panel").hidden=false;$("ql-workspace").hidden=true;
    status("ql-login-status","هذا الحساب ليس حساب المدير المخوّل. بوابة الامتحانات والجودة للمدير العام فقط.","error");
@@ -177,18 +180,39 @@ $("ql-bot-run").addEventListener("click",()=>runGraderNow());
 $("ql-bot-refresh").addEventListener("click",loadGraderStatus);
 graderButtons();
 $("ql-login-form").addEventListener("submit",async e=>{
- e.preventDefault();if(!client)return;
+ e.preventDefault();if(!client||exitStarted)return;
  const email=$("ql-email").value.trim(),password=$("ql-password").value;
  const b=$("ql-login-btn");b.disabled=true;status("ql-login-status","جارٍ التحقق…");
  const {error}=await client.auth.signInWithPassword({email,password});
+ if(exitStarted)return;
  $("ql-password").value="";b.disabled=false;
  if(error)return status("ql-login-status","فشل تسجيل الدخول. راجع البريد وكلمة المرور.","error");
  await authenticate();
 });
-$("ql-logout").addEventListener("click",async()=>{
- await client.auth.signOut();director=null;$("ql-workspace").hidden=true;$("ql-login-panel").hidden=false;
- status("ql-login-status","تم تسجيل الخروج.","success");
-});
+async function signOutDirector(){
+ if(exitPending)return;
+ exitStarted=true;
+ exitPending=true;
+ director=null;
+ $("ql-workspace").hidden=true;
+ $("ql-login-panel").hidden=false;
+ $("ql-login-form").hidden=true;
+ $("ql-password").value="";
+ const retry=$("ql-logout-retry");
+ retry.hidden=true;
+ status("ql-login-status","جارٍ إنهاء جلسة المدير…");
+ try{
+   const {error}=await client.auth.signOut();
+   if(error)throw error;
+   window.location.reload();
+ }catch{
+   status("ql-login-status","تعذّر تأكيد تسجيل الخروج. أعد المحاولة عند عودة الاتصال قبل ترك الجهاز.","error");
+   retry.hidden=false;
+   exitPending=false;
+ }
+}
+$("ql-logout").addEventListener("click",signOutDirector);
+$("ql-logout-retry")?.addEventListener("click",signOutDirector);
 $("ql-pdf").addEventListener("change",()=>{
  const f=$("ql-pdf").files[0];
  $("ql-file-label").textContent=f?f.name+" · "+(f.size/1048576).toFixed(2)+" MB":"لم يتم اختيار ملف بعد";
