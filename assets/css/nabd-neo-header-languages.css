@@ -19,7 +19,7 @@
 .neo-site .neo-nav a{white-space:normal;overflow-wrap:anywhere}
 /* Browser desktop-mode on phones typically has a 980px CSS viewport. Collapse
    navigation earlier, before text can collide with the academy wordmark. */
-@media(max-width:1399px){
+@media(max-width:1599px){
  .neo-site .neo-headbar{position:relative;gap:12px;justify-content:space-between}
  .neo-site .neo-brand{flex:1 1 auto;max-width:calc(100% - 225px)}
  .neo-site .neo-menu{display:inline-flex;flex:0 0 auto}
@@ -66,3 +66,13 @@
 .neo-site #neoLanguageNotice[hidden]{display:none!important}
 .neo-site .neo-brand>span:last-child strong{line-height:1.35}
 .neo-site .neo-nav.neo-open{max-height:min(65vh,530px);overflow-y:auto}
+
+@media(min-width:1600px){
+ .neo-site .neo-headbar{gap:12px}
+ .neo-site .neo-brand{min-width:180px}
+ .neo-site .neo-brand strong{font-size:.89rem}
+ .neo-site .neo-nav{gap:8px;min-width:0}
+ .neo-site .neo-nav a{font-size:.73rem;line-height:1.45}
+ .neo-site .neo-actions{gap:6px}
+ .neo-site .neo-signin{padding:8px 10px;font-size:.76rem;min-height:43px}
+}
