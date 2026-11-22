@@ -104,6 +104,7 @@ async function main(){
    await page.locator("#briefFile").setInputFiles({
      name:"nabd-brief.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(imported))
    });
+   await page.waitForFunction(()=>document.querySelector("#opportunity").value==="Software Engineer vacancy",null,{timeout:12000});
    assert.equal(await page.locator("#opportunity").inputValue(),"Software Engineer vacancy");
    assert.equal(await page.locator("#kindInput").inputValue(),"job");
    assert.equal(await page.locator("#wordLimit").inputValue(),"250");
