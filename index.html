@@ -1327,6 +1327,7 @@
 @media(prefers-reduced-motion:reduce){.neo-site *, .neo-site *:before,.neo-site *:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
 </style>
+<link rel="stylesheet" href="assets/css/nabd-neo-header-languages.css?v=1">
 </head>
 <body class="nfs-home">
 
@@ -1349,8 +1350,16 @@
         <a href="#neo-directory" data-neo-ar="المنصات والخدمات" data-neo-en="Explore all">المنصات والخدمات</a>
       </nav>
       <div class="neo-actions">
-        <button id="neoLang" class="neo-language" type="button" aria-label="Switch to English / تبديل اللغة" aria-pressed="false">🌐 <span id="neoLangLabel">English</span></button>
+        <label class="neo-language-picker" for="neoLang"><span aria-hidden="true">🌐</span><select id="neoLang" class="neo-language-select" aria-label="اختر لغة الموقع" autocomplete="off">
+          <option value="ar">العربية</option><option value="en">English</option>
+          <option value="fr">Français</option><option value="es">Español</option>
+          <option value="tr">Türkçe</option><option value="ru">Русский</option>
+          <option value="id">Indonesia</option><option value="de">Deutsch</option>
+          <option value="pt">Português</option><option value="zh">中文</option>
+          <option value="hi">हिन्दी</option><option value="ur">اردو</option>
+        </select></label>
         <a class="neo-signin" href="portal.html" data-neo-ar="دخول الطالب ↗" data-neo-en="Student portal ↗">دخول الطالب ↗</a>
+        <span id="neoLanguageNotice" role="status" aria-live="polite" hidden></span>
         <button id="neoMenu" class="neo-menu" type="button" aria-label="افتح القائمة / Open menu" aria-controls="neoNav" aria-expanded="false">☰</button>
       </div>
     </div>
@@ -2657,22 +2666,14 @@
 </script>
 </div>
 
+<script src="assets/js/nabd-home-i18n.js?v=1"></script>
 <script id="nabd-neo-home-script">
 (function(){
 "use strict";
-const root=document.getElementById("nabdNeoHome"),switcher=document.getElementById("neoLang"),langLabel=document.getElementById("neoLangLabel");
+const root=document.getElementById("nabdNeoHome"),switcher=document.getElementById("neoLang");
 const nav=document.getElementById("neoNav"),toggle=document.getElementById("neoMenu");
 if(!root||!switcher||!nav||!toggle)return;
-function applyLanguage(lang){
-  const en=lang==="en";
-  root.lang=en?"en":"ar";root.dir=en?"ltr":"rtl";switcher.setAttribute("aria-pressed",String(en));
-  langLabel.textContent=en?"العربية":"English";
-  root.querySelectorAll("[data-neo-ar][data-neo-en]").forEach(el=>{const text=el.getAttribute("data-neo-"+(en?"en":"ar"));if(text!==null)el.textContent=text;});
-  try{localStorage.setItem("nabdCompactHomeLanguage",en?"en":"ar")}catch(_){}
-}
-let start="ar";try{if(localStorage.getItem("nabdCompactHomeLanguage")==="en")start="en"}catch(_){}
-applyLanguage(start);
-switcher.addEventListener("click",()=>applyLanguage(root.lang==="en"?"ar":"en"));
+window.NABD_NEO_I18N?.init(root,switcher);
 function closeNav(){nav.classList.remove("neo-open");toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}
 toggle.addEventListener("click",()=>{const open=nav.classList.toggle("neo-open");toggle.setAttribute("aria-expanded",String(open));toggle.textContent=open?"✕":"☰"});
 nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",closeNav));
