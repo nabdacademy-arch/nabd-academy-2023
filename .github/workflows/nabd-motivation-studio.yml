@@ -48,6 +48,24 @@ jobs:
             if(j.ready!==true)console.warn('Deployment exists but provider / rate / Turnstile credentials need configuration; AI generation is not yet available.');
             const denied=await fetch(url,{headers:{Origin:'https://evil.example'}});
             if(denied.status!==403)throw Error('Origin guard was not enforced');
+            // These non-generative negative checks cannot call an AI provider.
+            const invalid=await fetch(url,{method:'POST',
+              headers:{Origin:'https://nabdacademy-arch.github.io','Content-Type':'application/json'},
+              body:'{}'});
+            if(invalid.status!==422)throw Error('Missing input was not rejected: '+invalid.status);
+            const forgedBody={
+              kind:'scholarship',language:'en',tone:'authentic',length:'standard',
+              variation:1,aiConsent:true,turnstileToken:'not_a_valid_turnstile_response_0000',
+              fullName:'',typeOther:'',specialty:'Computer Science',opportunity:'Sample Program',
+              organization:'',about:'A short fictional technical profile purely for an access-control test.',
+              achievements:'',why:'To explore technical learning and education.',
+              fit:'',future:'',requirements:'',challenges:'',avoid:'',region:''
+            };
+            const forged=await fetch(url,{method:'POST',
+              headers:{Origin:'https://nabdacademy-arch.github.io','Content-Type':'application/json'},
+              body:JSON.stringify(forgedBody)});
+            if(forged.status!==403)throw Error('Invalid CAPTCHA request passed: '+forged.status);
+            console.log('NABD MOTIVATION negative validation: missing input 422; invalid challenge 403');
           })().catch(e=>{console.error(e);process.exitCode=1});
           NODE
       - name: Install pinned headless Chromium
