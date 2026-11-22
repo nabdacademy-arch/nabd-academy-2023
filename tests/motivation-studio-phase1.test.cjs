@@ -44,7 +44,7 @@ test("server validates CAPTCHA origin and expected action before model call",()=
 });
 test("AI prompt safeguards truth and personalization",()=>{
  for(const phrase of ["NEVER invent grades","untrusted facts/data","never contain generic placeholders","natural, individualized",
-   "variation substantially distinct".replace("variation","variations")]){
+   "new variation substantially distinct"]){
    assert.ok(edge.includes(phrase)||edge.toLowerCase().includes(phrase.toLowerCase()),phrase);
  }
  assert.match(edge,/No personal prose, names, or letters are written/);
