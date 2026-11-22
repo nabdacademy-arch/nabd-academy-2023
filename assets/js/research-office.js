@@ -15,6 +15,7 @@
     in_review: "قيد المراجعة", replied: "رد بشري",
     exploring: "مباحثات تعاون", closed: "مغلق"
   };
+  let sessionVersion = 0;
   let userId = null;
   let editingId = null;
   let rows = [];
@@ -25,6 +26,10 @@
     box.className = error ? "info notice-error" : value ? "info" : "";
   }
   function showAuth() {
+    sessionVersion++;
+    recordForm.reset();
+    byId("identity").textContent = "";
+    byId("search").value = "";
     userId = null;
     rows = [];
     editingId = null;
@@ -79,10 +84,12 @@
   }
   async function loadRows() {
     if (!db || !userId) return;
+    const version = sessionVersion;
     message("");
     const {data, error} = await db.from("nabd_research_outreach")
       .select("id,institution,country,purpose,status,reference_code,contact_email,last_contact_on,follow_up_on,evidence_url,internal_notes,created_at")
       .order("created_at", {ascending: false}).limit(200);
+    if (version !== sessionVersion) return;
     if (error) {
       rows = [];
       render();
@@ -93,15 +100,18 @@
     render();
   }
   async function authorize() {
+    const version = ++sessionVersion;
     if (!db) {
       showAuth();
       message("خدمة المصادقة غير متصلة. لا يمكن عرض أي سجلات.", true);
       return;
     }
     const {data: {user}, error: userError} = await db.auth.getUser();
+    if (version !== sessionVersion) return;
     if (userError || !user) { showAuth(); return; }
     const {data: profile, error: profileError} = await db.from("profiles")
       .select("role").eq("id", user.id).maybeSingle();
+    if (version !== sessionVersion) return;
     if (profileError || !profile || profile.role !== "admin") {
       showAuth();
       message("الحساب لا يمتلك صلاحية إدارة المكتب البحثي.", true);
@@ -133,6 +143,7 @@
   byId("recordForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!userId || !db) return;
+    const version = sessionVersion;
     const submit = byId("save");
     submit.disabled = true;
     const payload = {
@@ -157,13 +168,14 @@
         ? db.from("nabd_research_outreach").update(payload).eq("id", editingId).select("id")
         : db.from("nabd_research_outreach").insert({...payload, created_by: userId}).select("id");
       const {data, error} = await query;
+      if (version !== sessionVersion) return;
       if (error || !data?.length) return message("لم يُحفظ السجل. تحقّق من الصلاحيات والحقول ثم أعد المحاولة.", true);
       editor.hidden = true;
       editingId = null;
       recordForm.reset();
       message("تم حفظ سجل المتابعة داخل قاعدة البيانات الخاصة.");
       await loadRows();
-    } catch (_) { message("حدث خطأ اتصال أثناء الحفظ.", true); }
+    } catch (_) { if (version === sessionVersion) message("حدث خطأ اتصال أثناء الحفظ.", true); }
     finally { submit.disabled = false; }
   });
   byId("newRecord").addEventListener("click", () => setEditor());
@@ -171,12 +183,41 @@
   byId("cancel").addEventListener("click", () => { editor.hidden = true; editingId = null; });
   byId("search").addEventListener("input", render);
   byId("logout").addEventListener("click", async () => {
-    if (db) await db.auth.signOut();
-    showAuth();
-    message("تم تسجيل الخروج.");
+    const button = byId("logout");
+    if (!db || button.disabled) return;
+    const version = sessionVersion;
+    button.disabled = true;
+    try {
+      const {error} = await db.auth.signOut();
+      if (error) throw error;
+      if (version === sessionVersion) showAuth();
+      if (!userId) message("تم تسجيل الخروج.");
+    } catch (_) {
+      if (version === sessionVersion) message("تعذّر تأكيد تسجيل الخروج. تحقّق من الاتصال ثم أعد المحاولة.", true);
+    } finally {
+      button.disabled = false;
+    }
   });
-  authorize().catch(() => {
-    showAuth();
-    message("تعذّر التحقق من صلاحية الحساب.", true);
+  db?.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT" || (event === "SIGNED_IN" && session?.user?.id !== userId)) {
+      showAuth();
+      message("");
+      if (event === "SIGNED_IN") {
+        const version = sessionVersion;
+        setTimeout(() => {
+          if (version === sessionVersion) checkAccount();
+        }, 0);
+      }
+    }
   });
+  function checkAccount() {
+    const request = authorize();
+    const version = sessionVersion;
+    request.catch(() => {
+      if (version !== sessionVersion) return;
+      showAuth();
+      message("تعذّر التحقق من صلاحية الحساب.", true);
+    });
+  }
+  checkAccount();
 })();
