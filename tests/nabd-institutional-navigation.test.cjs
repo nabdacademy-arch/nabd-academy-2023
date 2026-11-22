@@ -48,7 +48,7 @@ test("institutional directory is concise, bilingual, categorized and searchable"
  }
  assert.match(dirHTML,/lang="ar" dir="rtl"/);
  assert.match(dirJS,/if\(entry\.restricted\)/);
- assert.match(dirJS,/query\|\|filter==="all"/);
+ assert.match(dirJS,/Boolean\(query\)\|\|filter==="all"/);
  assert.match(dirJS,/document\.documentElement\.dir=/);
 });
 test("navigation is privacy-preserving, accessible, and staff access is not implied",()=>{
