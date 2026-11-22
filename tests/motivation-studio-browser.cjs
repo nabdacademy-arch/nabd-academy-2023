@@ -44,6 +44,14 @@ async function main(){
    await page.click("#uiSwitch");
    assert.equal(await page.locator("html").getAttribute("lang"),"ar");
    const widths=await page.evaluate(()=>({screen:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
+   if(widths.scroll>widths.screen+2){
+     const offenders=await page.evaluate(()=>[...document.querySelectorAll("body *")].map(el=>{
+       const r=el.getBoundingClientRect();
+       return {tag:el.tagName,id:el.id,cls:String(el.className||"").slice(0,100),
+         left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)};
+     }).filter(x=>x.right>innerWidth+2||x.left<-2).slice(0,28));
+     console.log("MOBILE_OVERFLOW_DIAGNOSTICS "+JSON.stringify(offenders));
+   }
    assert.ok(widths.scroll<=widths.screen+2,"Horizontal overflow: "+JSON.stringify(widths));
    assert.deepEqual(errors,[],"Uncaught browser exceptions");
    results.push({viewport,widths,checks:"passed"});
