@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0c2734">
+<meta name="description" content="الدليل الرسمي لخدمات وبوابات أكاديمية نبض للعلوم الطبية. مسارات واضحة للتعلّم والبحث والمنح والإدارة.">
+<title>دليل الخدمات والبوابات | أكاديمية نبض للعلوم الطبية</title>
+<link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
+<link rel="stylesheet" href="assets/css/academy-directory.css?v=1">
+<script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
+<script defer src="assets/js/academy-directory.js?v=1"></script>
+</head>
+<body>
+<div class="directory-shell">
+<header class="directory-header">
+ <a class="directory-brand" href="index.html" aria-label="العودة إلى أكاديمية نبض للعلوم الطبية">
+  <span aria-hidden="true">N</span><span><strong data-ar="أكاديمية نبض للعلوم الطبية" data-en="NABD Academy for Medical Sciences">أكاديمية نبض للعلوم الطبية</strong><small>NABD ACADEMY · SERVICE DIRECTORY</small></span>
+ </a>
+ <div class="directory-header-actions">
+  <a href="index.html" class="directory-home" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+  <button id="directoryLang" class="directory-language" type="button" aria-label="Switch to English">EN</button>
+ </div>
+</header>
+<main id="mainContent">
+ <div class="directory-hero">
+  <div class="directory-overline" data-ar="المكتب المؤسسي · دليل موحّد" data-en="INSTITUTIONAL OFFICE · UNIFIED DIRECTORY">المكتب المؤسسي · دليل موحّد</div>
+  <h1 data-ar="كل خدمات نبض، في مكان واضح." data-en="Every NABD service, clearly organized.">كل خدمات نبض، في مكان واضح.</h1>
+  <p data-ar="دليل مختصر للتعلّم والبحث والفرص والمبادرات والإدارة. اختر القسم الذي تحتاجه دون قوائم متداخلة أو بوابات متكررة." data-en="A concise directory for learning, research, opportunities, initiatives and operations. Go directly to the service you need.">دليل مختصر للتعلّم والبحث والفرص والمبادرات والإدارة. اختر القسم الذي تحتاجه دون قوائم متداخلة أو بوابات متكررة.</p>
+ </div>
+ <div class="directory-main">
+  <div class="directory-searchbar">
+   <label for="directorySearch" data-ar="ابحث عن خدمة أو بوابة" data-en="Search for a service or portal">ابحث عن خدمة أو بوابة</label>
+   <input id="directorySearch" type="search" autocomplete="off" placeholder="مثال: امتحانات، منح، أبحاث، مراسلات…" aria-describedby="directoryCount">
+  </div>
+  <div class="directory-filters" role="group" aria-label="Categories" id="directoryFilters">
+   <button type="button" class="directory-filter active" data-filter="essential" aria-pressed="true" data-ar="الأكثر استخدامًا" data-en="Essentials">الأكثر استخدامًا</button>
+   <button type="button" class="directory-filter" data-filter="learning" aria-pressed="false" data-ar="التعلّم" data-en="Learning">التعلّم</button>
+   <button type="button" class="directory-filter" data-filter="opportunities" aria-pressed="false" data-ar="الطلاب والفرص" data-en="Student services">الطلاب والفرص</button>
+   <button type="button" class="directory-filter" data-filter="research" aria-pressed="false" data-ar="البحث" data-en="Research">البحث</button>
+   <button type="button" class="directory-filter" data-filter="initiatives" aria-pressed="false" data-ar="المبادرات" data-en="Initiatives">المبادرات</button>
+   <button type="button" class="directory-filter" data-filter="management" aria-pressed="false" data-ar="الإدارة" data-en="Operations">الإدارة</button>
+   <button type="button" class="directory-filter" data-filter="governance" aria-pressed="false" data-ar="السياسات" data-en="Governance">السياسات</button>
+   <button type="button" class="directory-filter" data-filter="all" aria-pressed="false" data-ar="كل الخدمات" data-en="All services">كل الخدمات</button>
+  </div>
+  <div class="directory-results-heading">
+    <h2 id="directoryHeading" data-ar="بوابات أساسية" data-en="Essential services">بوابات أساسية</h2>
+    <span id="directoryCount" aria-live="polite"></span>
+  </div>
+  <div class="directory-grid" id="directoryGrid"></div>
+  <p id="directoryEmpty" class="directory-empty" hidden data-ar="لم نجد خدمة بهذا الاسم. جرّب كلمة أقصر أو اختر «كل الخدمات»." data-en="No matching services. Try a shorter keyword or choose All services.">لم نجد خدمة بهذا الاسم. جرّب كلمة أقصر أو اختر «كل الخدمات».</p>
+  <div class="directory-note">
+   <strong data-ar="ملاحظة تنظيمية" data-en="Access note">ملاحظة تنظيمية</strong>
+   <span data-ar="بعض البوابات مخصصة لفريق الإدارة أو المحاضرين أو أصحاب الصلاحيات؛ وجود الرابط هنا لا يمنح تصريح الدخول ولا يغيّر نظام الحماية." data-en="Some portals are intended for authorized administrators, lecturers or staff. Listing a link does not grant access or change existing security rules.">بعض البوابات مخصصة لفريق الإدارة أو المحاضرين أو أصحاب الصلاحيات؛ وجود الرابط هنا لا يمنح تصريح الدخول ولا يغيّر نظام الحماية.</span>
+  </div>
+ </div>
+</main>
+<footer class="directory-footer">
+ <span data-ar="أكاديمية نبض للعلوم الطبية · دليل مؤسسي للخدمات" data-en="NABD Academy for Medical Sciences · Institutional Service Directory">أكاديمية نبض للعلوم الطبية · دليل مؤسسي للخدمات</span>
+ <a href="policies.html" data-ar="السياسات والشفافية" data-en="Policies & transparency">السياسات والشفافية</a>
+</footer>
+</div>
+<noscript><div class="directory-noscript">للوصول دون JavaScript: <a href="portal.html">بوابة الطالب</a> · <a href="nabd-moodle.html">مودل نبض</a> · <a href="scholarships.html">المنح</a> · <a href="research-office.html">البحث العلمي</a> · <a href="policies.html">السياسات</a></div></noscript>
+</body>
+</html>
