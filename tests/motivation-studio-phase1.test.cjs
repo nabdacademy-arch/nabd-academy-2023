@@ -12,8 +12,8 @@ const edge=read("supabase/functions/nabd-motivation-studio/index.ts");
 
 test("standalone portal is properly linked and loads actual local assets",()=>{
  assert.match(read("scholarships.html"),/href="motivation-studio\.html"/);
- assert.match(html,/href="assets\/css\/motivation-studio\.css\?v=1"/);
- assert.match(html,/src="assets\/js\/motivation-studio\.js\?v=1"/);
+ assert.match(html,/href="assets\/css\/motivation-studio\.css\?v=3"/);
+ assert.match(html,/src="assets\/js\/motivation-studio\.js\?v=3"/);
  assert.match(html,/<html lang="ar" dir="rtl">/);
  assert.match(css,/@media \(max-width:620px\)/);
 });
