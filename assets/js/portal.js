@@ -108,34 +108,35 @@ function showDashboard() {
 }
 
 
-function normalizeProgress(value) {
+function normalizeProgress(value, allowFraction = false) {
   let progress = Number(value);
 
   if (!Number.isFinite(progress)) {
     progress = 0;
   }
 
-  if (progress > 0 && progress <= 1) {
+  if (allowFraction && progress > 0 && progress <= 1) {
     progress *= 100;
   }
 
-  progress = Math.round(progress);
-
-  if (progress < 0) progress = 0;
-  if (progress > 100) progress = 100;
-
-  return progress;
+  return Math.min(100, Math.max(0, progress));
 }
 
 
+// Reserve a displayed 100% for progress that has actually reached completion.
+function displayProgress(percent) {
+  return percent >= 100 ? 100 : Math.min(99, Math.round(percent));
+}
+
 function enrollmentProgress(enrollment) {
-  return normalizeProgress(
-    enrollment.progress_percent ??
-    enrollment.progress ??
-    enrollment.completion_percent ??
-    enrollment.percentage ??
-    0
-  );
+  if (enrollment.progress_percent != null) {
+    return normalizeProgress(enrollment.progress_percent);
+  }
+  if (enrollment.progress != null) {
+    // Older records may store progress as a fraction of the course.
+    return normalizeProgress(enrollment.progress, true);
+  }
+  return normalizeProgress(enrollment.completion_percent ?? enrollment.percentage ?? 0);
 }
 
 
@@ -558,11 +559,7 @@ function renderMetrics() {
         0
       );
 
-    average =
-      Math.round(
-        total /
-        enrollments.length
-      );
+    average = displayProgress(total / enrollments.length);
   }
 
 
@@ -678,7 +675,7 @@ function renderCourses() {
               </span>
 
               <strong>
-                ${progress}%
+                ${displayProgress(progress)}%
               </strong>
 
             </div>
