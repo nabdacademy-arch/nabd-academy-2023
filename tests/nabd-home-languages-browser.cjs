@@ -3,7 +3,7 @@ const assert=require("node:assert/strict");
 const path=require("node:path");
 const {pathToFileURL}=require("node:url");
 const {chromium}=require("playwright");
-const url=pathToFileURL(path.join(__dirname,"..","index.html")).href;
+const url=process.env.NABD_TEST_URL||"http://127.0.0.1:8123/index.html";
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{
@@ -40,7 +40,16 @@ const url=pathToFileURL(path.join(__dirname,"..","index.html")).href;
     assert.equal(await page.locator("#neoNav").isVisible(),false);
    }
    await page.selectOption("#neoLang","fr");
-   await page.waitForFunction(()=>document.querySelector("#nabdNeoHome").lang==="fr");
+   await page.waitForFunction(()=>document.querySelector("#nabdNeoHome").lang==="fr",null,{timeout:12000}).catch(async error=>{
+    const debug=await page.evaluate(()=>({lang:document.querySelector("#nabdNeoHome")?.lang,
+      selector:document.querySelector("#neoLang")?.value,disabled:document.querySelector("#neoLang")?.disabled,
+      notice:document.querySelector("#neoLanguageNotice")?.textContent,
+      noticeHidden:document.querySelector("#neoLanguageNotice")?.hidden,
+      hasLoader:!!window.NABD_NEO_I18N,loaded:window.NABD_NEO_TRANSLATIONS&&Object.keys(window.NABD_NEO_TRANSLATIONS),
+      texts:document.querySelectorAll("#nabdNeoHome [data-neo-ar][data-neo-en]").length,
+      scripts:[...document.querySelectorAll("script[src*=nabd-neo]")].map(x=>x.src)}));
+    throw Error("French translation failed: "+JSON.stringify(debug)+" | "+error.message);
+   });
    assert.match(await page.locator("#neo-h1").textContent(),/savoir médical|accessible/i);
    assert.equal(await page.locator("#nabdNeoHome").getAttribute("dir"),"ltr");
    await page.selectOption("#neoLang","ur");
