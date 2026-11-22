@@ -8,3 +8,43 @@ body{width:100%;max-width:100%;overflow-x:clip}
 .kind-context{border:1px solid rgba(119,228,184,.25);border-inline-start:3px solid var(--mint);background:rgba(51,134,111,.12);color:#d1f4e4;font-size:.78rem;line-height:1.9;padding:11px 15px;border-radius:11px;margin:-10px 0 23px}
 .quality-advice{margin:11px 0 4px;color:#b4d8ce;font-size:.74rem;line-height:1.8;min-height:34px}
 @media(max-width:620px){.kind-context{font-size:.74rem;padding:10px 12px}.quality-advice{min-height:0}}
+
+/* NABD Studio Professional Suite: opt-in local brief, revision workspace, accessible checklist */
+.brief-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px clamp(19px,3vw,39px);background:rgba(79,198,164,.045);border-bottom:1px solid var(--line)}
+.brief-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.utility-button{font-size:.73rem;font-weight:800;min-height:34px;padding:6px 11px;border-radius:9px;border:1px solid rgba(156,218,206,.31);background:#14333c;color:#d4fff1}
+.utility-button:hover{background:#21504d}.utility-danger{color:#fad6c9;border-color:rgba(245,168,142,.26)}
+.kind-context,.quality-advice{overflow-wrap:anywhere}
+.studio-controls{padding:15px 17px 0;border:1px solid rgba(99,211,173,.24);border-radius:13px;background:rgba(65,165,142,.065);margin-bottom:18px}
+.studio-controls .field-block{margin-bottom:12px}.studio-controls input{max-width:100%}
+.draft-history{border:1px solid rgba(126,229,193,.25);border-radius:12px;padding:11px 12px;margin:11px 0 14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:rgba(55,153,121,.055)}
+.history-label{font-size:.75rem;color:#d0e7de;font-weight:700}
+.draft-tabs{display:flex;flex-wrap:wrap;gap:8px;flex:1}
+.draft-tab{background:#173642;color:#c7e3db;border:1px solid #36676b;border-radius:9px;padding:6px 10px;font-size:.73rem;font-weight:700}
+.draft-tab[aria-pressed="true"]{background:#22634f;border-color:#83f4cc;color:#fff}
+.letter-metrics{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px;min-height:24px;margin:11px 0;color:#b6dfcd;font-size:.76rem}
+.letter-metrics .over-limit{color:#ffd2b4;font-weight:850}
+.letter-metrics .letter-warning{color:#f3d49c}
+.editor-tips{border:1px solid rgba(143,209,190,.19);background:rgba(29,87,81,.12);border-radius:13px;padding:17px;margin:14px 0}
+.editor-tips strong{display:block;margin-bottom:9px;color:#d4f2e4;font-size:.85rem}
+.editor-tips label{display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin:9px 0;color:#c0d7d4;font-size:.77rem;line-height:1.9}
+.editor-tips input{accent-color:#64deb6;width:17px;height:17px;flex:none;margin-top:5px}
+.editor-tips .field-hint{margin:10px 0 0}
+.compare-panel{margin:17px 0;padding:15px;border:1px solid rgba(235,200,143,.30);border-radius:15px;background:#0d2630}
+.comparison-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;color:#e9dbb5}
+.compare-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:13px}
+.compare-draft{border:1px solid rgba(160,217,207,.15);border-radius:10px;background:#17313a;padding:13px;min-width:0}
+.compare-draft b{display:block;color:#c9f3df;font-size:.79rem;margin-bottom:8px}
+.compare-draft pre{font:500 .76rem/1.85 "Cairo",system-ui,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto;margin:0;color:#d9e9e2}
+.print-letter{display:none;white-space:pre-wrap}
+@media(max-width:620px){.brief-toolbar{padding:12px 16px}.brief-actions{gap:5px}.utility-button{padding:7px 9px;font-size:.69rem}.compare-columns{grid-template-columns:1fr}.editor-tips{padding:13px}.draft-history{padding:10px}.studio-controls{padding:12px 12px 0}}
+@media print{
+ @page{margin:18mm 16mm}
+ body,html{background:#fff!important;color:#141414!important}
+ body>*:not(.print-letter){display:none!important}
+ /* Print output is appended into body at print time; never print private form answers */
+ #printLetter{display:block!important;position:static!important;visibility:visible!important;font:12pt/1.75 Georgia,"Times New Roman",serif!important;color:#151515!important;direction:inherit;overflow-wrap:anywhere;white-space:pre-wrap}
+ .ambient,.topbar,.shell,.footer{display:none!important}
+}
+
+@media print{#printLetter[dir="ltr"]{direction:ltr!important;text-align:left!important}#printLetter[dir="rtl"]{direction:rtl!important;text-align:right!important}}

@@ -54,6 +54,15 @@
           <button class="step-pill" type="button" data-step-button="3"><b>03</b><span data-ar="الرسالة" data-en="The letter">الرسالة</span></button>
         </nav>
 
+        <div class="brief-toolbar" aria-label="Private application brief controls">
+          <span class="micro" data-ar="مساحتك الخاصة · دون حساب" data-en="Your private workspace · no account">مساحتك الخاصة · دون حساب</span>
+          <div class="brief-actions">
+            <button type="button" id="saveBrief" class="utility-button" data-ar="↓ حفظ بياناتي" data-en="↓ Save brief">↓ حفظ بياناتي</button>
+            <button type="button" id="loadBrief" class="utility-button" data-ar="↑ استيراد" data-en="↑ Import">↑ استيراد</button>
+            <button type="button" id="resetBrief" class="utility-button utility-danger" data-ar="مسح الكل" data-en="Clear all">مسح الكل</button>
+            <input type="file" id="briefFile" accept=".json,application/json" aria-label="Choose a previously exported NABD brief" hidden>
+          </div>
+        </div>
         <form id="letterForm" novalidate>
           <section class="step-page" id="step1" data-step="1">
             <div class="section-marker">01 / THE OPPORTUNITY</div>
@@ -89,6 +98,10 @@
             <div class="field-block"><label for="fullName" data-ar="الاسم كما تود ظهوره (اختياري)" data-en="Your preferred name (optional)">الاسم كما تود ظهوره (اختياري)</label><input id="fullName" name="fullName" maxlength="180" autocomplete="name" placeholder="Full name"></div>
             <div class="field-block"><label for="about"><span data-ar="احكِ لنا عن نفسك" data-en="Tell us about yourself">احكِ لنا عن نفسك</span><span class="req">*</span></label><p class="field-hint" data-ar="دراستك، اهتماماتك، واقعك، تجاربك الحقيقية. ما القصة التي تريد أن يعرفوها؟" data-en="Your studies, interests, context, and experiences. What should the reviewers know about you?">دراستك، اهتماماتك، واقعك، تجاربك الحقيقية. ما القصة التي تريد أن يعرفوها؟</p><textarea id="about" name="about" rows="5" maxlength="2200" required placeholder="أنا طالب/ة في... تعلمت... خلال تجربتي..."></textarea><div class="field-bottom"><small data-ar="لا تُدخل معلومات حساسة لا تريد مشاركتها مع مزود الذكاء الاصطناعي." data-en="Do not enter sensitive details you don't want to share with the AI provider.">لا تُدخل معلومات حساسة لا تريد مشاركتها مع مزود الذكاء الاصطناعي.</small><small data-count="about">0 / 2200</small></div></div>
             <div class="field-block"><label for="achievements" data-ar="إنجازات وتجارب بأدلة واضحة" data-en="Specific achievements and real evidence">إنجازات وتجارب بأدلة واضحة</label><p class="field-hint" data-ar="أمثلة: مشروع نفذته، مهارة استخدمتها، نتيجة قابلة للتحقق، قيادة أو عمل تطوعي." data-en="Examples: a project, a skill in action, verifiable results, leadership, or volunteering.">أمثلة: مشروع نفذته، مهارة استخدمتها، نتيجة قابلة للتحقق، قيادة أو عمل تطوعي.</p><textarea id="achievements" name="achievements" rows="4" maxlength="2200" placeholder="أنشأت مشروعًا يخدم... تعلمت... وكانت النتيجة..."></textarea></div>
+            <div class="field-block"><label for="moment" data-ar="موقف واحد يوضح شخصيتك (اختياري)" data-en="One authentic moment that shows who you are (optional)">موقف واحد يوضح شخصيتك (اختياري)</label>
+              <p class="field-hint" data-ar="ما الموقف؟ ماذا فعلت أنت؟ ماذا تعلمت؟ اكتب حقائق فقط؛ يساعد هذا في تجنّب الخطابات العامة." data-en="What happened, what did you personally do, and what did you learn? Stick to facts rather than generic claims.">ما الموقف؟ ماذا فعلت أنت؟ ماذا تعلمت؟ اكتب حقائق فقط؛ يساعد هذا في تجنّب الخطابات العامة.</p>
+              <textarea id="moment" name="moment" rows="3" maxlength="1100" placeholder="مثلًا: واجهت مشكلة أثناء تطوير مشروع، وكانت استجابتي..."></textarea>
+            </div>
             <div class="field-block"><label for="challenges" data-ar="تحديات تخطيتها (اختياري)" data-en="Challenges overcome (optional)">تحديات تخطيتها (اختياري)</label><textarea id="challenges" name="challenges" rows="3" maxlength="1700" placeholder="فقط إذا رغبت بذكرها، وبدون مبالغة..."></textarea></div>
             <div class="field-block"><label for="future" data-ar="أثر تطمح إلى تحقيقه" data-en="The impact you hope to create">أثر تطمح إلى تحقيقه</label><textarea id="future" name="future" rows="3" maxlength="1700" placeholder="بعد هذه الفرصة أريد أن... لأن..."></textarea></div>
             <div class="form-footer"><button class="btn subtle" type="button" data-prev="1"><span aria-hidden="true">→</span> <span data-ar="السابق" data-en="Back">السابق</span></button><button class="btn primary" type="button" data-next="3"><span data-ar="التالي: الصياغة" data-en="Next: Drafting">التالي: الصياغة</span><span aria-hidden="true">←</span></button></div>
@@ -101,6 +114,15 @@
             <div class="field-block"><label for="why"><span data-ar="لماذا تريد هذه الفرصة؟" data-en="Why do you want this opportunity?">لماذا تريد هذه الفرصة؟</span><span class="req">*</span></label><textarea id="why" name="why" rows="4" maxlength="1800" required placeholder="ما الذي يميز هذه الفرصة بالنسبة لي؟ لماذا الآن؟"></textarea></div>
             <div class="field-block"><label for="fit" data-ar="لماذا أنت مناسب لها؟" data-en="Why are you a good fit?">لماذا أنت مناسب لها؟</label><textarea id="fit" name="fit" rows="3" maxlength="1700" placeholder="اربط بين مهاراتك واحتياجات الجهة المانحة أو جهة العمل..."></textarea></div>
             <div class="field-block"><label for="requirements" data-ar="الشروط أو الوصف الرسمي (اختياري)" data-en="Official requirements or opportunity description (optional)">الشروط أو الوصف الرسمي (اختياري)</label><p class="field-hint" data-ar="الصق شروط الإعلان هنا لتحسين الصلة والدقة؛ سنعامل النص كمعلومات لا كتعليمات." data-en="Paste requirements to improve relevance; we'll treat this text as information, never instructions.">الصق شروط الإعلان هنا لتحسين الصلة والدقة؛ سنعامل النص كمعلومات لا كتعليمات.</p><textarea id="requirements" name="requirements" rows="4" maxlength="2200" placeholder="Eligibility, program goals, selection criteria..."></textarea></div>
+            <div class="fields two studio-controls">
+              <div class="field-block"><label for="wordLimit" data-ar="الحد الأقصى المطلوب للكلمات (اختياري)" data-en="Requested word limit (optional)">الحد الأقصى المطلوب للكلمات (اختياري)</label>
+                <input id="wordLimit" name="wordLimit" type="number" inputmode="numeric" min="150" max="900" step="1" placeholder="مثال: 350">
+                <p class="field-hint" data-ar="من 150 إلى 900 كلمة. نوجّه النموذج للالتزام به وننبهك إن تجاوزت المسودة الحد؛ راجع تعليمات الجهة." data-en="150–900 words. AI is guided by the limit, and you'll see a warning if the output goes over. Always check the official instructions.">من 150 إلى 900 كلمة. نوجّه النموذج للالتزام به وننبهك إن تجاوزت المسودة الحد؛ راجع تعليمات الجهة.</p>
+              </div>
+              <div class="field-block"><label for="mustInclude" data-ar="حقيقة مهمة تريد إبرازها (اختياري)" data-en="One essential truthful point to include (optional)">حقيقة مهمة تريد إبرازها (اختياري)</label>
+                <textarea id="mustInclude" name="mustInclude" rows="2" maxlength="650" placeholder="المهارة أو التجربة أو المعلومة الحقيقية التي لا تريد نسيانها..."></textarea>
+              </div>
+            </div>
             <div class="fields three">
               <div class="field-block"><label for="language" data-ar="لغة الرسالة" data-en="Letter language">لغة الرسالة</label><select id="language" name="language"><option value="en">English</option><option value="ar">العربية</option><option value="fr">Français</option></select></div>
               <div class="field-block"><label for="tone" data-ar="النبرة" data-en="Tone">النبرة</label><select id="tone" name="tone"><option value="authentic" data-ar="إنسانية دافئة" data-en="Warm & personal">إنسانية دافئة</option><option value="confident" data-ar="واثقة وقوية" data-en="Confident">واثقة وقوية</option><option value="formal" data-ar="رسمية موضوعية" data-en="Formal">رسمية موضوعية</option></select></div>
@@ -129,13 +151,34 @@
   <section class="result-panel" id="resultPanel" hidden aria-labelledby="resultTitle">
     <div class="result-head"><div><span class="micro">YOUR PERSONAL DRAFT</span><h2 id="resultTitle" data-ar="هذه رسالتك. بصوتك أنت." data-en="Your story, in your own voice.">هذه رسالتك. بصوتك أنت.</h2><p data-ar="هذه مسودة قابلة للتحرير. دقّق الحقائق وعدّل العبارات حتى تشبهك تمامًا." data-en="This is an editable draft. Verify every fact and revise it until it truly sounds like you.">هذه مسودة قابلة للتحرير. دقّق الحقائق وعدّل العبارات حتى تشبهك تمامًا.</p></div><span class="result-sigil" aria-hidden="true">✧</span></div>
     <div class="result-tools"><span class="draft-label"><span class="live-dot"></span><span data-ar="مسودة قابلة للتحرير" data-en="Editable draft">مسودة قابلة للتحرير</span></span><span id="wordCount">0 words</span></div>
+    <div class="draft-history" id="draftHistory" hidden aria-label="Generated drafts">
+       <span class="history-label" data-ar="مسودات هذه الجلسة" data-en="This session's drafts">مسودات هذه الجلسة</span>
+       <div id="draftTabs" class="draft-tabs" role="group" aria-label="Switch between generated drafts"></div>
+       <button type="button" id="compareBtn" class="utility-button" hidden data-ar="مقارنة مسودتين" data-en="Compare two drafts">مقارنة مسودتين</button>
+    </div>
     <textarea id="generatedLetter" aria-label="Editable generated letter" rows="19" spellcheck="true"></textarea>
-    <div class="result-actions"><button type="button" class="btn primary" id="copyBtn" data-ar="نسخ الرسالة" data-en="Copy letter">نسخ الرسالة</button><button type="button" class="btn subtle" id="downloadBtn" data-ar="حفظ كملف نصي" data-en="Save as text">حفظ كملف نصي</button><button type="button" class="btn subtle" id="newVariantBtn" data-ar="صياغة مختلفة ✦" data-en="New variation ✦">صياغة مختلفة ✦</button></div>
+    <div class="letter-metrics">
+      <span id="wordLimitStatus" role="status" aria-live="polite"></span>
+      <span id="genericWarning" role="status" aria-live="polite"></span>
+    </div>
+    <div class="editor-tips">
+      <strong data-ar="مراجعة قبل الإرسال" data-en="Review before submission">مراجعة قبل الإرسال</strong>
+      <label><input type="checkbox" id="checkFacts"><span data-ar="تحققت من الأسماء والأرقام والتواريخ وجميع ادعاءات الإنجاز." data-en="I verified names, numbers, dates and every achievement claim.">تحققت من الأسماء والأرقام والتواريخ وجميع ادعاءات الإنجاز.</span></label>
+      <label><input type="checkbox" id="checkFit"><span data-ar="أجبت عن السؤال الرسمي وربطت أدلتي بالفرصة." data-en="I answered the official prompt and connected evidence to the opportunity.">أجبت عن السؤال الرسمي وربطت أدلتي بالفرصة.</span></label>
+      <label><input type="checkbox" id="checkVoice"><span data-ar="الرسالة تعبّر عن صوتي وليست مليئة بالمبالغات." data-en="The letter sounds like me and avoids exaggeration.">الرسالة تعبّر عن صوتي وليست مليئة بالمبالغات.</span></label>
+      <p class="field-hint" data-ar="هذه قائمة فحص شخصية وليست شهادة تحقق تلقائي أو ضمان قبول." data-en="This is your own checklist, not automatic fact verification or an acceptance guarantee.">هذه قائمة فحص شخصية وليست شهادة تحقق تلقائي أو ضمان قبول.</p>
+    </div>
+    <div id="comparePanel" class="compare-panel" hidden>
+      <div class="comparison-head"><strong data-ar="مقارنة المسودات" data-en="Compare drafts">مقارنة المسودات</strong><button id="closeCompareBtn" type="button" class="utility-button" data-ar="إغلاق" data-en="Close">إغلاق</button></div>
+      <div id="compareColumns" class="compare-columns"></div>
+    </div>
+    <div class="result-actions"><button type="button" class="btn primary" id="copyBtn" data-ar="نسخ الرسالة" data-en="Copy letter">نسخ الرسالة</button><button type="button" class="btn subtle" id="downloadBtn" data-ar="حفظ كملف نصي" data-en="Save as text">حفظ كملف نصي</button><button type="button" class="btn subtle" id="newVariantBtn" data-ar="صياغة مختلفة ✦" data-en="New variation ✦">صياغة مختلفة ✦</button><button type="button" class="btn subtle" id="printBtn" data-ar="طباعة / PDF" data-en="Print / PDF">طباعة / PDF</button></div>
     <div class="feedback-grid"><section><h3 data-ar="نقاط القوة في المسودة" data-en="Strengths of this draft">نقاط القوة في المسودة</h3><ul id="strengthList"></ul></section><section><h3 data-ar="قبل أن ترسلها" data-en="Before you send">قبل أن ترسلها</h3><ul id="missingList"></ul></section></div>
   </section>
   <section class="bottom-promise"><span>◎</span><p data-ar="الرسالة الجيدة لا تصنع إنجازات من العدم. إنها تمنح إنجازاتك الحقيقية المساحة التي تستحقها." data-en="Great letters don't invent achievements. They give real achievements the attention they deserve.">الرسالة الجيدة لا تصنع إنجازات من العدم. إنها تمنح إنجازاتك الحقيقية المساحة التي تستحقها.</p><strong>NABD STUDIO</strong></section>
 </main>
 <footer class="footer"><span>© 2026 NABD Academy for Medical Sciences</span><span data-ar="مصممة لخدمة المتقدمين مجانًا • لا ضمان للقبول" data-en="Free for applicants • No acceptance guarantees">مصممة لخدمة المتقدمين مجانًا • لا ضمان للقبول</span><a href="index.html" data-ar="العودة إلى الأكاديمية" data-en="Back to NABD">العودة إلى الأكاديمية</a></footer>
 <script defer src="assets/js/motivation-studio.js?v=1"></script>
+  <div id="printLetter" class="print-letter" aria-hidden="true"></div>
 </body>
 </html>
