@@ -24,14 +24,26 @@
   }
   async function loadPage(reset=false){
     const token=generation;
-    if(reset){offset=0;records=[];render()}
-    const rows=await checked(db.from('nabd_teaching_records').select('*').order('created_at',{ascending:false}).order('id').range(offset,offset+pageSize-1));
-    if(token!==generation||!user)return;
-    const known=new Set(records.map(x=>x.id)); records.push(...rows.filter(x=>!known.has(x.id)));offset+=rows.length;
-    el('studio-more').hidden=rows.length<pageSize;render();
+    const more=el('studio-more');
+    if(!reset && (more.hidden || more.disabled))return;
+    more.disabled=true;
+    try{
+      if(reset){offset=0;records=[];render()}
+      const rows=await checked(db.from('nabd_teaching_records').select('*').order('created_at',{ascending:false}).order('id').range(offset,offset+pageSize-1));
+      if(token!==generation||!user)return;
+      const known=new Set(records.map(x=>x.id));
+      records.push(...rows.filter(x=>!known.has(x.id)));
+      offset+=rows.length;
+      more.hidden=rows.length<pageSize;
+      render();
+    }catch(error){
+      if(token===generation)throw error;
+    }finally{
+      if(token===generation)more.disabled=false;
+    }
   }
-  async function refresh(){
-    const token=++generation;records=[];assignments=[];courses=[];admin=false;
+    async function refresh(){
+    const token=++generation;el('studio-more').hidden=true;records=[];assignments=[];courses=[];admin=false;
     el('studio-workspace').hidden=true;el('studio-admin').hidden=true;el('studio-editor').hidden=true;
     el('studio-record').reset();el('studio-record').elements.id.value='';el('editor-title').textContent='صمّم جلسة أو موردًا';
     let result;
