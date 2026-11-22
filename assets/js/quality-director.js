@@ -557,14 +557,27 @@ async function loadExams(){
  exams=data||[];
  $("ql-draft-count").textContent=exams.filter(x=>x.status==="draft").length;
  $("ql-active-count").textContent=exams.filter(x=>x.status==="published"&&new Date(x.closes_at)>new Date()).length;
- await countPending();
  renderExams();
+ await countPending();
 }
+let pendingCountRequest=0;
 async function countPending(){
- const liveIds=exams.filter(x=>x.status!=="draft").map(x=>x.id);
- if(!liveIds.length){$("ql-pending-count").textContent="0";return;}
- const {data}=await client.from("nabd_quality_submissions").select("id,human_score").in("exam_id",liveIds).limit(1500);
- $("ql-pending-count").textContent=(data||[]).filter(x=>x.human_score===null).length;
+ const owner=director;
+ if(!owner)return;
+ const request=++pendingCountRequest;
+ let label;
+ try{
+   const {count,error}=await client.from("nabd_quality_submissions")
+     .select("id,nabd_quality_exams!inner(id)",{count:"exact",head:true})
+     .eq("nabd_quality_exams.created_by",owner.id)
+     .neq("nabd_quality_exams.status","draft")
+     .is("human_score",null);
+   if(error||!Number.isSafeInteger(count)||count<0)throw Error("Count unavailable");
+   label=String(count);
+ }catch{
+   label="غير متاح";
+ }
+ if(director===owner&&request===pendingCountRequest)$("ql-pending-count").textContent=label;
 }
 // Director-controlled permanent deletion of ANY exam, including one with
 // student submissions. The server RPC owns all cascading deletes in one
