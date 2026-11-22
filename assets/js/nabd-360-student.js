@@ -129,13 +129,16 @@ function renderApplication(){
  d.append(node("p","",tr("التخصص: ","Specialty: ")+state.app.expertise),node("small","",tr("تاريخ التقديم: ","Submitted: ")+date(state.app.created_at)));
 }
 async function loadFaculty(){
+ const revision=state.serial;
  const {data,error}=await state.db.from("nabd_360_lecturer_applications").select("id,applicant_id,expertise,status,created_at").eq("applicant_id",state.user.id).maybeSingle();
- if(error){note("n360-auth","تعذر قراءة الطلب. لن نفترض عدم وجوده.","Could not verify your existing application.",true);return}
+ if(revision!==state.serial)return;
+ if(error||data&&data.applicant_id!==state.user.id){note("n360-auth","تعذر قراءة الطلب. لن نفترض عدم وجوده.","Could not verify your existing application.",true);return}
  state.app=data||null;$("n360-application").hidden=!!state.app;
  renderApplication();note("n360-auth","حسابك موثّق. يمكنك متابعة طلبك أو التقديم.","Authenticated: you may submit or track an application.")
 }
 async function submitFaculty(e){
- e.preventDefault();if(state.busy||!state.user||!state.db||state.app)return;
+ e.preventDefault();if(state.busy||!state.user||!state.db||state.app||$("n360-application").hidden)return;
+ const revision=state.serial;
  const val=id=>$(id).value.trim(),hours=Number(val("n360-hours")),email=val("n360-email"),topic=val("n360-topic");
  const payload={
   applicant_id:state.user.id,full_name:val("n360-fullname"),contact_email:email,
@@ -148,10 +151,11 @@ async function submitFaculty(e){
  state.busy=true;$("n360-apply-submit").disabled=true;
  try{
   const {data,error}=await state.db.from("nabd_360_lecturer_applications").insert(payload).select("id,applicant_id,expertise,status,created_at").single();
-  if(error||!data?.id)throw error||Error("No confirmed application");
+  if(revision!==state.serial)return;
+  if(error||!data?.id||data.applicant_id!==payload.applicant_id)throw error||Error("No confirmed application");
   state.app=data;renderApplication();note("n360-auth","حُفظ طلبك الحقيقي بنجاح، وهو الآن بانتظار مراجعة الإدارة.","Your application was saved and awaits staff review.")
- }catch(err){note("n360-auth","تعذّر تأكيد الطلب؛ قد يكون لديك طلب سابق أو أن الاتصال غير متاح.","The application could not be confirmed. You may already have a request or the network is unavailable.",true)}
- finally{state.busy=false;$("n360-apply-submit").disabled=false}
+ }catch(err){if(revision===state.serial)note("n360-auth","تعذّر تأكيد الطلب؛ قد يكون لديك طلب سابق أو أن الاتصال غير متاح.","The application could not be confirmed. You may already have a request or the network is unavailable.",true)}
+ finally{if(revision===state.serial){state.busy=false;$("n360-apply-submit").disabled=false}}
 }
 async function generateStudyRevision(){
  if(state.busy||!state.user||!state.db)return;
@@ -176,26 +180,40 @@ function clearPrivate(){
  state.serial++;state.user=null;state.plans=null;state.enrollments=null;state.attempts=null;state.modules=null;state.skills=null;state.certificates=null;state.courses=null;state.app=null;
  if($("n360-student-app"))$("n360-student-app").hidden=true;
  if($("n360-achievements"))$("n360-achievements").replaceChildren(node("p","n360-hint",tr("سجّل الدخول لعرض ملفك.","Sign in to view your record.")));
+ if(mode==="faculty"){
+  $("n360-faculty-form").reset();
+  $("n360-application-data").replaceChildren();
+  $("n360-apply-submit").disabled=false;
+  state.busy=false;
+ }
  if($("n360-application"))$("n360-application").hidden=true;
  if($("n360-application-status"))$("n360-application-status").hidden=true
 }
 async function boot(){
  clearPrivate();
+ const revision=state.serial;
  if(!window.supabase?.createClient||!window.NABD_CONFIG?.supabaseUrl||!window.NABD_CONFIG?.supabaseAnonKey){
   authError("تعذر تهيئة خدمة الحساب. افحص الإنترنت.","Account service unavailable. Check your connection.");return
  }
  try{
   if(!state.db){state.db=window.supabase.createClient(window.NABD_CONFIG.supabaseUrl,window.NABD_CONFIG.supabaseAnonKey);
-   if(state.db.auth.onAuthStateChange)state.db.auth.onAuthStateChange((event)=>{
+   if(state.db.auth.onAuthStateChange)state.db.auth.onAuthStateChange((event,session)=>{
     if(event==="SIGNED_OUT"){clearPrivate();authError("سجّل الدخول لعرض بياناتك.","Sign in to view private data.")}
-    else if(event==="SIGNED_IN")setTimeout(()=>{void boot()},0)
+    else if(event==="SIGNED_IN"){
+     if(mode!=="faculty"){setTimeout(()=>{void boot()},0);return}
+     if(state.user?.id&&session?.user?.id===state.user.id)return;
+     clearPrivate();
+     const pending=state.serial;
+     setTimeout(()=>{if(pending===state.serial)void boot()},0)
+    }
    });
   }
   const {data,error}=await state.db.auth.getUser();
+  if(revision!==state.serial)return;
   if(error||!data?.user?.id){authError("سجّل الدخول إلى حسابك أولًا لعرض بياناتك الخاصة.","Sign in first to view private records.");return}
   state.user=data.user;
   if(mode==="student")await loadStudent();else await loadFaculty()
- }catch(err){authError("تعذر التحقق من الحساب أو قاعدة البيانات.","Could not verify your account or database.")}
+ }catch(err){if(mode!=="faculty"||revision===state.serial)authError("تعذر التحقق من الحساب أو قاعدة البيانات.","Could not verify your account or database.")}
 }
 $("n360-lang").addEventListener("click",()=>{state.lang=state.lang==="ar"?"en":"ar";translate()});
 if(mode==="student"){$("n360-plan-form").addEventListener("submit",e=>{void savePlan(e)});$("n360-ai-plan").addEventListener("click",()=>{void generateStudyRevision()})}
