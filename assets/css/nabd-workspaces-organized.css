@@ -1,0 +1,47 @@
+/* Scoped inner-workspace refinement: never imported on index.html. */
+.nabd-admin-page #app .nabd-admin-module-finder{box-sizing:border-box;display:grid;gap:12px;margin:14px 0 8px;padding:17px 19px;background:#fff;border:1px solid #cce3e4;border-radius:18px;direction:rtl;text-align:right}
+.nabd-admin-page #app .nabd-admin-module-title{display:grid;gap:4px}
+.nabd-admin-page #app .nabd-admin-module-title strong{font-size:1rem;color:#0b3e47}
+.nabd-admin-page #app .nabd-admin-module-title strong span{font-size:.78rem;font-weight:500;color:#47646c}
+.nabd-admin-page #app .nabd-admin-module-title>span{font-size:.79rem;color:#496974}
+.nabd-admin-page #app .nabd-admin-module-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:12px}
+.nabd-admin-page #app .nabd-admin-module-controls label{display:grid;gap:5px;min-width:0;color:#164b55;font-size:.8rem;font-weight:700}
+.nabd-admin-page #app .nabd-admin-module-controls select,.nabd-admin-page #app .nabd-admin-module-controls input{width:100%;min-width:0;min-height:44px;border-radius:11px;border:1px solid #a7cbd1;padding:9px 12px;background:#f7fcfc;color:#153c46;font:inherit}
+.nabd-admin-page #app #nabdAdminResults{margin:0;color:#4b6b75;font-size:.75rem}
+.nabd-admin-page #app .tabs{position:static;display:flex;flex-wrap:wrap;overflow:visible;gap:8px;margin:8px 0 15px;padding:2px;background:transparent}
+.nabd-admin-page #app .tabs>.btn{flex:0 1 auto;max-width:100%;min-height:42px;white-space:normal;line-height:1.4;text-align:center}
+.nabd-admin-page #app .tabs>[hidden]{display:none!important}
+.nabd-admin-page #app .tabs [aria-selected="true"]{background:#087d81;color:#fff}
+.nabd-admin-page #app .panel{min-width:0}
+.nabd-admin-page #app .panel .module-toolbar>*,.nabd-admin-page #app .panel .actions>*{min-width:0}
+.nabd-student-workspace .portal-more-actions{width:100%;margin-top:3px}
+.nabd-student-workspace .portal-more-actions summary{display:inline-flex;align-items:center;gap:8px;min-height:43px;padding:9px 14px;border:1px solid rgba(255,255,255,.35);border-radius:12px;color:#effbf8;background:rgba(255,255,255,.09);font-weight:750;cursor:pointer;list-style:none}
+.nabd-student-workspace .portal-more-actions summary::-webkit-details-marker{display:none}
+.nabd-student-workspace .portal-more-actions summary:before{content:"+";font-size:1.1em;line-height:1}
+.nabd-student-workspace .portal-more-actions[open] summary:before{content:"−"}
+.nabd-student-workspace .portal-more-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px;padding-block:8px}
+.nabd-student-workspace .portal-more-links a{max-width:100%;white-space:normal}
+.nabd-student-workspace .dashboard-actions>*{max-width:100%}
+.nabd-lecturer-page .nabd-faculty-shortcuts{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:14px 16px;margin:16px 0;border:1px solid #355768;background:#103345;border-radius:16px}
+.nabd-lecturer-page .nabd-faculty-shortcuts strong{font-size:.85rem;margin-inline-end:8px}
+.nabd-lecturer-page .nabd-faculty-shortcuts a{padding:7px 12px;border-radius:10px;border:1px solid #619b9f;background:#194c57;color:#eafbf5;font-size:.82rem}
+.nabd-lecturer-page #studio-records-section,.nabd-lecturer-page #os-lecturer-suite{scroll-margin-top:24px}
+.nabd-lecturer-page .nw-header{flex-wrap:wrap;min-height:unset}
+.nabd-lecturer-page .nw-brand{min-width:0;overflow-wrap:anywhere}
+@media(max-width:620px){
+ .nabd-admin-page #app .nabd-admin-module-finder{padding:13px}
+ .nabd-admin-page #app .nabd-admin-module-controls{grid-template-columns:minmax(0,1fr)}
+ .nabd-admin-page #app .tabs>.btn{font-size:12px;padding:9px 11px}
+ .nabd-admin-page #app .wrap,.nabd-admin-page .wrap{max-width:100%;overflow-wrap:anywhere}
+ .nabd-student-workspace .portal-topbar{flex-wrap:wrap;gap:10px}
+ .nabd-student-workspace .portal-topbar .brand{flex:1 1 180px;min-width:0}
+ .nabd-student-workspace .portal-topbar .brand-copy{min-width:0;overflow-wrap:anywhere}
+ .nabd-student-workspace .portal-top-actions{flex:1 1 100%;flex-wrap:wrap;justify-content:flex-start}
+ .nabd-student-workspace .dashboard-actions>.btn{flex:1 1 100%;min-width:0;text-align:center;justify-content:center}
+ .nabd-student-workspace .dashboard-hero h1{line-height:1.22}
+ .nabd-lecturer-page .nw-header{padding:13px 5%;gap:10px}
+ .nabd-lecturer-page .nw-brand{flex:1 1 100%}
+ .nabd-lecturer-page .nw-hero{padding:35px 0 25px}
+ .nabd-lecturer-page .nw-hero h1{font-size:clamp(1.9rem,9vw,2.5rem)}
+ .nabd-lecturer-page .nw-toolbar>*{max-width:100%}
+}
