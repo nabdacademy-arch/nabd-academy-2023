@@ -330,13 +330,14 @@ body[data-page="apply"] .portal-navlinks .nav-apply,body[data-page="status"] .po
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const db = supabase.createClient(
+    const db = window.supabase?.createClient(
       "https://zsmmmljgguycrvyrmakl.supabase.co",
       "sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM"
     );
 
     const $ = id => document.getElementById(id);
     let lang = "ar";
+    let activeLookup = null;
 
     const statuses = {
       new: {
@@ -390,6 +391,7 @@ body[data-page="apply"] .portal-navlinks .nav-apply,body[data-page="status"] .po
       document.querySelectorAll("[data-ar][data-en]").forEach(el => {
         el.textContent = el.dataset[lang];
       });
+      renderSubmitButton();
       $("langBtn").textContent = lang === "ar" ? "English" : "العربية";
     }
 
@@ -409,37 +411,30 @@ body[data-page="apply"] .portal-navlinks .nav-apply,body[data-page="status"] .po
       }).format(d);
     }
 
-    $("statusForm").onsubmit = async e => {
-      e.preventDefault();
-
-      const applicationNumber = $("applicationNumber").value.trim();
-      const email = $("email").value.trim();
+    function renderSubmitButton(){
       const btn = $("submitBtn");
+      btn.disabled = Boolean(activeLookup);
+      btn.textContent = activeLookup
+        ? (lang === "ar" ? "جارٍ التحقق..." : "Checking...")
+        : btn.dataset[lang];
+    }
 
+    function clearLookup(){
+      const previous = activeLookup;
+      activeLookup = null;
+      previous?.abort();
+      renderSubmitButton();
       $("message").className = "message";
+      $("message").textContent = "";
       $("result").classList.remove("show");
-
-      btn.disabled = true;
-      btn.textContent = lang === "ar" ? "جارٍ التحقق..." : "Checking...";
-
-      const { data, error } = await db.rpc("check_executive_application_status", {
-        p_application_number: applicationNumber,
-        p_email: email
-      });
-
-      btn.disabled = false;
-      btn.textContent = lang === "ar" ? "فحص حالة الطلب" : "Check Application Status";
-
-      if(error){
-        console.error(error);
-        showMessage(
-          lang === "ar"
-            ? "تعذر التحقق من الطلب حاليًا. حاول مرة أخرى."
-            : "Could not check the application right now. Please try again."
-        );
-        return;
+      for (const id of ["statusPill", "statusNote", "resultNumber", "resultRole", "resultDate"]) {
+        $(id).textContent = "";
       }
+    }
 
+    $("statusForm").oninput = clearLookup;
+
+    function renderResult(data){
       const row = Array.isArray(data) ? data[0] : data;
 
       if(!row){
@@ -465,6 +460,45 @@ body[data-page="apply"] .portal-navlinks .nav-apply,body[data-page="status"] .po
       $("resultDate").textContent = formatDate(row.created_at);
       $("result").classList.add("show");
       $("result").scrollIntoView({behavior:"smooth", block:"center"});
+    }
+
+    $("statusForm").onsubmit = async e => {
+      e.preventDefault();
+      if (activeLookup) return;
+      clearLookup();
+
+      if (!db) {
+        showMessage(lang === "ar"
+          ? "تعذر تحميل خدمة التحقق. أعد تحميل الصفحة عند عودة الاتصال."
+          : "The tracking service could not load. Reload the page when your connection returns.");
+        return;
+      }
+
+      const lookup = new AbortController();
+      activeLookup = lookup;
+      renderSubmitButton();
+      const timeout = setTimeout(() => lookup.abort(), 20000);
+      try {
+        const { data, error } = await db.rpc("check_executive_application_status", {
+          p_application_number: $("applicationNumber").value.trim(),
+          p_email: $("email").value.trim()
+        }).abortSignal(lookup.signal);
+        if (activeLookup !== lookup) return;
+        if (lookup.signal.aborted || error) throw new Error("Lookup unavailable");
+        renderResult(data);
+      } catch {
+        if (activeLookup === lookup) {
+          showMessage(lang === "ar"
+            ? "تعذر التحقق من الطلب حاليًا. حاول مرة أخرى."
+            : "Could not check the application right now. Please try again.");
+        }
+      } finally {
+        clearTimeout(timeout);
+        if (activeLookup === lookup) {
+          activeLookup = null;
+          renderSubmitButton();
+        }
+      }
     };
   </script>
 <script defer src="assets/js/nabd-signature.js?v=1"></script></body>
