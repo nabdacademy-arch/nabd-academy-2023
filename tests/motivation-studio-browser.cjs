@@ -12,6 +12,12 @@ async function main(){
  try{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
    const page=await browser.newPage({viewport,locale:"ar-PS"});
+   // Local file:// test cannot pass Cloudflare's approved-hostname check.
+   // Mock only the external challenge widget, never the page's real own UI code.
+   // Production CAPTCHA verification is tested server-side by the endpoint's guards.
+   await page.route("https://challenges.cloudflare.com/**",route=>
+     route.fulfill({status:200,contentType:"application/javascript",
+       body:"window.turnstile={render:()=>123,getResponse:()=>'',reset:()=>{}};"}));
    const errors=[];
    page.on("pageerror",error=>errors.push(error.message));
    await page.goto(url,{waitUntil:"domcontentloaded"});
