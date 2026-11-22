@@ -137,6 +137,7 @@
   const posts = document.getElementById("sch-managed-posts");
   let signedInUser = null;
   let ownItems = [];
+  let ownPostsRequest = 0;
   const showLogin = () => {
     signedInUser=null;
     loginPanel.hidden=false;
@@ -207,12 +208,24 @@
   }
   document.getElementById("sch-cancel-edit")?.addEventListener("click",()=>{resetEditor();setStatus(publishStatus,"");});
   async function refreshOwnPosts(){
-    if(!signedInUser)return;
-    const {data,error}=await client.from("nabd_scholarship_opportunities")
-      .select("id,title,description,application_url,status,published_at")
-      .eq("published_by",signedInUser.id).order("published_at",{ascending:false}).limit(100);
-    if(error){setStatus(publishStatus,"تعذر تحميل قائمة الإعلانات.","error");return;}
-    ownItems=data||[];
+    const owner=signedInUser;
+    if(!owner)return;
+    const request = ++ownPostsRequest;
+    let rows;
+    try {
+      const {data,error}=await client.from("nabd_scholarship_opportunities")
+        .select("id,title,description,application_url,status,published_at")
+        .eq("published_by",owner.id).order("published_at",{ascending:false}).limit(100);
+      if(error)throw error;
+      rows=data||[];
+    } catch {
+      if(request===ownPostsRequest && owner===signedInUser){
+        setStatus(publishStatus,"تعذر تحميل قائمة الإعلانات.","error");
+      }
+      return;
+    }
+    if(request!==ownPostsRequest || owner!==signedInUser)return;
+    ownItems=rows;
     posts.replaceChildren();
     if(!ownItems.length){
       const p=document.createElement("p");p.textContent="لم تنشر أي فرصة حتى الآن.";posts.append(p);return;
@@ -227,15 +240,27 @@
       const edit=document.createElement("button");edit.type="button";edit.textContent="تعديل";edit.addEventListener("click",()=>editItem(item));
       const archive=document.createElement("button");archive.type="button";archive.textContent=item.status==="published"?"أرشفة":"إعادة نشر";
       archive.addEventListener("click",async()=>{
+        if(archive.disabled || owner!==signedInUser)return;
         archive.disabled=true;
         const next=item.status==="published"?"archived":"published";
-        const {error:err}=await client.from("nabd_scholarship_opportunities")
-          .update({status:next,updated_at:new Date().toISOString()})
-          .eq("id",item.id).eq("published_by",signedInUser.id);
-        archive.disabled=false;
-        if(err){setStatus(publishStatus,"تعذر تعديل حالة الإعلان.","error");return;}
-        setStatus(publishStatus,next==="archived"?"تمت أرشفة الفرصة وإخفاؤها عن الجمهور.":"أعيد نشر الفرصة بنجاح.","success");
-        await refreshOwnPosts();
+        try{
+          const {data:changed,error}=await client.from("nabd_scholarship_opportunities")
+            .update({status:next,updated_at:new Date().toISOString()})
+            .eq("id",item.id).eq("published_by",owner.id).eq("status",item.status)
+            .select("id,status").maybeSingle();
+          if(owner!==signedInUser)return;
+          if(error)throw error;
+          if(changed?.id===item.id && changed.status===next){
+            setStatus(publishStatus,next==="archived"?"تمت أرشفة الفرصة وإخفاؤها عن الجمهور.":"أعيد نشر الفرصة بنجاح.","success");
+          }else{
+            setStatus(publishStatus,"تغيّرت حالة الإعلان أو لم يعد متاحًا. راجع القائمة المحدّثة قبل إعادة المحاولة.","error");
+          }
+          await refreshOwnPosts();
+        }catch{
+          if(owner===signedInUser)setStatus(publishStatus,"تعذر تأكيد حالة الإعلان. أعد تحميل القائمة للتحقق منها.","error");
+        }finally{
+          archive.disabled=false;
+        }
       });
       actions.append(edit,archive);row.append(info,actions);posts.append(row);
     });
