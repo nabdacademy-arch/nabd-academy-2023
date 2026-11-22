@@ -16,7 +16,7 @@ function mount(language) {
   const db = {auth:{getUser:async()=>({data:{user:null}})}};
   vm.runInNewContext(fs.readFileSync(require.resolve("../assets/js/nabd-moodle.js"),"utf8"), {
     document:{getElementById:get, documentElement:{}, querySelector:()=>true, querySelectorAll:()=>[], addEventListener(){}, createElement:element},
-    window:{nabdSupabase:db}, localStorage:{getItem:()=>language,setItem(){}}, setInterval(){}
+    window:{nabdSupabase:db,addEventListener(){}}, localStorage:{getItem:()=>language,setItem(){}}, setInterval(){}
   });
   function submit() {
     get("mdl-email").value="student@example.test";
