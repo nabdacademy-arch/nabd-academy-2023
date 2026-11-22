@@ -51,18 +51,31 @@
     button.textContent = "قراءة البحث PDF ↗";
     button.setAttribute("aria-label", "فتح ملف PDF للبحث: " + item.title);
     button.addEventListener("click", async () => {
+      if (button.disabled) return;
       button.disabled = true;
-      const popup = window.open("about:blank", "_blank");
-      if (popup) popup.opener = null;
-      const {data, error} = await client.storage.from(bucket).createSignedUrl(item.pdf_path, 600);
-      button.disabled = false;
-      if (error || !data?.signedUrl) {
-        if (popup) popup.close();
-        status($("res-public-status") || $("res-home-status"), "تعذر فتح ملف PDF حاليًا. يرجى إعادة المحاولة.", "error");
-        return;
+      const feedback = $("res-public-status") || $("res-home-status");
+      let popup, timer;
+      try {
+        popup = window.open("about:blank", "_blank");
+        if (popup) popup.opener = null;
+        status(feedback, "");
+        const deadline = new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error("PDF link timed out")), 20000);
+        });
+        const {data, error} = await Promise.race([
+          client.storage.from(bucket).createSignedUrl(item.pdf_path, 600),
+          deadline
+        ]);
+        if (error || !data?.signedUrl) throw new Error("PDF link unavailable");
+        if (!popup) window.location.assign(data.signedUrl);
+        else if (!popup.closed) popup.location.replace(data.signedUrl);
+      } catch {
+        if (popup && !popup.closed) popup.close();
+        status(feedback, "تعذر فتح ملف PDF حاليًا. يرجى إعادة المحاولة.", "error");
+      } finally {
+        clearTimeout(timer);
+        button.disabled = false;
       }
-      if (popup) popup.location.replace(data.signedUrl);
-      else window.location.assign(data.signedUrl);
     });
     card.append(overline, title, author, abstract, time, button);
     return card;
