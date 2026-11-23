@@ -28,11 +28,11 @@ async function main(){
    assert.equal(await page.locator("html").getAttribute("dir"),"ltr");
    assert.match(await page.locator("#directoryHeading").textContent(),/Management|Operations/);
    await page.click('[data-filter="all"]');
-   assert.equal(await page.locator("#directoryGrid a:visible").count(),39);
+   assert.equal(await page.locator("#directoryGrid a:visible").count(),40);
    const width=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
    assert.ok(width.scroll<=width.client+2,"Directory must not overflow: "+JSON.stringify(width));
    assert.deepEqual(errors,[],"Directory scripts must not crash");
-   results.push({page:"academy-directory.html",viewport,cards:39,errors});
+   results.push({page:"academy-directory.html",viewport,cards:40,errors});
    await page.close();
   }
   for(const pagePath of ["academy.html","scholarships.html","portal.html","atlas/index.html","admin.html"]){
@@ -46,7 +46,7 @@ async function main(){
    assert.equal(await launcher.getAttribute("aria-expanded"),"true");
    assert.equal(await page.locator(".nabd-institutional-link:visible").count(),8,"Only essential shortcuts should be visible by default");
    await page.locator(".nabd-institutional-mode").nth(1).click();
-   assert.equal(await page.locator(".nabd-institutional-link:visible").count(),39,"All services reveals the full catalog");
+   assert.equal(await page.locator(".nabd-institutional-link:visible").count(),40,"All services reveals the full catalog");
    await page.locator(".nabd-institutional-mode").nth(0).click();
    assert.equal(await page.locator(".nabd-institutional-link:visible").count(),8,"Essentials returns to the compact view");
    await page.fill(".nabd-institutional-search","Motivation");
