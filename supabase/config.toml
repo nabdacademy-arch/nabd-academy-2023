@@ -14,3 +14,8 @@ verify_jwt = true
 # Public QR verification uses an unguessable token and never exposes private data.
 [functions.nabd-document-verify]
 verify_jwt = false
+
+# NABD Cortex verifies the signed-in user JWT and admin role inside the function.
+# Legacy gateway verify_jwt does not accept all modern JWT signing methods.
+[functions.nabd-cortex]
+verify_jwt = false
