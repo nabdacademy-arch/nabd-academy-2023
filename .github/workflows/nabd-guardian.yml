@@ -1,6 +1,12 @@
 name: NABD Guardian - website and database monitoring
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nabd-guardian.yml'
+      - 'scripts/nabd_guardian.py'
+      - 'assets/js/config.js'
   schedule:
     # Six lightweight synthetic checks per day (UTC); never counted as students.
     - cron: '17 */4 * * *'
