@@ -1,0 +1,26 @@
+name: NABD Cortex contract and safety checks
+on:
+  pull_request:
+    paths:
+      - 'nabd-cortex.html'
+      - 'nabd-ai-executive.html'
+      - 'supabase/functions/nabd-cortex/**'
+      - 'supabase/migrations/*nabd_cortex*'
+      - 'supabase/config.toml'
+      - 'tests/nabd-cortex-contract.test.mjs'
+  push:
+    paths:
+      - 'nabd-cortex.html'
+      - 'supabase/functions/nabd-cortex/**'
+      - 'supabase/migrations/*nabd_cortex*'
+      - 'tests/nabd-cortex-contract.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate offline security contracts
+        run: node --test tests/nabd-cortex-contract.test.mjs
