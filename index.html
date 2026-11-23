@@ -1204,50 +1204,20 @@
 @media(max-width:700px){.nabd-hope-home-link-wrap{width:100%}.nabd-hope-home-link-wrap>a{width:100%}.nfs-actions .nfs-hope-feature-link{width:100%}#langBtn{min-width:145px}}
 </style>
 <style id="nabd-cortex-home-shortcut-style">
-/* Persistent small, accessible shortcut; anchored to the compact homepage root,
-   outside the hero layout. It must remain reachable on narrow mobile screens. */
-#nabdNeoHome > .neo-cortex-home-link {
-  position:fixed;
-  right:14px;
-  bottom:calc(15px + env(safe-area-inset-bottom, 0px));
-  left:auto;
-  top:auto;
-  z-index:2000;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:42px;
-  width:auto;
-  max-width:calc(100vw - 28px);
-  padding:10px 15px;
-  border:1px solid #e9cb92;
-  border-radius:999px;
-  background:#103949;
-  color:#fff6d5;
-  font:800 13px/1.3 system-ui,Tahoma,sans-serif;
-  white-space:nowrap;
-  text-decoration:none;
-  box-shadow:0 7px 24px rgba(0,0,0,.36);
-  -webkit-tap-highlight-color:transparent;
+/* Visible bilingual pilot shortcut in the main hero, never a floating overlay. */
+#nabdNeoHome .neo-cortex-shortcut-line {margin:13px 0 0;display:flex;align-items:center;gap:8px}
+#nabdNeoHome .neo-cortex-inline {
+  display:inline-flex!important;align-items:center;justify-content:center;
+  min-height:37px;max-width:100%;padding:7px 13px;
+  border:1px solid #f2d596;border-radius:999px;
+  background:#174657;color:#fff4cc!important;
+  font:800 12px/1.3 system-ui,Tahoma,sans-serif;
+  text-decoration:none;box-shadow:0 3px 12px rgba(0,0,0,.17);
 }
-#nabdNeoHome > .neo-cortex-home-link:hover,
-#nabdNeoHome > .neo-cortex-home-link:focus-visible {
-  color:#fff;
-  background:#185269;
-  border-color:#ffe8a8;
-}
-#nabdNeoHome > .neo-cortex-home-link:focus-visible {
-  outline:3px solid #83e9d4;
-  outline-offset:3px;
-}
-@media (max-width:480px) {
-  #nabdNeoHome > .neo-cortex-home-link {
-    right:10px;
-    bottom:calc(10px + env(safe-area-inset-bottom, 0px));
-    min-height:40px;
-    padding:9px 12px;
-    font-size:12px;
-  }
+#nabdNeoHome .neo-cortex-inline:focus-visible{outline:3px solid #7be6d0;outline-offset:3px}
+@media(max-width:480px){
+  #nabdNeoHome .neo-cortex-shortcut-line{margin-top:10px}
+  #nabdNeoHome .neo-cortex-inline{min-height:37px;padding:7px 12px;font-size:12px}
 }
 </style>
 <style id="nabd-neo-institutional-style">
@@ -1380,8 +1350,6 @@
 
 <!-- NABD 2027 compact official home: archived full experience remains at academy-full.html -->
 <div class="neo-site" id="nabdNeoHome" dir="rtl" lang="ar">
-  <a class="neo-cortex-home-link" href="nabd-cortex.html" data-neo-ar="✦ مركز CORTEX"
-     data-neo-en="✦ CORTEX Control" aria-label="NABD CORTEX — لوحة القيادة الذكية للإدارة">✦ مركز CORTEX</a>
   <a class="neo-skip" href="#neo-main" data-neo-ar="انتقل إلى المحتوى" data-neo-en="Skip to content">انتقل إلى المحتوى</a>
   <header class="neo-header">
     <div class="neo-meta"><div class="neo-shell"><span data-neo-ar="من غزة، فلسطين • تعليم طبي رقمي مفتوح" data-neo-en="From Gaza, Palestine • Open digital medical education">من غزة، فلسطين • تعليم طبي رقمي مفتوح</span><b data-neo-ar="الاستقلالية • المعرفة • الأثر" data-neo-en="Independence • Knowledge • Impact">الاستقلالية • المعرفة • الأثر</b></div></div>
@@ -1429,6 +1397,7 @@
       <div class="neo-shell neo-hero-grid">
         <div>
           <span class="neo-kicker" data-neo-ar="✦ NABD ACADEMY · من غزة إلى العالم" data-neo-en="✦ NABD ACADEMY · FROM GAZA TO THE WORLD">✦ NABD ACADEMY · من غزة إلى العالم</span>
+          <div class="neo-cortex-shortcut-line"><a class="neo-cortex-inline" href="nabd-cortex.html" data-neo-ar="✦ مركز CORTEX" data-neo-en="✦ CORTEX Control" aria-label="NABD CORTEX — لوحة قيادة الإدارة">✦ مركز CORTEX</a></div>
           <h1 id="neo-h1"><span data-neo-ar="معرفة طبية تُفتح" data-neo-en="Medical knowledge,">معرفة طبية تُفتح</span><strong data-neo-ar="أبوابها للجميع." data-neo-en="open to everyone.">أبوابها للجميع.</strong></h1>
           <p class="neo-hero-lead" data-neo-ar="أكاديمية نبض للعلوم الطبية مبادرة تعليمية مستقلة تسعى إلى إتاحة المعرفة الطبية والتعلّم الرقمي والبحث العلمي للطلاب، عبر تجربة أكاديمية واضحة، متاحة، وتركّز على الإنسان." data-neo-en="NABD Academy for Medical Sciences is an independent educational initiative expanding access to medical knowledge, digital learning and research literacy through an accessible, human-centred academic experience.">أكاديمية نبض للعلوم الطبية مبادرة تعليمية مستقلة تسعى إلى إتاحة المعرفة الطبية والتعلّم الرقمي والبحث العلمي للطلاب، عبر تجربة أكاديمية واضحة، متاحة، وتركّز على الإنسان.</p>
           <div class="neo-hero-buttons">
