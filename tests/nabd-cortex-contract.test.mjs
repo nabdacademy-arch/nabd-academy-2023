@@ -6,13 +6,14 @@ const ui=read('nabd-cortex.html');
 const edge=read('supabase/functions/nabd-cortex/index.ts');
 const sql=read('supabase/migrations/20261123183000_nabd_cortex_foundation.sql');
 const conf=read('supabase/config.toml');
+const timerSql=read('supabase/migrations/20261123192000_nabd_cortex_admin_control_timer.sql');
 
-test('Cortex two buttons use server-side founder RPC',()=>{
+test('Cortex two buttons use server-side admin/founder RPC',()=>{
   for(const id of ['start','stop','run','feedback','tasks','runs','sources'])assert.match(ui,new RegExp('id="'+id+'"'));
   assert.match(ui,/nabd_cortex_set_enabled/);
   assert.match(sql,/nabd_cortex_set_enabled\(p_enabled boolean\)/);
   assert.match(sql,/role='founder' and is_active/);
-  assert.match(ui,/مفتاح التشغيل مخصص للمؤسس/);
+  assert.match(ui,/مفتاح التشغيل مخصص لحساب الإدارة المعتمد/);
 });
 
 test('Cortex requires a real admin session and obeys kill switch',()=>{
@@ -43,4 +44,25 @@ test('All five exposed database tables enforce RLS and append/read permissions',
 test('No artificial student sessions or data changes in Cortex pilot',()=>{
  assert.doesNotMatch(edge,/from\("profiles"\)\.update|from\("courses"\)\.update|from\("certificates"\)\.insert/);
  assert.match(ui,/لم نُنشئ نشاطًا وهميًا/);
+});
+
+test('Control permissions match authorized administrator and active founder login',()=>{
+ assert.match(timerSql,/public\.is_admin\(\)/);
+ assert.match(timerSql,/role='founder' and is_active/);
+ assert.match(timerSql,/auth\.uid\(\) is null/);
+ assert.match(timerSql,/revoke all on function public\.nabd_cortex_set_enabled\(boolean\) from public,anon/);
+ assert.match(timerSql,/create or replace function public\.nabd_cortex_review_task/);
+ assert.match(timerSql,/Admin or active founder authorization required/);
+});
+
+test('Uptime timers persist across visits and finish at stop',()=>{
+ for(const id of ['activeTimer','totalTimer','lastToggle','taskTimer'])assert.match(ui,new RegExp('id="'+id+'"'));
+ assert.match(ui,/select\('enabled,updated_at,active_since,last_stopped_at,elapsed_seconds'\)/);
+ assert.match(ui,/setInterval\(renderTimers,1000\)/);
+ assert.match(ui,/taskStartedAt=performance\.now\(\)/);
+ assert.match(timerSql,/add column if not exists active_since timestamptz/);
+ assert.match(timerSql,/add column if not exists elapsed_seconds bigint/);
+ assert.match(timerSql,/for update/);
+ assert.match(timerSql,/v_elapsed := v_elapsed \+ greatest/);
+ assert.match(timerSql,/if p_enabled is distinct from v_enabled then/);
 });
