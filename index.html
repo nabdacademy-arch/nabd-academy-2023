@@ -1203,6 +1203,51 @@
 #langBtn:focus-visible,.nfs-hope-feature-link:focus-visible{outline:3px solid #7ce0d8;outline-offset:3px}
 @media(max-width:700px){.nabd-hope-home-link-wrap{width:100%}.nabd-hope-home-link-wrap>a{width:100%}.nfs-actions .nfs-hope-feature-link{width:100%}#langBtn{min-width:145px}}
 </style>
+<style id="nabd-cortex-home-shortcut-style">
+/* Accessible, low-profile shortcut visible on desktop and phones without changing the homepage layout. */
+#nabdNeoHome .neo-cortex-floating-link{
+  position:fixed!important;
+  inset-inline-start:auto!important;
+  left:14px!important;
+  right:auto!important;
+  bottom:calc(74px + env(safe-area-inset-bottom, 0px))!important;
+  z-index:1050!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:auto!important;
+  max-width:calc(100vw - 28px)!important;
+  min-height:40px!important;
+  padding:8px 14px!important;
+  border:1px solid rgba(235,201,140,.7)!important;
+  border-radius:999px!important;
+  color:#fff5d6!important;
+  background:#0a3543!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.28)!important;
+  font:800 12px/1.2 system-ui,Tahoma,sans-serif!important;
+  letter-spacing:.01em;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+}
+#nabdNeoHome .neo-cortex-floating-link:hover{
+  background:#164b57!important;
+  border-color:#f5db9d!important;
+}
+#nabdNeoHome .neo-cortex-floating-link:focus-visible{
+  outline:3px solid #80e8d5!important;
+  outline-offset:3px!important;
+}
+@media(min-width:800px){
+  #nabdNeoHome .neo-cortex-floating-link{bottom:24px!important;left:24px!important}
+}
+@media(max-width:380px){
+  #nabdNeoHome .neo-cortex-floating-link{
+    min-height:38px!important;
+    padding:7px 11px!important;
+    font-size:11px!important
+  }
+}
+</style>
 <style id="nabd-neo-institutional-style">
 
 /* 2027 official compact institutional homepage; legacy modules are preserved in academy-full.html */
@@ -1374,6 +1419,10 @@
       </div>
     </div>
   </header>
+  <!-- Small permanent shortcut to the authorized AI command console. -->
+  <a class="neo-cortex-floating-link" href="nabd-cortex.html"
+     data-neo-ar="✦ مركز CORTEX" data-neo-en="✦ CORTEX Center"
+     aria-label="NABD CORTEX — مركز القيادة الذكية، يتطلب حسابًا إداريًا">✦ مركز CORTEX</a>
   <main id="neo-main">
     <section class="neo-hero" id="neo-welcome" aria-labelledby="neo-h1">
       <div class="neo-shell neo-hero-grid">
@@ -1387,7 +1436,6 @@
             <a class="neo-btn neo-btn--clear" href="nabd-health-impact.html" data-neo-ar="♡ مبادرة نبض للأثر الصحي" data-neo-en="♡ NABD Health Impact Initiative">♡ مبادرة نبض للأثر الصحي</a>
             <a class="neo-btn neo-btn--clear" href="scholarships.html" data-neo-ar="🌍 أخبار المنح الخارجية والدولية" data-neo-en="🌍 International Scholarship News">🌍 أخبار المنح الخارجية والدولية</a>
             <a class="neo-motivation-mini" href="motivation-studio.html" data-neo-ar="✍️ أنشئ رسالة الدافع" data-neo-en="✍️ Write a Motivation Letter" aria-label="NABD Motivation Studio — كتابة رسالة الدافع">✍️ أنشئ رسالة الدافع</a>
-            <a class="neo-motivation-mini" href="nabd-cortex.html" data-neo-ar="✦ مركز CORTEX" data-neo-en="✦ CORTEX Control" aria-label="NABD CORTEX — لوحة قيادة الوكلاء المصرح لهم">✦ مركز CORTEX</a>
           </div>
           <div class="neo-trust"><span data-neo-ar="تعليم تكميلي مفتوح" data-neo-en="Open supplementary learning">تعليم تكميلي مفتوح</span><span data-neo-ar="منظومة متعددة المسارات" data-neo-en="Multiple learning pathways">منظومة متعددة المسارات</span><span data-neo-ar="تأسست 2023" data-neo-en="Founded 2023">تأسست 2023</span></div>
         </div>
