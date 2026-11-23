@@ -1,0 +1,25 @@
+name: NABD Guardian - website and database monitoring
+
+on:
+  schedule:
+    # Six lightweight synthetic checks per day (UTC); never counted as students.
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nabd-guardian-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    name: Check GitHub Pages and Supabase (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout NABD Academy
+        uses: actions/checkout@v4
+      - name: Check live site and public courses API
+        run: python3 scripts/nabd_guardian.py
