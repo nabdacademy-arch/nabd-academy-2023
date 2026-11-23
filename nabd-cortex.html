@@ -34,7 +34,13 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
 <div id="app" class="hidden">
 <section class="panel" aria-label="مفتاح تشغيل المحرك"><div class="sectionhead"><div><h2>غرفة التحكم المباشر</h2><p>التحكم بمحرك NABD CORTEX فقط، ولا يوقف الموقع أو الدورات أو خدمات الطوارئ الخارجية.</p></div><button id="logout" class="btnsecondary" type="button">تسجيل الخروج</button></div>
 <div class="actions"><button id="start" class="start" type="button" disabled>▶ تشغيل البوت</button><button id="stop" class="stop" type="button" disabled>■ إيقاف البوت</button><button id="refresh" class="btnsecondary" type="button">↻ تحديث الحالة</button><span id="controlState" class="status">جارٍ التحقق…</span></div>
-<div class="notice">مفتاح التشغيل مخصص للمؤسس. الإيقاف يمنع قبول مهام جديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. يعمل هذا الإصدار عند الطلب، وليس مراقبة ذاتية مستمرة على مدار الساعة.</div>
+<div class="grid" aria-label="مؤقتات تشغيل البوت" style="margin-top:14px">
+ <div class="mini"><strong id="activeTimer" aria-live="off">00:00:00</strong><span>⏱️ مدة التشغيل الحالي</span></div>
+ <div class="mini"><strong id="totalTimer" aria-live="off">00:00:00</strong><span>⌛ إجمالي ساعات التشغيل المتراكمة</span></div>
+ <div class="mini"><strong id="lastToggle" aria-live="off">—</strong><span>🕒 آخر تشغيل / إيقاف</span></div>
+ <div class="mini"><strong id="taskTimer" aria-live="off">—</strong><span>⚡ مدة تنفيذ المهمة الحالية أو الأخيرة</span></div>
+ </div>
+<div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. يعمل هذا الإصدار عند الطلب وليس خدمة ذكاء اصطناعي تعمل دون طلب على مدار الساعة.</div>
 <p id="feedback" role="status" aria-live="polite"></p></section>
 <section class="grid" aria-label="الوكلاء المتخصصون">
 <div class="mini"><strong>⚙️ العمليات</strong><span>تخطيط، متابعة داخلية، تقارير</span></div><div class="mini"><strong>📊 المالية</strong><span>تحليل مقترحات فقط، دون صرف</span></div>
@@ -64,13 +70,30 @@ const cfg=window.NABD_CONFIG;
 const el=id=>document.getElementById(id);
 const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 let authorized=false,enabled=null,busy=false;
+let runtimeState={active_since:null,last_stopped_at:null,elapsed_seconds:0,updated_at:null};
+let taskStartedAt=null, lastTaskSeconds=null;
 const domainNames={administration:'إدارة',finance:'مالية',medical:'طب',crisis:'أزمات',cybersecurity:'أمن سيبراني',education:'تعليم وبحث'};
 const fmt=x=>x?new Date(x).toLocaleString('ar-PS'):'—';
 const labelStatus=s=>({logged_low_risk:'متابعة داخلية مسجلة',needs_review:'موافقة بشرية مطلوبة',approved_for_planning:'موافق على التخطيط فقط',rejected:'مرفوض'})[s]||s;
 function msg(t,error=false){el('feedback').textContent=t;el('feedback').className=error?'error':'success';}
 function make(tag,txt,cls){const e=document.createElement(tag);if(txt!==undefined)e.textContent=String(txt);if(cls)e.className=cls;return e;}
 function sessionUI(ok){authorized=ok;el('app').classList.toggle('hidden',!ok);el('loginWrap').classList.toggle('hidden',ok);el('authChip').textContent=ok?'✓ حساب إداري مصرح':'لم يتم تسجيل الدخول';}
-function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');}
+function duration(seconds){
+ const value=Math.max(0,Math.floor(Number(seconds)||0));
+ return [Math.floor(value/3600),Math.floor(value%3600/60),value%60].map(x=>String(x).padStart(2,'0')).join(':');
+}
+function renderTimers(){
+ const since=runtimeState.active_since?Date.parse(runtimeState.active_since):NaN;
+ const live=enabled===true&&Number.isFinite(since)?Math.max(0,Math.floor((Date.now()-since)/1000)):0;
+ el('activeTimer').textContent=enabled===true?duration(live):'00:00:00';
+ el('totalTimer').textContent=enabled===null?'—':duration((Number(runtimeState.elapsed_seconds)||0)+live);
+ const changed=enabled===true?runtimeState.active_since:runtimeState.last_stopped_at||runtimeState.updated_at;
+ el('lastToggle').textContent=changed?fmt(changed):'—';
+ el('taskTimer').textContent=taskStartedAt!==null?
+   'جارٍ العمل · '+duration((performance.now()-taskStartedAt)/1000):
+   lastTaskSeconds===null?'لم تُنفذ مهمة في هذه الجلسة':duration(lastTaskSeconds);
+}
+function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');renderTimers();}
 async function checkAuth(){
  try{
   const {data:{user}}=await db.auth.getUser();
@@ -81,8 +104,10 @@ async function checkAuth(){
  }catch(e){sessionUI(false);el('loginError').textContent='تعذر التحقق من الجلسة.';}
 }
 async function loadState(){
- const {data,error}=await db.from('nabd_cortex_settings').select('enabled,updated_at').eq('id',1).maybeSingle();
- enabled=error||!data?null:data.enabled===true;updateButtons();
+ const {data,error}=await db.from('nabd_cortex_settings').select('enabled,updated_at,active_since,last_stopped_at,elapsed_seconds').eq('id',1).maybeSingle();
+ enabled=error||!data?null:data.enabled===true;
+ runtimeState=error||!data?{active_since:null,last_stopped_at:null,elapsed_seconds:0,updated_at:null}:data;
+ updateButtons();
  if(error)msg('تعذر قراءة مفتاح التشغيل: '+error.message,true);
 }
 async function setEnabled(value){
@@ -124,7 +149,7 @@ function renderAnswer(d){
 }
 async function runTask(ev){
  ev.preventDefault();if(!authorized||!enabled||busy)return;
- busy=true;updateButtons();msg('يُحلّل الطلب ويختار مسار الوكيل…');
+ busy=true;taskStartedAt=performance.now();updateButtons();msg('يُحلّل الطلب ويختار مسار الوكيل…');
  try{
   const {data,error}=await db.functions.invoke('nabd-cortex',{body:{task:el('task').value,domain:el('domain').value}});
   if(error){
@@ -135,7 +160,7 @@ async function runTask(ev){
   renderAnswer(data);msg(data.requires_human?'أُضيف الطلب لصندوق المراجعة دون تنفيذ.':'أُضيفت متابعة داخلية منخفضة المخاطر إلى السجل.');
   await Promise.all([loadTasks(),loadRuns()]);
  }catch(e){msg('تعذر إكمال الطلب: '+e.message,true);}
- finally{busy=false;await loadState();updateButtons();}
+ finally{lastTaskSeconds=taskStartedAt===null?null:(performance.now()-taskStartedAt)/1000;taskStartedAt=null;busy=false;await loadState();updateButtons();}
 }
 async function loadTasks(){
  const {data,error}=await db.from('nabd_cortex_tasks').select('id,title,status,domain,created_at').order('created_at',{ascending:false}).limit(25);
@@ -180,6 +205,7 @@ el('loginForm').addEventListener('submit',async ev=>{
 el('logout').addEventListener('click',async()=>{await db.auth.signOut();enabled=null;sessionUI(false);updateButtons();});
 el('start').onclick=()=>setEnabled(true);el('stop').onclick=()=>setEnabled(false);el('refresh').onclick=loadState;
 el('taskForm').addEventListener('submit',runTask);el('loadTasks').onclick=loadTasks;el('loadRuns').onclick=loadRuns;
+setInterval(renderTimers,1000);
 if(location.hostname!=='nabdacademy-arch.github.io' && location.hostname!=='localhost'){
  el('loginError').textContent='استخدم النطاق الرسمي للأكاديمية لتسجيل الدخول بأمان.';
 }else{checkAuth();}
