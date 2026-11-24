@@ -115,8 +115,9 @@
       } else papers.slice(0,3).forEach(p => home.append(makeCard(p,true)));
     }
     if (listing) {
-      const search = ($("res-search")?.value || "").trim().toLocaleLowerCase();
-      const filtered = papers.filter(p => ((p.title || "") + " " + (p.abstract || "") + " " + (p.author_name || "")).toLocaleLowerCase().includes(search));
+      const normalizeSearch = value => String(value ?? "").normalize("NFKC").toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,"").replace(/[أإآٱ]/g,"ا").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+    const search=normalizeSearch(($("res-search")?.value || ""));
+      const filtered = papers.filter(p => search.split(" ").every(word=>normalizeSearch((p.title||"")+" "+(p.abstract||"")+" "+(p.author_name||"")).includes(word)));
       listing.replaceChildren();
       if (!filtered.length) {
         const p = document.createElement("p");
