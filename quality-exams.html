@@ -53,6 +53,15 @@
 <div class="ql-proctor-log" id="ql-proctor-log" aria-live="polite"><p class="ql-empty">اختر امتحانًا لعرض سجل المراقبة.</p></div>
 <p class="ql-muted ql-note">هذه مؤشرات تقنية وليست دليلًا قاطعًا على الغش أو الاختراق؛ يمكن لفقدان الإنترنت أو مكالمة هاتفية أن يسببا فقدان التركيز. لا يستطيع موقع ويب اكتشاف كل لقطات الشاشة أو التصوير من جهاز آخر، ولا يجري تسجيل الشاشة أو تشغيل الكاميرا. لا توجد عقوبة أو تعديل للدرجة آليًا؛ راجع الأدلة والظروف قبل اتخاذ أي قرار. تُحذف الإشارات تلقائيًا بعد 30 يومًا.</p>
 </section>
+<section class="ql-panel" id="ql-smart-exam" aria-label="مولد الامتحانات الذكي">
+<div class="ql-panel-header"><div><span class="ql-kicker">NABD AI · SMART EXAM STUDIO</span><h2>مولّد الامتحانات الذكي</h2><p class="ql-muted">اختر الدورة والمستوى وعدد الأسئلة والمدة. يُنشئ الذكاء الاصطناعي امتحانًا من محاور الدورة المسجلة دون PDF، مع مفتاح تصحيح مخفي عن الطلاب.</p></div><span class="ql-tag">للمدير فقط</span></div>
+<form id="ql-smart-form" class="ql-form" autocomplete="off">
+<div class="ql-two"><label>١ · الدورة<select id="ql-smart-course" required><option value="">جارٍ تحميل الدورات…</option></select></label><label>٢ · مستوى الامتحان<select id="ql-smart-level"><option value="basic">تأسيسي / بسيط</option><option value="easy">سهل</option><option value="medium" selected>متوسط</option><option value="hard">صعب / قوي</option><option value="professional">احترافي</option><option value="precision">دقيق ومتقدم</option></select></label></div>
+<div class="ql-two"><label>٣ · عدد الأسئلة<input id="ql-smart-count" type="number" min="1" max="30" step="1" value="10" required></label><label>٤ · المدة بالدقائق<input id="ql-smart-duration" type="number" min="5" max="180" step="1" value="60" required></label></div>
+<details><summary>إعداد إضافي: لغة الامتحان</summary><label>اللغة<select id="ql-smart-language"><option value="ar">العربية</option><option value="en">English</option></select></label></details>
+<p class="ql-muted" id="ql-smart-outline" aria-live="polite"></p><p class="ql-muted">الأسئلة اختيار من متعدد بأربع إجابات، وكل سؤال بعلامة واحدة. تستند إلى المحاور والمعرفة الأكاديمية العامة، وليست مقتبسة من المحاضرات. قد يخطئ الذكاء الاصطناعي؛ يُفضّل مراجعة المسودة قبل نشر امتحان رسمي. النشر يتبع إتاحة الامتحانات الحالية للطلاب المسجلين ويبدأ مؤقت الامتحان فورًا.</p>
+<div class="ql-actions"><button id="ql-smart-publish" class="ql-button" type="submit">توليد الامتحان ونشره الآن</button><button id="ql-smart-draft" class="ql-button ql-button-secondary" type="button">توليد للمراجعة أولًا</button></div></form>
+<p id="ql-smart-status" class="ql-status" hidden role="status" aria-live="polite"></p></section>
 <section class="ql-panel" id="ql-builder">
 <div class="ql-panel-header"><div><span class="ql-kicker">01 / SOURCE & CONFIGURATION</span><h2>من ملف المحاضرة إلى نموذج الامتحان</h2></div><span class="ql-step">1 / 3</span></div>
 <form id="ql-config" class="ql-form" autocomplete="off">
@@ -90,6 +99,6 @@
 <section class="ql-panel" id="ql-grading" hidden><div class="ql-panel-header"><div><span class="ql-kicker">HUMAN EVALUATION</span><h2 id="ql-grading-title">إجابات الطلاب والتصحيح البشري</h2></div><button class="ql-button ql-button-outline" id="ql-close-grading" type="button">إغلاق</button></div><div id="ql-submissions"></div><p class="ql-status" id="ql-grade-status" hidden role="status"></p></section>
 </div>
 </main><footer class="ql-footer">NABD ACADEMY · EXAMINATIONS & QUALITY ASSURANCE <span>المدير العام يراجع ويعتمد، والتصحيح الآلي أولي مع إتاحة المراجعة البشرية.</span></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=14"></script><script src="assets/js/quality-proctor-director.js?v=2" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js?v=12"></script><script src="assets/js/supabase-client.js?v=12"></script><script src="assets/js/quality-director.js?v=15"></script><script src="assets/js/quality-proctor-director.js?v=2" defer></script>
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 </body></html>
