@@ -13,3 +13,9 @@ def administrative_cycle(run=None):
     report = cycle(run)
     return {"health": report, "administrative_task": triage(report),
             "external_actions": False}
+
+if __name__ == "__main__":
+    import json
+    result = administrative_cycle()
+    print(json.dumps(result, ensure_ascii=False))
+    raise SystemExit({"healthy": 0, "degraded": 1, "unknown": 2}[result["health"]["final"]["status"]])
