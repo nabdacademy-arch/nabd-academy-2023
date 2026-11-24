@@ -21,7 +21,7 @@ jobs:
       - name: Run bounded health cycle
         run: |
           set -o pipefail
-          python3 scripts/prometheus_operations.py | tee prometheus-health.txt
+          python3 scripts/prometheus_admin.py | tee prometheus-health.txt
       - name: Retain diagnostic report
         if: always()
         uses: actions/upload-artifact@v4
