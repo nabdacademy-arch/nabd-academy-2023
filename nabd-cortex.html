@@ -41,8 +41,9 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
  <div class="mini"><strong id="stateFreshness">—</strong><span>آخر تحقق ناجح من الخادم</span></div>
  <div class="mini"><strong id="taskTimer" aria-live="off">—</strong><span>⚡ مدة تنفيذ المهمة الحالية أو الأخيرة</span></div>
  </div>
-<div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. يعمل هذا الإصدار عند الطلب وليس خدمة ذكاء اصطناعي تعمل دون طلب على مدار الساعة.</div>
+<div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. الذكاء اللغوي يعمل عند الطلب، بينما تُحال المتابعات المعتمدة تلقائيًا كل خمس دقائق ما دام المحرك والإدارة مفعّلين.</div>
 <p id="feedback" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>التحقق الحي من الذكاء الاصطناعي — V4</h2><p>اختبار اصطناعي لا يرسل بيانات الطلاب ولا ينشئ تكليفًا فعليًا. لا تُعرض حالة النجاح إلا بعد استجابة موثقة من مزود النموذج.</p><div class="actions"><button id="modelProbe" type="button" class="start" disabled>اختبار النموذج الآن</button><button id="modelRefresh" type="button">تحديث نتيجة الاختبار</button></div><p id="modelStatus" role="status" aria-live="polite">لم تُحمّل النتيجة.</p></section>
 <section class="grid" aria-label="الوكلاء المتخصصون">
 <div class="mini"><strong>⚙️ العمليات</strong><span>تخطيط، متابعة داخلية، تقارير</span></div><div class="mini"><strong>📊 المالية</strong><span>تحليل مقترحات فقط، دون صرف</span></div>
 <div class="mini"><strong>🩺 الطب</strong><span>معرفة عامة وتصعيد لمختص</span></div><div class="mini"><strong>🚨 الأزمات</strong><span>احتواء تنظيمي ومراجعة</span></div>
@@ -52,7 +53,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
 <section class="panel"><h2>🧠 فوّض مهمة إلى المنسّق المركزي</h2>
 <form id="taskForm"><label for="domain">المسار المقترح</label><select id="domain">
 <option value="auto">اختيار تلقائي حسب محتوى المهمة</option><option value="administration">الإدارة والعمليات</option><option value="finance">المالية</option><option value="medical">المراجع الطبية</option><option value="crisis">الأزمات واستمرارية العمل</option><option value="cybersecurity">الأمن السيبراني</option><option value="education">التعليم والبحث</option></select>
-<label for="task">ما القرار أو الخطة المطلوبة؟</label><textarea id="task" required minlength="8" maxlength="1500" placeholder="مثال: اقترح خطة منخفضة التكلفة لتنظيم محاضرات التطوع للأسبوع المقبل، وحدد المخاطر والخطوات."></textarea>
+<label for="department">القسم المسؤول (قد يفرض الخادم قسمًا أكثر ملاءمة للمجال)</label><select id="department"><option value="operations">العمليات</option><option value="academic">الأكاديمية</option><option value="research">البحث العلمي</option><option value="partnerships">الشراكات</option><option value="scholarships">المنح</option><option value="finance">المالية</option><option value="media">الإعلام</option><option value="technology">التكنولوجيا</option><option value="hr">الموارد البشرية</option><option value="secretary">السكرتارية</option></select><p><label><input id="dispatch" type="checkbox" style="width:auto"> إحالة متابعة تخطيطية إلى بوابة القسم خلال الدورة المجدولة التالية؛ الحساسة تحتاج موافقة مسبقة.</label></p><label for="task">ما القرار أو الخطة المطلوبة؟</label><textarea id="task" required minlength="8" maxlength="1500" placeholder="مثال: اقترح خطة منخفضة التكلفة لتنظيم محاضرات التطوع للأسبوع المقبل، وحدد المخاطر والخطوات."></textarea>
 <p class="help">لا ترسل أسماء مرضى أو أرقام هوية أو أسرارًا أو بيانات مالية شخصية. لا تُستخدم هذه اللوحة لإصدار علاج أو تحويل أموال أو إجراء اختبارات اختراق.</p>
 <div class="actions"><button id="run" class="start" type="submit" disabled>⚡ تحليل وتوجيه المهمة</button><span class="help">حد تجريبي: 8 مهام/ساعة للحساب</span></div></form>
 <div id="answer" class="result hidden" aria-live="polite"></div></section>
@@ -64,7 +65,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
 </div>
 </div>
 </main>
-<footer>NABD Academy for Medical Sciences · Prototype with human oversight · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
+<footer>NABD Academy for Medical Sciences · V4 · Governed departmental execution · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
 <script type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
 const cfg=window.NABD_CONFIG;
@@ -95,14 +96,14 @@ function renderTimers(){
    'جارٍ العمل · '+duration((performance.now()-taskStartedAt)/1000):
    lastTaskSeconds===null?'لم تُنفذ مهمة في هذه الجلسة':duration(lastTaskSeconds);
 }
-function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');renderTimers();}
+function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('modelProbe').disabled=!authorized||busy||enabled!==true;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');renderTimers();}
 async function checkAuth(){
  try{
   const {data:{user}}=await db.auth.getUser();
   if(!user){sessionUI(false);return;}
   const {data,error}=await db.rpc('nabd_agent_admin_info');
   if(error||data?.authorized!==true){sessionUI(false);el('loginError').textContent='الحساب غير مخوّل لإدارة الوكلاء.';return;}
-  sessionUI(true);await Promise.all([loadState(),loadSources(),loadTasks(),loadRuns()]);
+  sessionUI(true);await Promise.all([loadState(),loadSources(),loadTasks(),loadRuns(),loadModelStatus()]);
  }catch(e){sessionUI(false);el('loginError').textContent='تعذر التحقق من الجلسة.';}
 }
 async function loadState(){
@@ -145,7 +146,7 @@ function renderAnswer(d){
  const a=el('answer');a.replaceChildren();a.classList.remove('hidden');
  a.append(make('h3',d.agent||'منسّق غير معروف'));
  a.append(make('span','تصنيف المخاطر: '+d.risk+(d.requires_human?' · مراجعة بشرية إلزامية':' · متابعة داخلية منخفضة المخاطر'),'pill'));
- a.append(make('p',d.answer||'لا توجد خلاصة'));
+ a.append(make('p',d.answer||'لا توجد خلاصة'));if(d.dispatch_requested)a.append(make('p','القسم المسؤول: '+d.department+' · الإحالة المجدولة '+(d.requires_human?'بعد اعتماد التخطيط':'بانتظار دورة التنفيذ')));
  a.append(make('strong','خطة العمل المقترحة:'));
  const ol=make('ol');for(const x of d.steps||[])ol.append(make('li',x));a.append(ol);
  for(const warning of d.warnings||[])a.append(make('p','⚠ '+warning,'risk'));
@@ -153,13 +154,13 @@ function renderAnswer(d){
   a.append(make('strong','روابط رسمية للمراجعة (لم يتم استيعاب نصها):'));
   for(const s of d.sources){if(!/^https:\/\//.test(s.official_url))continue;const link=make('a',s.publisher+': '+s.title);link.href=s.official_url;link.target='_blank';link.rel='noopener noreferrer';a.append(link,make('span',' '));}
  }
- a.append(make('small','المحرّك: '+(d.engine==='llm_assisted'?'نموذج لغوي مساعد':'قواعد تخطيطية فقط')+' · رقم التشغيل: '+(d.run_id||'—')+' · تنفيذ خارجي: لا'));
+ a.append(make('small','المحرّك: '+(d.engine==='llm_assisted'?'نموذج لغوي مساعد':'قواعد تخطيطية فقط')+(d.provider_model?' · '+d.provider_model:'')+' · رقم التشغيل: '+(d.run_id||'—')+' · تنفيذ خارجي: لا'));
 }
 async function runTask(ev){
  ev.preventDefault();if(!authorized||!enabled||busy)return;
  busy=true;taskStartedAt=performance.now();updateButtons();msg('يُحلّل الطلب ويختار مسار الوكيل…');
  try{
-  const {data,error}=await db.functions.invoke('nabd-cortex',{body:{task:el('task').value,domain:el('domain').value}});
+  const {data,error}=await db.functions.invoke('nabd-cortex',{body:{task:el('task').value,domain:el('domain').value,department:el('department').value,dispatch:el('dispatch').checked}});
   if(error){
    let details='';try{details=(await error.context?.json?.())?.error||''}catch{}
    throw Error(details||error.message);
@@ -171,13 +172,13 @@ async function runTask(ev){
  finally{lastTaskSeconds=taskStartedAt===null?null:(performance.now()-taskStartedAt)/1000;taskStartedAt=null;busy=false;await loadState();updateButtons();}
 }
 async function loadTasks(){
- const {data,error}=await db.from('nabd_cortex_tasks').select('id,title,status,domain,created_at').order('created_at',{ascending:false}).limit(25);
+ const {data,error}=await db.from('nabd_cortex_tasks').select('id,title,status,domain,created_at,assigned_department,dispatch_requested,dispatched_at,portal_task_id').order('created_at',{ascending:false}).limit(25);
  const root=el('tasks');root.replaceChildren();
  if(error){root.textContent='لا تتوفر صلاحية قراءة المتابعات.';return;}
  if(!data?.length){root.textContent='لا توجد مهام من Cortex بعد.';return;}
  for(const t of data){
   const card=make('article',undefined,'item');card.append(make('strong',t.title),make('small',(domainNames[t.domain]||t.domain)+' · '+fmt(t.created_at)));
-  card.append(make('div',labelStatus(t.status),'pill'));
+  card.append(make('div',labelStatus(t.status),'pill'));if(t.dispatch_requested)card.append(make('p','القسم: '+t.assigned_department+' · '+(t.dispatched_at?'أُحيلت المتابعة: '+fmt(t.dispatched_at):t.status==='rejected'?'رُفضت الإحالة':'بانتظار الإحالة أو الموافقة')));
   if(t.status==='needs_review'){
    const actions=make('div',undefined,'actions');
    for(const [ok,title] of [[true,'اعتماد التخطيط'],[false,'رفض']] ){
@@ -194,15 +195,26 @@ async function loadTasks(){
  }
 }
 async function loadRuns(){
- const {data,error}=await db.from('nabd_cortex_runs').select('id,agent,risk,outcome,engine,sources_count,created_at').order('created_at',{ascending:false}).limit(20);
+ const {data,error}=await db.from('nabd_cortex_runs').select('id,agent,risk,outcome,engine,sources_count,created_at,provider_model,provider_response_id').order('created_at',{ascending:false}).limit(20);
  const root=el('runs');root.replaceChildren();
  if(error){root.textContent='تعذر قراءة سجل التشغيل.';return;}
  if(!data?.length){root.textContent='سجل التشغيل فارغ؛ لم نُنشئ نشاطًا وهميًا.';return;}
  for(const x of data){
-  const div=make('div',undefined,'item');div.append(make('strong',x.agent+' · '+x.risk+' · '+x.outcome),make('small',fmt(x.created_at)+' · '+x.engine+' · روابط المراجع: '+x.sources_count));
+  const div=make('div',undefined,'item');div.append(make('strong',x.agent+' · '+x.risk+' · '+x.outcome),make('small',fmt(x.created_at)+' · '+x.engine+(x.provider_model?' · '+x.provider_model+' · دليل الاستجابة: '+(x.provider_response_id?'محفوظ':'غير متاح'):'')+' · روابط المراجع: '+x.sources_count));
   root.append(div);
  }
 }
+async function loadModelStatus(){
+ if(!authorized)return;
+ try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_status'}});if(error||!data?.ok)throw Error('تعذر قراءة نتيجة الاختبار');const p=data.probe;el('modelStatus').textContent=p?(p.verified?'نجاح موثق · '+p.model:p.status==='running'?'اختبار قيد التنفيذ':'لا يوجد نجاح موثق · '+(p.diagnostic||p.status))+(p.finished_at?' · '+fmt(p.finished_at):''):'لم يُنفذ اختبار بعد';}catch(e){el('modelStatus').textContent=e.message;}
+}
+async function modelProbe(){
+ if(!authorized||!enabled||busy)return;
+ if(!confirm('تشغيل اختبار واحد باستخدام مفاتيح مزودي النماذج الحالية؟ قد يُحتسب ضمن حصة API الحالية.'))return;
+ busy=true;updateButtons();el('modelStatus').textContent='اختبار اتصال حقيقي…';
+ try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_probe'}});if(error||!data?.ok){let details='';try{details=(await error?.context?.json?.())?.error||''}catch{}throw Error(details||error?.message||data?.error||'فشل الاختبار');}msg(data.verified?'استجابة موثقة من '+data.model:'لم تُثبت الاستجابة: '+data.diagnostic,!data.verified);await loadModelStatus();}catch(e){el('modelStatus').textContent=e.message;msg(e.message,true);}finally{busy=false;updateButtons();}
+}
+el('modelProbe').onclick=modelProbe;el('modelRefresh').onclick=loadModelStatus;
 el('loginForm').addEventListener('submit',async ev=>{
  ev.preventDefault();el('loginError').textContent='';
  const {error}=await db.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});
