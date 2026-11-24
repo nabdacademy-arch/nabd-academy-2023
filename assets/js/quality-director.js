@@ -112,7 +112,7 @@ async function authenticate(){
  }
  director=user;$("ql-login-panel").hidden=true;$("ql-workspace").hidden=false;
  $("ql-director-email").textContent=user.email||"";
- await Promise.all([loadCourses(),loadExams(),loadGraderStatus()]);
+ await Promise.all([loadCourses(),loadExams(),loadGraderStatus(),loadSmartCourses()]);
 }
 // Persistent server-side AI grading agent. Only the logged-in director may toggle it.
 let graderEnabled=false,graderBusy=false;
@@ -237,6 +237,52 @@ $("ql-add-question").addEventListener("click",()=>{
  questions.push(freshQuestion($("ql-manual-type").value));renderEditor();
  $("ql-preview").scrollIntoView({behavior:"smooth"});
 });
+// Isolated director-only course exam studio. The existing PDF and manual flows remain unchanged.
+let smartCourses=[],smartBusy=false,smartPending=null;
+async function loadSmartCourses(){
+ if(!director||!$("ql-smart-course"))return;
+ const {data,error}=await client.from("courses").select("id,title_ar,title_en,modules").eq("status","active").order("title_ar").limit(150);
+ if(error){status("ql-smart-status","تعذر تحميل الدورات النشطة.","error");return;}
+ smartCourses=data||[];const sel=$("ql-smart-course");sel.replaceChildren(new Option("اختر الدورة",""));
+ smartCourses.forEach(c=>sel.append(new Option([c.title_ar,c.title_en].filter(Boolean).join(" — ")||"مقرر",c.id)));
+ if(!smartCourses.length)status("ql-smart-status","لا توجد دورات نشطة.","error");
+}
+function smartOutline(){
+ const course=smartCourses.find(c=>c.id===$("ql-smart-course").value);
+ $("ql-smart-outline").textContent=course&&Array.isArray(course.modules)?"محاور الدورة: "+course.modules.filter(x=>typeof x==="string").join(" · "):"";
+}
+async function runSmartExam(publish){
+ if(!director||smartBusy||!$("ql-smart-form").reportValidity())return;
+ const course=smartCourses.find(c=>c.id===$("ql-smart-course").value);
+ if(!course)return status("ql-smart-status","اختر دورة نشطة.","error");
+ const count=Number($("ql-smart-count").value),duration=Number($("ql-smart-duration").value);
+ if(!Number.isInteger(count)||count<1||count>30||!Number.isInteger(duration)||duration<5||duration>180)return status("ql-smart-status","العدد من 1 إلى 30 والمدة من 5 إلى 180 دقيقة.","error");
+ const settings={course_id:course.id,level:$("ql-smart-level").value,language:$("ql-smart-language").value,count,duration,publish};
+ const signature=JSON.stringify(settings);
+ if(publish&&!confirm("توليد ونشر "+count+" سؤالًا الآن لدورة "+(course.title_ar||course.title_en)+"؟ سيبدأ المؤقت عند النشر، ولن تُراجع دقة الأسئلة علميًا بصورة بشرية قبل الإتاحة للطلاب."))return;
+ if(!smartPending||smartPending.signature!==signature)smartPending={signature,id:crypto.randomUUID()};
+ const requestId=smartPending.id;
+ smartBusy=true;const controls=[...$("ql-smart-form").querySelectorAll("button,input,select")];controls.forEach(x=>x.disabled=true);
+ status("ql-smart-status","جارٍ توليد الأسئلة والتحقق من العدد ومفاتيح الإجابات… لا تغلق الصفحة.");
+ try{
+  let data,error;try{({data,error}=await client.functions.invoke("nabd-quality-smart-exam",{body:{...settings,request_id:requestId}}));}catch(e){error=e;}
+  if(error||!data?.ok){
+   let detail=data;try{if(error?.context?.clone)detail=await error.context.clone().json()}catch{}
+   // Recover a committed exam after a dropped response without publishing a duplicate.
+   const check=await client.from("nabd_quality_exams").select("id,status,opens_at,closes_at").eq("id",requestId).maybeSingle();
+   if(!check.error&&check.data?.id)data={ok:true,...check.data,existing:true};
+   else{const messages={AI_RATE_LIMITED:"بلغ المزود حد الاستخدام.",AI_GENERATION_FAILED:"لم ينجح التوليد أو التحقق من الأسئلة.",COURSE_OUTLINE_MISSING:"محاور الدورة غير متوفرة.",COURSE_NOT_ACTIVE:"الدورة غير نشطة.",AI_NOT_CONFIGURED:"مزود الذكاء الاصطناعي غير مهيأ.",INVALID_SETTINGS:"راجع إعدادات الامتحان.",SAVE_NOT_CONFIRMED:"تعذر تأكيد الحفظ."};throw Error((messages[detail?.error]||"تعذر تأكيد العملية.")+" أعد المحاولة بالإعدادات نفسها للتحقق من الطلب السابق.");}
+  }
+  smartPending=null;
+  status("ql-smart-status",data.status==="published"?"تم توليد ونشر الامتحان بنجاح. يغلق: "+isoDate(data.closes_at)+(data.provider?" · "+data.provider:""):data.status==="draft"?"تم حفظ الامتحان كمسودة. راجعه في قسم التحكم بالنشر.":"الطلب موجود بحالة: "+data.status,"success");
+  await loadExams();
+  $("ql-manage").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(e){status("ql-smart-status",e.message||"تعذر تأكيد العملية؛ أعد المحاولة بالإعدادات نفسها.","error");}
+ finally{smartBusy=false;controls.forEach(x=>x.disabled=false);}
+}
+$("ql-smart-course")?.addEventListener("change",smartOutline);
+$("ql-smart-form")?.addEventListener("submit",e=>{e.preventDefault();runSmartExam(true);});
+$("ql-smart-draft")?.addEventListener("click",()=>runSmartExam(false));
 async function loadCourses(){
  const {data,error}=await client.from("courses").select("id,title_ar,title_en").order("title_ar").limit(150);
  if(error)return;
