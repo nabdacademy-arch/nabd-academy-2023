@@ -43,7 +43,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
  </div>
 <div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. الذكاء اللغوي يعمل عند الطلب، بينما تُحال المتابعات المعتمدة تلقائيًا كل خمس دقائق ما دام المحرك والإدارة مفعّلين.</div>
 <p id="feedback" role="status" aria-live="polite"></p></section>
-<section class="panel"><h2>التحقق الحي من الذكاء الاصطناعي — V4</h2><p>اختبار اصطناعي لا يرسل بيانات الطلاب ولا ينشئ تكليفًا فعليًا. لا تُعرض حالة النجاح إلا بعد استجابة موثقة من مزود النموذج.</p><div class="actions"><button id="modelProbe" type="button" class="start" disabled>اختبار النموذج الآن</button><button id="modelRefresh" type="button">تحديث نتيجة الاختبار</button></div><p id="modelStatus" role="status" aria-live="polite">لم تُحمّل النتيجة.</p></section>
+<section class="panel"><h2>التحقق الحي من الذكاء الاصطناعي — V5</h2><p>اختبار اصطناعي لا يرسل بيانات الطلاب ولا ينشئ تكليفًا فعليًا. لا تُعرض حالة النجاح إلا بعد استجابة موثقة من مزود النموذج.</p><div class="actions"><button id="modelProbe" type="button" class="start" disabled>اختبار النموذج الآن</button><button id="modelRefresh" type="button">تحديث نتيجة الاختبار</button></div><p id="modelStatus" role="status" aria-live="polite">لم تُحمّل النتيجة.</p><div id="providerReadiness" class="list" aria-label="جاهزية مفاتيح المزودين"></div><p class="help">وجود مفتاح لا يعني نجاح الاتصال. quota: حصة غير كافية؛ 429: حد الطلبات أو الحصة؛ auth: مشكلة مصادقة؛ model404: النموذج غير متاح؛ timeout: انقضاء المهلة؛ invalid_result: استجابة غير مطابقة للاختبار.</p></section>
 <section class="grid" aria-label="الوكلاء المتخصصون">
 <div class="mini"><strong>⚙️ العمليات</strong><span>تخطيط، متابعة داخلية، تقارير</span></div><div class="mini"><strong>📊 المالية</strong><span>تحليل مقترحات فقط، دون صرف</span></div>
 <div class="mini"><strong>🩺 الطب</strong><span>معرفة عامة وتصعيد لمختص</span></div><div class="mini"><strong>🚨 الأزمات</strong><span>احتواء تنظيمي ومراجعة</span></div>
@@ -65,7 +65,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
 </div>
 </div>
 </main>
-<footer>NABD Academy for Medical Sciences · V4 · Governed departmental execution · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
+<footer>NABD Academy for Medical Sciences · V5 · Verified model response · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
 <script type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
 const cfg=window.NABD_CONFIG;
@@ -206,7 +206,7 @@ async function loadRuns(){
 }
 async function loadModelStatus(){
  if(!authorized)return;
- try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_status'}});if(error||!data?.ok)throw Error('تعذر قراءة نتيجة الاختبار');const p=data.probe;el('modelStatus').textContent=p?(p.verified?'نجاح موثق · '+p.model:p.status==='running'?'اختبار قيد التنفيذ':'لا يوجد نجاح موثق · '+(p.diagnostic||p.status))+(p.finished_at?' · '+fmt(p.finished_at):''):'لم يُنفذ اختبار بعد';}catch(e){el('modelStatus').textContent=e.message;}
+ try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_status'}});if(error||!data?.ok)throw Error('تعذر قراءة نتيجة الاختبار');const root=el('providerReadiness');root.replaceChildren();for(const provider of data.providers||[]){const item=make('div',undefined,'item');item.append(make('strong',provider.provider+' · '+provider.model),make('small',provider.configured?'مفتاح موجود — الاتصال غير مؤكد':'مفتاح غير مهيأ'));root.append(item);}const p=data.probe;el('modelStatus').textContent=p?(p.verified?'نجاح موثق · '+p.model:p.status==='running'?'اختبار قيد التنفيذ':'لا يوجد نجاح موثق · '+(p.diagnostic||p.status))+(p.finished_at?' · '+fmt(p.finished_at):''):'لم يُنفذ اختبار بعد';}catch(e){el('modelStatus').textContent=e.message;}
 }
 async function modelProbe(){
  if(!authorized||!enabled||busy)return;
