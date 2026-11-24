@@ -60,7 +60,7 @@ function safeText(x:unknown, max:number):string {
   return typeof x==="string" ? x.trim().slice(0,max) : "";
 }
 function modelOptions(){
- return [{provider:"groq",key:Deno.env.get("GROQ_API_KEY"),model:"openai/gpt-oss-120b"},{provider:"gemini",key:Deno.env.get("GEMINI_API_KEY"),model:"gemini-2.5-flash"},{provider:"openai",key:Deno.env.get("OPENAI_API_KEY"),model:Deno.env.get("NABD_CORTEX_MODEL")||"gpt-4.1-mini"}];
+ return [{provider:"groq",key:Deno.env.get("GROQ_API_KEY"),model:"openai/gpt-oss-120b"},{provider:"gemini",key:Deno.env.get("GEMINI_API_KEY"),model:"gemini-3.5-flash-lite"},{provider:"openai",key:Deno.env.get("OPENAI_API_KEY"),model:Deno.env.get("NABD_CORTEX_MODEL")||"gpt-4.1-mini"}];
 }
 function providerReadiness(){
  return modelOptions().map(o=>({provider:o.provider,configured:!!o.key?.trim(),model:o.model}));
@@ -81,7 +81,7 @@ async function callProvider(system:string,user:string,max:number,validate:(v:any
   try{
    const gem=o.provider==="gemini";
    const endpoint=gem?"https://generativelanguage.googleapis.com/v1beta/models/"+o.model+":generateContent":o.provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":"https://api.openai.com/v1/chat/completions";
-   const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingBudget:0}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
+   const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingLevel:"MINIMAL"}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
    if(!r.ok){const body=await r.json().catch(()=>null);attempts.push(o.provider+":"+classifyProviderError(r.status,body));continue;}
    const d=await r.json();
    const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
