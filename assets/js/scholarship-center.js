@@ -113,8 +113,9 @@
   }
   function renderPublicList() {
     if(!listings || publishedCache === null) return;
-    const search=(document.getElementById("sch-search")?.value || "").trim().toLocaleLowerCase();
-    const filtered=publishedCache.filter(x=>(x.title+" "+x.description).toLocaleLowerCase().includes(search));
+    const normalizeSearch = value => String(value ?? "").normalize("NFKC").toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,"").replace(/[أإآٱ]/g,"ا").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+    const search=normalizeSearch((document.getElementById("sch-search")?.value || ""));
+    const filtered=publishedCache.filter(x=>search.split(" ").every(word=>normalizeSearch((x.title||"")+" "+(x.description||"")).includes(word)));
     listings.replaceChildren();
     if (!filtered.length) {
       const empty=document.createElement("div");
