@@ -38,6 +38,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
  <div class="mini"><strong id="activeTimer" aria-live="off">00:00:00</strong><span>⏱️ مدة التشغيل الحالي</span></div>
  <div class="mini"><strong id="totalTimer" aria-live="off">00:00:00</strong><span>⌛ إجمالي ساعات التشغيل المتراكمة</span></div>
  <div class="mini"><strong id="lastToggle" aria-live="off">—</strong><span>🕒 آخر تشغيل / إيقاف</span></div>
+ <div class="mini"><strong id="stateFreshness">—</strong><span>آخر تحقق ناجح من الخادم</span></div>
  <div class="mini"><strong id="taskTimer" aria-live="off">—</strong><span>⚡ مدة تنفيذ المهمة الحالية أو الأخيرة</span></div>
  </div>
 <div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. يعمل هذا الإصدار عند الطلب وليس خدمة ذكاء اصطناعي تعمل دون طلب على مدار الساعة.</div>
@@ -70,6 +71,7 @@ const cfg=window.NABD_CONFIG;
 const el=id=>document.getElementById(id);
 const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 let authorized=false,enabled=null,busy=false;
+let stateCheckedAt=null, stateLoading=false;
 let runtimeState={active_since:null,last_stopped_at:null,elapsed_seconds:0,updated_at:null};
 let taskStartedAt=null, lastTaskSeconds=null;
 const domainNames={administration:'إدارة',finance:'مالية',medical:'طب',crisis:'أزمات',cybersecurity:'أمن سيبراني',education:'تعليم وبحث'};
@@ -104,11 +106,17 @@ async function checkAuth(){
  }catch(e){sessionUI(false);el('loginError').textContent='تعذر التحقق من الجلسة.';}
 }
 async function loadState(){
+ if(!authorized||stateLoading)return;
+ stateLoading=true;
+ try{
  const {data,error}=await db.from('nabd_cortex_settings').select('enabled,updated_at,active_since,last_stopped_at,elapsed_seconds').eq('id',1).maybeSingle();
  enabled=error||!data?null:data.enabled===true;
  runtimeState=error||!data?{active_since:null,last_stopped_at:null,elapsed_seconds:0,updated_at:null}:data;
  updateButtons();
  if(error)msg('تعذر قراءة مفتاح التشغيل: '+error.message,true);
+ if(!error&&data)stateCheckedAt=Date.now();
+ }catch(e){enabled=null;updateButtons();msg('تعذر الاتصال بالخادم.',true);}
+ finally{stateLoading=false;el('stateFreshness').textContent=stateCheckedAt?fmt(stateCheckedAt):'—';}
 }
 async function setEnabled(value){
  const label=value?'تشغيل':'إيقاف';
@@ -206,6 +214,8 @@ el('logout').addEventListener('click',async()=>{await db.auth.signOut();enabled=
 el('start').onclick=()=>setEnabled(true);el('stop').onclick=()=>setEnabled(false);el('refresh').onclick=loadState;
 el('taskForm').addEventListener('submit',runTask);el('loadTasks').onclick=loadTasks;el('loadRuns').onclick=loadRuns;
 setInterval(renderTimers,1000);
+setInterval(()=>{if(authorized&&!busy&&!document.hidden)loadState();},60000);
+document.addEventListener('visibilitychange',()=>{if(authorized&&!busy&&!document.hidden)loadState();});
 if(location.hostname!=='nabdacademy-arch.github.io' && location.hostname!=='localhost'){
  el('loginError').textContent='استخدم النطاق الرسمي للأكاديمية لتسجيل الدخول بأمان.';
 }else{checkAuth();}
