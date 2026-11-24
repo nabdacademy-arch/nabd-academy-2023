@@ -1,0 +1,32 @@
+name: PROMETHEUS operations
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: prometheus-operations
+  cancel-in-progress: false
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify operational tests
+        run: python3 -m unittest discover -s scripts -p 'test_prometheus*.py'
+      - name: Run bounded health cycle
+        run: |
+          set -o pipefail
+          python3 scripts/prometheus_operations.py | tee prometheus-health.txt
+      - name: Retain diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prometheus-health
+          path: prometheus-health.txt
+          retention-days: 7
+          if-no-files-found: ignore
