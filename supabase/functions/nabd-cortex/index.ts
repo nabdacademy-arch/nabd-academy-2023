@@ -59,19 +59,40 @@ function looksPersonal(t:string):boolean {
 function safeText(x:unknown, max:number):string {
   return typeof x==="string" ? x.trim().slice(0,max) : "";
 }
+function modelOptions(){
+ return [{provider:"groq",key:Deno.env.get("GROQ_API_KEY"),model:"openai/gpt-oss-120b"},{provider:"gemini",key:Deno.env.get("GEMINI_API_KEY"),model:"gemini-2.5-flash"},{provider:"openai",key:Deno.env.get("OPENAI_API_KEY"),model:Deno.env.get("NABD_CORTEX_MODEL")||"gpt-4.1-mini"}];
+}
+function providerReadiness(){
+ return modelOptions().map(o=>({provider:o.provider,configured:!!o.key?.trim(),model:o.model}));
+}
+function classifyProviderError(status:number,body:any):string{
+ const code=String(body?.error?.code||body?.error?.status||"").toLowerCase();
+ if(status===429)return code==="insufficient_quota"?"quota":"429";
+ if(status===401||status===403)return "auth";
+ if(status===404)return "model404";
+ if(status===400)return "bad400";
+ if(status>=500)return "server"+status;
+ return "http"+status;
+}
 async function callProvider(system:string,user:string,max:number,validate:(v:any)=>boolean=()=>true){
- const options=[{provider:"groq",key:Deno.env.get("GROQ_API_KEY"),model:"openai/gpt-oss-120b"},{provider:"gemini",key:Deno.env.get("GEMINI_API_KEY"),model:"gemini-2.5-flash"},{provider:"openai",key:Deno.env.get("OPENAI_API_KEY"),model:Deno.env.get("NABD_CORTEX_MODEL")||"gpt-4.1-mini"}];
- let diagnostic="missing_model_key";
- for(const o of options){if(!o.key)continue;try{
- const gem=o.provider==="gemini";
- const endpoint=gem?"https://generativelanguage.googleapis.com/v1beta/models/"+o.model+":generateContent":o.provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":"https://api.openai.com/v1/chat/completions";
- const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingBudget:0}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
- diagnostic=o.provider+"_http_"+r.status;if(!r.ok)continue;
- const d=await r.json();const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
- const id=gem?d.responseId:d.id;const value=JSON.parse(content||"{}");if(!id||!value||typeof value!=="object"||!validate(value)){diagnostic=o.provider+"_invalid_response";continue;}
- return {value,id:String(id),model:o.provider+"/"+(d.modelVersion||d.model||o.model),diagnostic:"verified_model_response"};
- }catch{diagnostic=o.provider+"_request_or_parse_failed";}}
- return {value:null,id:"",model:"",diagnostic};
+ const attempts:string[]=[];
+ for(const o of modelOptions()){
+  if(!o.key?.trim()){attempts.push(o.provider+":missing_key");continue;}
+  try{
+   const gem=o.provider==="gemini";
+   const endpoint=gem?"https://generativelanguage.googleapis.com/v1beta/models/"+o.model+":generateContent":o.provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":"https://api.openai.com/v1/chat/completions";
+   const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingBudget:0}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
+   if(!r.ok){const body=await r.json().catch(()=>null);attempts.push(o.provider+":"+classifyProviderError(r.status,body));continue;}
+   const d=await r.json();
+   const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
+   const id=gem?d.responseId:d.id;
+   let value:any;try{value=JSON.parse(content||"{}");}catch{attempts.push(o.provider+":invalid_json");continue;}
+   if(typeof id!=="string"||!id.trim()||!value||typeof value!=="object"||!validate(value)){attempts.push(o.provider+":invalid_result");continue;}
+   attempts.push(o.provider+":verified");
+   return {value,id,model:o.provider+"/"+(d.modelVersion||d.model||o.model),diagnostic:attempts.join("|")};
+  }catch(e){attempts.push(o.provider+":"+(e instanceof Error&&(e.name==="TimeoutError"||e.name==="AbortError")?"timeout":"request_error"));}
+ }
+ return {value:null,id:"",model:"",diagnostic:attempts.join("|")||"missing_model_key"};
 }
 async function maybeModel(task:string, domain:Domain, sources: Array<{title:string,publisher:string,official_url:string}>){
  if(!["administration","education","crisis"].includes(domain))return null;
@@ -99,14 +120,15 @@ Deno.serve(async(req:Request)=>{
     try {body=await req.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
     if(body?.action==="model_status"){
       const status=await admin.rpc("nabd_cortex_probe_status_v4");
-      return status.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data});
+      return status.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data,providers:providerReadiness()});
     }
     const state=await admin.from("nabd_cortex_settings").select("enabled").eq("id",1).single();
     if(state.error||state.data?.enabled!==true) return json({ok:false,error:"NABD Cortex is switched off"},409);
     if(body?.action==="model_probe"){
       const start=await admin.rpc("nabd_cortex_admin_probe_start",{p_actor:auth.user.id});
       if(start.error||!start.data?.ok)return json({ok:false,error:start.data?.reason==="cooldown"?"اختبار واحد كل خمس دقائق على مستوى النظام":"تعذر بدء الاختبار"},start.data?.reason==="cooldown"?429:503);
-      const r=await callProvider("Return JSON only with action set to internal_review_record and summary describing a fictitious administrative checklist.","Synthetic NABD CORTEX service verification. No real person or institutional data. No external action.",120,v=>v.action==="internal_review_record"&&typeof v.summary==="string"&&v.summary.trim().length>0);
+      const challenge=crypto.randomUUID();
+      const r=await callProvider("Return a JSON object containing action exactly internal_review_record, challenge exactly as supplied in the user message, and a concise summary of a fictitious administrative checklist. No external actions.",JSON.stringify({purpose:"Synthetic NABD CORTEX service verification",challenge,privacy:"No real person or institutional data"}),120,v=>v.action==="internal_review_record"&&v.challenge===challenge&&typeof v.summary==="string"&&v.summary.trim().length>0);
       const saved=await admin.rpc("nabd_cortex_probe_finish",{p_id:start.data.id,p_ok:!!r.id,p_model:r.model,p_provider_id:r.id,p_diagnostic:r.diagnostic});
       if(saved.error)return json({ok:false,error:"تعذر حفظ نتيجة الاختبار"},503);
       return json({ok:true,verified:saved.data===true,model:r.model||null,diagnostic:r.diagnostic,probe_id:start.data.id});
