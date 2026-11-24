@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PROMETHEUS | أكاديمية نبض للعلوم الطبية</title>
+<style>body{font:16px system-ui,sans-serif;background:#f4f7fa;color:#142638;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:white;border:1px solid #ccd7df;border-radius:12px;padding:20px;margin:16px 0}button,a{font:inherit}button{padding:10px 18px;background:#115e59;color:white;border:0;border-radius:8px;cursor:pointer}button:disabled{opacity:.5}a{color:#115e59}dt{font-weight:bold}dd{margin:8px 0 20px}small{color:#435568}</style>
+<script src="assets/js/config.js?v=1"></script></head><body><main>
+<header><small>أكاديمية نبض للعلوم الطبية</small><h1>PROMETHEUS Ω∞</h1><p>لوحة تشخيص مؤسسية — قراءة فقط</p></header>
+<section><p id="status" role="status" aria-live="polite">لم يتم التحقق من الجلسة.</p><button id="refresh" disabled>تحديث الحالة</button> <a href="nabd-cortex.html">فتح CORTEX وتسجيل الدخول</a></section>
+<section id="details" hidden><h2>حالة CORTEX على الخادم</h2><dl><dt>المحرك</dt><dd id="engine">—</dd><dt>آخر تحديث للخادم</dt><dd id="updated">—</dd><dt>وقت القراءة</dt><dd id="checked">—</dd></dl></section>
+<section><h2>حدود التشغيل</h2><p>لا تنفذ هذه اللوحة قرارات أو إصلاحات ولا ترسل رسائل. نتائج Guardian والمختبر ليست متصلة بهذه اللوحة بعد. حالة تشغيل CORTEX لا تثبت توفر نموذج لغوي.</p></section>
+<a href="index.html">العودة للأكاديمية</a></main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
+const el=id=>document.getElementById(id);
+const cfg=window.NABD_CONFIG;
+const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+let busy=false, generation=0;
+function clear(){el('details').hidden=true;for(const id of ['engine','updated','checked'])el(id).textContent='—';}
+async function refresh(){
+ if(busy)return;busy=true;const current=++generation;el('refresh').disabled=true;clear();
+ try{
+ const {data:{user},error:authError}=await db.auth.getUser();
+ if(authError||!user)throw Error('auth');
+ const {data:permission,error:permissionError}=await db.rpc('nabd_agent_admin_info');
+ if(permissionError||permission?.authorized!==true)throw Error('auth');
+ const {data,error}=await db.from('nabd_cortex_settings').select('enabled,updated_at').eq('id',1).maybeSingle();
+ if(current!==generation)return;
+ if(error||!data)throw Error('read');
+ el('engine').textContent=data.enabled===true?'مفعّل':data.enabled===false?'متوقف':'غير معروف';
+ el('updated').textContent=data.updated_at||'—';el('checked').textContent=new Date().toLocaleString('ar');
+ el('details').hidden=false;el('status').textContent='تمت قراءة حالة المحرك.';
+ }catch(e){clear();el('status').textContent=e.message==='auth'?'يلزم حساب إداري مخوّل عبر CORTEX.':'تعذر قراءة الحالة.';}
+ finally{busy=false;el('refresh').disabled=false;}
+}
+db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){generation++;clear();el('status').textContent='انتهت الجلسة.';}});
+el('refresh').onclick=refresh;refresh();
+</script></body></html>
