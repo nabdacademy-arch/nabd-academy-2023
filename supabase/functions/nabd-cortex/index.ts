@@ -74,23 +74,62 @@ function classifyProviderError(status:number,body:any):string{
  if(status>=500)return "server"+status;
  return "http"+status;
 }
+// V10: bounded discovery, stable text-only fallback, and per-runtime circuit breaker.
+const circuit=new Map<string,{until:number,reason:string}>();
+let geminiCache:{model:string,until:number}|null=null;
+function eligibleGemini(name:string){return /^gemini-\d+(?:\.\d+)?-flash-lite(?:-\d{3})?$/.test(name);}
+async function discoverGemini(key:string,excluded:string,deadline:number){
+ if(Date.now()>=deadline)return null;
+ let pageToken="",best:string|null=null;
+ for(let page=0;page<2;page++){
+  const u=new URL("https://generativelanguage.googleapis.com/v1beta/models");
+  u.searchParams.set("pageSize","100");if(pageToken)u.searchParams.set("pageToken",pageToken);
+  const remaining=deadline-Date.now();if(remaining<=0)break;
+  const r=await fetch(u,{headers:{"x-goog-api-key":key},signal:AbortSignal.timeout(Math.min(4000,remaining))});
+  if(!r.ok)break;
+  const d=await r.json();
+  for(const m of Array.isArray(d.models)?d.models:[]){
+   const name=String(m.name||"").replace(/^models\//,"");
+   if(name!==excluded&&eligibleGemini(name)&&Array.isArray(m.supportedGenerationMethods)&&m.supportedGenerationMethods.includes("generateContent")){
+    if(!best||name.localeCompare(best,undefined,{numeric:true})>0)best=name;
+   }
+  }
+  pageToken=typeof d.nextPageToken==="string"?d.nextPageToken:"";if(!pageToken)break;
+ }
+ return best;
+}
+function pauseProvider(provider:string,reason:string){
+ const ms=reason==="quota"||reason==="auth"?15*60*1000:reason==="429"?60*1000:reason==="model404"?120*1000:0;
+ if(ms)circuit.set(provider,{until:Date.now()+ms,reason});
+}
 async function callProvider(system:string,user:string,max:number,validate:(v:any)=>boolean=()=>true,target="auto"){
- const attempts:string[]=[];
+ const attempts:string[]=[];const deadline=Date.now()+28000;
  for(const o of modelOptions().filter(o=>target==="auto"||o.provider===target)){
   if(!o.key?.trim()){attempts.push(o.provider+":missing_key");continue;}
-  try{
-   const gem=o.provider==="gemini";
-   const endpoint=gem?"https://generativelanguage.googleapis.com/v1beta/models/"+o.model+":generateContent":o.provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":"https://api.openai.com/v1/chat/completions";
-   const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingLevel:"MINIMAL"}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
-   if(!r.ok){const body=await r.json().catch(()=>null);attempts.push(o.provider+":"+classifyProviderError(r.status,body));continue;}
-   const d=await r.json();
-   const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
-   const id=gem?d.responseId:d.id;
-   let value:any;try{value=JSON.parse(content||"{}");}catch{attempts.push(o.provider+":invalid_json");continue;}
-   if(typeof id!=="string"||!id.trim()||!value||typeof value!=="object"||!validate(value)){attempts.push(o.provider+":invalid_result");continue;}
-   attempts.push(o.provider+":verified");
-   return {value,id,model:o.provider+"/"+(d.modelVersion||d.model||o.model),diagnostic:attempts.join("|")};
-  }catch(e){attempts.push(o.provider+":"+(e instanceof Error&&(e.name==="TimeoutError"||e.name==="AbortError")?"timeout":"request_error"));}
+  const paused=circuit.get(o.provider);
+  if(target==="auto"&&paused&&paused.until>Date.now()){attempts.push(o.provider+":cooldown");continue;}
+  let model=o.provider==="gemini"&&geminiCache&&geminiCache.until>Date.now()?geminiCache.model:o.model;
+  const gem=o.provider==="gemini";
+  for(let n=0;n<(gem?2:1);n++){
+   if(Date.now()>=deadline){attempts.push(o.provider+":deadline");break;}
+   try{
+    const endpoint=gem?"https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent":o.provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":"https://api.openai.com/v1/chat/completions";
+    const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024)}}:{model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(Math.max(1,Math.min(10000,deadline-Date.now())))});
+    if(!r.ok){
+     const body=await r.json().catch(()=>null);const reason=classifyProviderError(r.status,body);attempts.push(o.provider+":"+reason);
+     if(gem&&r.status===404&&n===0){geminiCache=null;const discovered=await discoverGemini(o.key,model,deadline);if(discovered){model=discovered;attempts.push("gemini:discovered");continue;}}
+     pauseProvider(o.provider,reason);break;
+    }
+    const d=await r.json();
+    const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
+    const id=gem?d.responseId:d.id;
+    let value:any;try{value=JSON.parse(content||"{}");}catch{attempts.push(o.provider+":invalid_json");break;}
+    if(typeof id!=="string"||!id.trim()||!value||typeof value!=="object"||!validate(value)){attempts.push(o.provider+":invalid_result");break;}
+    circuit.delete(o.provider);if(gem)geminiCache={model,until:Date.now()+3600000};
+    attempts.push(o.provider+":verified");
+    return {value,id,model:o.provider+"/"+(d.modelVersion||d.model||model),diagnostic:attempts.join("|")};
+   }catch(e){attempts.push(o.provider+":"+(e instanceof Error&&(e.name==="TimeoutError"||e.name==="AbortError")?"timeout":"request_error"));break;}
+  }
  }
  return {value:null,id:"",model:"",diagnostic:attempts.join("|")||"missing_model_key"};
 }
@@ -120,7 +159,7 @@ Deno.serve(async(req:Request)=>{
     try {body=await req.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
     if(body?.action==="model_status"){
       const [status,health]=await Promise.all([admin.rpc("nabd_cortex_probe_status_v4"),admin.rpc("nabd_cortex_provider_status")]);
-      return status.error||health.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data,providers:providerReadiness().map(p=>({...p,...health.data?.providers?.[p.provider]})),retry_after_seconds:health.data?.retry_after_seconds||0});
+      return status.error||health.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,release:"V10",probe:status.data,providers:providerReadiness().map(p=>({...p,...health.data?.providers?.[p.provider]})),retry_after_seconds:health.data?.retry_after_seconds||0});
     }
     const state=await admin.from("nabd_cortex_settings").select("enabled").eq("id",1).single();
     if(state.error||state.data?.enabled!==true) return json({ok:false,error:"NABD Cortex is switched off"},409);
