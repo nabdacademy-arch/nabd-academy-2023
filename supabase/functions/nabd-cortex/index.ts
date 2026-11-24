@@ -74,9 +74,9 @@ function classifyProviderError(status:number,body:any):string{
  if(status>=500)return "server"+status;
  return "http"+status;
 }
-async function callProvider(system:string,user:string,max:number,validate:(v:any)=>boolean=()=>true){
+async function callProvider(system:string,user:string,max:number,validate:(v:any)=>boolean=()=>true,target="auto"){
  const attempts:string[]=[];
- for(const o of modelOptions()){
+ for(const o of modelOptions().filter(o=>target==="auto"||o.provider===target)){
   if(!o.key?.trim()){attempts.push(o.provider+":missing_key");continue;}
   try{
    const gem=o.provider==="gemini";
@@ -119,19 +119,21 @@ Deno.serve(async(req:Request)=>{
     let body:any;
     try {body=await req.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
     if(body?.action==="model_status"){
-      const status=await admin.rpc("nabd_cortex_probe_status_v4");
-      return status.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data,providers:providerReadiness()});
+      const [status,health]=await Promise.all([admin.rpc("nabd_cortex_probe_status_v4"),admin.rpc("nabd_cortex_provider_status")]);
+      return status.error||health.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data,providers:providerReadiness().map(p=>({...p,...health.data?.providers?.[p.provider]})),retry_after_seconds:health.data?.retry_after_seconds||0});
     }
     const state=await admin.from("nabd_cortex_settings").select("enabled").eq("id",1).single();
     if(state.error||state.data?.enabled!==true) return json({ok:false,error:"NABD Cortex is switched off"},409);
     if(body?.action==="model_probe"){
-      const start=await admin.rpc("nabd_cortex_admin_probe_start",{p_actor:auth.user.id});
-      if(start.error||!start.data?.ok)return json({ok:false,error:start.data?.reason==="cooldown"?"اختبار واحد كل خمس دقائق على مستوى النظام":"تعذر بدء الاختبار"},start.data?.reason==="cooldown"?429:503);
+      const target=body?.provider??"auto";
+      if(!["auto","groq","gemini","openai"].includes(target))return json({ok:false,error:"Invalid provider"},400);
+      const start=await admin.rpc("nabd_cortex_provider_probe_start",{p_actor:auth.user.id,p_target:target});
+      if(start.error||!start.data?.ok)return json({ok:false,error:start.data?.reason==="cooldown"?"انتظر "+Math.ceil(Number(start.data.retry_after_seconds)||300)+" ثانية قبل الاختبار التالي":"تعذر بدء الاختبار"},start.data?.reason==="cooldown"?429:503);
       const challenge=crypto.randomUUID();
-      const r=await callProvider("Return a JSON object containing action exactly internal_review_record, challenge exactly as supplied in the user message, and a concise summary of a fictitious administrative checklist. No external actions.",JSON.stringify({purpose:"Synthetic NABD CORTEX service verification",challenge,privacy:"No real person or institutional data"}),120,v=>v.action==="internal_review_record"&&v.challenge===challenge&&typeof v.summary==="string"&&v.summary.trim().length>0);
-      const saved=await admin.rpc("nabd_cortex_probe_finish",{p_id:start.data.id,p_ok:!!r.id,p_model:r.model,p_provider_id:r.id,p_diagnostic:r.diagnostic});
+      const r=await callProvider("Return a JSON object containing action exactly internal_review_record, challenge exactly as supplied in the user message, and a concise summary of a fictitious administrative checklist. No external actions.",JSON.stringify({purpose:"Synthetic NABD CORTEX service verification",challenge,privacy:"No real person or institutional data"}),120,v=>v.action==="internal_review_record"&&v.challenge===challenge&&typeof v.summary==="string"&&v.summary.trim().length>0,target);
+      const saved=await admin.rpc("nabd_cortex_probe_finish",{p_id:start.data.id,p_ok:!!r.id,p_model:r.model||(target==="auto"?"":target+"/"+(modelOptions().find(o=>o.provider===target)?.model||"unknown")),p_provider_id:r.id,p_diagnostic:r.diagnostic});
       if(saved.error)return json({ok:false,error:"تعذر حفظ نتيجة الاختبار"},503);
-      return json({ok:true,verified:saved.data===true,model:r.model||null,diagnostic:r.diagnostic,probe_id:start.data.id});
+      return json({ok:true,verified:saved.data===true,model:r.model||null,diagnostic:r.diagnostic,target,probe_id:start.data.id});
     }
     const task=safeText(body?.task,1501);
     if(task.length<8||task.length>1500) return json({ok:false,error:"اكتب مهمة بين 8 و1500 حرف"},400);
