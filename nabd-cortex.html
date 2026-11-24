@@ -43,7 +43,7 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
  </div>
 <div class="notice">مفتاح التشغيل مخصص لحساب الإدارة المعتمد أو مؤسس فعّال؛ ولا يمكن استخدامه من حساب طالب أو زائر. مؤقت التشغيل محفوظ على الخادم ويستمر عند إغلاق الصفحة. الإيقاف يمنع المهام الجديدة ويُعيد فحص الحالة قبل حفظ أي مهمة، لكنه لا يقطع استدعاء نموذج بدأ بالفعل. الذكاء اللغوي يعمل عند الطلب، بينما تُحال المتابعات المعتمدة تلقائيًا كل خمس دقائق ما دام المحرك والإدارة مفعّلين.</div>
 <p id="feedback" role="status" aria-live="polite"></p></section>
-<section class="panel"><h2>التحقق الحي من الذكاء الاصطناعي — V5</h2><p>اختبار اصطناعي لا يرسل بيانات الطلاب ولا ينشئ تكليفًا فعليًا. لا تُعرض حالة النجاح إلا بعد استجابة موثقة من مزود النموذج.</p><div class="actions"><button id="modelProbe" type="button" class="start" disabled>اختبار النموذج الآن</button><button id="modelRefresh" type="button">تحديث نتيجة الاختبار</button></div><p id="modelStatus" role="status" aria-live="polite">لم تُحمّل النتيجة.</p><div id="providerReadiness" class="list" aria-label="جاهزية مفاتيح المزودين"></div><p class="help">وجود مفتاح لا يعني نجاح الاتصال. quota: حصة غير كافية؛ 429: حد الطلبات أو الحصة؛ auth: مشكلة مصادقة؛ model404: النموذج غير متاح؛ timeout: انقضاء المهلة؛ invalid_result: استجابة غير مطابقة للاختبار.</p></section>
+<section class="panel"><h2>التحقق الحي من الذكاء الاصطناعي — V6</h2><p>اختبار اصطناعي لا يرسل بيانات الطلاب ولا ينشئ تكليفًا فعليًا. لا تُعرض حالة النجاح إلا بعد استجابة موثقة من مزود النموذج.</p><label for="probeProvider">اختر مزود الاختبار</label><select id="probeProvider"><option value="auto">تلقائي — أول مزود ناجح</option><option value="groq">Groq — GPT-OSS-120B</option><option value="gemini">Gemini 2.5 Flash — اختبار مستقل</option><option value="openai">OpenAI — اختبار مستقل</option></select><p id="probeCooldown" class="help" aria-live="polite"></p><div class="actions"><button id="modelProbe" type="button" class="start" disabled>اختبار النموذج الآن</button><button id="modelRefresh" type="button">تحديث نتيجة الاختبار</button></div><p id="modelStatus" role="status" aria-live="polite">لم تُحمّل النتيجة.</p><div id="providerReadiness" class="list" aria-label="جاهزية مفاتيح المزودين"></div><p class="help">وجود مفتاح لا يعني نجاح الاتصال. quota: حصة غير كافية؛ 429: حد الطلبات أو الحصة؛ auth: مشكلة مصادقة؛ model404: النموذج غير متاح؛ timeout: انقضاء المهلة؛ invalid_result: استجابة غير مطابقة للاختبار.</p></section>
 <section class="grid" aria-label="الوكلاء المتخصصون">
 <div class="mini"><strong>⚙️ العمليات</strong><span>تخطيط، متابعة داخلية، تقارير</span></div><div class="mini"><strong>📊 المالية</strong><span>تحليل مقترحات فقط، دون صرف</span></div>
 <div class="mini"><strong>🩺 الطب</strong><span>معرفة عامة وتصعيد لمختص</span></div><div class="mini"><strong>🚨 الأزمات</strong><span>احتواء تنظيمي ومراجعة</span></div>
@@ -65,13 +65,13 @@ main{max-width:1220px;margin:auto;padding:25px 16px 55px}.hero{display:grid;grid
 </div>
 </div>
 </main>
-<footer>NABD Academy for Medical Sciences · V5 · Verified model response · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
+<footer>NABD Academy for Medical Sciences · V6 · Independent provider checks · البيانات الحساسة لا تُرسل إلى مزود نماذج من هذه الواجهة</footer>
 <script type="module">
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/+esm';
 const cfg=window.NABD_CONFIG;
 const el=id=>document.getElementById(id);
 const db=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-let authorized=false,enabled=null,busy=false;
+let authorized=false,enabled=null,busy=false;let probeNextAllowed=0;
 let stateCheckedAt=null, stateLoading=false;
 let runtimeState={active_since:null,last_stopped_at:null,elapsed_seconds:0,updated_at:null};
 let taskStartedAt=null, lastTaskSeconds=null;
@@ -96,7 +96,7 @@ function renderTimers(){
    'جارٍ العمل · '+duration((performance.now()-taskStartedAt)/1000):
    lastTaskSeconds===null?'لم تُنفذ مهمة في هذه الجلسة':duration(lastTaskSeconds);
 }
-function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('modelProbe').disabled=!authorized||busy||enabled!==true;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');renderTimers();}
+function updateButtons(){el('start').disabled=!authorized||busy||enabled!==false;el('stop').disabled=!authorized||busy||enabled!==true;el('run').disabled=!authorized||busy||enabled!==true;el('modelProbe').disabled=!authorized||busy||enabled!==true||Date.now()<probeNextAllowed;el('controlState').textContent=enabled===null?'غير معروف':enabled?'● المحرك يعمل':'■ المحرك متوقف';el('controlState').className='status '+(enabled?'on':'off');el('stateChip').textContent=enabled===null?'حالة المحرك غير معروفة':enabled?'Cortex: يعمل':'Cortex: متوقف';el('stateChip').className='status '+(enabled?'on':'off');renderTimers();}
 async function checkAuth(){
  try{
   const {data:{user}}=await db.auth.getUser();
@@ -206,13 +206,14 @@ async function loadRuns(){
 }
 async function loadModelStatus(){
  if(!authorized)return;
- try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_status'}});if(error||!data?.ok)throw Error('تعذر قراءة نتيجة الاختبار');const root=el('providerReadiness');root.replaceChildren();for(const provider of data.providers||[]){const item=make('div',undefined,'item');item.append(make('strong',provider.provider+' · '+provider.model),make('small',provider.configured?'مفتاح موجود — الاتصال غير مؤكد':'مفتاح غير مهيأ'));root.append(item);}const p=data.probe;el('modelStatus').textContent=p?(p.verified?'نجاح موثق · '+p.model:p.status==='running'?'اختبار قيد التنفيذ':'لا يوجد نجاح موثق · '+(p.diagnostic||p.status))+(p.finished_at?' · '+fmt(p.finished_at):''):'لم يُنفذ اختبار بعد';}catch(e){el('modelStatus').textContent=e.message;}
+ try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_status'}});if(error||!data?.ok)throw Error('تعذر قراءة نتيجة الاختبار');const root=el('providerReadiness');root.replaceChildren();for(const provider of data.providers||[]){const item=make('div',undefined,'item');item.append(make('strong',provider.provider+' · '+provider.model),make('small',!provider.configured?'مفتاح غير مهيأ':provider.latest?.verified?'استجابة حية مؤكدة · '+fmt(provider.latest.finished_at):provider.latest?'آخر اختبار: '+(provider.latest.diagnostic||provider.latest.status)+(provider.last_verified_at?' · آخر نجاح '+fmt(provider.last_verified_at):''):'مفتاح موجود — لم يُختبر مستقلاً'));root.append(item);}probeNextAllowed=Date.now()+Math.max(0,Number(data.retry_after_seconds)||0)*1000;renderProbeCooldown();const p=data.probe;el('modelStatus').textContent=p?(p.verified?'نجاح موثق · '+p.model:p.status==='running'?'اختبار قيد التنفيذ':'لا يوجد نجاح موثق · '+(p.diagnostic||p.status))+(p.finished_at?' · '+fmt(p.finished_at):''):'لم يُنفذ اختبار بعد';}catch(e){el('modelStatus').textContent=e.message;}
 }
+function renderProbeCooldown(){const secs=Math.max(0,Math.ceil((probeNextAllowed-Date.now())/1000));el('probeCooldown').textContent=secs?'الاختبار التالي متاح بعد '+secs+' ثانية (حد عالمي لحماية الحصة).':'يمكن بدء اختبار جديد.';updateButtons();}
 async function modelProbe(){
- if(!authorized||!enabled||busy)return;
+ if(!authorized||!enabled||busy||Date.now()<probeNextAllowed)return;
  if(!confirm('تشغيل اختبار واحد باستخدام مفاتيح مزودي النماذج الحالية؟ قد يُحتسب ضمن حصة API الحالية.'))return;
  busy=true;updateButtons();el('modelStatus').textContent='اختبار اتصال حقيقي…';
- try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_probe'}});if(error||!data?.ok){let details='';try{details=(await error?.context?.json?.())?.error||''}catch{}throw Error(details||error?.message||data?.error||'فشل الاختبار');}msg(data.verified?'استجابة موثقة من '+data.model:'لم تُثبت الاستجابة: '+data.diagnostic,!data.verified);await loadModelStatus();}catch(e){el('modelStatus').textContent=e.message;msg(e.message,true);}finally{busy=false;updateButtons();}
+ try{const {data,error}=await db.functions.invoke('nabd-cortex',{body:{action:'model_probe',provider:el('probeProvider').value}});if(error||!data?.ok){let details='';try{details=(await error?.context?.json?.())?.error||''}catch{}throw Error(details||error?.message||data?.error||'فشل الاختبار');}msg(data.verified?'استجابة موثقة من '+data.model:'لم تُثبت الاستجابة: '+data.diagnostic,!data.verified);await loadModelStatus();}catch(e){el('modelStatus').textContent=e.message;msg(e.message,true);}finally{busy=false;updateButtons();}
 }
 el('modelProbe').onclick=modelProbe;el('modelRefresh').onclick=loadModelStatus;
 el('loginForm').addEventListener('submit',async ev=>{
@@ -225,7 +226,7 @@ el('loginForm').addEventListener('submit',async ev=>{
 el('logout').addEventListener('click',async()=>{await db.auth.signOut();enabled=null;sessionUI(false);updateButtons();});
 el('start').onclick=()=>setEnabled(true);el('stop').onclick=()=>setEnabled(false);el('refresh').onclick=loadState;
 el('taskForm').addEventListener('submit',runTask);el('loadTasks').onclick=loadTasks;el('loadRuns').onclick=loadRuns;
-setInterval(renderTimers,1000);
+setInterval(()=>{renderTimers();if(authorized)renderProbeCooldown();},1000);
 setInterval(()=>{if(authorized&&!busy&&!document.hidden)loadState();},60000);
 document.addEventListener('visibilitychange',()=>{if(authorized&&!busy&&!document.hidden)loadState();});
 if(location.hostname!=='nabdacademy-arch.github.io' && location.hostname!=='localhost'){
