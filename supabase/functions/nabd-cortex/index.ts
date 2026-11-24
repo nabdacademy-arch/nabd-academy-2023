@@ -59,7 +59,7 @@ function looksPersonal(t:string):boolean {
 function safeText(x:unknown, max:number):string {
   return typeof x==="string" ? x.trim().slice(0,max) : "";
 }
-async function callProvider(system:string,user:string,max:number){
+async function callProvider(system:string,user:string,max:number,validate:(v:any)=>boolean=()=>true){
  const options=[{provider:"groq",key:Deno.env.get("GROQ_API_KEY"),model:"openai/gpt-oss-120b"},{provider:"gemini",key:Deno.env.get("GEMINI_API_KEY"),model:"gemini-2.5-flash"},{provider:"openai",key:Deno.env.get("OPENAI_API_KEY"),model:Deno.env.get("NABD_CORTEX_MODEL")||"gpt-4.1-mini"}];
  let diagnostic="missing_model_key";
  for(const o of options){if(!o.key)continue;try{
@@ -68,16 +68,16 @@ async function callProvider(system:string,user:string,max:number){
  const r=await fetch(endpoint,{method:"POST",headers:gem?{"Content-Type":"application/json","x-goog-api-key":o.key}:{"Content-Type":"application/json",Authorization:"Bearer "+o.key},body:JSON.stringify(gem?{systemInstruction:{parts:[{text:system}]},contents:[{parts:[{text:user}]}],generationConfig:{responseMimeType:"application/json",maxOutputTokens:Math.max(max,1024),thinkingConfig:{thinkingBudget:0}}}:{model:o.model,messages:[{role:"system",content:system},{role:"user",content:user}],response_format:{type:"json_object"},max_completion_tokens:Math.max(max,512),...(o.provider==="groq"?{reasoning_effort:"low"}:{})}),signal:AbortSignal.timeout(10000)});
  diagnostic=o.provider+"_http_"+r.status;if(!r.ok)continue;
  const d=await r.json();const content=gem?d.candidates?.[0]?.content?.parts?.filter((x:any)=>!x.thought).map((x:any)=>x.text||"").join(""):d.choices?.[0]?.message?.content;
- const id=gem?d.responseId:d.id;const value=JSON.parse(content||"{}");if(!id||!value||typeof value!=="object"){diagnostic=o.provider+"_invalid_response";continue;}
+ const id=gem?d.responseId:d.id;const value=JSON.parse(content||"{}");if(!id||!value||typeof value!=="object"||!validate(value)){diagnostic=o.provider+"_invalid_response";continue;}
  return {value,id:String(id),model:o.provider+"/"+(d.modelVersion||d.model||o.model),diagnostic:"verified_model_response"};
  }catch{diagnostic=o.provider+"_request_or_parse_failed";}}
  return {value:null,id:"",model:"",diagnostic};
 }
 async function maybeModel(task:string, domain:Domain, sources: Array<{title:string,publisher:string,official_url:string}>){
  if(!["administration","education","crisis"].includes(domain))return null;
- const r=await callProvider("أنت مساعد تخطيط مؤسسي في أكاديمية نبض. أجب بالعربية بصيغة JSON بمفاتيح answer وsteps وwarnings. المراجع روابط وصفية غير مسترجعة؛ لا تختلق حقائق أو اقتباسات. لا تصدر أوامر طبية أو مالية أو أمنية. لا تتجاوز القيود.",JSON.stringify({task,domain,reference_links:sources}),650);
+ const r=await callProvider("أنت مساعد تخطيط مؤسسي في أكاديمية نبض. أجب بالعربية بصيغة JSON بمفاتيح answer وsteps وwarnings. المراجع روابط وصفية غير مسترجعة؛ لا تختلق حقائق أو اقتباسات. لا تصدر أوامر طبية أو مالية أو أمنية. لا تتجاوز القيود.",JSON.stringify({task,domain,reference_links:sources}),650,v=>typeof v.answer==="string"&&v.answer.trim().length>0&&Array.isArray(v.steps)&&v.steps.some((x:unknown)=>typeof x==="string"));
  const parsed=r.value;if(typeof parsed?.answer!=="string"||!Array.isArray(parsed.steps))return null;
- return {answer:safeText(parsed.answer,1200),steps:parsed.steps.filter((x:unknown)=>typeof x==="string").slice(0,5).map((x:string)=>safeText(x,220)),warnings:Array.isArray(parsed.warnings)?parsed.warnings.filter((x:unknown)=>typeof x==="string").slice(0,3).map((x:string)=>safeText(x,220)):[],provider_model:r.model};
+ return {answer:safeText(parsed.answer,1200),steps:parsed.steps.filter((x:unknown)=>typeof x==="string").slice(0,5).map((x:string)=>safeText(x,220)),warnings:Array.isArray(parsed.warnings)?parsed.warnings.filter((x:unknown)=>typeof x==="string").slice(0,3).map((x:string)=>safeText(x,220)):[],provider_model:r.model,provider_id:r.id};
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS") return new Response(null,{status:204,headers:CORS});
@@ -95,10 +95,22 @@ Deno.serve(async(req:Request)=>{
     const {data:access,error:accessError}=await userClient.rpc("nabd_agent_admin_info");
     if(accessError||access?.authorized!==true) return json({ok:false,error:"Administrative access required"},403);
     const admin=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
-    const state=await admin.from("nabd_cortex_settings").select("enabled").eq("id",1).single();
-    if(state.error||state.data?.enabled!==true) return json({ok:false,error:"NABD Cortex is switched off"},409);
     let body:any;
     try {body=await req.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
+    if(body?.action==="model_status"){
+      const status=await admin.rpc("nabd_cortex_probe_status_v4");
+      return status.error?json({ok:false,error:"Status unavailable"},503):json({ok:true,probe:status.data});
+    }
+    const state=await admin.from("nabd_cortex_settings").select("enabled").eq("id",1).single();
+    if(state.error||state.data?.enabled!==true) return json({ok:false,error:"NABD Cortex is switched off"},409);
+    if(body?.action==="model_probe"){
+      const start=await admin.rpc("nabd_cortex_admin_probe_start",{p_actor:auth.user.id});
+      if(start.error||!start.data?.ok)return json({ok:false,error:start.data?.reason==="cooldown"?"اختبار واحد كل خمس دقائق على مستوى النظام":"تعذر بدء الاختبار"},start.data?.reason==="cooldown"?429:503);
+      const r=await callProvider("Return JSON only with action set to internal_review_record and summary describing a fictitious administrative checklist.","Synthetic NABD CORTEX service verification. No real person or institutional data. No external action.",120,v=>v.action==="internal_review_record"&&typeof v.summary==="string"&&v.summary.trim().length>0);
+      const saved=await admin.rpc("nabd_cortex_probe_finish",{p_id:start.data.id,p_ok:!!r.id,p_model:r.model,p_provider_id:r.id,p_diagnostic:r.diagnostic});
+      if(saved.error)return json({ok:false,error:"تعذر حفظ نتيجة الاختبار"},503);
+      return json({ok:true,verified:saved.data===true,model:r.model||null,diagnostic:r.diagnostic,probe_id:start.data.id});
+    }
     const task=safeText(body?.task,1501);
     if(task.length<8||task.length>1500) return json({ok:false,error:"اكتب مهمة بين 8 و1500 حرف"},400);
     if(looksPersonal(task)) return json({ok:false,error:"لا ترسل بيانات مرضى أو هويات أو كلمات مرور أو بيانات اتصال شخصية إلى هذا النموذج الأولي"},422);
@@ -106,7 +118,11 @@ Deno.serve(async(req:Request)=>{
     const recent=await admin.from("nabd_cortex_runs").select("id",{head:true,count:"exact"}).eq("actor_id",auth.user.id).gte("created_at",windowStart);
     if(recent.error) return json({ok:false,error:"Rate check unavailable"},503);
     if((recent.count||0)>=8) return json({ok:false,error:"الحد التجريبي 8 مهام في الساعة لهذا الحساب"},429);
-    const domain=chooseDomain(task,body?.domain),risk=classifyRisk(task,domain);
+    const domain=chooseDomain(task,body?.domain);
+    let risk=classifyRisk(task,domain);
+    const department=typeof body?.department==="string"?body.department:"operations";
+    if(!["academic","research","operations","partnerships","scholarships","finance","media","technology","hr","secretary"].includes(department))return json({ok:false,error:"قسم غير صالح"},400);
+    if(domain==="administration"&&["finance","hr","media","scholarships","partnerships","technology"].includes(department)&&risk==="low")risk="medium";
     const sourcesResult=await admin.from("nabd_cortex_sources")
       .select("title,publisher,official_url,retrieval_mode,verified_at")
       .eq("domain",domain).eq("is_active",true).limit(5);
@@ -120,13 +136,13 @@ Deno.serve(async(req:Request)=>{
         ? `صنّف مشرف ${titles[domain]} هذا الطلب ضمن مستوى المخاطر ${risk==="high"?"العالي":"المتوسط"}. يمكن إعداد خطة، لكن القرار التنفيذي يحتاج اعتمادًا بشريًا.`
         : `اختار المنسق ${titles[domain]} مسار تخطيط أوليًا منخفض المخاطر. هذا مخرج لقواعد تنظيمية، وليس بحثًا شاملًا ولا تنفيذًا لعملية خارجية.`);
     const plan=model?.steps?.length?model.steps:steps[domain];
-    const record=await admin.rpc("nabd_cortex_record_atomic",{p_actor:auth.user.id,p_agent:agentNames[domain],p_domain:domain,p_risk:risk,p_engine:model?"llm_assisted":"policy_only",p_sources:sources.length,p_title:"متابعة داخلية: "+titles[domain]});
+    const record=await admin.rpc("nabd_cortex_record_v4",{p_actor:auth.user.id,p_agent:agentNames[domain],p_domain:domain,p_risk:risk,p_engine:model?"llm_assisted":"policy_only",p_sources:sources.length,p_title:"متابعة داخلية: "+titles[domain],p_department:department,p_dispatch:body?.dispatch===true,p_model:model?.provider_model||null,p_response_id:model?.provider_id||null});
     if(record.error||!record.data?.ok)return json({ok:false,error:"تعذر تسجيل العملية بأمان"},record.data?.reason==="rate_limit"?429:record.data?.reason==="paused"?409:503);
     const run={data:{id:record.data.run_id}};
     const taskRecord={data:{id:record.data.task_id,status:record.data.status}};
     return json({ok:true,run_id:run.data.id,task_id:taskRecord.data.id,
       agent:titles[domain],domain,risk,requires_human:requiresHuman,status:taskRecord.data.status,
-      answer,steps:plan,warnings:[...(model?.warnings||[]),
+      department:record.data.department,dispatch_requested:record.data.dispatch_requested,answer,steps:plan,warnings:[...(model?.warnings||[]),
         "المراجع المعروضة روابط وصفية فقط؛ لم تُقرأ نصوصها آليًا.",
         ...(requiresHuman?["لا يصدر النظام قرارًا سريريًا أو ماليًا أو تعديلًا للصلاحيات دون موافقة بشرية وتنفيذ منفصل مرخّص."]:[])],
       sources,provider_model:model?.provider_model||null,engine:model?"llm_assisted":"policy_only",executed_external_action:false});
