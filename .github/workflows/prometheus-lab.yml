@@ -1,0 +1,19 @@
+name: PROMETHEUS offline lab
+on:
+  pull_request:
+    paths:
+      - 'scripts/*prometheus*.py'
+      - '.github/workflows/prometheus-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s scripts -p 'test_prometheus*.py'
+      - run: python3 scripts/prometheus_lab.py
