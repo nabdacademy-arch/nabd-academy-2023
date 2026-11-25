@@ -113,6 +113,23 @@
 #hope-applications code{display:block;overflow-wrap:anywhere;margin-bottom:10px;color:var(--gold)}
 #hope-applications [role=status]{overflow-wrap:anywhere;color:var(--teal);margin-top:12px}
 #hope-applications #hope-submit-captcha,#hope-applications #hope-lookup-captcha{max-width:100%;overflow:auto;margin:12px 0}
+/* NABD HOPE — isolated result presentation; original scholarship layout unchanged. */
+#hope-applications #hope-lookup-message.hope-result-card{--result-accent:#7edbd0;--result-bg:#103d43;display:flex;align-items:flex-start;gap:16px;margin-top:24px;padding:clamp(18px,3.5vw,28px);border:1px solid var(--result-accent);border-inline-start:5px solid var(--result-accent);border-radius:18px;background:linear-gradient(125deg,var(--result-bg),#091f2b);color:#f3f8fa;box-shadow:0 12px 30px #03131e55;overflow-wrap:anywhere}
+#hope-applications #hope-lookup-message[hidden]{display:none!important}
+#hope-applications #hope-lookup-message[data-result-tone="accepted"]{--result-accent:#86efac;--result-bg:#124334}
+#hope-applications #hope-lookup-message[data-result-tone="waitlisted"]{--result-accent:#ffda89;--result-bg:#44391e}
+#hope-applications #hope-lookup-message[data-result-tone="shortlisted"]{--result-accent:#dcc1ff;--result-bg:#34294b}
+#hope-applications #hope-lookup-message[data-result-tone="review"]{--result-accent:#9ed6ff;--result-bg:#173b58}
+#hope-applications #hope-lookup-message[data-result-tone="pending"]{--result-accent:#a8ddd4;--result-bg:#193c42}
+#hope-applications #hope-lookup-message[data-result-tone="rejected"]{--result-accent:#ffb8b8;--result-bg:#472d35}
+#hope-applications #hope-lookup-message[data-result-tone="notice"]{--result-accent:#f5cf89;--result-bg:#423927}
+#hope-applications .hope-result-icon{flex:0 0 auto;display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--result-accent);border-radius:50%;background:#091f2b;color:var(--result-accent);font-size:26px;font-weight:800;line-height:1}
+#hope-applications .hope-result-content{flex:1;min-width:0}
+#hope-applications .hope-result-label{display:block;color:var(--result-accent);font-size:.74rem;font-weight:800;letter-spacing:.025em;margin-bottom:8px}
+#hope-applications .hope-result-title{display:block;color:var(--result-accent);font-size:clamp(1.2rem,2.6vw,1.65rem);font-weight:800;line-height:1.45;margin-bottom:8px}
+#hope-applications .hope-result-detail{margin:0;color:#e3edf0;font-size:.96rem;line-height:1.9}
+@media(max-width:480px){#hope-applications #hope-lookup-message.hope-result-card{gap:11px;padding:17px}#hope-applications .hope-result-icon{width:38px;height:38px;font-size:22px}}
+
 @media(max-width:650px){#hope-applications .hope-app-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -258,7 +275,7 @@
 <div id="hope-submit-captcha"></div><button type="submit" class="btn gold"><span data-hope-ar="إرسال الطلب" data-hope-en="Submit application">إرسال الطلب</span></button></fieldset></form>
 <p id="hope-apply-message" role="status" aria-live="polite"></p><div id="hope-receipt" hidden class="hope-app-receipt"><p id="hope-receipt-label"></p><code id="hope-receipt-code" dir="ltr"></code><button type="button" class="btn outline" id="hope-copy-code"><span data-hope-ar="نسخ رمز المتابعة" data-hope-en="Copy tracking code">نسخ رمز المتابعة</span></button><p id="hope-copy-message" role="status"></p></div>
 </div>
-<div id="hope-lookup-area" hidden><p><span data-hope-ar="أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة." data-hope-en="Enter your original email and private tracking code. A decision is shown only after the administration publishes it.">أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة.</span></p><form id="hope-lookup-form"><div class="hope-app-grid"><label><span data-hope-ar="البريد الإلكتروني" data-hope-en="Email">البريد الإلكتروني</span><input id="hope-lookup-email" type="email" maxlength="254" required></label><label><span data-hope-ar="رمز المتابعة" data-hope-en="Tracking code">رمز المتابعة</span><input id="hope-lookup-code" maxlength="36" minlength="36" dir="ltr" required></label></div><div id="hope-lookup-captcha"></div><button id="hope-lookup-submit" type="submit" class="btn gold"><span data-hope-ar="عرض النتيجة" data-hope-en="View result">عرض النتيجة</span></button></form><p id="hope-lookup-message" role="status" aria-live="polite"></p></div>
+<div id="hope-lookup-area" hidden><p><span data-hope-ar="أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة." data-hope-en="Enter your original email and private tracking code. A decision is shown only after the administration publishes it.">أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة.</span></p><form id="hope-lookup-form"><div class="hope-app-grid"><label><span data-hope-ar="البريد الإلكتروني" data-hope-en="Email">البريد الإلكتروني</span><input id="hope-lookup-email" type="email" maxlength="254" required></label><label><span data-hope-ar="رمز المتابعة" data-hope-en="Tracking code">رمز المتابعة</span><input id="hope-lookup-code" maxlength="36" minlength="36" dir="ltr" required></label></div><div id="hope-lookup-captcha"></div><button id="hope-lookup-submit" type="submit" class="btn gold"><span data-hope-ar="عرض النتيجة" data-hope-en="View result">عرض النتيجة</span></button></form><div id="hope-lookup-message" class="hope-result-card" role="status" aria-live="polite" aria-atomic="true" hidden></div></div>
 </div></div></section>
   </main>
   <footer><div class="wrap foot"><span><strong data-t="academyFooter">أكاديمية نبض للعلوم الطبية</strong> · NABD Hope Scholarship © 2027</span><span data-t="footerDisclaimer">صفحة تعريفية لمبادرة قيد الإعداد. لا يتم جمع تبرعات أو طلبات طلاب عبر هذه الصفحة الآن.</span><a href="./" data-t="backHome">العودة إلى الأكاديمية ↗</a></div></footer>
@@ -315,6 +332,6 @@ document.getElementById("hopeCopyButton").addEventListener("click",async functio
 </script>
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="assets/js/nabd-hope-applications.js?v=1"></script>
+<script defer src="assets/js/nabd-hope-applications.js?v=2"></script>
 </body>
 </html>
