@@ -98,6 +98,23 @@
 <link rel="stylesheet" href="assets/css/nabd-gateway-system.css?v=1">
 <script defer src="assets/js/nabd-gateway-system.js?v=1"></script>
 <link rel="stylesheet" href="assets/css/nabd-institutional-nav.css?v=1">
+<style>
+#hope-applications[hidden],#hope-applications [hidden]{display:none!important}
+#hope-applications fieldset{border:0;margin:0 0 14px;padding:0;min-width:0}
+#hope-applications .hope-app-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+#hope-applications label{display:grid;gap:6px;font-weight:700;color:var(--cream)}
+#hope-applications input:not([type=checkbox]),#hope-applications select{width:100%;min-height:46px;padding:10px 12px;border:1px solid #7ab5b299;border-radius:12px;background:#071e2b;color:var(--cream);font:inherit}
+#hope-applications .hope-app-checks{display:flex;flex-wrap:wrap;gap:12px 20px;margin:15px 0}
+#hope-applications .hope-app-checks legend{margin-bottom:8px;font-weight:850}
+#hope-applications .hope-app-checks label,#hope-applications .hope-app-consent{display:flex;align-items:flex-start;gap:8px}
+#hope-applications input[type=checkbox]{accent-color:var(--teal);margin-top:8px;flex:none}
+#hope-applications .hope-app-consent{font-size:.9rem;margin:18px 0}
+#hope-applications .hope-app-receipt{padding:18px;border:1px solid var(--teal);border-radius:15px;background:#071e2b}
+#hope-applications code{display:block;overflow-wrap:anywhere;margin-bottom:10px;color:var(--gold)}
+#hope-applications [role=status]{overflow-wrap:anywhere;color:var(--teal);margin-top:12px}
+#hope-applications #hope-submit-captcha,#hope-applications #hope-lookup-captcha{max-width:100%;overflow:auto;margin:12px 0}
+@media(max-width:650px){#hope-applications .hope-app-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
   <a class="skip" href="#content" data-t="skip">تجاوز إلى المحتوى</a>
@@ -126,6 +143,8 @@
           <div class="hero-actions">
             <a href="#mission" class="btn gold" data-t="explore">اكتشف رسالة المبادرة ↗</a>
             <a href="#give" class="btn outline" data-t="giveInfo">معلومات المساهمة ↗</a>
+            <button type="button" class="btn gold" id="hope-apply-button">التقديم للمنحة ↗</button>
+            <button type="button" class="btn outline" id="hope-result-button">الاستعلام عن النتيجة ↗</button>
           </div>
           <div class="hero-micro"><span class="micro"><span class="dot"></span><span data-t="allGaza">جميع محافظات قطاع غزة</span></span><span class="micro"><span class="dot"></span><span data-t="notOpen">التبرعات والتقديم لم يُفتَحا بعد</span></span></div>
         </div>
@@ -221,6 +240,26 @@
         <details><summary data-t="qFive">كيف أتحقق من التبرعات والمصروفات؟</summary><p data-t="aFive">بعد الإطلاق ستُعلن القناة الرسمية وتقارير إجمالية موثقة دون إظهار هويات الطلاب أو التفاصيل الخاصة.</p></details>
       </div>
     </div></section>
+<section id="hope-applications" class="section" hidden aria-labelledby="hope-application-heading"><div class="wrap"><div class="status-pane">
+<span class="tag">NABD HOPE · 2027</span><h2 id="hope-application-heading"><span data-hope-ar="بوابة تقديم منحة نبض الأمل" data-hope-en="NABD Hope application portal">بوابة تقديم منحة نبض الأمل</span></h2><p id="hope-registration-status" role="status" aria-live="polite"></p>
+<div id="hope-apply-area" hidden>
+<p><span data-hope-ar="التقديم مجاني لطلاب محافظات قطاع غزة. الدعم مرتبط بتوافر التمويل ومعايير الاختيار؛ التسجيل لا يعني القبول. لا ترسل رقم الهوية أو مستندات أو بيانات مالية هنا." data-hope-en="Free applications for students in Gaza governorates. Support depends on funding and selection criteria. Applying does not guarantee acceptance. Do not submit identity documents or financial data here.">التقديم مجاني لطلاب محافظات قطاع غزة. الدعم مرتبط بتوافر التمويل ومعايير الاختيار؛ التسجيل لا يعني القبول. لا ترسل رقم الهوية أو مستندات أو بيانات مالية هنا.</span></p>
+<div id="hope-open-note"><p><span data-hope-ar="لا يمكن تقديم طلب جديد الآن. الاستعلام متاح دائمًا." data-hope-en="New applications are unavailable. Result lookup remains available.">لا يمكن تقديم طلب جديد الآن. الاستعلام متاح دائمًا.</span></p><button type="button" class="btn outline" id="hope-refresh-state"><span data-hope-ar="تحديث حالة التسجيل" data-hope-en="Refresh status">تحديث حالة التسجيل</span></button></div>
+<form id="hope-form" hidden><fieldset id="hope-form-fields" disabled><div class="hope-app-grid">
+<label><span data-hope-ar="الاسم الكامل" data-hope-en="Full name">الاسم الكامل</span><input name="name" minlength="3" maxlength="150" autocomplete="name" required></label>
+<label><span data-hope-ar="البريد الإلكتروني" data-hope-en="Email">البريد الإلكتروني</span><input name="email" type="email" maxlength="254" autocomplete="email" required></label>
+<label><span data-hope-ar="رقم الهاتف (دون مسافات)" data-hope-en="Phone (no spaces)">رقم الهاتف (دون مسافات)</span><input name="phone" type="tel" pattern="[+]?[0-9]{7,15}" maxlength="16" autocomplete="tel" required></label>
+<label><span data-hope-ar="المحافظة" data-hope-en="Governorate">المحافظة</span><select name="governorate" required><option value="" data-hope-ar="اختر" data-hope-en="Select">اختر</option><option value="north_gaza" data-hope-ar="شمال غزة" data-hope-en="North Gaza">شمال غزة</option><option value="gaza" data-hope-ar="غزة" data-hope-en="Gaza">غزة</option><option value="middle" data-hope-ar="دير البلح" data-hope-en="Deir al-Balah">دير البلح</option><option value="khan_younis" data-hope-ar="خان يونس" data-hope-en="Khan Younis">خان يونس</option><option value="rafah" data-hope-ar="رفح" data-hope-en="Rafah">رفح</option></select></label>
+<label><span data-hope-ar="الجامعة / المؤسسة التعليمية (أو المقصودة)" data-hope-en="University / intended institution">الجامعة / المؤسسة التعليمية (أو المقصودة)</span><input name="institution" minlength="2" maxlength="160" required></label>
+<label><span data-hope-ar="التخصص الدراسي" data-hope-en="Field of study">التخصص الدراسي</span><input name="field" minlength="2" maxlength="120" required></label>
+<label><span data-hope-ar="المرحلة الدراسية" data-hope-en="Study stage">المرحلة الدراسية</span><select name="stage" required><option value="" data-hope-ar="اختر" data-hope-en="Select">اختر</option><option value="prospective" data-hope-ar="مقبل على الجامعة" data-hope-en="Prospective">مقبل على الجامعة</option><option value="year1" data-hope-ar="السنة الأولى" data-hope-en="Year 1">السنة الأولى</option><option value="year2" data-hope-ar="السنة الثانية" data-hope-en="Year 2">السنة الثانية</option><option value="year3" data-hope-ar="السنة الثالثة" data-hope-en="Year 3">السنة الثالثة</option><option value="year4" data-hope-ar="السنة الرابعة" data-hope-en="Year 4">السنة الرابعة</option><option value="year5plus" data-hope-ar="السنة الخامسة فأعلى" data-hope-en="Year 5+">السنة الخامسة فأعلى</option><option value="other" data-hope-ar="أخرى" data-hope-en="Other">أخرى</option></select></label>
+</div><fieldset class="hope-app-checks"><legend><span data-hope-ar="نوع الدعم المطلوب (اختر واحدًا أو أكثر)" data-hope-en="Requested support (one or more)">نوع الدعم المطلوب (اختر واحدًا أو أكثر)</span></legend><label><input type="checkbox" name="support" value="tuition"><span data-hope-ar="الرسوم الجامعية" data-hope-en="Tuition">الرسوم الجامعية</span></label><label><input type="checkbox" name="support" value="transport"><span data-hope-ar="المواصلات" data-hope-en="Transport">المواصلات</span></label><label><input type="checkbox" name="support" value="device"><span data-hope-ar="جهاز تعليمي" data-hope-en="Learning device">جهاز تعليمي</span></label><label><input type="checkbox" name="support" value="internet"><span data-hope-ar="الإنترنت" data-hope-en="Internet">الإنترنت</span></label><label><input type="checkbox" name="support" value="supplies"><span data-hope-ar="المستلزمات الدراسية" data-hope-en="Study supplies">المستلزمات الدراسية</span></label></fieldset>
+<label class="hope-app-consent"><input type="checkbox" name="consent" required><span data-hope-ar="أوافق على حفظ بياناتي لدى إدارة المنحة لتقييم طلبي والتواصل بشأنه. أقر بأن التسجيل لا يضمن التمويل، وأن بياناتي لن تظهر للمتقدمين الآخرين." data-hope-en="I consent to the scholarship administration storing my information to review my application and contact me. Registration does not guarantee funding; my details will not be visible to other applicants.">أوافق على حفظ بياناتي لدى إدارة المنحة لتقييم طلبي والتواصل بشأنه. أقر بأن التسجيل لا يضمن التمويل، وأن بياناتي لن تظهر للمتقدمين الآخرين.</span></label>
+<div id="hope-submit-captcha"></div><button type="submit" class="btn gold"><span data-hope-ar="إرسال الطلب" data-hope-en="Submit application">إرسال الطلب</span></button></fieldset></form>
+<p id="hope-apply-message" role="status" aria-live="polite"></p><div id="hope-receipt" hidden class="hope-app-receipt"><p id="hope-receipt-label"></p><code id="hope-receipt-code" dir="ltr"></code><button type="button" class="btn outline" id="hope-copy-code"><span data-hope-ar="نسخ رمز المتابعة" data-hope-en="Copy tracking code">نسخ رمز المتابعة</span></button><p id="hope-copy-message" role="status"></p></div>
+</div>
+<div id="hope-lookup-area" hidden><p><span data-hope-ar="أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة." data-hope-en="Enter your original email and private tracking code. A decision is shown only after the administration publishes it.">أدخل البريد نفسه ورمز المتابعة الخاص بك. لا تُعرض نتيجة إلا بعد اعتمادها ونشرها من الإدارة.</span></p><form id="hope-lookup-form"><div class="hope-app-grid"><label><span data-hope-ar="البريد الإلكتروني" data-hope-en="Email">البريد الإلكتروني</span><input id="hope-lookup-email" type="email" maxlength="254" required></label><label><span data-hope-ar="رمز المتابعة" data-hope-en="Tracking code">رمز المتابعة</span><input id="hope-lookup-code" maxlength="36" minlength="36" dir="ltr" required></label></div><div id="hope-lookup-captcha"></div><button id="hope-lookup-submit" type="submit" class="btn gold"><span data-hope-ar="عرض النتيجة" data-hope-en="View result">عرض النتيجة</span></button></form><p id="hope-lookup-message" role="status" aria-live="polite"></p></div>
+</div></div></section>
   </main>
   <footer><div class="wrap foot"><span><strong data-t="academyFooter">أكاديمية نبض للعلوم الطبية</strong> · NABD Hope Scholarship © 2027</span><span data-t="footerDisclaimer">صفحة تعريفية لمبادرة قيد الإعداد. لا يتم جمع تبرعات أو طلبات طلاب عبر هذه الصفحة الآن.</span><a href="./" data-t="backHome">العودة إلى الأكاديمية ↗</a></div></footer>
   <script>
@@ -275,5 +314,7 @@ document.getElementById("hopeCopyButton").addEventListener("click",async functio
 })();
 </script>
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="assets/js/nabd-hope-applications.js?v=1"></script>
 </body>
 </html>
