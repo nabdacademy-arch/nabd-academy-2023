@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#071b29">
-  <meta name="description" content="منحة نبض الأمل من أكاديمية نبض للعلوم الطبية: مشروع مقترح لدعم 100 طالب وطالبة من محافظات قطاع غزة بالرسوم الجامعية والمواصلات والأجهزة والإنترنت والمستلزمات التعليمية.">
+  <meta name="description" content="منحة نبض الأمل من أكاديمية نبض للعلوم الطبية: مشروع مقترح لدعم الطلاب والطالبات من محافظات قطاع غزة بالرسوم الجامعية والمواصلات والأجهزة والإنترنت والمستلزمات التعليمية.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="منحة نبض الأمل | NABD Hope Scholarship">
-  <meta property="og:description" content="100 طالب وطالبة. 100 فرصة للتعلم. حملة قيد الإعداد في جميع محافظات قطاع غزة.">
+  <meta property="og:description" content="فرص تعليمية للطلاب والطالبات. حملة قيد الإعداد في جميع محافظات قطاع غزة.">
   <meta property="og:image" content="https://nabdacademy-arch.github.io/nabd-academy-2023/social-preview.jpg">
   <meta property="og:url" content="https://nabdacademy-arch.github.io/nabd-academy-2023/nabd-hope.html">
   <link rel="canonical" href="https://nabdacademy-arch.github.io/nabd-academy-2023/nabd-hope.html">
@@ -132,6 +132,7 @@
 
 @media(max-width:650px){#hope-applications .hope-app-grid{grid-template-columns:1fr}}
 </style>
+<style>#hope-metrics [hidden]{display:none!important}#hope-metrics .kpis:empty{display:none}</style>
 </head>
 <body>
   <a class="skip" href="#content" data-t="skip">تجاوز إلى المحتوى</a>
@@ -162,13 +163,14 @@
             <a href="#give" class="btn outline" data-t="giveInfo">معلومات المساهمة ↗</a>
             <button type="button" class="btn gold" id="hope-apply-button">التقديم للمنحة ↗</button>
             <button type="button" class="btn outline" id="hope-result-button">الاستعلام عن النتيجة ↗</button>
+            <a href="#hope-metrics" class="btn outline" id="hope-metrics-link">أعداد المنحة ↗</a>
           </div>
           <div class="hero-micro"><span class="micro"><span class="dot"></span><span data-t="allGaza">جميع محافظات قطاع غزة</span></span><span class="micro"><span class="dot"></span><span data-t="notOpen">التبرعات والتقديم لم يُفتَحا بعد</span></span></div>
         </div>
         <div class="art-shell">
           <!-- Original scalable illustration: a learner and Gaza's skyline, dignity and resilience without photographs of beneficiaries. -->
           <img class="hope-photo" src="https://images.pexels.com/photos/36637781/pexels-photo-36637781.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400" loading="eager" decoding="async" fetchpriority="high" width="1200" height="800" alt="شباب من غزة في صورة فوتوغرافية تعبيرية">
-          <div class="floating first"><b>100</b><span data-t="studentsTarget">طالب وطالبة · هدف أولي</span></div>
+          <div class="floating first"><b data-hope-target>100</b><span data-t="studentsTarget">طالب وطالبة · هدف أولي</span></div>
           <div class="floating second">✦ <span data-t="artMessage">من قلب التحدي، يولد الأمل</span></div>
           <div class="art-caption"><span class="hope-photo-credit" data-hope="credit">صورة من غزة · Hosny Salah / Pexels · ليست لمستفيد من المنحة</span><strong>NABD HOPE</strong></div>
         </div>
@@ -202,7 +204,7 @@
       <div><span class="tag" data-t="reachTag">ONE GAZA · FIVE GOVERNORATES</span><h2 data-t="reachTitle">من الشمال إلى الجنوب. الفرصة لكل طالب يحتاجها.</h2><p class="lead" data-t="reachText">نستهدف محافظات شمال غزة، وغزة، ودير البلح، وخان يونس، ورفح. توزَّع المساعدات وفق الاحتياج ومعايير معلنة، دون افتراض حصص ثابتة قبل دراسة الطلبات.</p>
         <div class="governorates"><span data-t="north">📍 شمال غزة</span><span data-t="gaza">📍 غزة</span><span data-t="deir">📍 دير البلح</span><span data-t="khan">📍 خان يونس</span><span data-t="rafah">📍 رفح</span></div>
       </div>
-      <div class="reach-visual"><span class="tag" data-t="reachVisualTag">FIRST COHORT · PROPOSED TARGET</span><div class="reach-number">100</div><h3 data-t="reachVisualTitle">طالب وطالبة في الدفعة الأولى</h3><p data-t="reachVisualText">العدد هدف للحملة، وليس إعلانًا عن اختيار مستفيدين أو توافر تمويل.</p></div>
+      <div class="reach-visual"><span class="tag" data-t="reachVisualTag">FIRST COHORT · PROPOSED TARGET</span><div class="reach-number" data-hope-target>100</div><h3 data-t="reachVisualTitle">طالب وطالبة في الدفعة الأولى</h3><p data-t="reachVisualText">العدد هدف للحملة، وليس إعلانًا عن اختيار مستفيدين أو توافر تمويل.</p></div>
     </div></section>
 
     <section class="section" id="how"><div class="wrap"><div class="section-head"><span class="tag" data-t="howTag">HOW IT WORKS</span><h2 data-t="howTitle">من الاحتياج إلى أثر يمكن التحقق منه.</h2><p data-t="howText">لا يعتمد الحصول على الدعم على العلاقات أو الدفع للتسجيل. هذه الآلية المخطط لها قبل بدء اختيار المستفيدين.</p></div>
@@ -217,13 +219,20 @@
     <section class="section dark" id="transparency"><div class="wrap"><div class="section-head"><span class="tag" data-t="transTag">PUBLIC ACCOUNTABILITY</span><h2 data-t="transTitle">الثقة تبدأ بأرقام لا ندّعيها.</h2><p data-t="transText">لن نعرض عدّاد تبرعات أو مستفيدين بأرقام متخيلة. عند بدء الحملة وتوثيق العمليات، ستُنشر البيانات المجمعة بتواريخ تحديث واضحة.</p></div>
       <div class="status">
         <div class="status-pane"><span class="status-flag" data-t="phase">◌ مرحلة التحضير — لا يوجد استقبال تبرعات عبر هذه الصفحة</span><div class="kpis">
-            <div class="kpi"><strong>100</strong><span data-t="goalLabel">الطلاب المستهدفون</span></div>
+            <div class="kpi"><strong data-hope-target>100</strong><span data-t="goalLabel">الطلاب المستهدفون</span></div>
             <div class="kpi"><strong>—</strong><span data-t="raisedLabel">التبرعات الموثقة</span></div>
             <div class="kpi"><strong>—</strong><span data-t="spentLabel">المبالغ المصروفة</span></div>
-            <div class="kpi"><strong>0</strong><span data-t="servedLabel">مستفيدون مؤكدون من هذه المبادرة</span></div>
+            <div class="kpi"><strong id="hope-served-count">0</strong><span data-t="servedLabel">مستفيدون مؤكدون من هذه المبادرة</span></div>
         </div><p class="small-note" data-t="statusNote">الشرطات تعني أن الحسابات لم تُفعّل أو تُنشر بعد، وليست مبالغ مالية. لا تبرع عبر هذه الصفحة حاليًا.</p></div>
         <div class="status-pane"><h3 data-t="commitTitle">التزاماتنا قبل الإطلاق</h3><ul class="policy-list"><li data-t="policyOne">قناة استقبال موثقة ومسؤولية مالية محددة</li><li data-t="policyTwo">إيصالات وفواتير وتقرير مصروفات دوري</li><li data-t="policyThree">معايير اختيار علنية ولجنة مراجعة</li><li data-t="policyFour">احترام خصوصية الطلاب وعدم نشر مستنداتهم</li><li data-t="policyFive">الإعلان مسبقًا عن سياسة أي فائض أو عجز</li></ul></div>
       </div>
+<div id="hope-metrics" class="status-pane" style="margin-top:20px;scroll-margin-top:105px" aria-labelledby="hope-metrics-heading">
+<h3 id="hope-metrics-heading">أعداد المنحة والنتائج</h3><p id="hope-metrics-note" class="small-note">الأهداف المخططة ليست نتائج قبول، والقبول لا يعني تسليم الدعم.</p><div class="kpis">
+<div class="kpi" id="hope-plan-accepted-box" hidden><strong id="hope-plan-accepted">—</strong><span id="hope-plan-accepted-label">المقبولون المخطط لهم</span></div>
+<div class="kpi" id="hope-plan-wait-box" hidden><strong id="hope-plan-wait">—</strong><span id="hope-plan-wait-label">حجم قائمة الانتظار المخطط</span></div>
+<div class="kpi" id="hope-real-accepted-box" hidden><strong id="hope-real-accepted" style="color:#86efac">—</strong><span id="hope-real-accepted-label">القبول المنشور فعليًا</span></div>
+<div class="kpi" id="hope-real-wait-box" hidden><strong id="hope-real-wait" style="color:#ffda89">—</strong><span id="hope-real-wait-label">قائمة الانتظار المنشورة فعليًا</span></div>
+</div><p id="hope-metrics-updated" class="small-note" role="status"></p></div>
     </div></section>
 
     
@@ -346,5 +355,6 @@ document.getElementById("hopeCopyButton").addEventListener("click",async functio
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="assets/js/nabd-hope-applications.js?v=3"></script>
+<script defer src="assets/js/nabd-hope-public-metrics.js?v=1"></script>
 </body>
 </html>
