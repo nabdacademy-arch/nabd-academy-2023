@@ -80,3 +80,30 @@ These are release milestones bundled in one application update, not ten separate
 The learning module progress uses local browser storage if available, with manual JSON backup. No accounts, research participant database, cross-device sync or remote collection are implemented. Local storage on shared devices is not private; clear or back up progress when appropriate. The educational self-checks are unvalidated practice, not outcome instruments. The downloadable single HTML file has no required online runtime dependencies; actual offline and browser compatibility testing remains necessary. The existing research protocol link requires connectivity.
 ### Required before human research
 Independent literature review and novelty assessment, medical content and instrument review, statistical review, ethics approval and informed consent, device testing, data governance and approved study operations remain outstanding. Do not use self-check scores or synthetic NMERI outputs as research findings or accreditation.
+
+## Software release v30 — 25 November 2026
+V30 extends V10 in the same standalone HTML page, with no changes to the academy home page. The following twenty functional milestones were bundled in the release (not separately deployed versions).
+| Milestone | Functionality |
+|---|---|
+| V11 | Integrated bilingual research operations workspace |
+| V12 | Project-code validation |
+| V13 | Ten research readiness gates with self-reported states |
+| V14 | Readiness completion counters |
+| V15 | Ten-item manual device test matrix |
+| V16 | Device test progress counter |
+| V17 | Evidence register with categorical type and data mode |
+| V18 | Duplicate and malformed evidence rejection |
+| V19 | Evidence CSV export |
+| V20 | Editable six-category funding planner |
+| V21 | Live budget totals and budget CSV |
+| V22 | Single-proportion sample-size planning |
+| V23 | Recruitment inflation for anticipated attrition |
+| V24 | Wilson 95% interval for a single proportion |
+| V25 | Descriptive comparison of two proportions |
+| V26 | Follow-up attrition calculation |
+| V27 | Local workspace persistence |
+| V28 | Versioned workspace backup and strict restore validation |
+| V29 | Accidental-corruption checksum and controlled reset |
+| V30 | On-page synthetic self-tests, diagnostic export and offline package integration |
+### Verification and limitations
+21 additional pure-function assertions passed before the V30 commit. The V10 release previously passed 18 assertions; its browser/device compatibility remains unverified. V30 includes 12 browser-invokable synthetic tests. Manual device states, readiness gates and evidence codes are entered by users; they are not independent evidence, ethics approval, or institutional certification. No remote storage, account synchronization, patient data collection, file evidence uploads, or funder integration is implemented. The noncryptographic checksum is for accidental corruption only, not authentication. The single-proportion sample formula assumes independent observations and does not adjust for clustering or design effects; use only for planning with statistical review. The Wilson interval is descriptive and does not address systematic bias. No actual research results, medical review, ethics approval, or funding are claimed. Verify browser rendering, mobile accessibility and offline workflows independently before pilot recruitment.
