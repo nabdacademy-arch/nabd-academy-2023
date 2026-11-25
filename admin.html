@@ -106,7 +106,16 @@
 <button type="button" class="btn secondary" data-tab="resources">الروابط والوثائق</button>
 <button type="button" class="btn secondary" data-tab="audit">سجل القرارات</button>
 <button type="button" class="btn secondary" data-tab="consultations" id="consultationsTab">🩺 الاستشارات الطبية</button>
+<button type="button" class="btn secondary" data-tab="hopeScholarship" id="hopeScholarshipTab">منحة نبض الأمل</button>
 </div>
+<section id="hopeScholarship" class="panel card hidden" dir="rtl" lang="ar" aria-labelledby="hope-admin-heading">
+<div class="module-toolbar"><div><h2 id="hope-admin-heading">إدارة منحة نبض الأمل · 2027</h2><p class="dim">ملف خاص بالمدير العام. لا تظهر بيانات المتقدمين للعامة. فتح التسجيل لا يعني توفير التمويل.</p></div><button class="btn secondary" type="button" id="hopeAdminRefresh">تحديث</button></div>
+<p id="hopeAdminState" role="status">جارٍ التحقق من الصلاحيات…</p>
+<div class="actions"><button type="button" class="btn" id="hopeAdminOpen" disabled>فتح رابط التقديم</button><button type="button" class="btn danger" id="hopeAdminClose" disabled>إغلاق رابط التقديم</button><a href="nabd-hope.html" target="_blank" rel="noopener" class="btn secondary">صفحة المنحة ↗</a></div>
+<p id="hopeAdminMessage" role="status" aria-live="polite"></p>
+<div id="hopeAdminPrivate" hidden><h3>سجل طلبات المنحة</h3><p id="hopeAdminStats" class="dim"></p><div class="app-tools"><input class="input" id="hopeAdminSearch" type="search" placeholder="بحث بالاسم أو البريد أو رقم السجل"><select class="input" id="hopeAdminFilter"><option value="">جميع الحالات</option><option value="pending">جديد</option><option value="review">قيد الدراسة</option><option value="shortlisted">مرشح</option><option value="accepted">مقبول</option><option value="waitlisted">انتظار</option><option value="rejected">غير مختار</option></select><button class="btn secondary" type="button" id="hopeAdminExport" disabled>تصدير سجل خاص CSV</button></div>
+<p class="dim">احفظ القرار داخليًا أو انشره للمتقدم وحده. لا تُنشر الأسماء للعامة. احفظ الملف المُصدَّر في مكان آمن.</p><div class="scroll"><table><thead><tr><th>المتقدم</th><th>المحافظة</th><th>الدراسة</th><th>الدعم</th><th>التقديم</th><th>القرار والنتيجة</th></tr></thead><tbody id="hopeAdminRows"></tbody></table></div><div class="actions"><button id="hopeAdminPrev" class="btn secondary" type="button" disabled>السابق</button><span id="hopeAdminPage"></span><button id="hopeAdminNext" class="btn secondary" type="button" disabled>التالي</button></div></div>
+</section>
 <section id="students" class="panel card"><h2>Students</h2><div class="scroll"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Manage</th></tr></thead><tbody id="studentsBody"></tbody></table></div></section>
 <section id="enrollments" class="panel card hidden"><h2>Enrollments</h2><div class="scroll"><table><thead><tr><th>Student</th><th>Course</th><th>Status</th><th>Action</th></tr></thead><tbody id="enrollBody"></tbody></table></div></section>
 <section id="claims" class="panel card hidden"><h2>Certificate Claims</h2><div class="scroll"><table><thead><tr><th>ID</th><th>Student</th><th>Status</th><th>Action</th></tr></thead><tbody id="claimsBody"></tbody></table></div></section>
@@ -504,6 +513,7 @@ q('mcRequests').addEventListener('click',e=>{
 <script defer src="assets/js/nabd-frontier-admin.js?v=1"></script>
 <script defer src="assets/js/nabd-councils-director.js?v=1"></script>
 <script type="module" src="assets/js/nabd-director-exam-bot.js?v=7"></script>
-<script defer src="assets/js/nabd-admin-module-finder.js?v=1"></script>
+<script defer src="assets/js/nabd-admin-module-finder.js?v=2"></script>
 <script defer data-nabd-institutional-nav src="assets/js/nabd-institutional-nav.js?v=1"></script>
+<script defer src="assets/js/nabd-hope-admin.js?v=1"></script>
 </body></html>
