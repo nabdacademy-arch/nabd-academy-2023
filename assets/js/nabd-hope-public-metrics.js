@@ -2,7 +2,10 @@
 "use strict";
 const el=id=>document.getElementById(id);
 if(!el("hope-metrics"))return;
-const client=window.supabase.createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+let client;
+function getClient(){
+ return client ||= window.supabase.createClient("https://zsmmmljgguycrvyrmakl.supabase.co","sb_publishable_PEDwhSNvOky8CIP79ihA4Q_ozLI2CnM",{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+}
 const labels={
 ar:["أعداد المنحة ↗","أعداد المنحة والنتائج","الأهداف المخططة ليست نتائج قبول، والقبول لا يعني تسليم الدعم.","المقبولون المخطط لهم","حجم قائمة الانتظار المخطط","القبول المنشور فعليًا","قائمة الانتظار المنشورة فعليًا","آخر تحديث","تعذر تحديث الأعداد"],
 en:["Scholarship numbers ↗","Scholarship targets and results","Planned targets are not acceptance decisions; acceptance does not mean aid has been delivered.","Planned acceptances","Planned waitlist size","Published acceptances","Published waitlist","Last updated","Unable to refresh figures"],
@@ -25,7 +28,7 @@ function draw(){
   el("hope-metrics-updated").textContent=l[7]+": "+new Date(data.updated_at).toLocaleString(lang)+(failed?" · "+l[8]:"");
  }else el("hope-metrics-updated").textContent=failed?l[8]:"";
 }
-async function refresh(){if(loading)return;loading=true;try{const r=await client.from("nabd_hope_public_metrics").select("beneficiary_target,planned_acceptances,planned_waitlist,beneficiaries_served,published_accepted,published_waitlisted,updated_at").eq("id",1).single();if(r.error||!r.data)throw Error("Unavailable");data=r.data;failed=false;}catch{failed=true;}finally{loading=false;draw();}}
+async function refresh(){if(loading)return;loading=true;try{const r=await getClient().from("nabd_hope_public_metrics").select("beneficiary_target,planned_acceptances,planned_waitlist,beneficiaries_served,published_accepted,published_waitlisted,updated_at").eq("id",1).single();if(r.error||!Number.isSafeInteger(r.data?.beneficiaries_served)||r.data.beneficiaries_served<0)throw Error("Unavailable");data=r.data;failed=false;}catch{failed=true;}finally{loading=false;draw();}}
 capture();draw();refresh();
 document.getElementById("language")?.addEventListener("change",()=>{capture();draw()});
 window.addEventListener("focus",refresh);setInterval(()=>{if(!document.hidden)refresh()},30000);
