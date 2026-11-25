@@ -58,3 +58,25 @@ We invite universities, humanitarian innovation programs and educational technol
 
 ## Arabic summary
 مشروع نبض زيرو يهدف إلى تطوير منظومة تعليم طبي قابلة للعمل دون اتصال وقياس استمرارية المعرفة بمؤشر بحثي من ستة أبعاد. الأهداف المقترحة: 100 متطوع بالغ، 30 يومًا، 10 وحدات، وميزانية تخطيطية 15 ألف دولار. لا توجد نتائج ميدانية أو اعتماد أو تمويل مؤكد. يبدأ العمل باختبارات اصطناعية ومراجعة مستقلة وموافقة أخلاقية قبل إشراك الطلاب. تُنشر النتائج المجمعة بشفافية، ولا تُجمع بيانات مرضى أو هويات في الحاسبة العامة. لا يجوز وصف المؤشر بأنه الأول عالميًا قبل مراجعة الأدبيات والتحقق من الجدة.
+
+## Software release v10 — 25 November 2026
+The application release number is v10; the scientific index remains NMERI method v0.1. This version does not establish validity or novelty.
+| Milestone | Implemented in application |
+|---|---|
+| v1 | Standalone bilingual navigation and dashboard |
+| v2 | Ten introductory bilingual draft learning units |
+| v3 | One formative self-check per unit, local progress |
+| v4 | Single-file offline distribution without external runtime dependencies |
+| v5 | Progress JSON backup and recovery, validated import |
+| v6 | Six-domain NMERI calculator, strict complete-case validation |
+| v7 | Equal-weight sensitivity score and domain breakdown |
+| v8 | Synthetic versus observed record separation; aggregate JSON import/export |
+| v9 | Browser self-test lab and downloadable diagnostic report |
+| v10 | Research gates, funding overview, integrated dashboard and print support |
+These are release milestones bundled in one application update, not ten separately deployed historical releases.
+### Verification
+18 automated JavaScript assertions passed on the same pure functions embedded in the released page: scoring boundaries, weights, missing/invalid data, order and evidence code, record mode, progress schema and scoring, unit count and weight total. Browser lab additionally checks local storage and a synthetic serialization round trip when run by the user. It has not been independently executed on physical devices. No formal accessibility audit, security penetration test, or clinical content review has been completed.
+### Data and deployment limits
+The learning module progress uses local browser storage if available, with manual JSON backup. No accounts, research participant database, cross-device sync or remote collection are implemented. Local storage on shared devices is not private; clear or back up progress when appropriate. The educational self-checks are unvalidated practice, not outcome instruments. The downloadable single HTML file has no required online runtime dependencies; actual offline and browser compatibility testing remains necessary. The existing research protocol link requires connectivity.
+### Required before human research
+Independent literature review and novelty assessment, medical content and instrument review, statistical review, ethics approval and informed consent, device testing, data governance and approved study operations remain outstanding. Do not use self-check scores or synthetic NMERI outputs as research findings or accreditation.
