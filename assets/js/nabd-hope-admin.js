@@ -7,11 +7,11 @@ const labels={pending:"جديد",review:"قيد الدراسة",shortlisted:"م�
 const gov={north_gaza:"شمال غزة",gaza:"غزة",middle:"دير البلح",khan_younis:"خان يونس",rafah:"رفح"};
 const stage={prospective:"مقبل على الجامعة",year1:"السنة الأولى",year2:"السنة الثانية",year3:"السنة الثالثة",year4:"السنة الرابعة",year5plus:"السنة الخامسة فأعلى",other:"أخرى"};
 const aid={tuition:"رسوم",transport:"مواصلات",device:"جهاز",internet:"إنترنت",supplies:"مستلزمات"};
-let rows=[],authorized=false,opened=null,busy=false,page=0,epoch=0,snapshot=null,hasMore=false,cursors=[null],stats=null,searchTimer=null,exporting=false;
+let rows=[],authorized=false,opened=null,busy=false,page=0,epoch=0,snapshot=null,hasMore=false,cursors=[null],stats=null,searchTimer=null,exporting=false,exportCancelled=false;
 const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const msg=t=>el("hopeAdminMessage").textContent=t;
-function controls(){el("hopeAdminOpen").disabled=!authorized||busy||opened!==false;el("hopeAdminClose").disabled=!authorized||busy||opened!==true;el("hopeAdminExport").disabled=!authorized||busy||exporting||!stats?.total;el("hopeAdminPrev").disabled=!authorized||busy||page===0;el("hopeAdminNext").disabled=!authorized||busy||!hasMore;el("hopeAdminCancelExport").disabled=!exporting;}
-function clear(){epoch++;authorized=false;opened=null;rows=[];stats=null;page=0;snapshot=null;hasMore=false;cursors=[null];exporting=false;el("hopeAdminPrivate").hidden=true;el("hopeAdminRows").replaceChildren();el("hopeAdminStats").textContent="";el("hopeAdminState").textContent="يتطلب حساب المدير العام المخوّل.";controls();}
+function controls(){el("hopeAdminOpen").disabled=!authorized||busy||opened!==false;el("hopeAdminClose").disabled=!authorized||busy||opened!==true;el("hopeAdminExport").disabled=!authorized||busy||exporting||!stats?.total;el("hopeAdminPrev").disabled=!authorized||busy||page===0;el("hopeAdminNext").disabled=!authorized||busy||!hasMore;el("hopeAdminCancelExport").disabled=!exporting||exportCancelled;}
+function clear(){epoch++;authorized=false;opened=null;rows=[];stats=null;page=0;snapshot=null;hasMore=false;cursors=[null];exportCancelled=true;el("hopeAdminPrivate").hidden=true;el("hopeAdminRows").replaceChildren();el("hopeAdminStats").textContent="";el("hopeAdminState").textContent="يتطلب حساب المدير العام المخوّل.";controls();}
 const date=x=>x?new Date(x).toLocaleString("ar"):"—";
 function render(){
  if(!authorized)return;const found=rows;
@@ -74,21 +74,21 @@ async function exportCsv(){
  const header="\uFEFF"+line(["رقم السجل","الاسم","البريد","الهاتف","المحافظة","الجامعة","التخصص","المرحلة","الدعم","تاريخ التقديم","القرار","النتيجة منشورة","تاريخ المراجعة"]);
  const file="NABD-Hope-2027-private-"+new Date().toISOString().slice(0,10)+".csv";
  let writer=null,parts=[header],cursor=null,snap=null,n=0;
- exporting=true;controls();
+ exporting=true;exportCancelled=false;controls();
  try{
   if(typeof window.showSaveFilePicker==="function"){
    const handle=await window.showSaveFilePicker({suggestedName:file,types:[{description:"CSV",accept:{"text/csv":[".csv"]}}]});
    writer=await handle.createWritable();await writer.write(header);parts=[];
   }
-  while(exporting&&authorized){
+  while(!exportCancelled&&authorized){
    const result=await fetchPage(cursor,500,snap,{p_query:null,p_decision:null,p_governorate:null});
-   if(!exporting||!authorized)throw Error("تم إلغاء التصدير.");
+   if(exportCancelled||!authorized)throw Error("تم إلغاء التصدير.");
    snap=result.snapshot;const batch=result.rows;const csv=batch.map(r=>line([r.id,r.full_name,r.email,r.phone,gov[r.governorate],r.institution,r.field_of_study,stage[r.study_stage],(r.support_types||[]).map(x=>aid[x]).join("، "),r.created_at,labels[r.decision],r.result_published?"نعم":"لا",r.reviewed_at])).join("");
    if(writer)await writer.write(csv);else parts.push(csv);
    n+=batch.length;msg("جارٍ تصدير السجل: "+n.toLocaleString("ar")+" طلب");
    if(!result.has_more)break;if(!batch.length)throw Error("تعذر متابعة التصدير.");cursor=batch.at(-1);
   }
-  if(!exporting||!authorized)throw Error("تم إلغاء التصدير.");
+  if(exportCancelled||!authorized)throw Error("تم إلغاء التصدير.");
   if(writer){await writer.close();writer=null;}else{const u=URL.createObjectURL(new Blob(parts,{type:"text/csv;charset=utf-8"})),a=node("a");a.href=u;a.download=file;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
   msg("اكتمل تصدير "+n.toLocaleString("ar")+" طلبًا. لم يُنشر الملف للعامة.");
  }catch(e){if(writer)try{await writer.abort();}catch{}msg(e?.name==="AbortError"?"تم إلغاء التصدير.":e.message||"تعذر إكمال التصدير.");}
@@ -96,7 +96,7 @@ async function exportCsv(){
 }
 el("hopeScholarshipTab").addEventListener("click",()=>load(true));el("hopeAdminRefresh").onclick=()=>load(true);el("hopeAdminOpen").onclick=()=>setOpen(true);el("hopeAdminClose").onclick=()=>setOpen(false);el("hopeAdminExport").onclick=exportCsv;
 function search(){clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(busy){search();return;}load(true);},350);}
-el("hopeAdminSearch").oninput=search;el("hopeAdminFilter").onchange=search;el("hopeAdminGovernorate").onchange=search;el("hopeAdminPrev").onclick=()=>{if(!busy&&page>0){page--;load(false);}};el("hopeAdminNext").onclick=()=>{if(!busy&&hasMore){page++;load(false);}};el("hopeAdminCancelExport").onclick=()=>{exporting=false;controls();};
+el("hopeAdminSearch").oninput=search;el("hopeAdminFilter").onchange=search;el("hopeAdminGovernorate").onchange=search;el("hopeAdminPrev").onclick=()=>{if(!busy&&page>0){page--;load(false);}};el("hopeAdminNext").onclick=()=>{if(!busy&&hasMore){page++;load(false);}};el("hopeAdminCancelExport").onclick=()=>{exportCancelled=true;el("hopeAdminCancelExport").disabled=true;};
 client?.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")clear();});
 controls();
 })();
