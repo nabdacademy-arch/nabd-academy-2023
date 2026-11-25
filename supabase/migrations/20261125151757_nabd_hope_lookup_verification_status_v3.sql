@@ -1,0 +1,3 @@
+create or replace function public.nabd_hope_lookup_v1(p_code uuid,p_email text) returns jsonb language sql stable security invoker set search_path='' as $$
+ select coalesce((select jsonb_build_object('found',true,'status',case when a.result_published then a.decision else 'pending' end,'published',a.result_published,'verification',coalesce(v.verification_state,'missing')) from public.nabd_hope_applications a left join public.nabd_hope_verifications v on v.application_id=a.id where a.receipt_hash=extensions.digest(p_code::text,'sha256') and a.email=lower(btrim(p_email))),jsonb_build_object('found',false));
+$$;
