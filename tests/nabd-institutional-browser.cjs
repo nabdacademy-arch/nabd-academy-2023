@@ -10,12 +10,15 @@ async function main(){
  const browser=await chromium.launch({headless:true});
  try{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
-   const page=await browser.newPage({viewport,locale:"ar-PS"});
+   const page=await browser.newPage({offline:true,viewport,locale:"ar-PS"});
    const errors=[];page.on("pageerror",e=>errors.push(e.message));
    await page.goto(url("academy-directory.html"),{waitUntil:"domcontentloaded"});
    await page.locator("#directoryGrid a").first().waitFor({state:"visible"});
    assert.equal(await page.locator("#directoryGrid a:visible").count(),8,"Essential view should be short");
    assert.equal(await page.locator('a[href$="/admin.html"]:visible').count(),0,"Staff tools must not clutter essential list");
+   assert.equal(await page.evaluate(()=>navigator.onLine),false,"Directory uses local resources offline");
+   await page.fill("#directorySearch","بوابة الطالب");
+   assert.equal(await page.locator('#directoryGrid a[href$="/portal.html"]').isVisible(),true,"Student portal can be found offline");
    await page.fill("#directorySearch","research");
    assert.ok(await page.locator("#directoryGrid a:visible").count()>=3,"Global search must span groups");
    await page.fill("#directorySearch","not-a-matching-academy-service");
@@ -36,7 +39,7 @@ async function main(){
    await page.close();
   }
   for(const pagePath of ["academy.html","scholarships.html","portal.html","atlas/index.html","admin.html"]){
-   const page=await browser.newPage({viewport:{width:390,height:844}});
+   const page=await browser.newPage({offline:true,viewport:{width:390,height:844}});
    await page.goto(url(pagePath),{waitUntil:"domcontentloaded"});
    const launcher=page.locator("#nabdInstitutionalLauncher");
    await launcher.waitFor({state:"visible",timeout:12000});
@@ -59,7 +62,7 @@ async function main(){
    await page.close();
   }
   // The section finder operates on existing tab buttons without needing credentials.
-  const adminPage=await browser.newPage({viewport:{width:390,height:844}});
+  const adminPage=await browser.newPage({offline:true,viewport:{width:390,height:844}});
   await adminPage.goto(url("admin.html"),{waitUntil:"domcontentloaded"});
   const initialCount=await adminPage.evaluate(()=>[...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length);
   assert.equal(initialCount,6,"Director dashboard must start with a short essential navigation");
@@ -76,13 +79,13 @@ async function main(){
   });
   assert.ok(searchCount>=1&&searchCount<allCount,"Arabic module search must filter the full list");
   await adminPage.close();
-  const studentPage=await browser.newPage({viewport:{width:390,height:844}});
+  const studentPage=await browser.newPage({offline:true,viewport:{width:390,height:844}});
   await studentPage.goto(url("portal.html"),{waitUntil:"domcontentloaded"});
   assert.equal(await studentPage.locator("details.portal-more-actions").count(),1);
   assert.equal(await studentPage.locator("details.portal-more-actions .portal-more-links a").count(),3);
   assert.equal(await studentPage.locator("#logoutButton").count(),1);
   await studentPage.close();
-  const facultyPage=await browser.newPage({viewport:{width:390,height:844}});
+  const facultyPage=await browser.newPage({offline:true,viewport:{width:390,height:844}});
   await facultyPage.goto(url("lecturers.html"),{waitUntil:"domcontentloaded"});
   assert.equal(await facultyPage.locator("#studio-workspace .nabd-faculty-shortcuts a").count(),2);
   await facultyPage.close();
