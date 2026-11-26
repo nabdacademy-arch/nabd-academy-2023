@@ -80,8 +80,9 @@ $("hope-form").addEventListener("submit",async e=>{
 $("hope-copy-code").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("hope-receipt-code").textContent);status("hope-copy-message",t("تم النسخ.","Copied."));}catch{status("hope-copy-message",t("انسخ الرمز يدويًا.","Copy the code manually."));}});
 const lookupForm=$("hope-lookup-form"),lookupEmail=$("hope-lookup-email"),lookupCode=$("hope-lookup-code"),lookupButton=$("hope-lookup-submit");
 const verifyBox=$("hope-verification"),verifyForm=$("hope-verification-form"),verifyButton=$("hope-verify-submit");
-let verificationState=null,verificationBusy=false;
+let verificationState=null,verificationBusy=false,needsReceiptLookup=false;
 const verificationWords={
+ unconfirmed:["تعذّر تأكيد استلام الوثيقة. عند عودة الاتصال، استعلم بالبريد ورمز المتابعة قبل إعادة الرفع.","Document receipt is unconfirmed. Once connected, check status with your email and tracking code before uploading again."],
  missing:["لم تُرسل الوثيقة بعد — استكمل البيانات أدناه.","Document missing — complete the form below."],
  submitted:["تم استلام الوثيقة، وهي بانتظار المراجعة اليدوية.","Document received; manual review is pending."],
  verified:["تم اعتماد التحقق من الوثيقة من الإدارة.","The administration marked the document verified."],
@@ -97,7 +98,7 @@ function renderVerification(){
 }
 function setVerification(v){verificationState=v;renderVerification();}
 function hideVerification(){verificationState=null;verifyForm.reset();status("hope-verify-message","");renderVerification();}
-$("hope-verify-next").addEventListener("click",()=>{show("lookup");resultState=null;renderResult();setVerification("unknown");});
+$("hope-verify-next").addEventListener("click",()=>{show("lookup");resultState=null;renderResult();setVerification(needsReceiptLookup?"unconfirmed":"unknown");});
 const ve={
  INVALID_INPUT:["راجع نوع الهوية ورقمها ورمز البلد والملف.","Check identity type, number, country code and document."],
  FILE_LIMIT_OR_INVALID:["الملف غير صالح أو أكبر من 1 MB.","Invalid file or larger than 1 MB."],
@@ -109,7 +110,8 @@ const ve={
  STORAGE_UNAVAILABLE:["لم يتوفر تخزين الوثيقة الآن. حاول لاحقًا.","Document storage is unavailable. Try later."]
 };
 verifyForm.addEventListener("submit",async e=>{
- e.preventDefault();if(verificationBusy||!verificationState)return;
+ e.preventDefault();if(verificationBusy||needsReceiptLookup||verifyForm.hidden||!verificationState)return;
+ if(globalThis.navigator?.onLine===false){status("hope-verify-message",t("أنت دون اتصال. لم يبدأ رفع الوثيقة. أعد المحاولة بعد عودة الاتصال.","You are offline. The upload has not started. Retry when connected."));return;}
  if(!lookupEmail.checkValidity()||!lookupCode.checkValidity()){status("hope-verify-message",t("أدخل البريد ورمز المتابعة الصحيحين أعلاه.","Enter a valid email and tracking code above."));return;}
  if(!tokens.verify){status("hope-verify-message",t("أكمل التحقق الأمني.","Complete the security check."));return;}
  const f=new FormData(verifyForm),file=f.get("document");
@@ -122,9 +124,10 @@ verifyForm.addEventListener("submit",async e=>{
  try{
  const r=await fetch(url+"/functions/v1/nabd-hope-verify-enrollment",{method:"POST",headers:{apikey:key},body:f});
  const d=await r.json();
- if(!d.ok){status("hope-verify-message",ve[d.error]?t(...ve[d.error]):errorText(d.error));return;}
+ if(d?.error && !["SAVE_UNCONFIRMED","SERVICE_UNAVAILABLE","ALREADY_SUBMITTED"].includes(d.error)){status("hope-verify-message",ve[d.error]?t(...ve[d.error]):errorText(d.error));return;}
+ if(!r.ok||d?.ok!==true||d.state!=="submitted")throw new Error("Unconfirmed receipt");
  verifyForm.reset();setVerification("submitted");status("hope-verify-message",t("تم استلام الوثيقة. ستراجعها إدارة المنحة؛ لا يعني ذلك قبول الطلب.","Document received. The administration will review it; this does not mean acceptance."));
- }catch{status("hope-verify-message",t("تعذر تأكيد الرفع. استعلم عن الحالة قبل إعادة المحاولة.","Upload not confirmed. Check status before retrying."));}
+ }catch{needsReceiptLookup=true;setVerification("unconfirmed");}
  finally{verificationBusy=false;verifyButton.disabled=false;lookupButton.disabled=false;lookupEmail.readOnly=false;lookupCode.readOnly=false;resetCaptcha("verify");}
 });
 $("language")?.addEventListener("change",renderVerification);
@@ -141,7 +144,8 @@ lookupForm.addEventListener("submit",async e=>{
   if(d.found===false){showResult("notfound");return;}
   if(d.found!==true){showResult("error","SERVICE_UNAVAILABLE");return;}
   const publishedKinds=["review","shortlisted","accepted","waitlisted","rejected"];
-  showResult(d.published===true&&publishedKinds.includes(d.status)?d.status:"pending");setVerification(Object.hasOwn(verificationWords,d.verification)?d.verification:"unknown");
+  if(["missing","needs_correction","submitted","verified"].includes(d.verification))needsReceiptLookup=false;
+  showResult(d.published===true&&publishedKinds.includes(d.status)?d.status:"pending");setVerification(needsReceiptLookup?"unconfirmed":Object.hasOwn(verificationWords,d.verification)?d.verification:"unknown");
  }catch{showResult("error","SERVICE_UNAVAILABLE");}
  finally{lookupButton.disabled=false;lookupEmail.readOnly=false;lookupCode.readOnly=false;resetCaptcha("lookup");}
 });
