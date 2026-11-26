@@ -45,7 +45,11 @@ const path=require("node:path");
       if(width===390){
         await page.locator('.a3d-item[data-organ="heart"]').click();
         await page.locator("#a3dTrue3D").click();
-        await page.waitForFunction(()=>{const text=document.querySelector("#a3dModelStatus")?.textContent||"";return text.includes("لم يتوفر")||text.includes("تعذّر تحميل")},{timeout:15000}).catch(()=>{});
+        await page.waitForFunction(() => {
+          const message = document.querySelector("#a3dModelStatus")?.textContent || "";
+          return message.includes("لم يتوفر") || message.includes("تعذّر تحميل");
+        }, null, {timeout: 15000});
+        assert.equal(await page.locator("#a3dTrue3D").isEnabled(), true, "Retry is available after the viewer fails");
         assert.equal(await page.locator('#a3dViewport[data-mode="mesh"]').count(),0,"External CDN failure should preserve SVG fallback");
         assert.ok(await page.locator("#a3dImage").isVisible(),"Fallback remains visible");
         await page.locator('.a3d-item[data-organ="brain"]').click();
