@@ -141,6 +141,17 @@ try{
   assert.equal(await page.locator("#chambers button").count(),4);
   await page.goto(url+"/clinical-hub.html");
   assert.equal(await page.locator("#caseList button").count(),22);
+  await page.locator("#caseList button").first().click();
+  await page.locator("#optionList button").first().click();
+  await page.locator("#nextStep").click();
+  const caseTitle = await page.locator("#caseTitle").innerText();
+  const decisionTitle = await page.locator("#stepTitle").innerText();
+  assert.match(await page.locator("#stepCounter").innerText(), /2/);
+  await page.reload();
+  assert.equal(await page.locator("#caseTitle").innerText(), caseTitle);
+  assert.equal(await page.locator("#stepTitle").innerText(), decisionTitle);
+  assert.match(await page.locator("#stepCounter").innerText(), /2/);
+  assert.equal(await page.locator("#totalAttempts").innerText(), "3");
   await page.goto(url+"/hospital-3d.html");
   assert.equal(await page.locator("#wingList button").count(),13);
   const offlineImage=await page.evaluate(async()=>{
