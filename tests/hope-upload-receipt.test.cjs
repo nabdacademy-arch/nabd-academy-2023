@@ -21,7 +21,7 @@ function page(lang, online, responses) {
   }
   const doc = {getElementById:element, querySelectorAll:()=>[], querySelector:()=>null,
     createElement:()=>({setAttribute(){},append(){}}), head:{append(){}}, documentElement:{lang}};
-  class File {size=16;}
+  class File {size=16; type='application/pdf';}
   class FormData extends Map {
     constructor() {
       super([['document', new File()], ['number','123456789'], ['issuer','PS'], ['kind','national_id']]);
