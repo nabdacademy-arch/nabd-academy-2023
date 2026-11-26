@@ -641,13 +641,23 @@ $("ql-save-draft").addEventListener("click",async()=>{
  }catch(e){status("ql-save-status",e.message||"تعذر حفظ المسودة.","error")}
  finally{b.disabled=false}
 });
+let examListRequest=0;
 async function loadExams(){
- if(!director)return;
- const {data,error}=await client.from("nabd_quality_exams")
+ const owner=director;
+ if(!owner)return;
+ const request=++examListRequest;
+ let response;
+ try{
+   response=await client.from("nabd_quality_exams")
    .select("id,title,source_filename,source_path,questions,course_id,duration_minutes,status,opens_at,closes_at,created_at")
-   .eq("created_by",director.id).order("created_at",{ascending:false}).limit(100);
- if(error){status("ql-list-status","تعذر تحميل الامتحانات.","error");return;}
- exams=data||[];
+   .eq("created_by",owner.id).order("created_at",{ascending:false}).limit(100);
+ }catch(error){
+   if(director===owner && request===examListRequest)throw error;
+   return;
+ }
+ if(director!==owner || request!==examListRequest)return;
+ if(response?.error || !Array.isArray(response?.data)){status("ql-list-status","تعذر تحميل الامتحانات.","error");return;}
+ exams=response.data;
  $("ql-draft-count").textContent=exams.filter(x=>x.status==="draft").length;
  $("ql-active-count").textContent=exams.filter(x=>x.status==="published"&&new Date(x.closes_at)>new Date()).length;
  renderExams();
