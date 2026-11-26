@@ -78,7 +78,8 @@ function readDraft(caseId){
   const item=clinicalCases.find(v=>v.id===caseId);
   const draft=record && typeof record==="object" && !Array.isArray(record)?record[caseId]:null;
   if(!item || !draft || !Number.isInteger(draft.step)||draft.step<0||draft.step>=item.steps.length||!Array.isArray(draft.picks))return null;
-  if(draft.picks.length>item.steps.length || draft.picks.slice(0,draft.step).some((n,i)=>!Number.isInteger(n)||n<0||n>=item.steps[i].options.length))return null;
+  if((Object.hasOwn(draft,"revision") ? draft.revision : 1)!==(item.revision??1))return null;
+  if(draft.picks.length<draft.step || draft.picks.length>item.steps.length || draft.picks.slice(0,draft.step).some((n,i)=>!Number.isInteger(n)||n<0||n>=item.steps[i].options.length))return null;
   if(draft.picks.some((n,i)=>n!==null&&n!==undefined&&(!Number.isInteger(n)||n<0||n>=item.steps[i].options.length)))return null;
   return draft;
 }
