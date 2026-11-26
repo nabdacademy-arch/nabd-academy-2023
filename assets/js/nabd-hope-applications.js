@@ -119,6 +119,10 @@ verifyForm.addEventListener("submit",async e=>{
  }
  const file=f.get("document");
  if(!(file instanceof File)||file.size<1||file.size>1048576){status("hope-verify-message",t("اختر ملفًا لا يتجاوز 1 MB.","Select a document up to 1 MB."));return;}
+ if(!["application/pdf","image/jpeg","image/png"].includes(file.type)){
+   status("hope-verify-message",t(...ve.FILE_TYPE));
+   return;
+ }
  const number=String(f.get("number")||"").trim().replace(/[٠-٩]/g,x=>String("٠١٢٣٤٥٦٧٨٩".indexOf(x))).replace(/[۰-۹]/g,x=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(x))).toUpperCase();
  const issuer=String(f.get("issuer")||"").trim().toUpperCase();
  if(!/^[A-Z0-9]{5,20}$/.test(number)||!/^[A-Z]{2}$/.test(issuer)||(f.get("kind")==="national_id"&&issuer==="PS"&&!/^[0-9]{9}$/.test(number))){status("hope-verify-message",t("تحقق من صيغة الرقم ورمز بلد الإصدار. الهوية الفلسطينية تتطلب 9 أرقام.","Check the ID format and country code. Palestinian national ID requires 9 digits."));return;}
