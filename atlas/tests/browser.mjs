@@ -82,10 +82,27 @@ try{
   await page.locator("#nextStep").click();
   await page.reload();
   assert.match(await page.locator("#stepCounter").textContent(),/2/);
+  await page.evaluate(()=>{
+    const write=Storage.prototype.setItem;
+    Storage.prototype.setItem=function(key,value){
+      if(key==="nabd_atlas_clinical_history_v1")throw new DOMException("Storage full","QuotaExceededError");
+      return write.call(this,key,value);
+    };
+    window.restoreTestStorage=()=>{Storage.prototype.setItem=write;};
+  });
   for(let i=1;i<3;i++){
     await page.locator("#optionList button").first().click();
     await page.locator("#nextStep").click();
   }
+  const retry=page.locator("#retrySave");
+  assert.equal(await retry.isVisible(),true);
+  assert.equal(await page.locator("#totalAttempts").textContent(),"0");
+  await retry.click();
+  assert.equal(await retry.isVisible(),true);
+  await page.evaluate(()=>window.restoreTestStorage());
+  await retry.click();
+  assert.equal(await retry.isVisible(),false);
+  assert.equal(await page.locator("#storageWarning").textContent(),"");
   assert.equal(await page.locator("#finalScore").textContent(),"6 / 6");
   assert.equal(await page.locator("#totalAttempts").textContent(),"1");
   await page.locator("#decisionHistory button").first().click();
@@ -141,6 +158,17 @@ try{
   assert.equal(await page.locator("#chambers button").count(),4);
   await page.goto(url+"/clinical-hub.html");
   assert.equal(await page.locator("#caseList button").count(),22);
+  await page.locator("#caseList button").first().click();
+  await page.locator("#optionList button").first().click();
+  await page.locator("#nextStep").click();
+  const caseTitle = await page.locator("#caseTitle").innerText();
+  const decisionTitle = await page.locator("#stepTitle").innerText();
+  assert.match(await page.locator("#stepCounter").innerText(), /2/);
+  await page.reload();
+  assert.equal(await page.locator("#caseTitle").innerText(), caseTitle);
+  assert.equal(await page.locator("#stepTitle").innerText(), decisionTitle);
+  assert.match(await page.locator("#stepCounter").innerText(), /2/);
+  assert.equal(await page.locator("#totalAttempts").innerText(), "3");
   await page.goto(url+"/hospital-3d.html");
   assert.equal(await page.locator("#wingList button").count(),13);
   const offlineImage=await page.evaluate(async()=>{
