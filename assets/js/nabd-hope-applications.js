@@ -112,7 +112,12 @@ verifyForm.addEventListener("submit",async e=>{
  e.preventDefault();if(verificationBusy||!verificationState)return;
  if(!lookupEmail.checkValidity()||!lookupCode.checkValidity()){status("hope-verify-message",t("أدخل البريد ورمز المتابعة الصحيحين أعلاه.","Enter a valid email and tracking code above."));return;}
  if(!tokens.verify){status("hope-verify-message",t("أكمل التحقق الأمني.","Complete the security check."));return;}
- const f=new FormData(verifyForm),file=f.get("document");
+ const f=new FormData(verifyForm);
+ if(f.get("consent")!=="on"){
+   status("hope-verify-message",t("راجع إقرار استخدام الوثيقة وحدّد مربع الموافقة قبل الإرسال.","Review the document-use statement and select the consent checkbox before submitting."));
+   return;
+ }
+ const file=f.get("document");
  if(!(file instanceof File)||file.size<1||file.size>1048576){status("hope-verify-message",t("اختر ملفًا لا يتجاوز 1 MB.","Select a document up to 1 MB."));return;}
  const number=String(f.get("number")||"").trim().replace(/[٠-٩]/g,x=>String("٠١٢٣٤٥٦٧٨٩".indexOf(x))).replace(/[۰-۹]/g,x=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(x))).toUpperCase();
  const issuer=String(f.get("issuer")||"").trim().toUpperCase();
