@@ -115,35 +115,49 @@ async function authenticate(){
  await Promise.all([loadCourses(),loadExams(),loadGraderStatus(),loadSmartCourses()]);
 }
 // Persistent server-side AI grading agent. Only the logged-in director may toggle it.
-let graderEnabled=false,graderBusy=false;
+let graderEnabled=null,graderBusy=false;
+let graderStatusRequest=0;
+const graderReadError="تعذّر قراءة حالة بوت التصحيح. تحقق من اتصال قاعدة البيانات.";
 function graderButtons(){
- $("ql-bot-start").disabled=graderBusy||graderEnabled;
- $("ql-bot-stop").disabled=!graderEnabled;
+ $("ql-bot-start").disabled=graderBusy||graderEnabled!==false;
+ $("ql-bot-stop").disabled=graderEnabled===false;
  $("ql-bot-run").disabled=graderBusy||!graderEnabled;
  $("ql-bot-refresh").disabled=graderBusy;
 }
 async function loadGraderStatus(){
- if(!director)return;
- const {data,error}=await client.rpc("nabd_gradebot_status");
- if(error||!data){
-   status("ql-bot-status","تعذّر قراءة حالة بوت التصحيح. تحقق من اتصال قاعدة البيانات.","error");
+ const owner=director;
+ if(!owner)return;
+ const request=++graderStatusRequest;
+ let reply;
+ try{reply=await client.rpc("nabd_gradebot_status");}catch{reply=null;}
+ if(owner!==director||request!==graderStatusRequest)return;
+ const data=reply?.data;
+ if(reply?.error||typeof data?.enabled!=="boolean"){
+   graderEnabled=null;
+   $("ql-bot-state").textContent="غير معروف";
+   $("ql-bot-state").className="ql-tag";
+   $("ql-bot-summary").textContent="إحصاءات التصحيح غير متاحة.";
+   graderButtons();
+   status("ql-bot-status",graderReadError,"error");
    return;
  }
- graderEnabled=Boolean(data.enabled);
+ if($("ql-bot-status").textContent===graderReadError)status("ql-bot-status","");
+ graderEnabled=data.enabled;
+ const count=value=>Number.isSafeInteger(value)&&value>=0?String(value):"غير متاح";
  const state=$("ql-bot-state");
  state.textContent=graderEnabled?"يعمل تلقائيًا":"متوقف";
  state.className="ql-tag"+(graderEnabled?" ql-tag-green":"");
  const last=data.last_run?isoDate(data.last_run):"لم يبدأ بعد";
  $("ql-bot-summary").textContent=
-   "بانتظار التصحيح الآلي: "+(data.pending||0)+
-   " · تتطلب مراجعة: "+(data.needs_review||0)+
-   " · مرات التصحيح: "+(data.total_graded||0)+
+   "بانتظار التصحيح الآلي: "+count(data.pending)+
+   " · تتطلب مراجعة: "+count(data.needs_review)+
+   " · مرات التصحيح: "+count(data.total_graded)+
    " · آخر تشغيل: "+last;
  if(data.last_error)status("ql-bot-status","آخر مشكلة تشغيل: "+String(data.last_error).slice(0,200),"error");
  graderButtons();
 }
 async function setGrader(enabled){
- if(!director||(graderBusy&&enabled))return;
+ if(!director||(enabled&&(graderBusy||graderEnabled!==false)))return;
  if(enabled&&!window.confirm("تشغيل بوت التصحيح الذكي؟ سيصحح جميع الإجابات المعلّقة تدريجيًا، ويعرض درجات أولية وملاحظات للطلاب. ستظل درجات الأسئلة المقالية قابلة لمراجعتك واعتمادك."))return;
  if(!enabled&&!window.confirm("إيقاف بوت التصحيح؟ سيتوقف التقييم الآلي الجديد على الخادم، وستبقى النتائج المحفوظة كما هي."))return;
  graderBusy=true;graderButtons();
