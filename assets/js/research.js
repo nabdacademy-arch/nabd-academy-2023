@@ -11,6 +11,17 @@ function esc(v = '') {
   }[c]));
 }
 
+function researchSourceHref(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value, document.baseURI);
+    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
 async function loadResearch() {
   const slug = new URLSearchParams(location.search).get('id');
   const lang = localStorage.getItem('nabd_lang') || 'en';
@@ -71,6 +82,7 @@ async function loadResearch() {
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
+  const sourceHref = researchSourceHref(data.evidence_url);
   document.title = `${title} | NABD Research Center`;
 
   box.innerHTML = `
@@ -114,7 +126,7 @@ async function loadResearch() {
     }
 
     ${
-      data.evidence_url
+      sourceHref
         ? `
           <div class="notice-card">
             <strong>
@@ -128,9 +140,9 @@ async function loadResearch() {
             <p>
               <a
                 class="text-link"
-                href="${esc(data.evidence_url)}"
+                href="${esc(sourceHref)}"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
               >
                 ${
                   lang === 'ar'
