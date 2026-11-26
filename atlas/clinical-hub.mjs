@@ -285,8 +285,12 @@ function renderReport({record=false}={}){
   if(record && signature!==lastRecorded){
     const records=completionHistory();
     records.push({caseId:current.id,score:result.score,maxPoints:result.maxPoints,at:new Date().toISOString(),answers:[...picks]});
-    if(!safeWrite(HISTORY_KEY,records.slice(-40)))warning();
-    lastRecorded=signature;clearDraft(current.id);
+    if(safeWrite(HISTORY_KEY,records.slice(-40))){
+      lastRecorded=signature;
+      clearDraft(current.id);
+    }else{
+      warning();
+    }
   }
   lastGrade=result;reportMode=true;
   $("caseExercise").hidden=true;$("caseReport").hidden=false;
