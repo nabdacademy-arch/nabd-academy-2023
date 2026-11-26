@@ -9,7 +9,7 @@ const html = fs.readFileSync(path.join(root, 'nabd-hope.html'), 'utf8');
 const script = html.match(/src="([^"?]*nabd-hope-applications\.js)/)[1];
 const source = fs.readFileSync(path.join(root, script), 'utf8');
 
-function page(lang, consent) {
+function page(lang, consent, fileType = 'application/pdf') {
   const nodes = new Map();
   const calls = [];
   function element(id) {
@@ -22,7 +22,7 @@ function page(lang, consent) {
   }
   const doc = {getElementById:element, querySelectorAll:()=>[], querySelector:()=>null,
     createElement:()=>({}), head:{append(){}}, documentElement:{lang}};
-  class File {size=16;}
+  class File {size=16; type=fileType;}
   class FormData extends Map {
     constructor() {
       super([['document', new File()], ['number','123456789'], ['issuer','PS'], ['kind','national_id']]);
@@ -34,7 +34,7 @@ function page(lang, consent) {
     turnstile:{render(selector,options){options.callback('sample-token');return selector;},reset(){}}};
   vm.runInNewContext(source,{window,document:doc,File,FormData,fetch:async (url,options)=>{
     calls.push(options.body);
-    return {json:async()=>({ok:true})};
+    return {ok:true,json:async()=>({ok:true,state:'submitted'})};
   }});
   element('hope-verify-next').listeners.click();
   return {calls, submit:()=>element('hope-verification-form').listeners.submit({preventDefault(){}}),
@@ -62,6 +62,25 @@ for (const lang of ['ar','en']) {
         assert.equal(view.calls.length,0);
         assert.match(view.message(),lang==='ar'?/مربع الموافقة/:/consent checkbox/);
       }
+    }
+  });
+}
+
+for (const lang of ['ar','en']) {
+  test(lang + ': rejects unsupported or undeclared file types before upload',async()=>{
+    for (const type of ['image/heic','text/plain','']) {
+      const view = page(lang,'on',type);
+      await view.submit();
+      assert.equal(view.calls.length,0);
+      assert.match(view.message(),/PDF/);
+    }
+  });
+  test(lang + ': sends PDF, JPEG and PNG documents',async()=>{
+    for (const type of ['application/pdf','image/jpeg','image/png']) {
+      const view = page(lang,'on',type);
+      await view.submit();
+      assert.equal(view.calls.length,1);
+      assert.equal(view.calls[0].get('document').type,type);
     }
   });
 }
