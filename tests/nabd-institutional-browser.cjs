@@ -18,6 +18,15 @@ async function main(){
    assert.equal(await page.locator('a[href$="/admin.html"]:visible').count(),0,"Staff tools must not clutter essential list");
    await page.fill("#directorySearch","research");
    assert.ok(await page.locator("#directoryGrid a:visible").count()>=3,"Global search must span groups");
+   const studentPortal=page.locator('#directoryGrid a[href$="/portal.html"]');
+   for(const query of ["grades   portal", "الطَّالِب   بوابة", "grades بوابة"]){
+    await page.fill("#directorySearch",query);
+    assert.ok(await studentPortal.isVisible(),"Portal matches all search terms: "+query);
+   }
+   await page.fill("#directorySearch","grades no-such-service");
+   assert.ok(await page.locator("#directoryEmpty").isVisible(),"Every term must match");
+   await page.fill("#directorySearch","");
+   assert.equal(await page.locator("#directoryGrid a:visible").count(),8,"Clearing search restores essentials");
    await page.fill("#directorySearch","not-a-matching-academy-service");
    assert.equal(await page.locator("#directoryEmpty").isVisible(),true);
    await page.click('[data-filter="management"]');

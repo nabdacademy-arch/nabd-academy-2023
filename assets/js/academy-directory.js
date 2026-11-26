@@ -50,11 +50,12 @@ function updateContent(){
  render();
 }
 function render(){
- const query=normalize(search.value.trim());
+ const query=normalize(search.value).trim();
+ const terms=query.split(/\s+/).filter(Boolean);
  let shown=0;
  for(const {entry,link} of cards){
   // A search covers the entire academy, regardless of the active category.
-  const matchQuery=!query||link.dataset.search.includes(query);
+  const matchQuery=terms.every(term=>link.dataset.search.includes(term));
   const matchGroup=Boolean(query)||filter==="all"||(filter==="essential"?entry.essential:entry.group===filter);
   const visible=matchQuery&&matchGroup;
   link.hidden=!visible;if(visible)shown++;
