@@ -10,7 +10,7 @@ function init(){
   operations:["overview","applications","executives","councilAccounts","mediaReview","executiveTasks","meetings","bulletins"],
   governance:["claims","certificates","feedback","resources","audit","councilAccounts"]
  };
- const aliases={hopeScholarship:"منحة نبض الأمل المنح التسجيل النتائج",students:"الطلاب",enrollments:"التسجيلات الدورات",claims:"طلبات الشهادات",certificates:"الشهادات",feedback:"الشكاوى المقترحات",applications:"الطلبات التنفيذية",overview:"نظرة عامة الملخص التنفيذي",councilAccounts:"حسابات المجالس","os-admin-suite":"التعليم الجودة المقررات الامتحانات",executives:"المناصب",mediaReview:"الإعلام الأخبار",executiveTasks:"المهام",meetings:"الاجتماعات",bulletins:"التعاميم",resources:"الوثائق",audit:"سجل القرارات",consultations:"الاستشارات الطبية",officialDocumentsEntry:"الوثائق الرسمية مركز طباعة المستندات"};
+ const aliases={hopeScholarship:"NABD Hope Scholarship منحة نبض الأمل المنح التسجيل النتائج",students:"الطلاب",enrollments:"التسجيلات الدورات",claims:"طلبات الشهادات",certificates:"الشهادات",feedback:"الشكاوى المقترحات",applications:"الطلبات التنفيذية",overview:"نظرة عامة الملخص التنفيذي",councilAccounts:"حسابات المجالس","os-admin-suite":"التعليم الجودة المقررات الامتحانات",executives:"المناصب",mediaReview:"الإعلام الأخبار",executiveTasks:"المهام",meetings:"الاجتماعات",bulletins:"التعاميم",resources:"الوثائق",audit:"سجل القرارات",consultations:"الاستشارات الطبية",officialDocumentsEntry:"الوثائق الرسمية مركز طباعة المستندات"};
  const norm=value=>String(value||"").toLowerCase().normalize("NFKD").replace(/[\u064b-\u065f\u0670\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي");
  function render(){
   const query=norm(search.value.trim()),group=category.value;

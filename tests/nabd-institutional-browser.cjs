@@ -61,8 +61,15 @@ async function main(){
   // The section finder operates on existing tab buttons without needing credentials.
   const adminPage=await browser.newPage({viewport:{width:390,height:844}});
   await adminPage.goto(url("admin.html"),{waitUntil:"domcontentloaded"});
-  const initialCount=await adminPage.evaluate(()=>[...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length);
-  assert.equal(initialCount,6,"Director dashboard must start with a short essential navigation");
+  const shownTabs=()=>adminPage.locator("#app .tabs [data-tab]:not([hidden])").evaluateAll(nodes=>nodes.map(node=>node.dataset.tab).sort());
+  assert.deepEqual(await shownTabs(),["consultations","enrollments","executiveTasks","hopeScholarship","os-admin-suite","overview","students"]);
+  for(const term of ["Hope Scholarship","منحة نبض الأمل","no-such-scholarship-code"]){
+   await adminPage.locator("#nabdAdminSearch").evaluate((input,term)=>{
+    input.value=term;
+    input.dispatchEvent(new Event("input",{bubbles:true}));
+   },term);
+   assert.deepEqual(await shownTabs(),term==="no-such-scholarship-code"?[]:["hopeScholarship"]);
+  }
   const allCount=await adminPage.evaluate(()=>{
    const area=document.getElementById("nabdAdminCategory");
    area.value="all";area.dispatchEvent(new Event("change",{bubbles:true}));
