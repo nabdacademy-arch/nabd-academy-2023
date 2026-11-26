@@ -55,10 +55,61 @@ test('Control permissions match authorized administrator and active founder logi
  assert.match(timerSql,/Admin or active founder authorization required/);
 });
 
+test('Cortex display clock pauses when hidden and catches up on return', async () => {
+ const {createContext, runInContext} = await import('node:vm');
+ const nodes = new Map(), intervals = new Map();
+ const visibility = [];
+ const document = {
+  hidden: true,
+  getElementById(id) {
+   if (!nodes.has(id)) nodes.set(id, {addEventListener() {}});
+   return nodes.get(id);
+  },
+  addEventListener(name, callback) {
+   if (name === 'visibilitychange') visibility.push(callback);
+  }
+ };
+ let now = 10000, nextId = 0;
+ const context = createContext({
+  window: {NABD_CONFIG:{}}, document, location:{hostname:'fixture.invalid'},
+  createClient: () => ({}), Date: class extends Date {static now() {return now;}},
+  setInterval(callback, delay) {
+   intervals.set(++nextId, {callback, delay});
+   return nextId;
+  },
+  clearInterval(id) { intervals.delete(id); }
+ });
+ const script = ui.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
+ runInContext(script.replace(/^import .*;$/m, ''), context);
+ const clocks = () => [...intervals.values()].filter(entry => entry.delay === 1000);
+ const show = hidden => {
+  document.hidden = hidden;
+  visibility.forEach(notify => notify());
+ };
+ assert.equal(clocks().length, 0);
+ runInContext("authorized=true; busy=true; probeNextAllowed=20000; enabled=true; runtimeState={active_since:new Date(0).toISOString(), elapsed_seconds:60}", context);
+ show(false);
+ assert.equal(nodes.get('activeTimer').textContent, '00:00:10');
+ assert.match(nodes.get('probeCooldown').textContent, /10 ثانية/);
+ show(false);
+ assert.equal(clocks().length, 1);
+ now += 1000;
+ clocks()[0].callback();
+ assert.equal(nodes.get('totalTimer').textContent, '00:01:11');
+ show(true);
+ assert.equal(clocks().length, 0);
+ now += 120000;
+ show(false);
+ assert.equal(nodes.get('totalTimer').textContent, '00:03:11');
+ assert.equal(nodes.get('probeCooldown').textContent, 'يمكن بدء اختبار جديد.');
+ runInContext("enabled=null", context);
+ clocks()[0].callback();
+ assert.equal(nodes.get('totalTimer').textContent, '—');
+});
+
 test('Uptime timers persist across visits and finish at stop',()=>{
  for(const id of ['activeTimer','totalTimer','lastToggle','taskTimer'])assert.match(ui,new RegExp('id="'+id+'"'));
  assert.match(ui,/select\('enabled,updated_at,active_since,last_stopped_at,elapsed_seconds'\)/);
- assert.match(ui,/setInterval\(renderTimers,1000\)/);
  assert.match(ui,/taskStartedAt=performance\.now\(\)/);
  assert.match(timerSql,/add column if not exists active_since timestamptz/);
  assert.match(timerSql,/add column if not exists elapsed_seconds bigint/);
