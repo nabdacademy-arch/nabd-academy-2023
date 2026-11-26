@@ -36,6 +36,15 @@ on:
 permissions:
   contents: read
 jobs:
+  workspace-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test tests/nabd-workspaces-organization.test.cjs
   navigation-and-mobile:
     name: Institutional directory safety and responsive browser tests
     runs-on: ubuntu-24.04
@@ -50,7 +59,6 @@ jobs:
           node --check assets/js/nabd-institutional-nav.js
           node --check assets/js/academy-directory.js
           node --check assets/js/nabd-admin-module-finder.js
-          node --test tests/nabd-workspaces-organization.test.cjs
           node --check tests/nabd-institutional-browser.cjs
           node --test tests/nabd-institutional-navigation.test.cjs
       - name: Install pinned Playwright
