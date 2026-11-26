@@ -226,7 +226,22 @@ el('loginForm').addEventListener('submit',async ev=>{
 el('logout').addEventListener('click',async()=>{await db.auth.signOut();enabled=null;sessionUI(false);updateButtons();});
 el('start').onclick=()=>setEnabled(true);el('stop').onclick=()=>setEnabled(false);el('refresh').onclick=loadState;
 el('taskForm').addEventListener('submit',runTask);el('loadTasks').onclick=loadTasks;el('loadRuns').onclick=loadRuns;
-setInterval(()=>{renderTimers();if(authorized)renderProbeCooldown();},1000);
+let displayTimer = null;
+function refreshClock() {
+ if (authorized) renderProbeCooldown();
+ else renderTimers();
+}
+function syncClockVisibility() {
+ if (document.hidden) {
+  if (displayTimer !== null) clearInterval(displayTimer);
+  displayTimer = null;
+ } else if (displayTimer === null) {
+  refreshClock();
+  displayTimer = setInterval(refreshClock, 1000);
+ }
+}
+document.addEventListener('visibilitychange', syncClockVisibility);
+syncClockVisibility();
 setInterval(()=>{if(authorized&&!busy&&!document.hidden)loadState();},60000);
 document.addEventListener('visibilitychange',()=>{if(authorized&&!busy&&!document.hidden)loadState();});
 if(location.hostname!=='nabdacademy-arch.github.io' && location.hostname!=='localhost'){

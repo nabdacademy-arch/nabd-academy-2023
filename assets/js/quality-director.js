@@ -700,16 +700,22 @@ async function deleteExam(x,trigger){
    if(editingId===x.id)resetBuilder();
    let fileNotice="";
    if(x.source_path){
-     const {data:references,error:referenceError}=await client.from("nabd_quality_exams")
-       .select("id").eq("source_path",x.source_path).limit(1);
-     if(referenceError){
-       fileNotice=" تم الاحتفاظ بملف PDF لأننا لم نتمكن من التحقق من مراجع التخزين.";
-     }else if(!references?.length){
-       const {error:storageError}=await client.storage.from(bucket).remove([x.source_path]);
-       if(storageError)fileNotice=" حُذف الامتحان لكن تعذّر تنظيف ملف PDF المرتبط.";
+     try{
+       const {data:references,error:referenceError}=await client.from("nabd_quality_exams")
+         .select("id").eq("source_path",x.source_path).limit(1);
+       if(referenceError||!Array.isArray(references)){
+         fileNotice=" تم الاحتفاظ بملف PDF لتعذّر التحقق من مراجع التخزين.";
+       }else if(references.length===0){
+         const {error:storageError}=await client.storage.from(bucket).remove([x.source_path]);
+         if(storageError)fileNotice=" تعذّر تأكيد تنظيف ملف PDF المرتبط.";
+       }
+     }catch{
+       fileNotice=" تعذّر تأكيد تنظيف ملف PDF المرتبط.";
      }
    }
-   await loadExams();
+   try{await loadExams();}catch{
+     fileNotice+=" تعذّر تحديث قائمة الامتحانات.";
+   }
    status("ql-list-status","تم حذف الامتحان "+label+" نهائيًا، مع "+
      Number(data.deleted_submissions||0)+" تسليم/نتيجة و"+
      Number(data.deleted_proctor_events||0)+" حدث مراقبة."+fileNotice,"success");
