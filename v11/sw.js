@@ -15,8 +15,26 @@ self.addEventListener("fetch",event=>{
   const url=new URL(request.url);
   if(url.origin!==self.location.origin||!url.pathname.startsWith(ROOT.pathname))return;
   if(request.mode==="navigate"){
-    event.respondWith(fetch(request).catch(async()=>await caches.match("./index.html")||Response.error()));
+    if(request.headers.has("authorization"))return;
+    const shell = new URL("./index.html", ROOT);
+    if(url.pathname!==ROOT.pathname && url.pathname!==shell.pathname)return;
+    event.respondWith(loadShell(request, shell.href));
     return;
   }
   event.respondWith(caches.match(request).then(hit=>hit||fetch(request)));
 });
+
+async function loadShell(request, shellURL){
+  let response;
+  try {
+    response = await fetch(request);
+    if (![502, 503, 504].includes(response.status)) return response;
+  } catch {
+    response = Response.error();
+  }
+  try {
+    return await caches.match(shellURL, {cacheName: CACHE}) || response;
+  } catch {
+    return response;
+  }
+}
