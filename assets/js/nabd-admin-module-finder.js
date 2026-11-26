@@ -29,7 +29,12 @@ function init(){
   if(selected?.hidden)tabs.querySelector('button[data-tab]:not([hidden])')?.click();
  });
  search.addEventListener("input",render);
- const initial=decodeURIComponent(location.hash.slice(1));
+ let initial="";
+ try {
+  initial=decodeURIComponent(location.hash.slice(1));
+ } catch {
+  // An incomplete URL fragment should leave the default category usable.
+ }
  if(initial&&!groups.essential.includes(initial))category.value="all";
  new MutationObserver(records=>{if(records.some(r=>r.addedNodes.length||r.removedNodes.length))render();}).observe(tabs,{childList:true});
  render();
