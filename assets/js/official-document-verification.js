@@ -31,10 +31,11 @@ async function check(e){
   let d;
   try{d=await r.json();}catch{if(request===latestRequest)showUnavailable();return;}
   if(request!==latestRequest)return;
-  const details=d?.number?[["رقم المستند",d.number],["نوع المستند",names[d.type]||"—"],["تاريخ الإصدار",fmt(d.issued_at)]]:[];
-  if(d?.status==="valid")show("valid","✓ المستند ساري في سجل نبض","تم تأكيد وجود هذا المستند في سجل الأكاديمية وأنه لم يُلغَ.",details);
-  else if(d?.status==="void")show("void","المستند ملغى","ألغت الإدارة هذا المستند ولا يجوز اعتباره ساريًا.",details);
-  else if(d?.status==="invalid")show("invalid","لم يُعثر على المستند","رمز التحقق غير صحيح أو المستند غير مسجّل.");
+  if(!d || typeof d!=="object" || Array.isArray(d)){showUnavailable();return;}
+  const details=d.number?[["رقم المستند",d.number],["نوع المستند",names[d.type]||"—"],["تاريخ الإصدار",fmt(d.issued_at)]]:[];
+  if(d.status==="valid")show("valid","✓ المستند ساري في سجل نبض","تم تأكيد وجود هذا المستند في سجل الأكاديمية وأنه لم يُلغَ.",details);
+  else if(d.status==="void")show("void","المستند ملغى","ألغت الإدارة هذا المستند ولا يجوز اعتباره ساريًا.",details);
+  else if(d.status==="invalid")show("invalid","لم يُعثر على المستند","رمز التحقق غير صحيح أو المستند غير مسجّل.");
   else showUnavailable();
  }catch(_){if(request===latestRequest)show("unavailable","تعذّر الاتصال","حاول مجددًا عند توفر الإنترنت.");}
  finally{if(request===latestRequest)$("check").disabled=false;}
