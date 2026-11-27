@@ -10,7 +10,8 @@ test("all three internal workspaces use isolated styles; homepage remains untouc
 });
 test("director finder preserves role checks and existing native tab buttons",()=>{
  for(const id of ["nabdAdminModuleFinder","nabdAdminCategory","nabdAdminSearch","nabdAdminResults"])assert.ok(admin.includes('id="'+id+'"'));
- assert.match(admin,/src="assets\/js\/nabd-admin-module-finder\.js\?v=1"/);
+ const finderVersion=admin.match(/src="assets\/js\/nabd-admin-module-finder\.js\?v=(\d+)"/);
+ assert.ok(finderVersion && Number(finderVersion[1])>=1,"Load versioned internal module finder");
  assert.match(admin,/profile\.role!=="admin"/);
  assert.match(admin,/id="loginForm"/);
  for(const id of ["students","overview","applications","councilAccounts","consultations"])assert.ok(admin.includes('data-tab="'+id+'"'));
