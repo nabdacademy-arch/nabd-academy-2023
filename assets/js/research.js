@@ -11,42 +11,53 @@ function esc(v = '') {
   }[c]));
 }
 
+function researchSourceHref(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  try {
+    const url = new URL(value, document.baseURI);
+    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
 async function loadResearch() {
   const slug = new URLSearchParams(location.search).get('id');
-  const lang = localStorage.getItem('nabd_lang') || 'en';
+  let lang = 'en';
+  try {
+    if (localStorage.getItem('nabd_lang') === 'ar') lang = 'ar';
+  } catch {
+    // The project remains readable when browser storage is blocked.
+  }
+  const ar = lang === 'ar';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = ar ? 'rtl' : 'ltr';
+  const back = '<a class="btn" href="index.html#research">' +
+    (ar ? 'العودة إلى الأبحاث' : 'Back to Research') + '</a>';
 
-  if (!slug) {
-    box.innerHTML = `
-      <h1>Research project not found</h1>
-      <a class="btn" href="index.html#research">Back to Research</a>
-    `;
-    return;
+  function showMissing() {
+    box.innerHTML = '<h1>' + (ar ? 'لم يُعثر على المشروع البحثي' : 'Research project not found') + '</h1>' + back;
+  }
+  function showUnavailable() {
+    const retry = '?' + new URLSearchParams({id: slug}).toString();
+    box.innerHTML = '<h1>' + (ar ? 'تعذّر تحميل المشروع البحثي' : 'Could not load the research project') +
+      '</h1><p>' + (ar ? 'تحقق من الاتصال ثم أعد المحاولة.' : 'Check your connection and try again.') +
+      '</p><a class="btn" href="' + esc(retry) + '">' + (ar ? 'إعادة المحاولة' : 'Try again') + '</a> ' + back;
   }
 
-  if (!client) {
-    box.innerHTML = `
-      <h1>Backend unavailable</h1>
-      <p>The research database is not connected.</p>
-    `;
-    return;
+  if (!slug) return showMissing();
+  if (!client) return showUnavailable();
+  box.innerHTML = '<p role="status">' + (ar ? 'جارٍ تحميل المشروع البحثي…' : 'Loading research project…') + '</p>';
+  let response;
+  try {
+    response = await client.from('research_projects').select('*').eq('slug', slug).maybeSingle();
+  } catch {
+    return showUnavailable();
   }
-
-  box.innerHTML = `<p>Loading research project…</p>`;
-
-  const { data, error } = await client
-    .from('research_projects')
-    .select('*')
-    .eq('slug', slug)
-    .maybeSingle();
-
-  if (error || !data) {
-    box.innerHTML = `
-      <h1>Research project not found</h1>
-      <p>${esc(error?.message || 'This project does not exist.')}</p>
-      <a class="btn" href="index.html#research">Back to Research</a>
-    `;
-    return;
-  }
+  if (!response || response.error) return showUnavailable();
+  if (!response.data) return showMissing();
+  const data = response.data;
 
   const title =
     lang === 'ar'
@@ -68,9 +79,7 @@ async function loadResearch() {
       ? (data.abstract_ar || data.abstract_en)
       : data.abstract_en;
 
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
+  const sourceHref = researchSourceHref(data.evidence_url);
   document.title = `${title} | NABD Research Center`;
 
   box.innerHTML = `
@@ -114,7 +123,7 @@ async function loadResearch() {
     }
 
     ${
-      data.evidence_url
+      sourceHref
         ? `
           <div class="notice-card">
             <strong>
@@ -128,9 +137,9 @@ async function loadResearch() {
             <p>
               <a
                 class="text-link"
-                href="${esc(data.evidence_url)}"
+                href="${esc(sourceHref)}"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
               >
                 ${
                   lang === 'ar'
