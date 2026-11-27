@@ -61,8 +61,8 @@ async function main(){
   // The section finder operates on existing tab buttons without needing credentials.
   const adminPage=await browser.newPage({viewport:{width:390,height:844}});
   await adminPage.goto(url("admin.html"),{waitUntil:"domcontentloaded"});
-  const initialCount=await adminPage.evaluate(()=>[...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).length);
-  assert.equal(initialCount,6,"Director dashboard must start with a short essential navigation");
+  const initialTabs=await adminPage.evaluate(()=>[...document.querySelectorAll("#app .tabs [data-tab]")].filter(n=>!n.hidden).map(n=>n.dataset.tab).sort());
+  assert.deepEqual(initialTabs,["hopeScholarship","overview","students","enrollments","os-admin-suite","executiveTasks","consultations"].sort(),"Essential navigation must retain the seven approved modules, including the Hope Scholarship");
   const allCount=await adminPage.evaluate(()=>{
    const area=document.getElementById("nabdAdminCategory");
    area.value="all";area.dispatchEvent(new Event("change",{bubbles:true}));

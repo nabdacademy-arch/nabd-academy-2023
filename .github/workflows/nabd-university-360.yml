@@ -45,6 +45,9 @@ jobs:
           node tests/nabd-360-integrity.test.mjs
   browser:
     runs-on: ubuntu-24.04
+    # The matching official image includes Chromium and native libraries.
+    # Avoid runner-wide apt updates during browser provisioning.
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 17
     steps:
       - uses: actions/checkout@v4
@@ -54,6 +57,6 @@ jobs:
       - name: Install browser
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          node -e 'const {chromium}=require("playwright"); (async()=>{const browser=await chromium.launch(); try { const page=await browser.newPage(); await page.setContent("<title>NABD CI</title>"); if(await page.title()!=="NABD CI") throw new Error("Chromium smoke test failed"); } finally { await browser.close(); }})().catch(e=>{console.error(e); process.exitCode=1;})'
       - name: Run learner, lecturer, director and AI opt-in checks
         run: node tests/nabd-360-browser.cjs
