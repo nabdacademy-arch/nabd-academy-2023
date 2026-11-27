@@ -56,20 +56,14 @@ async function loadCourse() {
     return;
   }
 
-  const title =
-    lang === 'ar'
-      ? (data.title_ar || data.title_en)
-      : data.title_en;
+  function courseText(ar, en) {
+    const preferred = text(ar, en)?.trim();
+    return preferred || text(en, ar)?.trim() || '';
+  }
 
-  const description =
-    lang === 'ar'
-      ? (data.description_ar || data.description_en)
-      : data.description_en;
-
-  const level =
-    lang === 'ar'
-      ? (data.level_ar || data.level_en)
-      : data.level_en;
+  const title = courseText(data.title_ar, data.title_en) || text('دورة', 'Course');
+  const description = courseText(data.description_ar, data.description_en);
+  const level = courseText(data.level_ar, data.level_en);
 
   const modules = Array.isArray(data.modules)
     ? data.modules
