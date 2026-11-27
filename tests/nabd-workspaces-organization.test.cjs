@@ -10,7 +10,10 @@ test("all three internal workspaces use isolated styles; homepage remains untouc
 });
 test("director finder preserves role checks and existing native tab buttons",()=>{
  for(const id of ["nabdAdminModuleFinder","nabdAdminCategory","nabdAdminSearch","nabdAdminResults"])assert.ok(admin.includes('id="'+id+'"'));
- assert.match(admin,/src="assets\/js\/nabd-admin-module-finder\.js\?v=1"/);
+ const finderSources = [...admin.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)]
+   .map(match => match[1].split("?")[0])
+   .filter(src => src === "assets/js/nabd-admin-module-finder.js");
+ assert.deepEqual(finderSources, ["assets/js/nabd-admin-module-finder.js"]);
  assert.match(admin,/profile\.role!=="admin"/);
  assert.match(admin,/id="loginForm"/);
  for(const id of ["students","overview","applications","councilAccounts","consultations"])assert.ok(admin.includes('data-tab="'+id+'"'));
@@ -32,4 +35,29 @@ test("faculty shortcuts stay inside authenticated workspace and have real target
  for(const id of ["os-lecturer-suite","studio-records-section"])assert.ok(faculty.includes('href="#'+id+'"')&&faculty.includes('id="'+id+'"'));
  assert.match(faculty,/id="studio-login"/);
  assert.match(faculty,/id="studio-editor"/);
+});
+
+test("director search initializes for complete and malformed deep links", () => {
+ const vm = require("node:vm");
+ for (const [hash, expectedGroup] of [["", "essential"], ["#%73tudents", "essential"],
+   ["#council%41ccounts", "all"], ["#%", "essential"]]) {
+  const listeners = {};
+  const search = {value: "", addEventListener(event, fn) { listeners[event] = fn; }};
+  const category = {value: "essential", addEventListener() {}};
+  const results = {};
+  const buttons = ["students", "certificates"].map(tab => ({dataset: {tab}, textContent: tab}));
+  const tabs = {querySelectorAll: () => buttons};
+  const elements = {app: {querySelector: () => tabs}, nabdAdminCategory: category,
+    nabdAdminSearch: search, nabdAdminResults: results};
+  vm.runInNewContext(script, {document: {readyState: "complete", getElementById: id => elements[id]},
+    location: {hash}, MutationObserver: class { observe() {} }});
+  assert.equal(category.value, expectedGroup);
+  assert.equal(buttons[0].hidden, false);
+  assert.equal(buttons[1].hidden, expectedGroup === "essential");
+  search.value = "الشهادات";
+  listeners.input();
+  assert.equal(buttons[0].hidden, true);
+  assert.equal(buttons[1].hidden, false);
+  assert.match(results.textContent, /^1 /);
+ }
 });

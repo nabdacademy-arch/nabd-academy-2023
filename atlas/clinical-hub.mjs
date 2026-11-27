@@ -17,7 +17,7 @@ const I18N={
     good:"قرار مناسب",partial:"قرار مناسب جزئيًا",review:"راجع هذا القرار",replay:"أعد هذا القرار",
     noHistory:"لم تكتمل أي محاولة على هذا الجهاز بعد.",score:"نتيجة تعليمية",compared:"قبل إعادة القرار",
     comparedNew:"بعد إعادة القرار",diff:"تغيّر النقاط",replayNotice:"هذه مقارنة لنقاط التعلّم وليست توقعًا لنتيجة المريض.",
-    saveWarning:"تعذّر الحفظ في ذاكرة المتصفح؛ قد تفقد النتائج عند إغلاق الصفحة.",exportFailure:"تعذّر إعداد التقرير المحلي.",
+    retrySave:"إعادة محاولة حفظ النتيجة",saveWarning:"تعذّر الحفظ في ذاكرة المتصفح؛ قد تفقد النتائج عند إغلاق الصفحة.",exportFailure:"تعذّر إعداد التقرير المحلي.",
     resume:"متابعة المحاولة",start:"ابدأ المهمة",searchLabel:"ابحث عن حالة",searchPlaceholder:"ابحث بالاسم أو التخصص",
     departmentLabel:"التخصص",levelLabel:"المستوى",allLevels:"جميع المستويات",introLevel:"مبتدئ",intermediateLevel:"متوسط",
     advancedLevel:"متقدم",noMatches:"لا توجد حالات مطابقة. جرّب تغيير البحث.",filtered:"الحالات الظاهرة",
@@ -40,7 +40,7 @@ const I18N={
     good:"Appropriate decision",partial:"Partly appropriate",review:"Review this decision",replay:"Replay this decision",
     noHistory:"No completed attempt has been saved on this device yet.",score:"Educational score",compared:"Before replay",
     comparedNew:"After replay",diff:"Point difference",replayNotice:"This compares learning scores, not predicted patient outcomes.",
-    saveWarning:"Browser storage is unavailable; results may disappear when you close this page.",exportFailure:"Could not prepare the local report.",
+    retrySave:"Retry saving result",saveWarning:"Browser storage is unavailable; results may disappear when you close this page.",exportFailure:"Could not prepare the local report.",
     resume:"Resume attempt",start:"Start mission",searchLabel:"Search cases",searchPlaceholder:"Search by name or specialty",
     departmentLabel:"Department",levelLabel:"Difficulty",allLevels:"All levels",introLevel:"Beginner",intermediateLevel:"Intermediate",
     advancedLevel:"Advanced",noMatches:"No matching cases. Try adjusting the filters.",filtered:"Cases shown",
@@ -78,7 +78,8 @@ function readDraft(caseId){
   const item=clinicalCases.find(v=>v.id===caseId);
   const draft=record && typeof record==="object" && !Array.isArray(record)?record[caseId]:null;
   if(!item || !draft || !Number.isInteger(draft.step)||draft.step<0||draft.step>=item.steps.length||!Array.isArray(draft.picks))return null;
-  if(draft.picks.length>item.steps.length || draft.picks.slice(0,draft.step).some((n,i)=>!Number.isInteger(n)||n<0||n>=item.steps[i].options.length))return null;
+  if((Object.hasOwn(draft,"revision") ? draft.revision : 1)!==(item.revision??1))return null;
+  if(draft.picks.length<draft.step || draft.picks.length>item.steps.length || draft.picks.slice(0,draft.step).some((n,i)=>!Number.isInteger(n)||n<0||n>=item.steps[i].options.length))return null;
   if(draft.picks.some((n,i)=>n!==null&&n!==undefined&&(!Number.isInteger(n)||n<0||n>=item.steps[i].options.length)))return null;
   return draft;
 }
@@ -281,11 +282,19 @@ function renderSkillReport(){
 function renderReport({record=false}={}){
   if(!isFinished(current,picks))return;
   const result=grade(current,picks),signature=current.id+":"+picks.join(",");
+  if(record && signature===lastRecorded)$("retrySave").hidden=true;
   if(record && signature!==lastRecorded){
     const records=completionHistory();
     records.push({caseId:current.id,score:result.score,maxPoints:result.maxPoints,at:new Date().toISOString(),answers:[...picks]});
-    if(!safeWrite(HISTORY_KEY,records.slice(-40)))warning();
-    lastRecorded=signature;clearDraft(current.id);
+    if(safeWrite(HISTORY_KEY,records.slice(-40))){
+      if(!$("retrySave").hidden)$("storageWarning").textContent="";
+      $("retrySave").hidden=true;
+      lastRecorded=signature;
+      clearDraft(current.id);
+    }else{
+      $("retrySave").hidden=false;
+      warning();
+    }
   }
   lastGrade=result;reportMode=true;
   $("caseExercise").hidden=true;$("caseReport").hidden=false;
@@ -350,6 +359,7 @@ $("clearHistory").addEventListener("click",()=>{
 $("nextStep").addEventListener("click",proceed);
 $("restartCase").addEventListener("click",()=>activateCase(current.id,{reset:true}));
 $("restartFromReport").addEventListener("click",()=>activateCase(current.id,{reset:true}));
+$("retrySave").addEventListener("click",()=>renderReport({record:true}));
 $("exportAttempt").addEventListener("click",exportAttempt);
 window.addEventListener("online",updateConnection);window.addEventListener("offline",updateConnection);
 if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{});

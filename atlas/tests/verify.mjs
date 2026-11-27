@@ -23,7 +23,7 @@ assert.match(html,/lang="ar" dir="rtl"/);
 assert.match(html,/data-view-button="case"/);
 assert.match(html,/data-view-button="offline"/);
 assert.match(html,/heart-lab.html/);
-assert.match(sw,/nabd-atlas-foundation-v6/);
+assert.match(sw,/nabd-atlas-foundation-v8/);
 assert.match(html,/clinical-hub.html/);
 assert.match(html,/hospital-3d.html/);
 assert.match(app,/hospital-3d\.mjs/);

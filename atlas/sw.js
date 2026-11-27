@@ -1,8 +1,9 @@
 /* Scope is restricted to /atlas/; never cache student or admin pages. */
-const CACHE="nabd-atlas-foundation-v6";
+const CACHE="nabd-atlas-foundation-v8";
 const FILES = ["./","./index.html","./heart-lab.html","./clinical-hub.html","./hospital-3d.html","./hospital-3d.css","./hospital-3d.mjs","./styles.css","./clinical-hub.css","./app.mjs","./clinical-hub.mjs","./clinical-cases.mjs","./clinical-authoring.mjs","./cases-critical.mjs","./cases-general.mjs","./cases-specialist.mjs","./cases-injury.mjs","./clinical-engine.mjs","./scenario-data.mjs","./manifest.webmanifest","./icon.svg","./sw.js","./images/hero.webp","./images/emergency.webp","./images/pediatrics.webp","./images/simulation.webp"];
 self.addEventListener("install",(event)=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES.map(file => ["./clinical-hub.mjs","./clinical-hub.html"].includes(file)
+    ? new Request(new URL(file, self.registration.scope), {cache:"reload"}) : file))).then(()=>self.skipWaiting()));
 });
 self.addEventListener("activate",(event)=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith("nabd-atlas-")&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));

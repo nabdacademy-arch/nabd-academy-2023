@@ -80,3 +80,23 @@ test('catalog fallback, unavailable catalogs and missing backend', async () => {
   assert.ok(missing.button.disabled);
   assert.match(missing.message.textContent, /Registration is unavailable/);
 });
+
+test('a confirmed empty catalog keeps registration closed even with bundled courses', async () => {
+  let downloads = 0;
+  let submissions = 0;
+  const p = page({
+    catalog: async () => ({data: [], error: null}),
+    fetch: async () => {
+      downloads++;
+      return {ok: true, json: async () => [course]};
+    },
+    insert: async () => { submissions++; return {}; }
+  });
+  await p.ready;
+  assert.equal(downloads, 0);
+  assert.deepEqual(p.select.options.map(option => option.value), ['']);
+  assert.equal(p.button.disabled, true);
+  assert.match(p.message.textContent, /No courses are available/);
+  await p.submit();
+  assert.equal(submissions, 0);
+});

@@ -45,7 +45,20 @@ function local(){
  $("hope-open-note").hidden=state===true;
  renderResult();
 }
-async function refresh(){try{const {data,error}=await db.from("nabd_hope_control").select("registration_open").eq("id",1).single();state=error?null:data.registration_open;}catch{state=null;}local();}
+let refreshVersion=0;
+async function refresh(){
+ const version=++refreshVersion;
+ let confirmed=null;
+ try{
+  const {data,error}=await db.from("nabd_hope_control").select("registration_open").eq("id",1).single();
+  if(!error && typeof data?.registration_open==="boolean")confirmed=data.registration_open;
+ }catch{
+  // Keep the registration status unknown when the read fails.
+ }
+ if(version!==refreshVersion)return;
+ state=confirmed;
+ local();
+}
 function renderCaptcha(kind){
  if(widgets[kind]!==undefined||!window.turnstile)return;
  widgets[kind]=window.turnstile.render("#hope-"+kind+"-captcha",{sitekey:site,action:kind==="submit"?"hope_submit":kind==="verify"?"hope_verify":"hope_lookup",callback:token=>{tokens[kind]=token;}, "expired-callback":()=>{tokens[kind]="";},"error-callback":()=>{tokens[kind]="";}});
@@ -59,11 +72,14 @@ window.nabdHopeCaptchaReady=()=>{if(!root.hidden){if(!$("hope-verification-form"
 const script=document.createElement("script");script.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=nabdHopeCaptchaReady";script.async=true;script.defer=true;document.head.append(script);
 async function call(body){const r=await fetch(url+"/functions/v1/nabd-hope-register",{method:"POST",headers:{"Content-Type":"application/json","apikey":key},body:JSON.stringify(body)});const d=await r.json();return d;}
 const errors={CLOSED:["التسجيل مغلق. لم يُستقبل الطلب الجديد.","Registration is closed. No new application was submitted."],DUPLICATE_OR_CONFLICT:["تعذر تسجيل طلب جديد. إن سبق لك التقديم فاستخدم رمز المتابعة الأصلي.","A new application could not be registered. If you applied before, use your original tracking code."],INVALID_INPUT:["راجع البيانات المطلوبة.","Check the required information."],CAPTCHA_FAILED:["أعد التحقق الأمني وحاول مرة أخرى.","Repeat security verification and try again."],SERVICE_UNAVAILABLE:["الخدمة غير متاحة الآن، حاول لاحقًا بنفس رمز المتابعة.","Service unavailable; retry later using the same tracking code."]};
+function asciiDigits(value){
+ return value.replace(/[٠-٩]/g,x=>String("٠١٢٣٤٥٦٧٨٩".indexOf(x))).replace(/[۰-۹]/g,x=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(x)));
+}
 function errorText(code){const a=errors[code]||errors.SERVICE_UNAVAILABLE;return t(...a);}
 $("hope-form").addEventListener("submit",async e=>{
  e.preventDefault();if(busy||state!==true)return;
  if(!tokens.submit){status("hope-apply-message",t("أكمل التحقق الأمني.","Complete the security check."));return;}
- const f=new FormData(e.target),payload={name:String(f.get("name")||"").trim(),email:String(f.get("email")||"").trim().toLowerCase(),phone:String(f.get("phone")||"").trim(),governorate:f.get("governorate"),institution:String(f.get("institution")||"").trim(),field:String(f.get("field")||"").trim(),stage:f.get("stage"),support:f.getAll("support"),consent:f.get("consent")==="on"};
+ const f=new FormData(e.target),payload={name:String(f.get("name")||"").trim(),email:String(f.get("email")||"").trim().toLowerCase(),phone:asciiDigits(String(f.get("phone")||"").trim()),governorate:f.get("governorate"),institution:String(f.get("institution")||"").trim(),field:String(f.get("field")||"").trim(),stage:f.get("stage"),support:f.getAll("support"),consent:f.get("consent")==="on"};
  if(!payload.support.length){status("hope-apply-message",t("اختر نوع دعم واحدًا على الأقل.","Select at least one support type."));return;}
  if(!pending||pending.email!==payload.email)pending={email:payload.email,code:crypto.randomUUID()};$("hope-verify-next").hidden=true;
  // The applicant keeps the secret; it is never stored in public code or sent by email.
@@ -114,7 +130,7 @@ verifyForm.addEventListener("submit",async e=>{
  if(!tokens.verify){status("hope-verify-message",t("أكمل التحقق الأمني.","Complete the security check."));return;}
  const f=new FormData(verifyForm),file=f.get("document");
  if(!(file instanceof File)||file.size<1||file.size>1048576){status("hope-verify-message",t("اختر ملفًا لا يتجاوز 1 MB.","Select a document up to 1 MB."));return;}
- const number=String(f.get("number")||"").trim().replace(/[٠-٩]/g,x=>String("٠١٢٣٤٥٦٧٨٩".indexOf(x))).replace(/[۰-۹]/g,x=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(x))).toUpperCase();
+ const number=asciiDigits(String(f.get("number")||"").trim()).toUpperCase();
  const issuer=String(f.get("issuer")||"").trim().toUpperCase();
  if(!/^[A-Z0-9]{5,20}$/.test(number)||!/^[A-Z]{2}$/.test(issuer)||(f.get("kind")==="national_id"&&issuer==="PS"&&!/^[0-9]{9}$/.test(number))){status("hope-verify-message",t("تحقق من صيغة الرقم ورمز بلد الإصدار. الهوية الفلسطينية تتطلب 9 أرقام.","Check the ID format and country code. Palestinian national ID requires 9 digits."));return;}
  f.set("number",number);f.set("issuer",issuer);f.set("code",lookupCode.value.trim());f.set("email",lookupEmail.value.trim());f.set("captcha",tokens.verify);f.set("consent","yes");

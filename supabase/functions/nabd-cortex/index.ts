@@ -200,7 +200,11 @@ Deno.serve(async(req:Request)=>{
         : `اختار المنسق ${titles[domain]} مسار تخطيط أوليًا منخفض المخاطر. هذا مخرج لقواعد تنظيمية، وليس بحثًا شاملًا ولا تنفيذًا لعملية خارجية.`);
     const plan=model?.steps?.length?model.steps:steps[domain];
     const record=await admin.rpc("nabd_cortex_record_v4",{p_actor:auth.user.id,p_agent:agentNames[domain],p_domain:domain,p_risk:risk,p_engine:model?"llm_assisted":"policy_only",p_sources:sources.length,p_title:"متابعة داخلية: "+titles[domain],p_department:department,p_dispatch:body?.dispatch===true,p_model:model?.provider_model||null,p_response_id:model?.provider_id||null});
-    if(record.error||!record.data?.ok)return json({ok:false,error:"تعذر تسجيل العملية بأمان"},record.data?.reason==="rate_limit"?429:record.data?.reason==="paused"?409:503);
+    if (!record.error && record.data?.ok === false) {
+      if (record.data.reason === "paused") return json({ok:false,error:"توقف CORTEX قبل تسجيل المهمة",reason:"paused"},409);
+      if (record.data.reason === "rate_limit") return json({ok:false,error:"الحد التجريبي 8 مهام في الساعة لهذا الحساب",reason:"rate_limit"},429);
+    }
+    if (record.error || record.data?.ok !== true) return json({ok:false,error:"تعذر تسجيل العملية بأمان"},503);
     const run={data:{id:record.data.run_id}};
     const taskRecord={data:{id:record.data.task_id,status:record.data.status}};
     return json({ok:true,run_id:run.data.id,task_id:taskRecord.data.id,
