@@ -149,6 +149,7 @@ async function switchTranslation(ctx){
   if(current(ctx)!==deck||$(ctx.id+"Panel").hidden)return;
   if(error||!t)throw Error("SAVED_TRANSLATION_MISSING");
   if(!Array.isArray(t.options_ar)||t.options_ar.length!==q.options.length||
+     !t.options_ar.every(option=>typeof option==="string" && option.trim())||
      typeof t.question_ar!=="string"||!t.question_ar.trim())throw Error("INCOMPLETE_TRANSLATION");
   ctx.translation.set(q.id,t);
   setTranslationVisible(ctx,true);renderChoices(ctx);renderResult(ctx);
