@@ -45,7 +45,7 @@ async function loadCourses() {
     try {
       const {data, error} = await client.from('courses')
         .select('slug,title_en,hours').eq('status','active').order('title_en');
-      if (!error && data?.length) return data;
+      if (!error && Array.isArray(data)) return data;
     } catch {
       // A failed catalog request can still use the bundled course list.
     }
