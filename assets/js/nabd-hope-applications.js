@@ -45,7 +45,20 @@ function local(){
  $("hope-open-note").hidden=state===true;
  renderResult();
 }
-async function refresh(){try{const {data,error}=await db.from("nabd_hope_control").select("registration_open").eq("id",1).single();state=error?null:data.registration_open;}catch{state=null;}local();}
+let refreshVersion=0;
+async function refresh(){
+ const version=++refreshVersion;
+ let confirmed=null;
+ try{
+  const {data,error}=await db.from("nabd_hope_control").select("registration_open").eq("id",1).single();
+  if(!error && typeof data?.registration_open==="boolean")confirmed=data.registration_open;
+ }catch{
+  // Keep the registration status unknown when the read fails.
+ }
+ if(version!==refreshVersion)return;
+ state=confirmed;
+ local();
+}
 function renderCaptcha(kind){
  if(widgets[kind]!==undefined||!window.turnstile)return;
  widgets[kind]=window.turnstile.render("#hope-"+kind+"-captcha",{sitekey:site,action:kind==="submit"?"hope_submit":kind==="verify"?"hope_verify":"hope_lookup",callback:token=>{tokens[kind]=token;}, "expired-callback":()=>{tokens[kind]="";},"error-callback":()=>{tokens[kind]="";}});
