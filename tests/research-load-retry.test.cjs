@@ -41,3 +41,24 @@ test('storage denial still allows an English result or retry',async()=>{
   assert.equal(dir,'ltr');
   assert.match(html,/Try again/);
 });
+
+test('research details show each available translation when the preferred field is blank', async () => {
+  const data = {title_ar:'عنوان', title_en:'   ', subtitle_en:'Subtitle',
+    summary_ar:'ملخص', summary_en:'Summary', abstract_ar:'نص <أولي>'};
+  for (const lang of ['ar', 'en']) {
+    const result = await open('?id=sample', () => ({data}), () => lang);
+    assert.match(result.html, /<h1>عنوان<\/h1>/);
+    assert.match(result.html, /<h2>Subtitle<\/h2>/);
+    assert.ok(result.html.includes('<p class="lead">' + (lang === 'ar' ? 'ملخص' : 'Summary') + '</p>'));
+    assert.match(result.html, /نص &lt;أولي&gt;/);
+    assert.equal(result.dir, lang === 'ar' ? 'rtl' : 'ltr');
+  }
+});
+
+test('an untitled project has a localized heading without inventing an abstract', async () => {
+  for (const [lang, title] of [['ar', 'مشروع بحثي'], ['en', 'Research project']]) {
+    const result = await open('?id=sample', () => ({data:{}}), () => lang);
+    assert.ok(result.html.includes('<h1>' + title + '</h1>'));
+    assert.doesNotMatch(result.html, /<h2>/);
+  }
+});

@@ -59,25 +59,16 @@ async function loadResearch() {
   if (!response.data) return showMissing();
   const data = response.data;
 
-  const title =
-    lang === 'ar'
-      ? (data.title_ar || data.title_en)
-      : data.title_en;
+  function translation(arabic, english) {
+    const preferred = ar ? arabic : english;
+    const fallback = ar ? english : arabic;
+    return preferred?.trim() || fallback?.trim() || '';
+  }
 
-  const subtitle =
-    lang === 'ar'
-      ? (data.subtitle_ar || data.subtitle_en)
-      : data.subtitle_en;
-
-  const summary =
-    lang === 'ar'
-      ? (data.summary_ar || data.summary_en)
-      : data.summary_en;
-
-  const abstract =
-    lang === 'ar'
-      ? (data.abstract_ar || data.abstract_en)
-      : data.abstract_en;
+  const title = translation(data.title_ar, data.title_en) || (ar ? 'مشروع بحثي' : 'Research project');
+  const subtitle = translation(data.subtitle_ar, data.subtitle_en);
+  const summary = translation(data.summary_ar, data.summary_en);
+  const abstract = translation(data.abstract_ar, data.abstract_en);
 
   const sourceHref = researchSourceHref(data.evidence_url);
   document.title = `${title} | NABD Research Center`;
