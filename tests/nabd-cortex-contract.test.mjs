@@ -6,6 +6,8 @@ const ui=read('nabd-cortex.html');
 const edge=read('supabase/functions/nabd-cortex/index.ts');
 const sql=read('supabase/migrations/20261123183000_nabd_cortex_foundation.sql');
 const conf=read('supabase/config.toml');
+const atomicSql=read('supabase/migrations/20261124210720_nabd_cortex_atomic_execution_v3.sql');
+const recordSql=read('supabase/migrations/20261124211709_nabd_cortex_department_execution_v4.sql');
 const timerSql=read('supabase/migrations/20261123192000_nabd_cortex_admin_control_timer.sql');
 
 test('Cortex two buttons use server-side admin/founder RPC',()=>{
@@ -20,7 +22,18 @@ test('Cortex requires a real admin session and obeys kill switch',()=>{
   assert.match(edge,/auth\.getUser\(jwt\)/);
   assert.match(edge,/rpc\("nabd_agent_admin_info"\)/);
   assert.match(edge,/enabled!==true/);
-  assert.match(edge,/!stillOn\.data\?\.enabled/);
+  // The current implementation rechecks the kill switch transactionally at write time.
+  assert.match(edge,/rpc\("nabd_cortex_record_v4",/);
+  assert.match(edge,/if\(record\.error\|\|!record\.data\?\.ok\)return json/);
+  assert.match(recordSql,/v:=public\.nabd_cortex_record_atomic\(/);
+  assert.match(recordSql,/if v->>'ok' is distinct from 'true' then return v;end if;/);
+  const guard=atomicSql.indexOf("if v_enabled is distinct from true then return jsonb_build_object('ok',false,'reason','paused')");
+  const lock=atomicSql.indexOf("select enabled into v_enabled from public.nabd_cortex_settings where id=1 for share");
+  const write=atomicSql.indexOf("insert into public.nabd_cortex_runs");
+  assert.ok(lock>=0 && guard>lock && write>guard,"Locked kill switch must precede recording");
+  assert.match(atomicSql,/perform pg_advisory_xact_lock\(hashtextextended\(p_actor::text,82174012\)\)/);
+  assert.match(atomicSql,/if v_count>=8 then return jsonb_build_object\('ok',false,'reason','rate_limit'\)/);
+  assert.match(atomicSql,/grant execute on function public\.nabd_cortex_record_atomic\([^)]*\) to service_role/);
   assert.match(edge,/\(recent\.count\|\|0\)>=8/);
   assert.match(conf,/\[functions\.nabd-cortex\]\s*verify_jwt\s*=\s*false/);
 });
@@ -58,7 +71,7 @@ test('Control permissions match authorized administrator and active founder logi
 test('Uptime timers persist across visits and finish at stop',()=>{
  for(const id of ['activeTimer','totalTimer','lastToggle','taskTimer'])assert.match(ui,new RegExp('id="'+id+'"'));
  assert.match(ui,/select\('enabled,updated_at,active_since,last_stopped_at,elapsed_seconds'\)/);
- assert.match(ui,/setInterval\(renderTimers,1000\)/);
+ assert.match(ui,/setInterval\(\(\)=>\{renderTimers\(\);if\(authorized\)renderProbeCooldown\(\);\},1000\);/);
  assert.match(ui,/taskStartedAt=performance\.now\(\)/);
  assert.match(timerSql,/add column if not exists active_since timestamptz/);
  assert.match(timerSql,/add column if not exists elapsed_seconds bigint/);
