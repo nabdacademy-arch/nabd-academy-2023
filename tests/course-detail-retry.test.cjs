@@ -52,3 +52,25 @@ test('blocked preference storage still permits a successful lookup',async()=>{
   const p=page({language:()=>{throw Error('blocked')},lookup:()=>({data:row})});await p.ready;
   assert.match(p.box.innerHTML,/Example/);assert.equal(p.document.documentElement.dir,'ltr');
 });
+
+test('course details use available translations field by field in both languages', async () => {
+  const data = {...row, title_en:'  ', title_ar:'عنوان الدورة', description_en:'English summary',
+    description_ar:'الملخص العربي', level_en:null, level_ar:'مبتدئ'};
+  for (const lang of ['en', 'ar']) {
+    const p = page({language:() => lang, lookup:() => ({data})});
+    await p.ready;
+    assert.match(p.box.innerHTML, /<h1>عنوان الدورة<\/h1>/);
+    assert.match(p.box.innerHTML, /<strong>مبتدئ<\/strong>/);
+    assert.ok(p.box.innerHTML.includes(lang === 'en' ? data.description_en : data.description_ar));
+    assert.equal(p.document.title, 'عنوان الدورة | NABD Academy');
+  }
+});
+
+test('a course without a title in either language gets a localized heading', async () => {
+  for (const [lang, heading] of [['ar', 'دورة'], ['en', 'Course']]) {
+    const p = page({language:() => lang, lookup:() => ({data:{slug:'sample'}})});
+    await p.ready;
+    assert.equal(p.document.title, heading + ' | NABD Academy');
+    assert.ok(p.box.innerHTML.includes('<h1>' + heading + '</h1>'));
+  }
+});
