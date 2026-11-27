@@ -8,7 +8,7 @@ export const PACKS = Object.freeze({
     assets: ['./','./index.html','./zero.html','./zero.css','./zero.mjs','./zero-core.mjs','./styles.css','./visuals.css','./knowledge.css','./app.mjs','./crisis-tracks.mjs','./crisis-evidence.html','./crisis-evidence.mjs','./crisis-observations.json','./knowledge-data.mjs','./knowledge-atlas.mjs','./medical-visuals.mjs','./anatomy-lightbox.mjs','./heart-studio.mjs','./heart-webgl.mjs','./heart-simulator.mjs','./tutor-format.mjs','./core.mjs','./content.mjs','./icon.svg','./manifest.webmanifest']
   },
   atlas: {
-    cache: 'nabd-atlas-foundation-v6',
+    cache: 'nabd-atlas-foundation-v8',
     scope: '../atlas/',
     assets: ['./','./index.html','./heart-lab.html','./clinical-hub.html','./hospital-3d.html','./hospital-3d.css','./hospital-3d.mjs','./styles.css','./clinical-hub.css','./app.mjs','./clinical-hub.mjs','./clinical-cases.mjs','./clinical-authoring.mjs','./cases-critical.mjs','./cases-general.mjs','./cases-specialist.mjs','./cases-injury.mjs','./clinical-engine.mjs','./scenario-data.mjs','./manifest.webmanifest','./icon.svg','./sw.js','./images/hero.webp','./images/emergency.webp','./images/pediatrics.webp','./images/simulation.webp']
   }
