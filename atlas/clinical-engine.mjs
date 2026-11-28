@@ -93,3 +93,33 @@ export function explorationPath(cases,history,limit=3){
   for(const c of candidates){if(chosen.length>=limit)break;if(!used.has(c.department)){chosen.push(c.id);used.add(c.department);}}
   return chosen;
 }
+
+// EQUITY: compare abstract study budgets, never allocate clinical care.
+export function studyBudget(item,picks,budget){
+  const g=grade(item,picks);
+  if(!Number.isInteger(budget)||budget<0||budget>item.steps.length)throw Error("Invalid study budget");
+  const priorities=reviewPriorities(item,picks).slice(0,budget);
+  return {budget,reviewSteps:priorities.map(d=>d.index),recoverablePoints:priorities.reduce((n,d)=>n+d.maxPoints-d.points,0),baseline:g.score,maxPoints:g.maxPoints};
+}
+// DISCOVERY: expose content gaps without interpreting them as medical discoveries.
+export function contentAudit(cases){
+  return cases.map(c=>({caseId:c.id,revision:c.revision??1,reviewStatus:c.reviewStatus,referenceCount:Array.isArray(c.references)?c.references.length:0,structuralValid:validateCase(c)}));
+}
+// CONSENSUS: compare independent practice answers, never infer medical truth.
+export function compareLearners(item,a,b){
+  grade(item,a);grade(item,b);
+  const differing=a.map((n,i)=>n!==b[i]?i:-1).filter(i=>i>=0);
+  return {steps:a.length,agreements:a.length-differing.length,differing};
+}
+// PROOF: reproducible self-reported practice record, not an issuer signature.
+export function practiceRecord(item,picks){
+  const g=grade(item,picks);
+  return {kind:"NABD_PRACTICE_RECORD",version:1,caseId:item.id,revision:item.revision??1,answers:[...picks],score:g.score,maxPoints:g.maxPoints,issuerVerified:false};
+}
+export function verifyPracticeRecord(item,record){
+  try{
+    if(record?.kind!=="NABD_PRACTICE_RECORD"||record.version!==1||record.caseId!==item.id||record.revision!==(item.revision??1)||record.issuerVerified!==false)return false;
+    const expected=practiceRecord(item,record.answers);
+    return record.score===expected.score&&record.maxPoints===expected.maxPoints;
+  }catch{return false;}
+}
