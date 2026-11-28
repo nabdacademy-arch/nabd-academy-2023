@@ -33,6 +33,13 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  assert.ok(await page.evaluate(()=>[...document.querySelectorAll(".explorer-group>summary")].every(el=>el.getBoundingClientRect().height>=120)));
  assert.equal(await page.locator(".explorer-group summary svg.explorer-icon").count(),5);
  assert.equal(await page.locator(".explorer-description").count(),5);
+ assert.equal(await page.locator(".explorer-gallery-card").count(),3);
+ assert.equal(await page.locator(".explorer-gallery-card img[loading=lazy]").count(),3);
+ assert.ok(fs.existsSync("assets/images/hero-medical.jpg"));
+ assert.ok(fs.existsSync("atlas/images/simulation.webp"));
+ await page.locator(".explorer-gallery").scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>[...document.querySelectorAll(".explorer-gallery-card img")].every(img=>img.complete&&img.naturalWidth>0));
+ assert.ok(await page.evaluate(()=>document.querySelector(".explorer-gallery").getBoundingClientRect().top>=document.querySelector(".explorer-groups").getBoundingClientRect().bottom));
  assert.ok(await page.evaluate(()=>new Set([...document.querySelectorAll(".explorer-group")].map(el=>getComputedStyle(el).getPropertyValue("--accent").trim())).size===5));
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),"No horizontal overflow");
  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>[...document.querySelectorAll(".explorer-group>summary")].every(el=>el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>=44)));}
