@@ -58,3 +58,47 @@ body.explorer-compact{--explorer-border:#315966;--explorer-text:#eaf5f7;--explor
 }
 @media(max-width:360px){.explorer-compact .nfs-main-grid{grid-template-columns:1fr}.explorer-compact .nfs-portrait-card{max-width:160px}.explorer-groups{grid-template-columns:1fr}}
 @media print{.explorer-group-content{display:block!important}}
+
+/* V2 — category accents, illustrated cards, and compact institutional hierarchy. */
+.explorer-compact .explorer-directory{padding:22px 14px}
+.explorer-compact .explorer-directory>h2{font-size:1.5rem;letter-spacing:-.02em}
+.explorer-compact .explorer-groups{gap:10px}
+.explorer-compact .explorer-group{--accent:#77e5e1;--tint:#123a49;background:#0b2636;border-color:#355766;border-radius:15px;box-shadow:0 3px 12px #0002}
+.explorer-compact #explorer-learning{--accent:#8af0d9;--tint:#125246}
+.explorer-compact #explorer-innovation{--accent:#a5c9ff;--tint:#284570}
+.explorer-compact #explorer-research{--accent:#f5d38e;--tint:#594727}
+.explorer-compact #explorer-institution{--accent:#dbc6ff;--tint:#44365e}
+.explorer-compact #explorer-support{--accent:#83e4f4;--tint:#1a5365;grid-column:1/-1}
+.explorer-compact .explorer-group>summary{position:relative;isolation:isolate;display:grid;grid-template-columns:40px minmax(0,1fr) 20px;grid-template-rows:auto auto;column-gap:10px;row-gap:5px;min-height:92px;padding:14px;background:linear-gradient(125deg,var(--tint),#0c2536 78%);align-items:center;overflow:hidden}
+.explorer-compact .explorer-group>summary::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.23;background:radial-gradient(ellipse at 85% 15%,var(--accent),transparent 60%);pointer-events:none}
+.explorer-compact #explorer-learning>summary::before{background:linear-gradient(90deg,#0b2636 20%,transparent),url("../../atlas/images/hero.webp") center/cover;opacity:.23}
+.explorer-compact #explorer-innovation>summary::before{background:linear-gradient(90deg,#0b2636 20%,transparent),url("../../atlas/images/simulation.webp") center/cover;opacity:.23}
+.explorer-compact .explorer-icon{grid-row:1/3;width:40px;height:40px;padding:8px;box-sizing:border-box;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;border-radius:11px;background:#071b2acc;border:1px solid var(--accent)}
+.explorer-compact .explorer-group>summary>span{grid-column:2;grid-row:1;font-size:.95rem;line-height:1.35;color:#f4fbff}
+.explorer-compact .explorer-group>summary>small{grid-column:2;grid-row:2;color:var(--accent);font-weight:650;font-size:.72rem}
+.explorer-compact .explorer-description{grid-column:2/4;grid-row:3;font-size:.76rem;line-height:1.45;color:#c5dae3;font-weight:400}
+.explorer-compact .explorer-group>summary::after{grid-column:3;grid-row:1/3;color:var(--accent);font-size:1.2rem;margin:0;justify-self:center}
+.explorer-compact .explorer-group[open]{grid-column:1/-1;border-color:var(--accent)}
+.explorer-compact .nfs-button,.explorer-compact .nfs-quick a,.explorer-compact .nfs-quick button{min-height:40px;border-radius:10px;line-height:1.35}
+.explorer-compact .nfs-actions a.primary{background:#7ce9e4!important;color:#062531!important;border-color:#7ce9e4}
+.explorer-compact .nfs-actions a.nv11-entry{background:#b7eee3!important;color:#102e38!important}
+.explorer-compact .nfs-actions a.nv10-hero-link{background:#21476d!important;color:#eef6ff!important;border-color:#709ac7}
+.explorer-compact .nfs-actions a.nfs-hope-feature-link{background:#efd399!important;color:#172a35!important}
+.explorer-compact #nabd-hope-home-entry{border-radius:14px;margin:0 14px;border:1px solid #8d744b}
+.explorer-compact .cta-card{background:linear-gradient(120deg,#123e49,#0b2636)!important;border:1px solid #376373!important;border-radius:14px!important}
+.explorer-compact .cta-card .btn{min-height:42px}
+.explorer-compact .footer-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.explorer-compact .footer-grid>.footer-contact{grid-column:1/-1}
+.explorer-compact .footer-grid>.explorer-footer-links{grid-column:2}
+.explorer-compact .footer .brand-copy strong{color:#eef8fa!important}
+.explorer-compact .footer{background:#071d2b!important;border-top:1px solid #315966}
+.explorer-compact .footer-bottom{gap:6px;flex-wrap:wrap}
+@media(max-width:700px){
+ .explorer-compact .explorer-group>summary{grid-template-columns:30px minmax(0,1fr) 14px;gap:4px 6px;padding:10px;min-height:92px}
+ .explorer-compact .explorer-icon{width:30px;height:30px;padding:5px}
+ .explorer-compact .explorer-group>summary>span{font-size:.82rem}
+ .explorer-compact .explorer-description{font-size:.7rem}
+ .explorer-compact .footer-grid{grid-template-columns:1fr}
+ .explorer-compact .footer-grid>.explorer-footer-links{grid-column:1}
+}
+@media(prefers-reduced-motion:no-preference){.explorer-compact .explorer-group>summary{transition:filter .15s}.explorer-compact .explorer-group>summary:hover{filter:brightness(1.1)}}
