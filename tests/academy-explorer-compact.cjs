@@ -55,7 +55,11 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  assert.ok(await page.locator("#feedbackForm").isVisible());
  await page.goto("http://nabd.test/med-minute.html");
  assert.equal(await page.locator(".topic").count(),5);
- assert.equal(await page.locator(".topic svg").count(),5);
+ assert.equal(await page.locator(".topic .topic-photo").count(),5);
+ assert.equal(await page.locator(".topic svg").count(),0);
+ const topicImages=await page.locator(".topic .topic-photo").all();
+ for(const img of topicImages){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode());assert.ok(await img.evaluate(el=>el.naturalWidth===400&&el.naturalHeight===225));const src=await img.getAttribute("src");assert.ok(src.startsWith("assets/images/med-minute/")&&fs.statSync(src).size<10000);}
+ assert.equal(new Set(await page.locator(".topic .topic-photo").evaluateAll(els=>els.map(e=>e.getAttribute("src")))).size,5);
  assert.equal(await page.locator(".topic .care.urgent").count(),2);
  assert.ok(await page.locator(".hero img").evaluate(img=>img.complete&&img.naturalWidth>0));
  for(const topic of await page.locator(".topic").all()){
