@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -299,8 +299,12 @@ function renderReport({record=false}={}){
     compare.textContent=tr("compared")+": "+change.before+" / "+result.maxPoints+" · "+tr("comparedNew")+": "+change.after+" · "+tr("diff")+": "+(change.difference>=0?"+":"")+change.difference+". "+tr("replayNotice");
   }else{compare.hidden=true;compare.textContent="";}
   renderSkillReport();
+  const priorities=reviewPriorities(current,picks);
   const target=$("decisionHistory");target.replaceChildren();
-  current.steps.forEach((stage,index)=>{
+  const order=[...priorities.map(d=>d.index),...current.steps.map((_,i)=>i).filter(i=>!priorities.some(d=>d.index===i))];
+  const note=document.createElement("p");note.textContent=lang==="ar"?"مراجعة تكيفية: القرارات ذات أكبر فجوة تعليمية أولاً.":"Adaptive review: largest learning gaps first.";target.append(note);
+  order.forEach(index=>{
+    const stage=current.steps[index];
     const option=stage.options[picks[index]];
     const card=document.createElement("article");card.className="hub-decision";
     const title=document.createElement("strong");title.textContent=tx(stage.title)+" · "+option.points+"/"+Math.max(...stage.options.map(x=>x.points));
