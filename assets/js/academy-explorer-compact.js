@@ -43,10 +43,27 @@
   for(const id of ids)content.append(document.getElementById(id));
   details.append(content);grid.append(details);
  }
+ const gallery=document.createElement("div");gallery.className="explorer-gallery";gallery.setAttribute("role","group");gallery.setAttribute("aria-labelledby","explorer-gallery-title");
+ const galleryTitle=document.createElement("h2");galleryTitle.id="explorer-gallery-title";galleryTitle.dataset.ar="رحلة التعلّم";galleryTitle.dataset.en="The learning journey";gallery.append(galleryTitle);
+ const galleryGrid=document.createElement("div");galleryGrid.className="explorer-gallery-grid";gallery.append(galleryGrid);
+ const galleryItems=[
+  {src:"https://images.pexels.com/photos/8419199/pexels-photo-8419199.jpeg?auto=compress&cs=tinysrgb&w=640",fallback:"assets/images/hero-medical.jpg",ar:"التعلّم معًا",en:"Learning together",credit:"RDNE Stock Project / Pexels",altAr:"صورة تعبيرية لطلاب يدرسون معًا",altEn:"Illustrative photograph of students studying together"},
+  {src:"assets/images/hero-medical.jpg",ar:"استكشاف العلوم الطبية",en:"Exploring medical science",altAr:"صورة تعليمية عن العلوم الطبية",altEn:"Medical science educational imagery"},
+  {src:"atlas/images/simulation.webp",ar:"التدريب بالمحاكاة",en:"Learning by simulation",altAr:"تصور تعليمي لمختبر محاكاة افتراضي",altEn:"Illustration of a virtual simulation laboratory"}
+ ];
+ for(const item of galleryItems){
+  const card=document.createElement("figure");card.className="explorer-gallery-card";
+  const photo=document.createElement("img");photo.loading="lazy";photo.decoding="async";photo.width=640;photo.height=400;photo.dataset.altAr=item.altAr;photo.dataset.altEn=item.altEn;photo.alt=item.altEn;photo.referrerPolicy="no-referrer";
+  photo.addEventListener("error",()=>{if(item.fallback&&!photo.dataset.fallback){photo.dataset.fallback="1";photo.dataset.altAr="صورة تعليمية عن العلوم الطبية";photo.dataset.altEn="Medical science educational imagery";photo.alt=document.documentElement.lang.startsWith("ar")?photo.dataset.altAr:photo.dataset.altEn;const credit=card.querySelector(".explorer-photo-credit");if(credit)credit.hidden=true;photo.src=item.fallback;}else{photo.hidden=true;card.classList.add("explorer-gallery-fallback");}});photo.src=item.src;
+  const caption=document.createElement("figcaption");const label=document.createElement("span");label.dataset.ar=item.ar;label.dataset.en=item.en;caption.append(label);
+  if(item.credit){const credit=document.createElement("small");credit.className="explorer-photo-credit";credit.textContent=item.credit;caption.append(credit);}
+  card.append(photo,caption);galleryGrid.append(card);
+ }
+ const galleryNote=document.createElement("p");galleryNote.className="explorer-gallery-note";galleryNote.dataset.ar="صور توضيحية للتعلّم، وليست توثيقًا لطلاب الأكاديمية أو مرافقها.";galleryNote.dataset.en="Illustrative learning imagery, not photographs documenting NABD students or facilities.";gallery.append(galleryNote);panel.append(gallery);
  hero.after(panel);
  const footerLinks=document.querySelector(".footer-links");
  if(footerLinks){const details=document.createElement("details");details.className="explorer-footer-links";const summary=document.createElement("summary");summary.dataset.ar="جميع الروابط والسياسات";summary.dataset.en="All links & policies";details.append(summary);footerLinks.before(details);details.append(footerLinks);}
- function translate(){const ar=document.documentElement.lang.toLowerCase().startsWith("ar");document.querySelectorAll(".explorer-directory [data-ar],.explorer-footer-links > summary").forEach(el=>{if(el.matches("summary")||el.parentElement?.matches(".explorer-group > summary")||el===title||el===subtitle)el.textContent=ar?el.dataset.ar:el.dataset.en;});}
+ function translate(){const ar=document.documentElement.lang.toLowerCase().startsWith("ar");gallery.querySelectorAll("[data-ar][data-en]").forEach(el=>el.textContent=ar?el.dataset.ar:el.dataset.en);gallery.querySelectorAll("img").forEach(el=>el.alt=ar?el.dataset.altAr:el.dataset.altEn);document.querySelectorAll(".explorer-directory [data-ar],.explorer-footer-links > summary").forEach(el=>{if(el.matches("summary")||el.parentElement?.matches(".explorer-group > summary")||el===title||el===subtitle)el.textContent=ar?el.dataset.ar:el.dataset.en;});}
  function reveal(target){if(!target)return;let parent=target.closest("details.explorer-group,details.explorer-footer-links");if(parent)parent.open=true;}
  function hashTarget(){try{return document.getElementById(decodeURIComponent(location.hash.slice(1)));}catch{return null;}}
  function onHash(){const target=hashTarget();if(target){reveal(target);requestAnimationFrame(()=>target.scrollIntoView({block:"start"}));}}
