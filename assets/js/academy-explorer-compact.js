@@ -10,11 +10,10 @@
   ["institution","المؤسسة والفريق","Institution & team",["story","founder","team","about"]],
   ["support","التحقق والدعم","Verification & support",["verify","medical-consultations","feedback"]]
  ];
- const hero=document.getElementById("home"),hope=document.getElementById("nabd-hope-home-entry");
- if(!hero||!hope||groups.some(g=>g[3].some(id=>!document.getElementById(id))))return;
+ const hero=document.getElementById("home");
+ if(!hero||groups.some(g=>g[3].some(id=>!document.getElementById(id))))return;
  const panel=document.createElement("div");panel.className="explorer-directory";
- const title=document.createElement("h2");title.dataset.ar="دليل الأكاديمية";title.dataset.en="Academy directory";panel.append(title);
- const subtitle=document.createElement("p");subtitle.className="explorer-intro";subtitle.dataset.ar="اختر القسم لعرض جميع خدماته وتفاصيله.";subtitle.dataset.en="Open a category to explore all its services and details.";panel.append(subtitle);
+ panel.setAttribute("aria-labelledby","nfs-title");
  const grid=document.createElement("div");grid.className="explorer-groups";panel.append(grid);
  const artwork={
   learning:"M3 10 12 5l9 5-9 5-9-5Zm4 3v5c3 2 7 2 10 0v-5M21 10v7",
@@ -43,10 +42,10 @@
   for(const id of ids)content.append(document.getElementById(id));
   details.append(content);grid.append(details);
  }
- hope.after(panel);
+ hero.after(panel);
  const footerLinks=document.querySelector(".footer-links");
  if(footerLinks){const details=document.createElement("details");details.className="explorer-footer-links";const summary=document.createElement("summary");summary.dataset.ar="جميع الروابط والسياسات";summary.dataset.en="All links & policies";details.append(summary);footerLinks.before(details);details.append(footerLinks);}
- function translate(){const ar=document.documentElement.lang.toLowerCase().startsWith("ar");document.querySelectorAll(".explorer-directory [data-ar],.explorer-footer-links > summary").forEach(el=>{if(el.matches("summary")||el.parentElement?.matches(".explorer-group > summary")||el===title||el===subtitle)el.textContent=ar?el.dataset.ar:el.dataset.en;});}
+ function translate(){const ar=document.documentElement.lang.toLowerCase().startsWith("ar");document.querySelectorAll(".explorer-directory [data-ar],.explorer-footer-links > summary").forEach(el=>{if(el.matches("summary")||el.parentElement?.matches(".explorer-group > summary"))el.textContent=ar?el.dataset.ar:el.dataset.en;});}
  function reveal(target){if(!target)return;let parent=target.closest("details.explorer-group,details.explorer-footer-links");if(parent)parent.open=true;}
  function hashTarget(){try{return document.getElementById(decodeURIComponent(location.hash.slice(1)));}catch{return null;}}
  function onHash(){const target=hashTarget();if(target){reveal(target);requestAnimationFrame(()=>target.scrollIntoView({block:"start"}));}}
