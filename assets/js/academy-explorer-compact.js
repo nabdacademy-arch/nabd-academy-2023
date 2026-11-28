@@ -59,7 +59,7 @@
   if(item.credit){const credit=document.createElement("small");credit.className="explorer-photo-credit";credit.textContent=item.credit;caption.append(credit);}
   card.append(photo,caption);galleryGrid.append(card);
  }
- const galleryNote=document.createElement("p");galleryNote.className="explorer-gallery-note";galleryNote.dataset.ar="صور توضيحية للتعلّم، وليست توثيقًا لطلاب الأكاديمية أو مرافقها.";galleryNote.dataset.en="Illustrative learning imagery, not photographs documenting NABD students or facilities.";gallery.append(galleryNote);panel.append(gallery);
+ panel.append(gallery);
  hero.after(panel);
  const footerLinks=document.querySelector(".footer-links");
  if(footerLinks){const details=document.createElement("details");details.className="explorer-footer-links";const summary=document.createElement("summary");summary.dataset.ar="جميع الروابط والسياسات";summary.dataset.en="All links & policies";details.append(summary);footerLinks.before(details);details.append(footerLinks);}
