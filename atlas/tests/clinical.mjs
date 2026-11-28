@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {clinicalCases,clinicalDepartments} from "../clinical-cases.mjs";
-import {grade,comparePath,isFinished,validateCase,sumMaximum} from "../clinical-engine.mjs";
+import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps} from "../clinical-engine.mjs";
 assert.equal(clinicalCases.length,22,"22 scenarios are required");
 assert.equal(new Set(clinicalCases.map(x=>x.id)).size,22,"Case IDs must be unique");
 assert.equal(clinicalCases.reduce((sum,item)=>sum+item.steps.length,0),86,"86 learning checkpoints expected");
@@ -34,3 +34,12 @@ for(const item of clinicalCases){
 assert.ok(partialOptions>=75,"Most missions need nuanced partially appropriate responses");
 assert.ok(!validateCase({...clinicalCases[0],maxPoints:100}));
 console.log("22 fictional clinical cases, 86 decision steps and "+partialOptions+" nuanced decisions validated.");
+
+for(const item of clinicalCases){
+ const worst=item.steps.map(s=>s.options.findIndex(o=>o.points===0));
+ const best=item.steps.map(s=>s.options.findIndex(o=>o.points===2));
+ const row={caseId:item.id,revision:item.revision??1,answers:worst};
+ assert.equal(learningGaps([item],[row])[0].gap,1);
+ assert.deepEqual(learningGaps([item],[row,{...row,answers:best}]),[]);
+ assert.deepEqual(learningGaps([item],[{...row,revision:-1}]),[]);
+}
