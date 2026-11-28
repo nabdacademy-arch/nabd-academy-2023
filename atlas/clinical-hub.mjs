@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -101,6 +101,14 @@ function renderHistory(){
   const records=completionHistory();
   $("totalAttempts").textContent=records.length;
   const target=$("attemptHistory");target.replaceChildren();
+  const suggestions=explorationPath(clinicalCases,records);
+  if(suggestions.length){
+    const panel=document.createElement("section");panel.className="history-item";
+    const title=document.createElement("strong");title.textContent=lang==="ar"?"NABD SYNAPSE · استكشف تخصصات جديدة":"NABD SYNAPSE · Explore new specialties";panel.append(title);
+    const note=document.createElement("p");note.textContent=lang==="ar"?"حالات غير مكتملة في تخصصات أقل تغطية، وليست مسار اعتماد سريري.":"Uncompleted cases in less explored specialties; not clinical prerequisites.";panel.append(note);
+    for(const id of suggestions){const item=clinicalCases.find(c=>c.id===id);const button=document.createElement("button");button.type="button";button.className="hub-case-button";button.textContent=tx(item.title)+" · "+difficulty(item);button.addEventListener("click",()=>{activateCase(id);$("caseTitle").scrollIntoView({block:"start"});});panel.append(button);}
+    target.append(panel);
+  }
   if(!records.length){
     const empty=document.createElement("p");empty.className="history-empty";empty.textContent=tr("noHistory");
     target.append(empty);return;
