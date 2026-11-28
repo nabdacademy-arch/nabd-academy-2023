@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath,studyBudget,contentAudit,compareLearners,practiceRecord,verifyPracticeRecord} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -329,6 +329,23 @@ function renderReport({record=false}={}){
   renderSkillReport();
   const priorities=reviewPriorities(current,picks);
   const target=$("decisionHistory");target.replaceChildren();
+  const lab=document.createElement("details");lab.className="hub-decision";
+  const labTitle=document.createElement("summary");labTitle.textContent=lang==="ar"?"مختبر نبض للتعلم والبحث":"NABD learning and research lab";lab.append(labTitle);
+  const add=(value)=>{const p=document.createElement("p");p.textContent=value;lab.append(p);return p;};
+  add(lang==="ar"?"أدوات تعليمية محلية، لا تستخدم في رعاية المرضى أو إصدار الشهادات.":"Local learning tools, not for patient care or credential issuance.");
+  const budgetLabel=document.createElement("label");budgetLabel.textContent=lang==="ar"?"EQUITY · عدد القرارات المتاحة للمراجعة عند ضيق الوقت: ":"EQUITY · Review decisions available under a limited study budget: ";
+  const budget=document.createElement("select");
+  for(let n=0;n<=current.steps.length;n++){const opt=document.createElement("option");opt.value=String(n);opt.textContent=String(n);budget.append(opt);}budget.value="1";budgetLabel.append(budget);lab.append(budgetLabel);
+  const budgetResult=add("");const updateBudget=()=>{const plan=studyBudget(current,picks,Number(budget.value));budgetResult.textContent=(lang==="ar"?"نقاط تعلم قابلة للاستدراك نظريًا: ":"Theoretical recoverable learning points: ")+plan.recoverablePoints+" · "+plan.reviewSteps.map(i=>tx(current.steps[i].title)).join(" / ");};budget.addEventListener("change",updateBudget);updateBudget();
+  const audit=contentAudit(clinicalCases),unreviewed=audit.filter(c=>c.reviewStatus!=="reviewed").length,missing=audit.filter(c=>!c.referenceCount).length;
+  add("DISCOVERY · "+(lang==="ar"?"حالات تحتاج مراجعة مختص: ":"Cases requiring specialist review: ")+unreviewed+"/"+audit.length+" · "+(lang==="ar"?"دون مراجع: ":"No references: ")+missing);
+  const peerLabel=document.createElement("label");peerLabel.textContent=lang==="ar"?"CONSENSUS · اختر إجابات زميل افتراضي للمقارنة: ":"CONSENSUS · Select fictional peer choices for comparison: ";lab.append(peerLabel);
+  const peerInputs=current.steps.map((step,i)=>{const label=document.createElement("label");label.textContent=tx(step.title)+" ";const select=document.createElement("select");select.setAttribute("aria-label",tx(step.title));step.options.forEach((option,j)=>{const o=document.createElement("option");o.value=String(j);o.textContent=String(j+1)+" · "+tx(option);select.append(o);});select.value=String(picks[i]);label.append(select);lab.append(label);return select;});
+  const agreement=add("");const updateAgreement=()=>{const comparison=compareLearners(current,picks,peerInputs.map(s=>Number(s.value)));agreement.textContent=(lang==="ar"?"توافق الاختيارات، وليس صحة طبية: ":"Choice agreement, not medical correctness: ")+comparison.agreements+"/"+comparison.steps;};peerInputs.forEach(s=>s.addEventListener("change",updateAgreement));updateAgreement();
+  const proof=practiceRecord(current,picks);
+  add("PROOF · "+(verifyPracticeRecord(current,proof)?(lang==="ar"?"نتيجة قابلة لإعادة الحساب، غير موقعة من الأكاديمية.":"Recomputable result, not institution-signed."):"Invalid"));
+  const saveProof=document.createElement("button");saveProof.type="button";saveProof.textContent=lang==="ar"?"تنزيل سجل التدريب الشخصي":"Download personal practice record";saveProof.addEventListener("click",()=>{try{const url=URL.createObjectURL(new Blob([JSON.stringify(proof,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="nabd-practice-record.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),500);}catch{warning();}});lab.append(saveProof);target.append(lab);
+
   const order=[...priorities.map(d=>d.index),...current.steps.map((_,i)=>i).filter(i=>!priorities.some(d=>d.index===i))];
   const note=document.createElement("p");note.textContent=lang==="ar"?"مراجعة تكيفية: القرارات ذات أكبر فجوة تعليمية أولاً.":"Adaptive review: largest learning gaps first.";target.append(note);
   order.forEach(index=>{

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {clinicalCases,clinicalDepartments} from "../clinical-cases.mjs";
-import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "../clinical-engine.mjs";
+import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath,studyBudget,contentAudit,compareLearners,practiceRecord,verifyPracticeRecord} from "../clinical-engine.mjs";
 assert.equal(clinicalCases.length,22,"22 scenarios are required");
 assert.equal(new Set(clinicalCases.map(x=>x.id)).size,22,"Case IDs must be unique");
 assert.equal(clinicalCases.reduce((sum,item)=>sum+item.steps.length,0),86,"86 learning checkpoints expected");
@@ -71,3 +71,17 @@ assert.equal(new Set(exploration.map(id=>clinicalCases.find(c=>c.id===id).depart
 const finished=clinicalCases.map(c=>({caseId:c.id,revision:c.revision??1,answers:c.steps.map(s=>s.options.findIndex(o=>o.points===2))}));
 assert.deepEqual(explorationPath(clinicalCases,finished),[]);
 assert.ok(!explorationPath(clinicalCases,[finished.find(x=>x.caseId===exploration[0])]).includes(exploration[0]));
+
+for(const item of clinicalCases){
+  const low=item.steps.map(s=>s.options.findIndex(o=>o.points===0)),high=item.steps.map(s=>s.options.findIndex(o=>o.points===2));
+  assert.equal(studyBudget(item,low,0).recoverablePoints,0);
+  assert.equal(studyBudget(item,low,item.steps.length).recoverablePoints,item.maxPoints);
+  assert.throws(()=>studyBudget(item,low,-1));
+  assert.equal(compareLearners(item,low,high).agreements,0);
+  assert.equal(compareLearners(item,high,high).agreements,item.steps.length);
+  const proof=practiceRecord(item,high);assert.ok(verifyPracticeRecord(item,proof));
+  assert.ok(!verifyPracticeRecord(item,{...proof,score:-1}));
+  assert.ok(!verifyPracticeRecord(item,{...proof,issuerVerified:true}));
+}
+assert.equal(contentAudit(clinicalCases).length,clinicalCases.length);
+assert.ok(contentAudit(clinicalCases).every(c=>c.structuralValid&&c.reviewStatus==="unreviewed"));
