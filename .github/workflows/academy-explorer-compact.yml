@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'academy-full.html'
+      - 'med-minute.html'
+      - 'assets/css/med-minute.css'
+      - 'assets/images/med-minute/**'
       - 'assets/css/academy-explorer-compact.css'
       - 'assets/js/academy-explorer-compact.js'
       - 'tests/academy-explorer-compact.cjs'
