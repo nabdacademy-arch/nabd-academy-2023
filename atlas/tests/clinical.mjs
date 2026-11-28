@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {clinicalCases,clinicalDepartments} from "../clinical-cases.mjs";
-import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence} from "../clinical-engine.mjs";
+import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "../clinical-engine.mjs";
 assert.equal(clinicalCases.length,22,"22 scenarios are required");
 assert.equal(new Set(clinicalCases.map(x=>x.id)).size,22,"Case IDs must be unique");
 assert.equal(clinicalCases.reduce((sum,item)=>sum+item.steps.length,0),86,"86 learning checkpoints expected");
@@ -64,3 +64,10 @@ for(const item of clinicalCases){
  assert.equal(learningEvidence([item],[]).meanScoreChange,null);
  assert.ok(!JSON.stringify(ev).includes("answers"));
 }
+
+const exploration=explorationPath(clinicalCases,[]);
+assert.equal(exploration.length,3);
+assert.equal(new Set(exploration.map(id=>clinicalCases.find(c=>c.id===id).department)).size,3);
+const finished=clinicalCases.map(c=>({caseId:c.id,revision:c.revision??1,answers:c.steps.map(s=>s.options.findIndex(o=>o.points===2))}));
+assert.deepEqual(explorationPath(clinicalCases,finished),[]);
+assert.ok(!explorationPath(clinicalCases,[finished.find(x=>x.caseId===exploration[0])]).includes(exploration[0]));

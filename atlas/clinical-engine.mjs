@@ -81,3 +81,15 @@ export function learningEvidence(cases,history){
   }
   return {kind:"NABD_LOCAL_LEARNING_EVIDENCE",version:1,available:cases.length,completed:attempts.size,pairedCases:paired,meanScoreChange:paired?change/paired:null,departments:[...departments.values()]};
 }
+
+// Recommend unattempted cases in underrepresented departments, not clinical prerequisites.
+export function explorationPath(cases,history,limit=3){
+  const evidence=learningEvidence(cases,history);
+  const visited=new Set(history.slice(-40).filter(row=>{const item=cases.find(c=>c.id===row?.caseId);return item&&row.revision===(item.revision??1)&&isFinished(item,row.answers);}).map(row=>row.caseId));
+  const coverage=new Map(evidence.departments.map(d=>[d.department,d.completed/d.available]));
+  const level={intro:0,intermediate:1,advanced:2};
+  const candidates=cases.filter(c=>!visited.has(c.id)).sort((a,b)=>coverage.get(a.department)-coverage.get(b.department)||(level[a.level]??3)-(level[b.level]??3)||a.id.localeCompare(b.id));
+  const chosen=[],used=new Set();
+  for(const c of candidates){if(chosen.length>=limit)break;if(!used.has(c.department)){chosen.push(c.id);used.add(c.department);}}
+  return chosen;
+}
