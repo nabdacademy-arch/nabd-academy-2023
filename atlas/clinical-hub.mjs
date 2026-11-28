@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -77,9 +77,7 @@ function readDraft(caseId){
   const record=safeRead(DRAFT_KEY,{});
   const item=clinicalCases.find(v=>v.id===caseId);
   const draft=record && typeof record==="object" && !Array.isArray(record)?record[caseId]:null;
-  if(!item || !draft || !Number.isInteger(draft.step)||draft.step<0||draft.step>=item.steps.length||!Array.isArray(draft.picks))return null;
-  if(draft.picks.length>item.steps.length || draft.picks.slice(0,draft.step).some((n,i)=>!Number.isInteger(n)||n<0||n>=item.steps[i].options.length))return null;
-  if(draft.picks.some((n,i)=>n!==null&&n!==undefined&&(!Number.isInteger(n)||n<0||n>=item.steps[i].options.length)))return null;
+  if(!item||!validDraft(item,draft))return null;
   return draft;
 }
 function warning(){
@@ -324,7 +322,13 @@ function renderReport({record=false}={}){
       replayBefore=[...picks];stepIndex=index;selectedAnswer=null;
       renderStep();
     });
-    card.append(title,explanation,replay);target.append(card);
+    const alternatives=document.createElement("details");
+    const summary=document.createElement("summary");summary.textContent=lang==="ar"?"مقارنة البدائل التعليمية":"Compare educational alternatives";alternatives.append(summary);
+    const disclaimer=document.createElement("p");disclaimer.textContent=tr("replayNotice");alternatives.append(disclaimer);
+    for(const alt of alternativeScores(current,picks,index)){
+      const line=document.createElement("p");line.textContent=tx(stage.options[alt.answer])+" · "+alt.score+"/"+result.maxPoints+" ("+(alt.delta>=0?"+":"")+alt.delta+")"+(alt.selected?(lang==="ar"?" · اختيارك":" · your choice"):"");alternatives.append(line);
+    }
+    card.append(title,explanation,alternatives,replay);target.append(card);
   });
   renderHistory();renderCatalog();
 }

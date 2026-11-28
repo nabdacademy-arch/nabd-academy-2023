@@ -43,3 +43,19 @@ export function learningGaps(cases,history){
     const g=latest.get(c.id);return {caseId:c.id,score:g.score,maxPoints:g.maxPoints,gap:g.maxPoints?1-g.score/g.maxPoints:0};
   }).filter(x=>x.gap>0).sort((a,b)=>b.gap-a.gap||a.caseId.localeCompare(b.caseId));
 }
+
+// Validate saved progress against the exact case revision and contiguous answers.
+export function validDraft(item,draft){
+  if(!draft||draft.revision!==(item.revision??1)||!Number.isInteger(draft.step)||draft.step<0||draft.step>=item.steps.length||!Array.isArray(draft.picks)||draft.picks.length>item.steps.length)return false;
+  for(let i=0;i<draft.picks.length;i++){
+    const n=draft.picks[i];
+    if(!Number.isInteger(n)||n<0||n>=item.steps[i].options.length)return false;
+  }
+  return draft.picks.length>=draft.step;
+}
+// Counterfactual learning scores only; no prediction of health outcomes.
+export function alternativeScores(item,picks,index){
+  const base=grade(item,picks);
+  if(!Number.isInteger(index)||index<0||index>=item.steps.length)throw new Error("Invalid decision index");
+  return item.steps[index].options.map((option,answer)=>({answer,selected:answer===picks[index],score:base.score-base.decisions[index].points+option.points,delta:option.points-base.decisions[index].points}));
+}
