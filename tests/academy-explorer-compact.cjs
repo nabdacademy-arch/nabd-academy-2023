@@ -27,6 +27,12 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  assert.deepEqual(after.sections,before.sections);assert.deepEqual(after.links,before.links);assert.deepEqual(after.fields,before.fields);
  assert.equal(await page.locator(".explorer-group").count(),5);
  assert.equal(await page.locator(".explorer-group[open]").count(),0);
+ assert.equal(await page.locator(".explorer-group summary svg.explorer-icon").count(),5);
+ assert.equal(await page.locator(".explorer-description").count(),5);
+ assert.ok(await page.evaluate(()=>new Set([...document.querySelectorAll(".explorer-group")].map(el=>getComputedStyle(el).getPropertyValue("--accent").trim())).size===5));
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),"No horizontal overflow");
+ for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>[...document.querySelectorAll(".explorer-group>summary")].every(el=>el.getBoundingClientRect().width>0&&el.getBoundingClientRect().height>=44)));}
+ await page.setViewportSize({width:390,height:844});
  assert.ok(after.height<before.height*0.5,"Default height should be less than half: "+JSON.stringify({before:before.height,after:after.height}));
  await page.evaluate(()=>{location.hash="verify"});await page.waitForFunction(()=>document.querySelector("#explorer-support").open);
  assert.ok(await page.locator("#certificateId").isVisible());
