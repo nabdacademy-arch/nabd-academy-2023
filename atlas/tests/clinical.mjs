@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {clinicalCases,clinicalDepartments} from "../clinical-cases.mjs";
-import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps} from "../clinical-engine.mjs";
+import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores} from "../clinical-engine.mjs";
 assert.equal(clinicalCases.length,22,"22 scenarios are required");
 assert.equal(new Set(clinicalCases.map(x=>x.id)).size,22,"Case IDs must be unique");
 assert.equal(clinicalCases.reduce((sum,item)=>sum+item.steps.length,0),86,"86 learning checkpoints expected");
@@ -42,4 +42,16 @@ for(const item of clinicalCases){
  assert.equal(learningGaps([item],[row])[0].gap,1);
  assert.deepEqual(learningGaps([item],[row,{...row,answers:best}]),[]);
  assert.deepEqual(learningGaps([item],[{...row,revision:-1}]),[]);
+}
+
+for(const item of clinicalCases){
+ const picks=item.steps.map(s=>s.options.findIndex(o=>o.points===0));
+ assert.ok(validDraft(item,{revision:item.revision??1,step:0,picks:[]}));
+ assert.ok(!validDraft(item,{revision:-1,step:0,picks:[]}));
+ assert.ok(!validDraft(item,{revision:item.revision??1,step:1,picks:[null]}));
+ for(let i=0;i<picks.length;i++)for(const alt of alternativeScores(item,picks,i)){
+  const changed=[...picks];changed[i]=alt.answer;
+  assert.equal(alt.score,grade(item,changed).score);
+  assert.equal(alt.delta,comparePath(item,picks,changed).difference);
+ }
 }
