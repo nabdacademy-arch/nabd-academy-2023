@@ -151,3 +151,6 @@ body.explorer-compact{--explorer-border:#315966;--explorer-text:#eaf5f7;--explor
 .explorer-compact .explorer-gallery-fallback{background:linear-gradient(135deg,#164d58,#142b43)}
 .explorer-compact .explorer-gallery-note{margin:8px 0 0;color:#b7d1dc;font-size:.73rem;line-height:1.5}
 @media(max-width:700px){.explorer-compact .explorer-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.explorer-compact .explorer-gallery-card:first-child{grid-column:1/-1;aspect-ratio:21/9}.explorer-compact .explorer-gallery-card figcaption{font-size:.82rem}.explorer-compact .explorer-gallery{margin-top:20px}}
+
+/* Med Minute link — scoped to internal directory. */
+.explorer-awareness{display:flex;align-items:center;gap:12px;padding:16px 20px;border:1px solid #5a8985;border-radius:16px;background:linear-gradient(120deg,#19554f,#0e3343);color:#eefaf8!important;text-decoration:none;min-height:100px;grid-column:1/-1}.explorer-awareness strong,.explorer-awareness small{display:block}.explorer-awareness strong{font-size:1.05rem}.explorer-awareness small{color:#bde8df;font-size:.8rem}.awareness-icon{font-size:1.8rem;line-height:1;border:1px solid #8ce8db;border-radius:12px;padding:10px;color:#8ce8db}.explorer-awareness>span:last-child{margin-inline-start:auto;color:#8ce8db}.explorer-awareness:focus-visible{outline:3px solid #f6d28d;outline-offset:3px}

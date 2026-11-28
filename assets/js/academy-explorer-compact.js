@@ -59,6 +59,7 @@
   if(item.credit){const credit=document.createElement("small");credit.className="explorer-photo-credit";credit.textContent=item.credit;caption.append(credit);}
   card.append(photo,caption);galleryGrid.append(card);
  }
+ const awareness=document.getElementById('med-minute-entry');if(awareness)grid.append(awareness);
  panel.append(gallery);
  hero.after(panel);
  const footerLinks=document.querySelector(".footer-links");
