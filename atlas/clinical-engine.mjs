@@ -93,3 +93,33 @@ export function explorationPath(cases,history,limit=3){
   for(const c of candidates){if(chosen.length>=limit)break;if(!used.has(c.department)){chosen.push(c.id);used.add(c.department);}}
   return chosen;
 }
+
+// A decision-count budget for disrupted learning, not clinical resource allocation.
+export function crisisStudyPlan(cases,history,budget){
+  if(!Number.isInteger(budget)||budget<1||budget>86)throw Error("Invalid study budget");
+  const priorities=[...learningGaps(cases,history).map(x=>x.caseId),...explorationPath(cases,history,cases.length),...cases.map(c=>c.id)];
+  const selected=[];let remaining=budget;
+  for(const id of new Set(priorities)){const c=cases.find(x=>x.id===id);if(c.steps.length<=remaining){selected.push({caseId:id,decisions:c.steps.length});remaining-=c.steps.length;}}
+  return {budget,remaining,selected};
+}
+// Catalog documentation gaps, not judgments of clinical accuracy.
+export function documentationGaps(cases){
+  return cases.map(c=>({caseId:c.id,missing:[...(!c.references?.length?["references"]:[]),...(!c.objectives?.ar||!c.objectives?.en?["objectives"]:[]),...(c.reviewStatus!=="reviewed"?["clinical_review"]:[])]})).filter(x=>x.missing.length);
+}
+export function makePracticeRecord(item,picks){
+  const g=grade(item,picks);
+  return {kind:"NABD_PRACTICE_RECORD",version:1,caseId:item.id,revision:item.revision??1,answers:[...picks],score:g.score,maxPoints:g.maxPoints};
+}
+// Reproducible scores only. No identity, authenticity or credential assertion.
+export function checkPracticeRecord(cases,record){
+  if(!record||record.kind!=="NABD_PRACTICE_RECORD"||record.version!==1)return null;
+  const item=cases.find(c=>c.id===record.caseId);
+  if(!item||record.revision!==(item.revision??1)||!isFinished(item,record.answers))return null;
+  const g=grade(item,record.answers);
+  return g.score===record.score&&g.maxPoints===record.maxPoints?makePracticeRecord(item,record.answers):null;
+}
+export function comparePracticeRecords(cases,a,b){
+  const x=checkPracticeRecord(cases,a),y=checkPracticeRecord(cases,b);
+  if(!x||!y||x.caseId!==y.caseId||x.revision!==y.revision)return null;
+  return {caseId:x.caseId,agreements:x.answers.filter((n,i)=>n===y.answers[i]).length,total:x.answers.length,different:x.answers.map((n,i)=>n===y.answers[i]?-1:i).filter(i=>i>=0)};
+}
