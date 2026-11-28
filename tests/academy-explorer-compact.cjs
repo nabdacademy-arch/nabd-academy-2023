@@ -27,6 +27,10 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  assert.deepEqual(after.sections,before.sections);assert.deepEqual(after.links,before.links);assert.deepEqual(after.fields,before.fields);
  assert.equal(await page.locator(".explorer-group").count(),5);
  assert.equal(await page.locator(".explorer-group[open]").count(),0);
+ assert.equal(await page.locator('img[src*="founder.jpg"]').count(),0);
+ assert.equal(await page.locator(".nfs-hero,.nfs-actions,#nabd-hope-home-entry,.final-cta,.hp-header-shortcuts").count(),0);
+ assert.ok(await page.locator("#home .explorer-search").isVisible());
+ assert.ok(await page.evaluate(()=>[...document.querySelectorAll(".explorer-group>summary")].every(el=>el.getBoundingClientRect().height>=120)));
  assert.equal(await page.locator(".explorer-group summary svg.explorer-icon").count(),5);
  assert.equal(await page.locator(".explorer-description").count(),5);
  assert.ok(await page.evaluate(()=>new Set([...document.querySelectorAll(".explorer-group")].map(el=>getComputedStyle(el).getPropertyValue("--accent").trim())).size===5));
