@@ -27,6 +27,8 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  assert.deepEqual(after.sections,before.sections);assert.deepEqual(after.links,before.links);assert.deepEqual(after.fields,before.fields);
  assert.equal(await page.locator(".explorer-group").count(),5);
  assert.equal(await page.locator(".explorer-group[open]").count(),0);
+ assert.equal(await page.locator(".explorer-groups #med-minute-entry").count(),1);
+ assert.equal(await page.locator("#med-minute-entry").getAttribute("href"),"med-minute.html");
  assert.equal(await page.locator('img[src*="founder.jpg"]').count(),0);
  assert.equal(await page.locator(".nfs-hero,.nfs-actions,#nabd-hope-home-entry,.final-cta,.hp-header-shortcuts").count(),0);
  assert.ok(await page.locator("#home .explorer-search").isVisible());
@@ -51,6 +53,17 @@ assert.ok(!fs.readFileSync("index.html","utf8").includes("academy-explorer-compa
  await page.waitForFunction(()=>document.querySelector("#explorer-learning summary span").textContent==="التعليم والبوابات");
  await page.goto("http://nabd.test/academy-full.html?certificate=demo");await page.waitForFunction(()=>document.querySelector("#explorer-support").open);
  assert.ok(await page.locator("#feedbackForm").isVisible());
+ await page.goto("http://nabd.test/med-minute.html");
+ assert.equal(await page.locator(".topic").count(),5);
+ assert.equal(await page.locator(".topic svg").count(),5);
+ assert.equal(await page.locator(".topic .care.urgent").count(),2);
+ assert.ok(await page.locator(".hero img").evaluate(img=>img.complete&&img.naturalWidth>0));
+ for(const topic of await page.locator(".topic").all()){
+   await topic.locator("summary").click();
+   assert.ok(await topic.locator(".care").isVisible());
+   assert.ok(await topic.locator(".sources a").count()>0);
+ }
+ for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),"Med Minute overflow at "+width);}
  assert.deepEqual(errors,[]);
  console.log(JSON.stringify({mobileBefore:before.height,mobileAfter:after.height,sections:after.sections.length,links:after.links.length,fields:after.fields.length}));
  }finally{await browser.close();}
