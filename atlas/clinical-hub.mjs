@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -106,6 +106,16 @@ function renderHistory(){
   if(!records.length){
     const empty=document.createElement("p");empty.className="history-empty";empty.textContent=tr("noHistory");
     target.append(empty);return;
+  }
+  const gaps=learningGaps(clinicalCases,records);
+  if(gaps.length){
+    const panel=document.createElement("section");panel.className="history-item";
+    const heading=document.createElement("strong");heading.textContent=lang==="ar"?"مسار نبض الشخصي للمراجعة":"NABD personal review pathway";panel.append(heading);
+    for(const gap of gaps.slice(0,3)){
+      const item=clinicalCases.find(c=>c.id===gap.caseId);
+      const button=document.createElement("button");button.type="button";button.className="hub-case-button";button.textContent=tx(item.title)+" · "+Math.round(gap.gap*100)+"% "+(lang==="ar"?"فجوة تعليمية":"learning gap");button.addEventListener("click",()=>activateCase(item.id));panel.append(button);
+    }
+    target.append(panel);
   }
   records.slice(-8).reverse().forEach(entry=>{
     const card=document.createElement("div");card.className="history-item";
@@ -283,7 +293,7 @@ function renderReport({record=false}={}){
   const result=grade(current,picks),signature=current.id+":"+picks.join(",");
   if(record && signature!==lastRecorded){
     const records=completionHistory();
-    records.push({caseId:current.id,score:result.score,maxPoints:result.maxPoints,at:new Date().toISOString(),answers:[...picks]});
+    records.push({caseId:current.id,score:result.score,maxPoints:result.maxPoints,at:new Date().toISOString(),answers:[...picks],revision:current.revision??1});
     if(!safeWrite(HISTORY_KEY,records.slice(-40)))warning();
     lastRecorded=signature;clearDraft(current.id);
   }

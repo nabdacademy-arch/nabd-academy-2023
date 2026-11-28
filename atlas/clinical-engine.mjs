@@ -30,3 +30,16 @@ export function comparePath(item,oldPicks,newPicks){
 export function reviewPriorities(item,picks){
   return grade(item,picks).decisions.filter(d=>d.points<d.maxPoints).sort((a,b)=>(b.maxPoints-b.points)-(a.maxPoints-a.points)||a.index-b.index);
 }
+
+// Latest valid attempt per case; never interpret as clinical competence.
+export function learningGaps(cases,history){
+  const latest=new Map();
+  for(const row of history.slice(-40)){
+    const item=cases.find(c=>c.id===row?.caseId);
+    if(!item||row.revision!==(item.revision??1)||!isFinished(item,row.answers))continue;
+    latest.set(item.id,grade(item,row.answers));
+  }
+  return cases.filter(c=>latest.has(c.id)).map(c=>{
+    const g=latest.get(c.id);return {caseId:c.id,score:g.score,maxPoints:g.maxPoints,gap:g.maxPoints?1-g.score/g.maxPoints:0};
+  }).filter(x=>x.gap>0).sort((a,b)=>b.gap-a.gap||a.caseId.localeCompare(b.caseId));
+}
