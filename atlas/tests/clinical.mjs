@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {clinicalCases,clinicalDepartments} from "../clinical-cases.mjs";
-import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "../clinical-engine.mjs";
+import {grade,comparePath,isFinished,validateCase,sumMaximum,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath,crisisStudyPlan,documentationGaps,makePracticeRecord,checkPracticeRecord,comparePracticeRecords} from "../clinical-engine.mjs";
 assert.equal(clinicalCases.length,22,"22 scenarios are required");
 assert.equal(new Set(clinicalCases.map(x=>x.id)).size,22,"Case IDs must be unique");
 assert.equal(clinicalCases.reduce((sum,item)=>sum+item.steps.length,0),86,"86 learning checkpoints expected");
@@ -71,3 +71,7 @@ assert.equal(new Set(exploration.map(id=>clinicalCases.find(c=>c.id===id).depart
 const finished=clinicalCases.map(c=>({caseId:c.id,revision:c.revision??1,answers:c.steps.map(s=>s.options.findIndex(o=>o.points===2))}));
 assert.deepEqual(explorationPath(clinicalCases,finished),[]);
 assert.ok(!explorationPath(clinicalCases,[finished.find(x=>x.caseId===exploration[0])]).includes(exploration[0]));
+
+for(const budget of [1,4,8,12,20,86]){const p=crisisStudyPlan(clinicalCases,[],budget);assert.equal(p.selected.reduce((n,x)=>n+x.decisions,0)+p.remaining,budget);assert.ok(p.remaining>=0);assert.equal(new Set(p.selected.map(x=>x.caseId)).size,p.selected.length);}
+assert.equal(documentationGaps(clinicalCases).length,22);
+for(const item of clinicalCases){const a=makePracticeRecord(item,item.steps.map(s=>s.options.findIndex(o=>o.points===2)));const b=makePracticeRecord(item,item.steps.map(s=>s.options.findIndex(o=>o.points===0)));assert.deepEqual(checkPracticeRecord(clinicalCases,a),a);assert.equal(checkPracticeRecord(clinicalCases,{...a,score:-1}),null);assert.equal(comparePracticeRecords(clinicalCases,a,a).agreements,item.steps.length);assert.equal(comparePracticeRecords(clinicalCases,a,b).agreements,0);}

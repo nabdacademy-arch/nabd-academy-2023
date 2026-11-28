@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence,explorationPath,crisisStudyPlan,documentationGaps,makePracticeRecord,checkPracticeRecord,comparePracticeRecords} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -101,6 +101,17 @@ function renderHistory(){
   const records=completionHistory();
   $("totalAttempts").textContent=records.length;
   const target=$("attemptHistory");target.replaceChildren();
+  const suite=document.createElement("details");suite.className="history-item";
+  const label=document.createElement("summary");label.textContent=lang==="ar"?"NABD CRISIS · أدوات الاستمرارية والأدلة":"NABD CRISIS · continuity and evidence tools";suite.append(label);
+  const planLabel=document.createElement("label");planLabel.textContent=lang==="ar"?"ميزانية التدريب (عدد القرارات) ":"Study budget (decision count) ";
+  const budget=document.createElement("select");for(const n of [4,8,12,20]){const o=document.createElement("option");o.value=String(n);o.textContent=String(n);budget.append(o);}planLabel.append(budget);suite.append(planLabel);
+  const results=document.createElement("div");suite.append(results);
+  const showPlan=()=>{results.replaceChildren();const plan=crisisStudyPlan(clinicalCases,records,Number(budget.value));for(const entry of plan.selected){const item=clinicalCases.find(c=>c.id===entry.caseId);const button=document.createElement("button");button.type="button";button.textContent=tx(item.title)+" · "+entry.decisions;button.addEventListener("click",()=>activateCase(item.id));results.append(button);}};budget.addEventListener("change",showPlan);showPlan();
+  const audit=document.createElement("p");const catalogGaps=documentationGaps(clinicalCases);audit.textContent=(lang==="ar"?"DISCOVERY · حالات تحتاج استكمال التوثيق أو المراجعة الطبية: ":"DISCOVERY · cases needing documentation or clinical review: ")+catalogGaps.length+"/"+clinicalCases.length;suite.append(audit);
+  const verifyLabel=document.createElement("label");verifyLabel.textContent=lang==="ar"?"PROOF / CONSENSUS · اختر تقريرًا أو تقريرين للمقارنة المحلية (لا شهادة ولا إثبات هوية) ":"PROOF / CONSENSUS · select one or two reports for local comparison (not identity proof or certification) ";
+  const input=document.createElement("input");input.type="file";input.accept=".json,application/json";input.multiple=true;verifyLabel.append(input);suite.append(verifyLabel);
+  const output=document.createElement("p");output.setAttribute("role","status");suite.append(output);
+  input.addEventListener("change",async()=>{try{const files=[...input.files];if(files.length<1||files.length>2||files.some(f=>f.size>16384))throw Error("invalid files");const parsed=await Promise.all(files.map(async f=>JSON.parse(await f.text())));const checked=parsed.map(p=>checkPracticeRecord(clinicalCases,p));if(checked.some(x=>!x))throw Error("invalid record");if(checked.length===1){output.textContent=(lang==="ar"?"النتيجة قابلة لإعادة الحساب: ":"Score reproducible: ")+checked[0].score+"/"+checked[0].maxPoints;}else{const c=comparePracticeRecords(clinicalCases,...checked);if(!c)throw Error("different cases");output.textContent=(lang==="ar"?"اتفاق الاختيارات: ":"Choice agreement: ")+c.agreements+"/"+c.total;}}catch{output.textContent=lang==="ar"?"تعذر التحقق؛ يلزم تقرير متوافق مع الحالة والإصدار الحالي.":"Verification failed: compatible current-revision reports required.";}});target.append(suite);
   const suggestions=explorationPath(clinicalCases,records);
   if(suggestions.length){
     const panel=document.createElement("section");panel.className="history-item";
@@ -329,6 +340,8 @@ function renderReport({record=false}={}){
   renderSkillReport();
   const priorities=reviewPriorities(current,picks);
   const target=$("decisionHistory");target.replaceChildren();
+  const recordButton=document.createElement("button");recordButton.type="button";recordButton.textContent=lang==="ar"?"تنزيل تقرير قابل لإعادة الحساب":"Download reproducible practice record";recordButton.addEventListener("click",()=>{try{const record=makePracticeRecord(current,picks);const url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="nabd-practice-"+current.id+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),500);}catch{warning();}});target.append(recordButton);
+
   const order=[...priorities.map(d=>d.index),...current.steps.map((_,i)=>i).filter(i=>!priorities.some(d=>d.index===i))];
   const note=document.createElement("p");note.textContent=lang==="ar"?"مراجعة تكيفية: القرارات ذات أكبر فجوة تعليمية أولاً.":"Adaptive review: largest learning gaps first.";target.append(note);
   order.forEach(index=>{

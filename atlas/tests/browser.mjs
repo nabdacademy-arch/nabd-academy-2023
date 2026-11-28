@@ -88,7 +88,18 @@ try{
   }
   assert.equal(await page.locator("#finalScore").textContent(),"6 / 6");
   assert.equal(await page.locator("#totalAttempts").textContent(),"1");
-  await page.locator("#decisionHistory button").first().click();
+  // The new export button is not a replay action. Test both explicitly.
+  const practice=page.getByRole("button",{name:"Download reproducible practice record",exact:true});
+  assert.equal(await practice.count(),1);
+  const downloadPromise=page.waitForEvent("download");
+  await practice.click();
+  const practiceDownload=await downloadPromise;
+  assert.match(practiceDownload.suggestedFilename(),/^nabd-practice-.*\.json$/);
+  const suite=page.locator("#attemptHistory details").first();
+  await suite.locator("summary").click();
+  await suite.locator("input[type=file]").setInputFiles({name:"practice.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify({kind:"NABD_PRACTICE_RECORD",version:1,caseId:clinicalCases[1].id,revision:clinicalCases[1].revision??1,answers:[0,0,0],score:6,maxPoints:6}))});
+  await page.waitForFunction(()=>document.querySelector("#attemptHistory details [role=status]")?.textContent.includes("Score reproducible: 6/6"));
+  await page.locator("#decisionHistory .hub-decision button").first().click();
   await page.locator("#optionList button").nth(1).click();
   await page.locator("#nextStep").click();
   assert.equal(await page.locator("#finalScore").textContent(),"4 / 6");
