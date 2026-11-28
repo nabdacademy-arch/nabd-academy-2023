@@ -59,3 +59,25 @@ export function alternativeScores(item,picks,index){
   if(!Number.isInteger(index)||index<0||index>=item.steps.length)throw new Error("Invalid decision index");
   return item.steps[index].options.map((option,answer)=>({answer,selected:answer===picks[index],score:base.score-base.decisions[index].points+option.points,delta:option.points-base.decisions[index].points}));
 }
+
+// Local descriptive evidence only. Recompute scores from answers; exclude obsolete revisions.
+export function learningEvidence(cases,history){
+  const attempts=new Map();
+  for(const row of history.slice(-40)){
+    const item=cases.find(c=>c.id===row?.caseId);
+    if(!item||row.revision!==(item.revision??1)||!isFinished(item,row.answers))continue;
+    const g=grade(item,row.answers);
+    const prev=attempts.get(item.id);
+    attempts.set(item.id,{first:prev?.first??g,last:g,count:(prev?.count??0)+1});
+  }
+  const departments=new Map();let paired=0,change=0;
+  for(const item of cases){
+    const d=departments.get(item.department)??{department:item.department,available:0,completed:0,score:0,maxPoints:0};
+    d.available++;
+    const a=attempts.get(item.id);
+    if(a){d.completed++;d.score+=a.last.score;d.maxPoints+=a.last.maxPoints;
+      if(a.count>1&&a.last.maxPoints>0){paired++;change+=(a.last.score-a.first.score)/a.last.maxPoints;}}
+    departments.set(item.department,d);
+  }
+  return {kind:"NABD_LOCAL_LEARNING_EVIDENCE",version:1,available:cases.length,completed:attempts.size,pairedCases:paired,meanScoreChange:paired?change/paired:null,departments:[...departments.values()]};
+}
