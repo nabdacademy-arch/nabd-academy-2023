@@ -1,5 +1,5 @@
 import {clinicalCases,clinicalDepartments} from "./clinical-cases.mjs";
-import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores} from "./clinical-engine.mjs";
+import {grade,isFinished,comparePath,validateCase,reviewPriorities,learningGaps,validDraft,alternativeScores,learningEvidence} from "./clinical-engine.mjs";
 
 // NABD MEDVERSE: fully client-side fictional education simulation.
 // This module does not access student accounts or real patient records.
@@ -105,6 +105,18 @@ function renderHistory(){
     const empty=document.createElement("p");empty.className="history-empty";empty.textContent=tr("noHistory");
     target.append(empty);return;
   }
+  const evidence=learningEvidence(clinicalCases,records);
+  const metrics=document.createElement("section");metrics.className="history-item";
+  const heading=document.createElement("strong");heading.textContent=lang==="ar"?"NABD INDEX · مؤشر التعلم المحلي":"NABD INDEX · Local learning evidence";metrics.append(heading);
+  const coverage=document.createElement("p");coverage.textContent=(lang==="ar"?"تغطية الحالات (الإصدار الحالي): ":"Current-revision case coverage: ")+evidence.completed+"/"+evidence.available;metrics.append(coverage);
+  if(evidence.pairedCases){const progress=document.createElement("p");progress.textContent=(lang==="ar"?"متوسط تغير النقاط بين أول وآخر محاولة (نقطة مئوية): ":"Mean first-to-last score change (percentage points): ")+Math.round(evidence.meanScoreChange*100)+" · "+evidence.pairedCases;metrics.append(progress);}
+  for(const d of evidence.departments.filter(d=>d.completed)){
+    const line=document.createElement("p");const dept=clinicalDepartments.find(x=>x.id===d.department);line.textContent=(dept?.[lang]??d.department)+" · "+d.completed+"/"+d.available+" · "+d.score+"/"+d.maxPoints;metrics.append(line);
+  }
+  const limitation=document.createElement("p");limitation.textContent=lang==="ar"?"وصف للمحاولات المحلية الأخيرة فقط، وليس قياسًا للكفاءة السريرية أو أثرًا بحثيًا مثبتًا.":"Describes recent local attempts only; not clinical competence or proven research impact.";metrics.append(limitation);
+  const download=document.createElement("button");download.type="button";download.textContent=lang==="ar"?"تنزيل المؤشرات المجمعة":"Download aggregate indicators";download.addEventListener("click",()=>{
+    try{const url=URL.createObjectURL(new Blob([JSON.stringify(evidence,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="nabd-local-learning-evidence.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),500);}catch{warning();}
+  });metrics.append(download);target.append(metrics);
   const gaps=learningGaps(clinicalCases,records);
   if(gaps.length){
     const panel=document.createElement("section");panel.className="history-item";
