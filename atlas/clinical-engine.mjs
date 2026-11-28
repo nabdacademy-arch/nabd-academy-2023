@@ -26,3 +26,7 @@ export function comparePath(item,oldPicks,newPicks){
   const before=grade(item,oldPicks),after=grade(item,newPicks);
   return {before:before.score,after:after.score,difference:after.score-before.score};
 }
+
+export function reviewPriorities(item,picks){
+  return grade(item,picks).decisions.filter(d=>d.points<d.maxPoints).sort((a,b)=>(b.maxPoints-b.points)-(a.maxPoints-a.points)||a.index-b.index);
+}
